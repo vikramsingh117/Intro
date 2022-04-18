@@ -19,19 +19,19 @@ export default function Home() {
         <p className={styles.description}>
           Completely original !!
         </p>
-
+        <div>(right now, ive just linked weird stuff)</div>
         <div className={styles.grid}>
           <a href="https://github.com/discordmod217" className={styles.card}>
             <h2>about me &rarr;</h2>
           </a>
 
-          <a href="https://github.com/discordmod217" className={styles.card}>
+          <a href="https://youtu.be/8dVQ0813KVM" className={styles.card}>
             <h2>whatever this web is about &rarr;</h2>
             <p>original ideas under work</p>
           </a>
 
           <a
-            href="https://github.com/discordmod217"
+            href="http://matias.ma/nsfw/"
             className={styles.card}
           >
             <h2>random stuff &rarr;</h2>
