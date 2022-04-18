@@ -114,3 +114,36 @@
     flex-direction: column;
   }
 }
+
+.navbar ul{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+  height: 50px;
+  background: #fff;
+  border-bottom: 5px solid #eaeaea;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+}
+.navbar ul li{
+  list-style: none;
+  margin: 0 1rem;
+}
+
+.blogitem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.bloghead {
+  
+  padding-top: 36px;
+  padding-bottom: 26px;
+  display: flex;
+  /* flex-direction: column; */
+  align-items: center;
+  justify-content: center;
+}

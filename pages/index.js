@@ -26,7 +26,7 @@ export default function Home() {
           </a>
 
           <a href="https://youtu.be/8dVQ0813KVM" className={styles.card}>
-            <h2>whatever this web is about &rarr;</h2>
+            <h2>whatever this web is abouBLOGS &rarr;</h2>
             <p>original ideas under work</p>
           </a>
 
@@ -50,16 +50,10 @@ export default function Home() {
       </main>
 
       <footer className={styles.footer}>
-        <a
-          href="https://drive.google.com/file/d/1c_NpwLBqdzDG9DrzwkX_F4JWnIhBAs5U/view?usp=sharing"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
           Powered by me, just me.
           {/* <span className={styles.logo}>
             <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
           </span> */}
-        </a>
       </footer>
     </div>
   )
