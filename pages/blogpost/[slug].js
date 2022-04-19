@@ -2,10 +2,10 @@ import React from 'react'
 import { useRouter } from 'next/router'
 const slug = () => {
   const router = useRouter()
-  const { slug } = router.query
+  const { Slug } = router.query
   
   return (
-    <div>{slug}</div>
+    <div>{Slug}</div>
   )
 }
 

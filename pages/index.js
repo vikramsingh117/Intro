@@ -36,6 +36,7 @@ export default function Home() {
           >
             <h2>random stuff &rarr;</h2>
           </a>
+          
           <a
             href="https://bhailang.js.org/"
             className={styles.card}
