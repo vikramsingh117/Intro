@@ -36,6 +36,12 @@ export default function Home() {
           >
             <h2>random stuff &rarr;</h2>
           </a>
+          <a
+            href="https://bhailang.js.org/"
+            className={styles.card}
+          >
+            <h2>extremely cursed &rarr;</h2>
+          </a>
 {/* 
           <a
             href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
