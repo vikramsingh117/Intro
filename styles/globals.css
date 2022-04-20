@@ -15,3 +15,59 @@ a {
   box-sizing: border-box;
 }
 
+
+html {
+  color-scheme: dark !important;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+::-webkit-scrollbar {
+  background-color: #202324;
+  color: #aba499;
+}
+::-webkit-scrollbar-corner {
+  background-color: rgb(19, 21, 22);
+}
+::-webkit-scrollbar-corner {
+  background-color: #181a1b;
+}
+::-webkit-scrollbar-corner {
+  background-color: #181a1b;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgb(55, 60, 62);
+}
+::-webkit-scrollbar-thumb {
+  background-color: #454a4d;
+}
+::-webkit-scrollbar-thumb {
+  background-color: #454a4d;
+}
+::selection {
+  background-color: rgb(0, 62, 136) !important;
+  color: rgb(216, 212, 207) !important;
+}
+::selection {
+  background-color: #004daa !important;
+  color: #e8e6e3 !important;
+}
+::selection {
+  background-color: #004daa !important;
+  color: #e8e6e3 !important;
+}
