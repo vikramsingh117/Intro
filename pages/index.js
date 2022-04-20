@@ -1,6 +1,7 @@
-import Head from 'next/head'
-import Image from 'next/image'
-import styles from '../styles/Home.module.css'
+import Head from "next/head";
+import Image from "next/image";
+import styles from "../styles/Home.module.css";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -13,55 +14,38 @@ export default function Home() {
 
       <main className={styles.main}>
         <h1 className={styles.title}>
-          Welcome to My website <a href="https://github.com/discordmod217">:D</a>
+          Welcome to My website{" "}
+          <a href="https://github.com/discordmod217">:D</a>
         </h1>
 
-        <p className={styles.description}>
-          Completely original !!
-        </p>
+        <p className={styles.description}>Completely original !!</p>
         <div>(right now, ive just linked weird stuff)</div>
         <div className={styles.grid}>
+
+          <Link href="/about">
+            <div className={styles.card2}>
+              <h2>BLOGS &rarr;</h2>
+            </div>
+          </Link>
+
           <a href="https://github.com/discordmod217" className={styles.card}>
             <h2>about me &rarr;</h2>
           </a>
 
-          <a href="https://youtu.be/8dVQ0813KVM" className={styles.card}>
-            <h2>whatever this web is abouBLOGS &rarr;</h2>
-            <p>original ideas under work</p>
-          </a>
-
-          <a
-            href="http://matias.ma/nsfw/"
-            className={styles.card}
-          >
+          <a href="http://matias.ma/nsfw/" className={styles.card}>
             <h2>random stuff &rarr;</h2>
           </a>
-          
-          <a
-            href="https://bhailang.js.org/"
-            className={styles.card}
-          >
+
+          <a href="https://bhailang.js.org/" className={styles.card}>
             <h2>extremely cursed &rarr;</h2>
           </a>
-{/* 
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h2>Deploy &rarr;</h2>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a> */}
+
         </div>
       </main>
 
       <footer className={styles.footer}>
-          Powered by me, just me.
-          {/* <span className={styles.logo}>
-            <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
-          </span> */}
+        Powered by me, just me.
       </footer>
     </div>
-  )
+  );
 }
