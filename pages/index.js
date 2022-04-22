@@ -24,7 +24,7 @@ export default function Home() {
 
           <Link href="/about">
             <div className={styles.card2}>
-              <h2>BLOGS &rarr;</h2>
+              <h2>blogs &rarr;</h2>
             </div>
           </Link>
 

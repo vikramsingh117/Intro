@@ -1,5 +1,7 @@
 .container {
   padding: 0 2rem;
+  font-size: 1.1rem;
+
 }
 
 .main {
@@ -88,6 +90,7 @@
 .card:hover,
 .card2:hover,
 .card:focus,
+.navbar ul li a:hover,
 .card2:focus,
 .card:active,
 .card2:active {
@@ -127,10 +130,18 @@
   background: #121212;
   border-bottom: 5px solid #eaeaea;
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+  font-size: 2rem;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 300;
+  color: #eaeaea;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;  
+
 }
 .navbar ul li{
   list-style: none;
   margin: 0 1rem;
+
 }
 
 .blogitem {
@@ -143,13 +154,13 @@
 
 .bloghead {
   
-  padding-top: 36px;
-  padding-bottom: 26px;
+  padding-top: 0.1rem;
   display: flex;
   /* flex-direction: column; */
   align-items: center;
   justify-content: center;
 }
+
 
 .card2 {
   margin: 1rem;
@@ -164,3 +175,8 @@
   cursor: pointer;
 }
 
+.semititle{
+  margin-bottom: 3px;
+  color: black;
+  display: block
+}
