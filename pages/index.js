@@ -19,7 +19,7 @@ export default function Home() {
         </h1>
 
         <p className={styles.description}>Completely original !!</p>
-        <div>(REMEMBER TO ADD LOGIN AND REACTIONS NNEXT TIME YOU OPEN THIS AGAIN.)</div>
+        <div>need authentication + login</div>
         <div className={styles.grid}>
 
           <Link href="/about">
