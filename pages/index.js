@@ -14,30 +14,33 @@ export default function Home() {
 
       <main className={styles.main}>
         <h1 className={styles.title}>
-          Welcome to My website{" "}
-          <a href="https://github.com/discordmod217">:D</a>
+          Welcome to My website
+          :D
         </h1>
 
         <p className={styles.description}>Completely original !!</p>
-        <div>(right now, ive just linked weird stuff)</div>
         <div className={styles.grid}>
 
-          <Link href="/about">
+          {/* <Link href="/about">
             <div className={styles.card2}>
               <h2>blogs &rarr;</h2>
             </div>
-          </Link>
+          </Link> */}
 
-          <a href="https://github.com/discordmod217" className={styles.card}>
-            <h2>about me &rarr;</h2>
+          <a href="https://www.instagram.com/vikram.real0/" className={styles.card}>
+            <h2>Instagram</h2>
+          </a>
+
+          <a href="https://www.linkedin.com/in/vikram-singh-9b48a4220" className={styles.card}>
+            <h2>Linkedin</h2>
           </a>
 
           <a href="http://matias.ma/nsfw/" className={styles.card}>
-            <h2>random stuff &rarr;</h2>
+            <h2>?</h2>
           </a>
 
-          <a href="https://bhailang.js.org/" className={styles.card}>
-            <h2>extremely cursed &rarr;</h2>
+          <a href="https://github.com/discordmod217" className={styles.card2}>
+            <h2>Github</h2>
           </a>
 
         </div>
