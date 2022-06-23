@@ -21,11 +21,6 @@ export default function Home() {
         <p className={styles.description}>Completely original !!</p>
         <div className={styles.grid}>
 
-          {/* <Link href="/about">
-            <div className={styles.card2}>
-              <h2>blogs &rarr;</h2>
-            </div>
-          </Link> */}
 
           <a href="https://www.instagram.com/vikram.real0/" className={styles.card}>
             <h2>Instagram</h2>
