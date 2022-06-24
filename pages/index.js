@@ -13,37 +13,39 @@ export default function Home() {
       </Head>
 
       <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to My website
-          :D
-        </h1>
+        <h1 className={styles.title}>Welcome to My website :D</h1>
 
         <p className={styles.description}>Completely original !!</p>
         <div className={styles.grid}>
-
-
-          <a href="https://www.instagram.com/vikram.real0/" className={styles.card}>
+          <a
+            href="https://www.instagram.com/vikram.real0/"
+            className={styles.card}
+          >
             <h2>Instagram</h2>
           </a>
 
-          <a href="https://www.linkedin.com/in/vikram-singh-9b48a4220" className={styles.card}>
+          <a
+            href="https://www.linkedin.com/in/vikram-singh-9b48a4220"
+            className={styles.card}
+          >
             <h2>Linkedin</h2>
           </a>
 
-          <a href="http://matias.ma/nsfw/" className={styles.card}>
+          <a href="/mail.txt" className={styles.card}>
+            <h2>Mail</h2>
+          </a>
+
+          <a href="http://matias.ma/nsfw/" className={styles.card2}>
             <h2>?</h2>
           </a>
 
           <a href="https://github.com/discordmod217" className={styles.card2}>
             <h2>Github</h2>
           </a>
-
         </div>
       </main>
 
-      <footer className={styles.footer}>
-        Powered by me, just me.
-      </footer>
+      <footer className={styles.footer}>Powered by me, just me.</footer>
     </div>
   );
 }

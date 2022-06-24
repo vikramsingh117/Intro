@@ -1,8 +1,6 @@
 .container {
   padding: 0 2rem;
   font-size: 1.1rem;
-  
-
 }
 
 .main {
@@ -76,47 +74,64 @@
   max-width: 800px;
 }
 
+
+.card h2 {
+  margin: 0 0 0 0;
+}
+
 .card {
   margin: 1rem;
-  padding: 1.5rem;
+  padding: 1.4rem;
   text-align: center;
   color: inherit;
   text-decoration: none;
   border: 1px solid #eaeaea;
   border-radius: 10px;
-  transition: color 0.5s ease, border 0.5s ease, border-radius 0.5s;
-
-  width: 170px;
-  /* min-width: 90px; */
+  width: 190px;
+  font-size: 1.1rem;
+  transition: color 0.5s ease, border 0.5s ease, border-radius 0.5s,
+    font-size 0.5s;
 }
+
+.card2 {
+  margin: 1rem;
+  padding: 0.2rem;
+  text-align: center;
+  color: inherit;
+  text-decoration: none;
+  border: 1px solid #eaeaea;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  transition: color 0.5s ease, border 0.5s ease, border-radius 0.5s,
+  font-size 0.5s;
+  width: 200px;
+}
+
 
 .card:hover,
-.card2:hover,
 .card:focus,
 .navbar ul li a:hover,
-.card2:focus,
-.card:active,
-.card2:active {
+.card:active {
   color: #0070f3;
-  border-color: #A020F0;
-  border: 5px solid #A020F0;
+  border-color: #a020f0;
+  border: 5px solid #a020f0;
   border-radius: 3rem;
-  transition: color 0.5s ease, border 0.5s ease, border-radius 0.5s;
-
-
+  font-size: 1.2rem;
+  transition: color 0.5s ease, border 0.5s ease, border-radius 0.5s,
+    font-size 0.5s;
 }
 
 .card2:hover,
 .navbar ul li a:hover,
 .card2:focus,
 .card2:active {
-  color: #FFD700;
-  border-color: #A020F0;
-  border: 5px solid #A020F0;
+  color: #ffd700;
+  border-color: #a020f0;
+  border: 5px solid #a020f0;
   border-radius: 3rem;
-  transition: color 0.5s ease, border 0.5s ease, border-radius 0.5s;
-
-
+  font-size: 1.3rem;
+  transition: color 0.5s ease, border 0.5s ease, border-radius 0.5s,
+    font-size 0.5s;
 }
 
 .card h2 {
@@ -142,7 +157,7 @@
   }
 }
 
-.navbar ul{
+.navbar ul {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -152,17 +167,15 @@
   border-bottom: 5px solid #eaeaea;
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
   font-size: 2rem;
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
   font-weight: 300;
   color: #eaeaea;
   margin-top: 1rem;
-  margin-bottom: 0.5rem;  
-
+  margin-bottom: 0.5rem;
 }
-.navbar ul li{
+.navbar ul li {
   list-style: none;
   margin: 0 1rem;
-
 }
 
 .blogitem {
@@ -174,7 +187,6 @@
 }
 
 .bloghead {
-  
   padding-top: 0.1rem;
   display: flex;
   /* flex-direction: column; */
@@ -182,21 +194,8 @@
   justify-content: center;
 }
 
-
-.card2 {
-  margin: 1rem;
-  padding: 1rem;
-  text-align: center;
-  color: inherit;
-  text-decoration: none;
-  border: 1px solid #eaeaea;
-  border-radius: 10px;
-  transition: color 0.5s ease, border 0.5s ease, border-radius 0.5s;
-  width: 170px;
-}
-
-.semititle{
+.semititle {
   margin-bottom: 3px;
   color: black;
-  display: block
+  display: block;
 }
