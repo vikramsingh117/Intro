@@ -4,8 +4,8 @@
 }
 
 .main {
-  min-height: 100vh;
-  padding: 4rem 0;
+  min-height: 88vh;
+  padding: 1rem 0;
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -22,37 +22,61 @@
   align-items: center;
 }
 
-.footer a {
+.footer  {
   display: flex;
   justify-content: center;
   align-items: center;
+  font-size: 1.2rem;
   flex-grow: 1;
+  transition: font-size 0.5s, color 0.5s;
+
 }
 
-.title a {
-  color: #0070f3;
+.footer:hover{
+  color: #a020f0;
+  font-size: 1.6rem;
+  cursor:context-menu;
+
+  transition: all 0.5s;
+}
+
+.title  {
   text-decoration: none;
 }
 
-.title a:hover,
-.title a:focus,
-.title a:active {
-  text-decoration: underline;
+.title :hover,
+.title :focus,
+.title :active {
 }
 
 .title {
   margin: 0;
-  line-height: 1.15;
+  line-height: 1.15; 
   font-size: 4rem;
+  padding-left:6px;
+  padding-right:6px;
+  cursor:context-menu;
+  transition: font-size 1s, color 1s;
+
+
 }
 
 .title,
 .description {
   text-align: center;
+
 }
 
+.title:hover{
+
+  color: #FFA500;
+  font-size: 4.11rem;
+  transition: all 0.5s;
+}
+
+
 .description {
-  margin: 4rem 0;
+  margin: 3rem 0;
   line-height: 1.5;
   font-size: 1.5rem;
 }
@@ -112,7 +136,7 @@
 .card:focus,
 .navbar ul li a:hover,
 .card:active {
-  color: #0070f3;
+  color: #FFA500;
   border-color: #a020f0;
   border: 5px solid #a020f0;
   border-radius: 3rem;
@@ -125,9 +149,8 @@
 .navbar ul li a:hover,
 .card2:focus,
 .card2:active {
-  color: #ffd700;
-  border-color: #a020f0;
-  border: 5px solid #a020f0;
+  color: #a020f0;
+  border: 5px solid #FFA500;
   border-radius: 3rem;
   font-size: 1.3rem;
   transition: color 0.5s ease, border 0.5s ease, border-radius 0.5s,

@@ -15,7 +15,7 @@ export default function Home() {
       <main className={styles.main}>
         <h1 className={styles.title}>Welcome to My website :D</h1>
 
-        <p className={styles.description}>Completely original !!</p>
+        <p className={styles.description}></p>
         <div className={styles.grid}>
           <a
             href="https://www.instagram.com/vikram.real0/"
