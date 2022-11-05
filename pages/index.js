@@ -13,7 +13,7 @@ export default function Home() {
       </Head>
 
       <main className={styles.main}>
-        <h1 className={styles.title}>Welcome to My website :D</h1>
+        <h1 className={styles.title}>Welcome to My website</h1>
 
         <p className={styles.description}></p>
         <div className={styles.grid}>
