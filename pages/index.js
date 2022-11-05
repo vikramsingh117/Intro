@@ -39,7 +39,7 @@ export default function Home() {
             <h2>?</h2>
           </a>
 
-          <a href="https://github.com/discordmod217" className={styles.card2}>
+          <a href="https://github.com/vikramsingh117" className={styles.card2}>
             <h2>Github</h2>
           </a>
         </div>
