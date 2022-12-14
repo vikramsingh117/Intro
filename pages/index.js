@@ -18,7 +18,7 @@ export default function Home() {
         <p className={styles.description}></p>
         <div className={styles.grid}>
           <a
-            href="https://www.instagram.com/vikram.real0/"
+            href="https://www.instagram.com/ss.vikram_/"
             className={styles.card}
           >
             <h2>Instagram</h2>
