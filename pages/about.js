@@ -13,38 +13,42 @@ const about = () => {
       </Head>
       <nav className={styles.navbar}>
         <ul>
-          <li>home</li>
-          <li>blog</li>
-          <li>contact</li>
+          <li> <a href="https://first-nextjs-pi.vercel.app/"> Home </a></li>
         </ul>
       </nav>
 
       <main className={styles.bloghead}>
-        <h1>
-          Welcome to My Blogs
-        </h1>
-        </main>
+        <h1>Welcome to My Blogs</h1>
+      </main>
 
-
-    <div className={styles.blogs}>
-      <div className={styles.blogitem}>
-        <h2>Popular Blogs</h2>
-        <h3>how to learn js in 2022</h3>
-        <p>its cool and only thing to use these days. java? what is your company rich??</p>
+      <div className={styles.blogs}>
+        <div className={styles.blogitem}>
+          <h2 className={styles.semititle}>Popular Blogs</h2>
+          <h3>how to learn js in 2022</h3>
+          <p>
+            its cool and only thing to use these days. java? what is your
+            company rich??
+          </p>
+        </div>
+        <div className={styles.blogitem}>
+          <h3>why learn python first?</h3>
+          <p>
+            because we want to become a data schience, machine learning, AI, big
+            data, tensorflow, engineer before we actually learn coding
+          </p>
+        </div>
+        <div className={styles.blogitem}>
+          <h3>is javascript worth it?</h3>
+          <p>
+            ask these questions, should you learn javascriptNO, is there any
+            other option NO, is it maintainable NO, is it portable? i mean not
+            really... javascript i love it
+          </p>
+        </div>
       </div>
-      <div className={styles.blogitem}>
-        <h3>how to learn js in 2022</h3>
-        <p>its cool and only thing to use these days. java? what is your company rich??</p>
-      </div>
-      <div className={styles.blogitem}>
-        <h3>how to learn js in 2022</h3>
-        <p>its cool and only thing to use these days. java? what is your company rich??</p>
-      </div>
-    </div>
-
 
       <footer className={styles.footer}>
-        Powered by me, just me.
+        yeah no, im not continuing blogs, THIS IS DUMB.
         {/* <span className={styles.logo}>
           <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
         </span> */}
