@@ -41,11 +41,13 @@
 
 .title {
   text-decoration: none;
+  
 }
 
 .title :hover,
 .title :focus,
 .title :active {
+
 }
 
 .title {
@@ -114,14 +116,16 @@
   margin: 0.5rem;
   padding: 1.4rem;
   text-align: center;
-  color: rgb(214 144 94);
+  color: #9693f1;
   text-decoration: none;
   border: 2px solid #c55f5f;
-  border-radius: 10px;
+  border-radius: 0rem 3rem 0rem 3rem;
   width: 190px;
   font-size: 1.1rem;
-  transition: color 0.5s ease, border 0.5s ease, border-radius 0.5s,
-    font-size 0.5s;
+    transition: all 0.5s;
+  backdrop-filter: blur(0px);
+  animation: rgb-cycle 5s infinite;
+
 }
 
 .card2 {
@@ -149,13 +153,15 @@
 .card:focus,
 .navbar ul li a:hover,
 .card:active {
-  color: #ffa500;
-  border-color: #a020f0;
-  border: 5px solid #a020f0;
-  border-radius: 3rem;
+  color: c55f5f;
+  border-color: rgb(197 206 77);
+  border: solid #c55f5f;
+  border-radius: 3rem 0rem 3rem 0rem;
   font-size: 1.2rem;
   transition: color 0.5s ease, border 0.5s ease, border-radius 0.5s,
-    font-size 0.5s;
+    font-size 0.5s blur .5s;
+  backdrop-filter: blur(10px);
+
 }
 
 .card2:hover,
@@ -179,6 +185,7 @@
 .logo {
   height: 1em;
   margin-left: 0.5rem;
+
 }
 
 @media (max-width: 600px) {
@@ -236,4 +243,12 @@
   backgroundrepeat: "no-repeat";
   backgroundsize: "cover";
   backgroundattachment: "fixed";
+}
+
+
+@keyframes rgb-cycle {
+  0% { color: rgb(255 214 213); } /* Red */
+  50% { color: rgb(231 134 133); } /* Blue */
+  100% { color: rgb(255 214 213); } /* Red */
+
 }
