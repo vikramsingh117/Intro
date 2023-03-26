@@ -1,6 +1,5 @@
 .container {
-  padding: 0 2rem;
-  font-size: 1.1rem;
+  padding: 0 1rem;
 }
 
 .main {
@@ -11,6 +10,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  animation: fadein 4s;
 }
 
 .footer {
@@ -22,25 +22,24 @@
   align-items: center;
 }
 
-.footer  {
+.footer {
   display: flex;
   justify-content: center;
   align-items: center;
   font-size: 1.2rem;
   flex-grow: 1;
   transition: font-size 0.5s, color 0.5s;
-
 }
 
-.footer:hover{
+.footer:hover {
   color: #a020f0;
   font-size: 1.6rem;
-  cursor:context-menu;
+  cursor: context-menu;
 
   transition: all 0.5s;
 }
 
-.title  {
+.title {
   text-decoration: none;
 }
 
@@ -50,30 +49,39 @@
 }
 
 .title {
+
+
   margin: 0;
-  line-height: 1.15; 
+  line-height: 1.15;
   font-size: 4rem;
-  padding-left:6px;
-  padding-right:6px;
-  cursor:context-menu;
+  padding-left: 6px;
+  padding-right: 6px;
+  cursor: context-menu;
   transition: font-size 1s, color 1s;
 
 
+  background: linear-gradient(to right, rgb(255 214 213), rgb(220 22 21));
+  /* -webkit-background-clip: text; */
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  /* text-fill-color: transparent; */
+
 }
+
+
+
+
 
 .title,
 .description {
   text-align: center;
-
 }
 
-.title:hover{
-
-  color: #FFA500;
+.title:hover {
+  color: #ffa500;
   font-size: 4.11rem;
   transition: all 0.5s;
 }
-
 
 .description {
   margin: 3rem 0;
@@ -98,18 +106,17 @@
   max-width: 800px;
 }
 
-
 .card h2 {
   margin: 0 0 0 0;
 }
 
 .card {
-  margin: 1rem;
+  margin: 0.5rem;
   padding: 1.4rem;
   text-align: center;
-  color: inherit;
+  color: rgb(214 144 94);
   text-decoration: none;
-  border: 1px solid #eaeaea;
+  border: 2px solid #c55f5f;
   border-radius: 10px;
   width: 190px;
   font-size: 1.1rem;
@@ -125,18 +132,24 @@
   text-decoration: none;
   border: 1px solid #eaeaea;
   border-radius: 10px;
-  font-size: 1.1rem;
-  transition: color 0.5s ease, border 0.5s ease, border-radius 0.5s,
-  font-size 0.5s;
-  width: 200px;
+  transition: color 0.15s ease, border-color 0.15s ease;
+  width: 190px;
 }
 
+@keyframes fadeInAnimation {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
 
 .card:hover,
 .card:focus,
 .navbar ul li a:hover,
 .card:active {
-  color: #FFA500;
+  color: #ffa500;
   border-color: #a020f0;
   border: 5px solid #a020f0;
   border-radius: 3rem;
@@ -150,7 +163,7 @@
 .card2:focus,
 .card2:active {
   color: #a020f0;
-  border: 5px solid #FFA500;
+  border: 5px solid #ffa500;
   border-radius: 3rem;
   font-size: 1.3rem;
   transition: color 0.5s ease, border 0.5s ease, border-radius 0.5s,
@@ -216,4 +229,11 @@
   margin-bottom: 3px;
   color: black;
   display: block;
+}
+
+.bgimg {
+  height: "100%";
+  backgroundrepeat: "no-repeat";
+  backgroundsize: "cover";
+  backgroundattachment: "fixed";
 }
