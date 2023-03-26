@@ -70,10 +70,6 @@
 
 }
 
-
-
-
-
 .title,
 .description {
   text-align: center;
@@ -111,6 +107,9 @@
 .card h2 {
   margin: 0 0 0 0;
 }
+.card1 h2 {
+  margin: 0 0 0 0;
+}
 
 .card {
   margin: 0.5rem;
@@ -128,16 +127,20 @@
 
 }
 
-.card2 {
-  margin: 1rem;
-  padding: 0.2rem;
+.card1 {
+  margin: 0.5rem;
+  padding: 1.4rem;
   text-align: center;
-  color: inherit;
+  color: #9693f1;
   text-decoration: none;
-  border: 1px solid #eaeaea;
-  border-radius: 10px;
-  transition: color 0.15s ease, border-color 0.15s ease;
+  border: 2px solid #c55f5f;
+  border-radius: 3rem 0rem 3rem 0rem;
   width: 190px;
+  font-size: 1.1rem;
+    transition: all 0.5s;
+  backdrop-filter: blur(0px);
+  animation: rgb-cycle 5s infinite;
+
 }
 
 @keyframes fadeInAnimation {
@@ -164,6 +167,22 @@
 
 }
 
+.card1:hover,
+.card1:focus,
+.navbar ul li a:hover,
+.card1:active {
+  color: c55f5f;
+  border-color: rgb(197 206 77);
+  border: solid #c55f5f;
+  border-radius: 0rem 3rem 0rem 3rem;
+  font-size: 1.2rem;
+  transition: color 0.5s ease, border 0.5s ease, border-radius 0.5s,
+    font-size 0.5s blur .5s;
+  backdrop-filter: blur(10px);
+
+}
+
+
 .card2:hover,
 .navbar ul li a:hover,
 .card2:focus,
@@ -177,6 +196,12 @@
 }
 
 .card p {
+  margin: 0;
+  font-size: 1.25rem;
+  line-height: 1.5;
+}
+
+.card1 p {
   margin: 0;
   font-size: 1.25rem;
   line-height: 1.5;
@@ -247,8 +272,7 @@
 
 
 @keyframes rgb-cycle {
-  0% { color: rgb(255 214 213); } /* Red */
-  50% { color: rgb(231 134 133); } /* Blue */
-  100% { color: rgb(255 214 213); } /* Red */
-
+  0% { color: rgb(255 214 213); }
+  50% { color: rgb(220 22 21); }
+  100% { color: rgb(255 214 213); }
 }
