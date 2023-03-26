@@ -5,41 +5,32 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
 
-    
-    animation: fadeInAnimation ease 2s;
-    animation-iteration-count: 1;
-    animation-fill-mode: forwards;
-
-
-  }
-
-
-  @keyframes fadeInAnimation {
-    0% {
-        opacity: 0;
-    }
-    100% {
-        opacity: 1;
-    }
-  
-  
-animation: fadeInAnimation ease 3s;
-    animation-iteration-count: 1;
-    animation-fill-mode: forwards;
-
-
- }
-
-
-  @keyframes fadeInAnimation {
-    0% {
-        opacity: 0;
-    }
-    100% {
-        opacity: 1;
-    }
+  animation: fadeInAnimation ease 4s;
+  animation-iteration-count: 1;
+  animation-fill-mode: forwards;
 }
 
+@keyframes fadeInAnimation {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+
+  animation: fadeInAnimation ease 6s;
+  animation-iteration-count: 1;
+  animation-fill-mode: forwards;
+}
+
+@keyframes fadeInAnimation {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
 
 a {
   color: inherit;
@@ -49,28 +40,11 @@ a {
 * {
   box-sizing: border-box;
 }
-
-
+/* 
 html {
   color-scheme: dark !important;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+} */
+/* 
 ::-webkit-scrollbar {
   background-color: #202324;
   color: #aba499;
@@ -105,4 +79,4 @@ html {
 ::selection {
   background-color: #004daa !important;
   color: #e8e6e3 !important;
-}
+} */
