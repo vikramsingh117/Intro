@@ -4,6 +4,11 @@ import styles from '../styles/Home.module.css'
 
 export default function Home() {
   return (
+    <>
+    <div style={{  backgroundImage: `url("111.jpg")`,height: '100vh',
+          backgroundRepeat: 'no-repeat',
+          backgroundSize: 'cover'}
+}>
     <div className={styles.container}>
       <Head>
         <title>my first app</title>
@@ -43,25 +48,12 @@ export default function Home() {
           >
             <h2>extremely cursed &rarr;</h2>
           </a>
-{/* 
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h2>Deploy &rarr;</h2>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a> */}
         </div>
       </main>
+      </div>
 
-      <footer className={styles.footer}>
-          Powered by me, just me.
-          {/* <span className={styles.logo}>
-            <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
-          </span> */}
-      </footer>
     </div>
+    </>
+
   )
 }
