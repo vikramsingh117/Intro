@@ -48,13 +48,13 @@ export default function Home() {
                 <h2>Mail</h2>
               </a>
 
-              <a href="http://matias.ma/nsfw/" className={styles.card}>
+              <a href="http://matias.ma/nsfw/" className={styles.card1}>
                 <h2>?</h2>
               </a>
 
               <a
                 href="https://github.com/vikramsingh117"
-                className={styles.card}
+                className={styles.card1}
               >
                 <h2>Github</h2>
               </a>
