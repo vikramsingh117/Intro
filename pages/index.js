@@ -22,9 +22,8 @@ export default function Home() {
           </Head>
 
           <main className={styles.main}>
-            <h1 className={styles.title}>Welcome to My website</h1>
+            <h1 className={styles.title}>Welcome to My Website</h1>
 
-            <p className={styles.description}></p>
             <div className={styles.grid}>
               <a
                 href="https://www.instagram.com/ss.vikram_/"
@@ -37,46 +36,48 @@ export default function Home() {
                 href="https://www.linkedin.com/in/vikram-singh-9b48a4220"
                 className={styles.card}
               >
-                <h2>Linkedin</h2>
+                <h2>LinkedIn</h2>
               </a>
 
               <a href="mailto:vikramandanshu@gmail.com" className={styles.card}>
                 <h2>Mail</h2>
               </a>
-
               <a href="http://matias.ma/nsfw/" className={styles.card1}>
                 <h2>?</h2>
               </a>
 
-              <a
-                href="https://github.com/vikramsingh117"
-                className={styles.card1}
-              >
-                <h2>Github</h2>
+              <a href="https://github.com/vikramsingh117" className={styles.card1}>
+                <h2>GitHub</h2>
               </a>
             </div>
 
             {/* GitHub and LeetCode Activity Cards */}
-            <div style={{ marginTop: "50px", textAlign: "center" }}>
-              <h2 style={{ fontSize: "2rem" }}>My Activities</h2>
-              <div>
+            <div className={styles.activityContainer}>
+              <div className={styles.activityImages}>
                 {/* GitHub Stats */}
                 <img
                   src="https://github-readme-stats.vercel.app/api?username=vikramsingh117&show_icons=true&theme=radical"
                   alt="GitHub Stats"
                   style={{
+                    
                     width: "500px",
-                    margin: "20px",
+                    height: "300px", 
+                    objectFit: "contain",  
                     borderRadius: "10px",
+                    position: "relative",
                   }}
+                  className={styles.activityImage}
                 />
                 {/* LeetCode Monthly Activity Graph */}
+                
                 <img
+                  className={styles.activityImage}
                   src="https://leetcard.jacoblin.cool/vikramandanshu?ext=heatmap&theme=dark"
                   alt="LeetCode Activity Graph"
                   style={{
                     width: "500px",
-                    margin: "20px",
+                    height: "300px",
+                    objectFit: "contain",
                     borderRadius: "10px",
                   }}
                 />

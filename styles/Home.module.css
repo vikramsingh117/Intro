@@ -2,6 +2,28 @@
   padding: 0 1rem;
 }
 
+
+.activityContainer {
+  margin-top: 3vh;
+  text-align: center;
+}
+
+.activityTitle {
+  font-size: 2rem;
+}
+
+.activityImages {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.activityImage {
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(221, 10, 10, 0.1);
+}
+
 .main {
   min-height: 88vh;
   padding: 1rem 0;
@@ -23,6 +45,7 @@
   font-size: 4rem;
   padding-left: 6px;
   padding-right: 6px;
+  padding-bottom: 5vh;
   cursor: context-menu;
   transition: font-size 1s, color 1s;
   background: linear-gradient(to right, rgb(255 214 213), rgb(220 22 21));
@@ -160,12 +183,12 @@
 
 @keyframes rgb-cycle {
   0% {
-    color: rgb(255 214 213);
+    color: rgb(230, 176, 59);
   }
   50% {
-    color: rgb(220 22 21);
+    color: rgb(167, 7, 7);
   }
   100% {
-    color: rgb(255 214 213);
+    color: rgb(230, 176, 59);
   }
 }
