@@ -192,3 +192,51 @@
     color: rgb(230, 176, 59);
   }
 }
+
+.activityContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 3vh;
+  flex-direction: column;
+  gap: 20px; /* Adds space between the images */
+}
+
+.activityImages {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 30px;
+  gap: 20px;
+  flex-wrap: wrap; /* Ensures images wrap on smaller screens */
+  width: 100%; /* Ensures container takes up full width */
+}
+
+.activityImage {
+  width: 100%; /* Ensures the image takes the full width of its container */
+  max-width: 500px; /* Limits the maximum width */
+  height: auto; /* Ensures the image height is adjusted to maintain aspect ratio */
+  object-fit: contain; /* Keeps the image within bounds, scaling it if needed */
+  border-radius: 10px;
+}
+
+@media (min-width: 600px) {
+  .activityImages {
+    flex-direction: row; /* Ensures images are side by side on larger screens */
+  }
+
+  .activityImage {
+    width: 45%; /* Each image takes 45% of the container's width on large screens */
+  }
+}
+
+@media (max-width: 600px) {
+  .activityImages {
+    flex-direction: column; /* Stacks the images vertically on small screens */
+  }
+
+  .activityImage {
+    width: 90%; /* Makes the image take 90% of the container width on small screens */
+    max-width: 100%; /* Allows image to grow with the container */
+  }
+}
