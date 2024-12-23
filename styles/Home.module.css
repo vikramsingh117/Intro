@@ -13,46 +13,11 @@
   animation: fadein 4s;
 }
 
-.footer {
-  display: flex;
-  flex: 1;
-  padding: 1.5rem 0;
-  border-top: 1px solid #eaeaea;
-  justify-content: center;
-  align-items: center;
-}
-
-.footer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 1.2rem;
-  flex-grow: 1;
-  transition: font-size 0.5s, color 0.5s;
-}
-
-.footer:hover {
-  color: #a020f0;
-  font-size: 1.6rem;
-  cursor: context-menu;
-
-  transition: all 0.5s;
-}
-
 .title {
   text-decoration: none;
-  
-}
-
-.title :hover,
-.title :focus,
-.title :active {
-
 }
 
 .title {
-
-
   margin: 0;
   line-height: 1.15;
   font-size: 4rem;
@@ -60,14 +25,9 @@
   padding-right: 6px;
   cursor: context-menu;
   transition: font-size 1s, color 1s;
-
-
   background: linear-gradient(to right, rgb(255 214 213), rgb(220 22 21));
-  /* -webkit-background-clip: text; */
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  /* text-fill-color: transparent; */
-
 }
 
 .title,
@@ -121,10 +81,9 @@
   border-radius: 0rem 3rem 0rem 3rem;
   width: 190px;
   font-size: 1.1rem;
-    transition: all 0.5s;
+  transition: all 0.5s;
   backdrop-filter: blur(0px);
   animation: rgb-cycle 5s infinite;
-
 }
 
 .card1 {
@@ -137,10 +96,9 @@
   border-radius: 3rem 0rem 3rem 0rem;
   width: 190px;
   font-size: 1.1rem;
-    transition: all 0.5s;
+  transition: all 0.5s;
   backdrop-filter: blur(0px);
   animation: rgb-cycle 5s infinite;
-
 }
 
 @keyframes fadeInAnimation {
@@ -162,9 +120,8 @@
   border-radius: 3rem 0rem 3rem 0rem;
   font-size: 1.2rem;
   transition: color 0.5s ease, border 0.5s ease, border-radius 0.5s,
-    font-size 0.5s blur .5s;
+    font-size 0.5s blur 0.5s;
   backdrop-filter: blur(10px);
-
 }
 
 .card1:hover,
@@ -177,22 +134,8 @@
   border-radius: 0rem 3rem 0rem 3rem;
   font-size: 1.2rem;
   transition: color 0.5s ease, border 0.5s ease, border-radius 0.5s,
-    font-size 0.5s blur .5s;
+    font-size 0.5s blur 0.5s;
   backdrop-filter: blur(10px);
-
-}
-
-
-.card2:hover,
-.navbar ul li a:hover,
-.card2:focus,
-.card2:active {
-  color: #a020f0;
-  border: 5px solid #ffa500;
-  border-radius: 3rem;
-  font-size: 1.3rem;
-  transition: color 0.5s ease, border 0.5s ease, border-radius 0.5s,
-    font-size 0.5s;
 }
 
 .card p {
@@ -207,11 +150,6 @@
   line-height: 1.5;
 }
 
-.logo {
-  height: 1em;
-  margin-left: 0.5rem;
-
-}
 
 @media (max-width: 600px) {
   .grid {
@@ -220,59 +158,14 @@
   }
 }
 
-.navbar ul {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 0;
-  height: 50px;
-  background: #121212;
-  border-bottom: 5px solid #eaeaea;
-  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
-  font-size: 2rem;
-  font-family: "Roboto", sans-serif;
-  font-weight: 300;
-  color: #eaeaea;
-  margin-top: 1rem;
-  margin-bottom: 0.5rem;
-}
-.navbar ul li {
-  list-style: none;
-  margin: 0 1rem;
-}
-
-.blogitem {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-
-.bloghead {
-  padding-top: 0.1rem;
-  display: flex;
-  /* flex-direction: column; */
-  align-items: center;
-  justify-content: center;
-}
-
-.semititle {
-  margin-bottom: 3px;
-  color: black;
-  display: block;
-}
-
-.bgimg {
-  height: "100%";
-  backgroundrepeat: "no-repeat";
-  backgroundsize: "cover";
-  backgroundattachment: "fixed";
-}
-
-
 @keyframes rgb-cycle {
-  0% { color: rgb(255 214 213); }
-  50% { color: rgb(220 22 21); }
-  100% { color: rgb(255 214 213); }
+  0% {
+    color: rgb(255 214 213);
+  }
+  50% {
+    color: rgb(220 22 21);
+  }
+  100% {
+    color: rgb(255 214 213);
+  }
 }

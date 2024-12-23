@@ -1,7 +1,5 @@
 import Head from "next/head";
-import Image from "next/image";
 import styles from "../styles/Home.module.css";
-import Link from "next/link";
 
 export default function Home() {
   return (
@@ -11,16 +9,14 @@ export default function Home() {
           backgroundImage: `url("111.jpg")`,
           backgroundRepeat: "no-repeat",
           backgroundSize: "cover",
-          backgroundAttachment: 'scroll',
+          backgroundAttachment: "scroll",
           backgroundPosition: "center",
-          // height: 'auto',
-          minHeight: '100vh',  
-
+          minHeight: "100vh",
         }}
       >
         <div className={styles.container}>
           <Head>
-            <title>Hello</title>
+            <title>Vikram Singh</title>
             <meta name="description" content="Web by Vikram Singh" />
             <link rel="icon" href="/favicon.ico" />
           </Head>
@@ -58,6 +54,33 @@ export default function Home() {
               >
                 <h2>Github</h2>
               </a>
+            </div>
+
+            {/* GitHub and LeetCode Activity Cards */}
+            <div style={{ marginTop: "50px", textAlign: "center" }}>
+              <h2 style={{ fontSize: "2rem" }}>My Activities</h2>
+              <div>
+                {/* GitHub Stats */}
+                <img
+                  src="https://github-readme-stats.vercel.app/api?username=vikramsingh117&show_icons=true&theme=radical"
+                  alt="GitHub Stats"
+                  style={{
+                    width: "500px",
+                    margin: "20px",
+                    borderRadius: "10px",
+                  }}
+                />
+                {/* LeetCode Monthly Activity Graph */}
+                <img
+                  src="https://leetcard.jacoblin.cool/vikramandanshu?ext=heatmap&theme=dark"
+                  alt="LeetCode Activity Graph"
+                  style={{
+                    width: "500px",
+                    margin: "20px",
+                    borderRadius: "10px",
+                  }}
+                />
+              </div>
             </div>
           </main>
         </div>
