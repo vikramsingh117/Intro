@@ -13,32 +13,46 @@
   animation: fadein 4s;
 }
 
-
 .title {
   margin: 0;
   line-height: 1.15;
   font-size: 4rem;
   padding-left: 6px;
   padding-right: 6px;
-  padding-top: 20px;
+  padding-top: 10vh;
   padding-bottom: 5vh;
   cursor: context-menu;
   transition: font-size 1s, color 1s;
-  background: linear-gradient(to right, rgb(255 214 213), rgb(220 22 21));
+  background: linear-gradient(90deg, rgb(255 214 213), rgb(220 22 21), rgb(255 214 213));
+  background-size: 200% 100%;
   background-clip: text;
+  -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  text-fill-color: transparent;
   text-decoration: none;
   text-align: center;
-
+  animation: wave 6s linear infinite;
 }
 
+@keyframes wave {
+  0% {
+    background-position: 0% 50%;
+  }
+  
+  50% {
+    background-position: 100% 50%;
+  }
+  
+  100% {
+    background-position: 0% 50%;
+  }
+}
 
 .title:hover {
-  color: #ffa500;
   font-size: 4.11rem;
   transition: all 0.5s;
-
 }
+
 
 .description {
   margin: 3rem 0;
@@ -152,7 +166,7 @@
 .activityContainer {
   text-align: center;
   /* display: flex; */
-  margin-top: 20vh;
+  margin-top: 5vh;
   flex-direction: column;
 }
 
@@ -160,7 +174,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 100px;
+  gap: 50px;
   flex-wrap: wrap; /* Ensures images wrap on smaller screens */
   width: 100%; /* Ensures container takes up full width */
 }
@@ -172,7 +186,7 @@
   object-fit: contain; /* Keeps the image within bounds, scaling it if needed */
   border-radius: 10px;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 10px 14px 16px rgba(29, 236, 226, 0.568);
   animation: float 3s ease-in-out infinite; /* Floating effect */
 }
 
