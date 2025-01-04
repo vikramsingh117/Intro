@@ -290,18 +290,18 @@
 
 /* Positioning for individual project cards */
 .compilerCard {
-  top: 5vh; /* Vertical position */
-  left: 5%; /* Horizontal position */
+  top: 35vh; /* Vertical position */
+  right: 3%; /* Horizontal position */
 }
 
 .figmaCard {
-  top: 10vh;
-  right: 10%; /* Horizontal position */
+  top: 5vh;
+  right: 3%; /* Horizontal position */
 }
 
 .bwappCard {
-  top: 30vh; /* Vertical position */
-  left: 15%; /* Horizontal position */
+  top: 65vh; /* Vertical position */
+  right: 3%; /* Horizontal position */
 }
 
 /* Visibility only for desktops (media query) */
