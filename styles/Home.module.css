@@ -19,16 +19,16 @@
   font-size: 4rem;
   padding-left: 6px;
   padding-right: 6px;
-  padding-top: 10vh;
+  padding-top: 5vh;
   padding-bottom: 5vh;
   cursor: context-menu;
   transition: font-size 1s, color 1s;
   background: linear-gradient(
     90deg,
-    rgb(255 214 213),
-    rgb(220 22 21),
-    rgb(189, 201, 80),
-    rgb(255 214 213)
+    #9693f1,
+    #f06790,
+    #9693f1,
+    #f06790
   );
   background-size: 200% 100%;
   background-clip: text;
@@ -102,7 +102,7 @@
   font-size: 1.1rem;
   transition: all 0.5s;
   backdrop-filter: blur(0px);
-  animation: rgb-cycle 5s infinite;
+  /* animation: rgb-cycle 5s infinite; */
 }
 
 .card1 {
@@ -117,20 +117,17 @@
   font-size: 1.1rem;
   transition: all 0.5s;
   backdrop-filter: blur(0px);
-  animation: rgb-cycle 5s infinite;
 }
 
 .card:hover,
 .card:focus,
 .navbar ul li a:hover,
 .card:active {
-  color: c55f5f;
-  border-color: rgb(197 206 77);
-  border: solid #c55f5f;
+  color: #ed5181;
+  border: 2px solid #663c92;
   border-radius: 3rem 0rem 3rem 0rem;
   font-size: 1.2rem;
-  transition: color 0.5s ease, border 0.5s ease, border-radius 0.5s,
-    font-size 0.5s blur 0.5s;
+  transition: all 0.5s;
   backdrop-filter: blur(10px);
 }
 
@@ -138,14 +135,13 @@
 .card1:focus,
 .navbar ul li a:hover,
 .card1:active {
-  color: c55f5f;
-  border-color: rgb(197 206 77);
-  border: solid #c55f5f;
+  border: 2px solid #663c92;
   border-radius: 0rem 3rem 0rem 3rem;
-  font-size: 1.2rem;
-  transition: color 0.5s ease, border 0.5s ease, border-radius 0.5s,
-    font-size 0.5s blur 0.5s;
+  font-size: 1.3rem;
   backdrop-filter: blur(10px);
+  color: #ed5181;
+  transition: all 0.5s;
+
 }
 
 .card p {
@@ -161,9 +157,7 @@
 }
 
 .activityContainer {
-  text-align: center;
-  /* display: flex; */
-  margin-top: 15vh;
+  margin-top: 25vh;
   flex-direction: column;
 }
 
@@ -225,18 +219,6 @@
   }
 }
 
-@keyframes rgb-cycle {
-  0% {
-    color: rgb(230, 176, 59);
-  }
-  50% {
-    color: rgb(167, 7, 7);
-  }
-  100% {
-    color: rgb(230, 176, 59);
-  }
-}
-
 @keyframes fadeInAnimation {
   0% {
     opacity: 0;
@@ -254,7 +236,7 @@
 .projectCard {
   position: absolute;
   background: rgba(0, 0, 0, 0.7);
-  color: white;
+  color: #9693f1;
   padding: 20px;
   border-radius: 10px;
   width: 250px;
@@ -270,13 +252,15 @@
 .projectCard:hover {
   transform: scale(1.05);
   background-color: rgba(86, 100, 95, 0.247);
-  color: black;
+  color: #ed5181;
+  transition: max-height 0.5s ease, opacity 0.5s ease;
 }
 
 .projectDescription {
   max-height: 0;
   overflow: hidden;
   opacity: 0;
+  color: rgb(192, 167, 167);
   transition: max-height 0.5s ease, opacity 0.5s ease;
 }
 

@@ -6,12 +6,12 @@ export default function Home() {
     <>
       <div
         style={{
-          backgroundImage: `url("111.jpg")`,
+          backgroundImage: `url("wallpaper.jpg")`,
           backgroundRepeat: "no-repeat",
           backgroundSize: "cover",
           backgroundAttachment: "scroll",
           backgroundPosition: "center",
-          minHeight: "100vh",
+          minHeight: "105vh",
         }}
       >
         <div className={styles.container}>
