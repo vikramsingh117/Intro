@@ -1,4 +1,6 @@
 import Head from "next/head";
+import React from "react";
+import { Typewriter } from "react-simple-typewriter";
 import styles from "../styles/Home.module.css";
 
 export default function Home() {
@@ -22,7 +24,6 @@ export default function Home() {
           </Head>
 
           <main className={styles.main}>
-
             {/* Scattered Project Cards */}
 
             <div className={styles.projectCards}>
@@ -52,9 +53,22 @@ export default function Home() {
               </div>
             </div>
 
-
-            <h1 className={styles.title}>Welcome to My Website</h1>
-
+            <h1 className={styles.title}>
+              <Typewriter
+                words={[
+                  "Welcome, I am Vikram Singh",
+                  "I am a Full Stack Developer",
+                  "Competitive Programmer",
+                  "And passionate about Open Source",
+                ]}
+                loop={Infinity}
+                cursor
+                cursorStyle="_"
+                typeSpeed={70}
+                deleteSpeed={50}
+                delaySpeed={2000}
+              />
+            </h1>
             <div className={styles.grid}>
               <a
                 href="https://www.instagram.com/ss.vikram_/"
