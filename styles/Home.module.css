@@ -40,6 +40,15 @@
   animation: wave 6s linear infinite;
 }
 
+.typingText {
+  display: inline-block;
+  overflow: hidden; /* Ensures text doesn't overflow */
+  white-space: nowrap; /* Prevents text wrapping */
+  border-right: 3px solid black; /* Simulates the caret */
+  animation: typing 4s steps(30, end), blink 0.6s step-end infinite;
+  font-family: inherit; /* Matches the title font */
+}
+
 @keyframes wave {
   0% {
     background-position: 0% 50%;
@@ -54,25 +63,11 @@
   }
 }
 
-.title:hover {
-  font-size: 4.11rem;
-  transition: all 0.5s;
-}
-
 .description {
   margin: 3rem 0;
   line-height: 1.5;
   font-size: 1.5rem;
   text-align: center;
-}
-
-.code {
-  background: #fafafa;
-  border-radius: 5px;
-  padding: 0.75rem;
-  font-size: 1.1rem;
-  font-family: Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono,
-    Bitstream Vera Sans Mono, Courier New, monospace;
 }
 
 .grid {
@@ -102,7 +97,6 @@
   font-size: 1.1rem;
   transition: all 0.5s;
   backdrop-filter: blur(0px);
-  /* animation: rgb-cycle 5s infinite; */
 }
 
 .card1 {
@@ -287,6 +281,19 @@
   top: 65vh; /* Vertical position */
   right: 3%; /* Horizontal position */
 }
+.sentimentCard {
+  top: 5vh; /* Vertical position */
+  left: 2%; /* Horizontal position */
+}
+
+.goCard {
+  top: 35vh; /* Vertical position */
+  left: 2%; /* Horizontal position */
+}
+.botCard {
+  top: 65vh; /* Vertical position */
+  left: 2%; /* Horizontal position */
+}
 
 /* Visibility only for desktops (media query) */
 @media (min-width: 1024px) {
@@ -318,40 +325,4 @@
   50% {
     border-color: black;
   }
-}
-
-.title {
-  margin: 0;
-  line-height: 1.15;
-  font-size: 4rem;
-  padding-left: 6px;
-  padding-right: 6px;
-  padding-top: 5vh;
-  padding-bottom: 5vh;
-  cursor: context-menu;
-  transition: font-size 1s, color 1s;
-  background: linear-gradient(
-    90deg,
-    #9693f1,
-    #f06790,
-    #9693f1,
-    #f06790
-  );
-  background-size: 200% 100%;
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  text-fill-color: transparent;
-  text-decoration: none;
-  text-align: center;
-  animation: wave 6s linear infinite;
-}
-
-.typingText {
-  display: inline-block;
-  overflow: hidden; /* Ensures text doesn't overflow */
-  white-space: nowrap; /* Prevents text wrapping */
-  border-right: 3px solid black; /* Simulates the caret */
-  animation: typing 4s steps(30, end), blink 0.6s step-end infinite;
-  font-family: inherit; /* Matches the title font */
 }

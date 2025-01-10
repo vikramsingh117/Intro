@@ -1,6 +1,7 @@
 import Head from "next/head";
-import React from "react";
-import { Typewriter } from "react-simple-typewriter";
+import Header from "../components/Header";
+import ContactCard from "../components/ContactCard";
+import ActivityCard from "../components/ActivityCard";
 import styles from "../styles/Home.module.css";
 
 export default function Home() {
@@ -24,98 +25,93 @@ export default function Home() {
           </Head>
 
           <main className={styles.main}>
-            {/* Scattered Project Cards */}
-
+            {/* Project Cards */}
             <div className={styles.projectCards}>
+              {/* Compiler Card */}
               <div className={`${styles.projectCard} ${styles.compilerCard}`}>
                 <h3>Simplified Compiler</h3>
-                <p>Technology: C, LEX, YACC</p>
+                <p> C, LEX, YACC</p>
                 <p className={styles.projectDescription}>
                   A compiler that parses and compiles 200 lines of code.
                 </p>
               </div>
 
+              {/* Figma Clone Card */}
               <div className={`${styles.projectCard} ${styles.figmaCard}`}>
                 <h3>Figma Clone</h3>
-                <p>Technology: Next.js, Codeblocks</p>
+                <p> Next.js, Codeblocks</p>
                 <p className={styles.projectDescription}>
                   Implemented live collaboration features and improved SEO.
                 </p>
               </div>
 
+              {/* bWAPP Attack Card */}
               <div className={`${styles.projectCard} ${styles.bwappCard}`}>
                 <h3>bWAPP Attack</h3>
-                <p>Techniques: SQL Injection, Phishing</p>
+                <p> SQL Injection, Phishing, Crawlers</p>
                 <p className={styles.projectDescription}>
                   Accessed unprotected CCTV cameras and exploited
                   vulnerabilities.
                 </p>
               </div>
-            </div>
 
-            <h1 className={styles.title}>
-              <Typewriter
-                words={[
-                  "Welcome, I am Vikram Singh",
-                  "I am a Full Stack Developer",
-                  "Competitive Programmer",
-                  "And passionate about Open Source",
-                ]}
-                loop={Infinity}
-                cursor
-                cursorStyle="_"
-                typeSpeed={70}
-                deleteSpeed={50}
-                delaySpeed={2000}
-              />
-            </h1>
-            <div className={styles.grid}>
-              <a
-                href="https://www.instagram.com/ss.vikram_/"
-                className={styles.card}
-              >
-                <h2>Instagram</h2>
-              </a>
+              <div className={`${styles.projectCard} ${styles.sentimentCard}`}>
+                <h3>Sentiment Analyzer</h3>
+                <p> ML model, OpenAI, React</p>
+                <p className={styles.projectDescription}>
+                  A compiler that parses and compiles 200 lines of code.
+                </p>
+              </div>
 
-              <a
-                href="https://www.linkedin.com/in/vikram-singh-9b48a4220"
-                className={styles.card}
-              >
-                <h2>LinkedIn</h2>
-              </a>
+              <div className={`${styles.projectCard} ${styles.botCard}`}>
+                <h3>Discord Bot and Telegram Bot</h3>
+                <p> API, Python</p>
+                <p className={styles.projectDescription}>
+                  A compiler that parses and compiles 200 lines of code.
+                </p>
+              </div>
 
-              <a href="mailto:vikramandanshu@gmail.com" className={styles.card}>
-                <h2>Mail</h2>
-              </a>
-              <a href="http://matias.ma/nsfw/" className={styles.card1}>
-                <h2>?</h2>
-              </a>
-
-              <a
-                href="https://github.com/vikramsingh117"
-                className={styles.card1}
-              >
-                <h2>GitHub</h2>
-              </a>
-            </div>
-
-            {/* GitHub and LeetCode Activity Cards */}
-            <div className={styles.activityContainer}>
-              <div className={styles.activityImages}>
-                {/* GitHub Stats */}
-                <img
-                  src="https://github-readme-stats.vercel.app/api?username=vikramsingh117&show_icons=true&theme=radical"
-                  alt="GitHub Stats"
-                  className={styles.activityImage}
-                />
-                {/* LeetCode Monthly Activity Graph */}
-                <img
-                  className={styles.activityImage}
-                  src="https://leetcard.jacoblin.cool/vikramandanshu?ext=heatmap&theme=dark"
-                  alt="LeetCode Activity Graph"
-                />
+              <div className={`${styles.projectCard} ${styles.goCard}`}>
+                <h3>WAV to FLAC Stream</h3>
+                <p> Golang, Data Streaming</p>
+                <p className={styles.projectDescription}>
+                  A compiler that parses and compiles 200 lines of code.
+                </p>
               </div>
             </div>
+
+            {/* Typing Animation */}
+            <Header />
+
+            {/* Contact Cards */}
+            <div className={styles.grid}>
+              <ContactCard
+                href="https://www.instagram.com/ss.vikram_/"
+                title="Instagram"
+              />
+              <ContactCard
+                href="https://www.linkedin.com/in/vikram-singh-9b48a4220"
+                title="LinkedIn"
+              />
+              <ContactCard
+                href="mailto:vikramandanshu@gmail.com"
+                title="Mail"
+              />
+              <ContactCard
+                href="http://matias.ma/nsfw/"
+                title="?"
+                isCard1={true}
+              />
+
+              <ContactCard
+                href="https://github.com/vikramsingh117"
+                title="GitHub"
+                isCard1={true}
+              />
+            </div>
+
+            {/* GitHub and LeetCode Activity */}
+            <ActivityCard />
           </main>
         </div>
       </div>
