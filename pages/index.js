@@ -98,14 +98,19 @@ export default function Home() {
                 title="Mail"
               />
               <ContactCard
-                href="http://matias.ma/nsfw/"
-                title="?"
+                href="https://leetcode.com/u/vikramandanshu/"
+                title="LeetCode"
                 isCard1={true}
               />
 
               <ContactCard
                 href="https://github.com/vikramsingh117"
                 title="GitHub"
+                isCard1={true}
+              />
+              <ContactCard
+                href="http://matias.ma/nsfw/"
+                title="?"
                 isCard1={true}
               />
             </div>

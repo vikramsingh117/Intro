@@ -20,7 +20,7 @@
   padding-left: 6px;
   padding-right: 6px;
   padding-top: 5vh;
-  padding-bottom: 7vh;
+  padding-bottom: 6vh;
   cursor: context-menu;
   transition: font-size 1s, color 1s;
   background: linear-gradient(
@@ -79,7 +79,7 @@
   margin: 0.5rem;
   padding: 1.4rem;
   text-align: center;
-  color: #9693f1;
+  color: #834bbe;
   text-decoration: none;
   border: 2px solid #c55f5f;
   border-radius: 0rem 3rem 0rem 3rem;
@@ -93,7 +93,7 @@
   margin: 0.5rem;
   padding: 1.4rem;
   text-align: center;
-  color: #9693f1;
+  color: #834bbe;
   text-decoration: none;
   border: 2px solid #c55f5f;
   border-radius: 3rem 0rem 3rem 0rem;
