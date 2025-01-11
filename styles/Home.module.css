@@ -25,10 +25,10 @@
   transition: font-size 1s, color 1s;
   background: linear-gradient(
     90deg,
-    #9693f1,
-    #f06790,
-    #9693f1,
-    #f06790
+    #663C92,
+    #b4083c,
+    #663C92,
+    #b4083c
   );
   background-size: 200% 100%;
   background-clip: text;

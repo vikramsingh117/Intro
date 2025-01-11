@@ -25,9 +25,10 @@ export default function Home() {
           </Head>
 
           <main className={styles.main}>
+
+
             {/* Project Cards */}
             <div className={styles.projectCards}>
-              {/* Compiler Card */}
               <div className={`${styles.projectCard} ${styles.compilerCard}`}>
                 <h3>Simplified Compiler</h3>
                 <p> C, LEX, YACC</p>
@@ -36,7 +37,6 @@ export default function Home() {
                 </p>
               </div>
 
-              {/* Figma Clone Card */}
               <div className={`${styles.projectCard} ${styles.figmaCard}`}>
                 <h3>Figma Clone</h3>
                 <p> Next.js, Codeblocks</p>
@@ -45,7 +45,6 @@ export default function Home() {
                 </p>
               </div>
 
-              {/* bWAPP Attack Card */}
               <div className={`${styles.projectCard} ${styles.bwappCard}`}>
                 <h3>bWAPP Attack</h3>
                 <p> SQL Injection, Phishing, Crawlers</p>
@@ -79,6 +78,7 @@ export default function Home() {
                 </p>
               </div>
             </div>
+
 
             {/* Typing Animation */}
             <Header />
