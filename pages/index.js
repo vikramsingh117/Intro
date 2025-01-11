@@ -59,7 +59,7 @@ export default function Home() {
                 <h3>Sentiment Analyzer</h3>
                 <p> ML model, OpenAI, React</p>
                 <p className={styles.projectDescription}>
-                  A compiler that parses and compiles 200 lines of code.
+                  Application with a Machine Learning model to understand human semantics.
                 </p>
               </div>
 
@@ -67,7 +67,7 @@ export default function Home() {
                 <h3>Discord Bot and Telegram Bot</h3>
                 <p> API, Python</p>
                 <p className={styles.projectDescription}>
-                  A compiler that parses and compiles 200 lines of code.
+                  Dedicated Discord and telegram bots to interact with users.
                 </p>
               </div>
 
@@ -75,7 +75,7 @@ export default function Home() {
                 <h3>WAV to FLAC Stream</h3>
                 <p> Golang, Data Streaming</p>
                 <p className={styles.projectDescription}>
-                  A compiler that parses and compiles 200 lines of code.
+                  Data streaming client & server to convert WAV files into FLAC.
                 </p>
               </div>
             </div>
