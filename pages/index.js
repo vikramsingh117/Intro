@@ -25,8 +25,6 @@ export default function Home() {
           </Head>
 
           <main className={styles.main}>
-
-
             {/* Project Cards */}
             <div className={styles.projectCards}>
               <div className={`${styles.projectCard} ${styles.compilerCard}`}>
@@ -58,7 +56,8 @@ export default function Home() {
                 <h3>Sentiment Analyzer</h3>
                 <p> ML model, OpenAI, React</p>
                 <p className={styles.projectDescription}>
-                  Application with a Machine Learning model to understand human semantics.
+                  Application with a Machine Learning model to understand human
+                  semantics.
                 </p>
               </div>
 
@@ -78,7 +77,6 @@ export default function Home() {
                 </p>
               </div>
             </div>
-
 
             {/* Typing Animation */}
             <Header />
@@ -111,7 +109,7 @@ export default function Home() {
               <ContactCard
                 href="http://matias.ma/nsfw/"
                 title="?"
-                isCard1={true}
+                isCard2={true} // Ensure the special card has `isCard2` set to true
               />
             </div>
 
