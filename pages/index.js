@@ -3,8 +3,17 @@ import Header from "../components/Header";
 import ContactCard from "../components/ContactCard";
 import ActivityCard from "../components/ActivityCard";
 import styles from "../styles/Home.module.css";
+import { useAuth } from "../context/AuthContext";
+import { useState } from "react";
 
 export default function Home() {
+  const { getToken, isAuthenticated, user } = useAuth();
+  const [showToken, setShowToken] = useState(false);
+
+  const handleShowToken = () => {
+    setShowToken(!showToken);
+  };
+
   return (
     <>
       <div
@@ -77,6 +86,78 @@ export default function Home() {
                 </p>
               </div>
             </div>
+
+            {/* Show Token Button - Only show if authenticated */}
+            {isAuthenticated && (
+              <div style={{ marginTop: '0.1rem', marginBottom: '1rem', textAlign: 'center' }}>
+                <button
+                  onClick={handleShowToken}
+                  style={{
+                    margin: '0.5rem',
+                    padding: '1.0rem',
+                    textAlign: 'center',
+                    color: '#834bbe',
+                    background: 'transparent',
+                    textDecoration: 'none',
+                    border: '2px solid #c55f5f',
+                    borderRadius: '1rem 1rem 1rem 1rem',
+                    fontSize: '1.1rem',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    textTransform: 'uppercase',
+                    letterSpacing: '1px',
+                    transition: 'all 0.5s',
+                    backdropFilter: 'blur(0px)',
+
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.color = '#ed5181';
+                    e.target.style.border = '2px solid #663c92';
+                    e.target.style.fontSize = '1.2rem';
+                    e.target.style.backdropFilter = 'blur(10px)';
+                    e.target.style.boxShadow = '0 0 10px rgba(255, 0, 255, 0.3)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.color = '#834bbe';
+                    e.target.style.border = '2px solid #c55f5f';
+                    e.target.style.fontSize = '1.1rem';
+                    e.target.style.backdropFilter = 'blur(0px)';
+                    e.target.style.boxShadow = 'none';
+                  }}
+                >
+                  {showToken ? 'Who Cares?' : 'Show Token'}
+                </button>
+                
+                {showToken && (
+                  <div style={{
+                    marginTop: '0.5rem',
+                    padding: '1.0rem',
+                    background: 'transparent',
+                    border: '2px solid #c55f5f',
+                    borderRadius: '1rem 1rem 1rem 1rem',
+                    maxWidth: '800px',
+                    margin: '1rem auto',
+                    wordBreak: 'break-all',
+                    fontFamily: 'monospace',
+                    fontSize: '0.9rem',
+                    color: '#834bbe',
+                    lineHeight: '1.5',
+                    backdropFilter: 'blur(10px)',
+                    transition: 'all 0.5s ease-in-out',
+                    animation: 'tokenSlideIn 0.5s ease-out',
+                    opacity: showToken ? 1 : 0,
+                    transform: showToken ? 'translateY(0)' : 'translateY(-20px)',
+                  }}>
+                    <p style={{ color: '#834bbe',margin:"0", fontWeight: 'bold' }}>
+                      Your JWT Token (User ID: {user?.userId}):
+                    </p>
+                    <code style={{ color: '#834bbe' }}>
+                      {getToken()}
+                    </code>
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Typing Animation */}
             <Header />

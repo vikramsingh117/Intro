@@ -10,6 +10,7 @@ const Header = () => {
           "I am a Full Stack Developer",
           "Competitive Programmer",
           "And passionate about Open Source",
+          "I made this before AI became popular"
         ]}
         loop={Infinity}
         cursor
