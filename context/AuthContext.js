@@ -14,23 +14,48 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Check if user is logged in on app load
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      // Verify token by making a request or decode it
+    const checkAuth = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+  
+      // Quick expiration check for UX (optional)
       try {
-        const payload = JSON.parse(atob(token.split('.')[1])); // Decode JWT payload
-        if (payload.exp * 1000 > Date.now()) {
-          setUser({ userId: payload.userId });
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        if (payload.exp * 1000 <= Date.now()) {
+          localStorage.removeItem('token');
+          setLoading(false);
+          return;
+        }
+      } catch (error) {
+        localStorage.removeItem('token');
+        setLoading(false);
+        return;
+      }
+  
+      // Proper server-side verification
+      try {
+        const response = await fetch('/api/auth/verify', {
+          headers: { 'Authorization': token },
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          setUser({ userId: data.userId });
         } else {
           localStorage.removeItem('token');
         }
       } catch (error) {
         localStorage.removeItem('token');
       }
-    }
-    setLoading(false);
+      
+      setLoading(false);
+    };
+  
+    checkAuth();
   }, []);
 
   const loginWithMagicNumber = async (magicNumber) => {
