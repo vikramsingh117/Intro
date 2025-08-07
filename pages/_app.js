@@ -11,11 +11,10 @@ function AppContent({ Component, pageProps }) {
 
   return (
     <>
-      {isAuthenticated ? (
+      <div className={!isAuthenticated ? 'blur-background' : ''}>
         <Component {...pageProps} />
-      ) : (
-        <MagicNumberLogin />
-      )}
+      </div>
+      {!isAuthenticated && <MagicNumberLogin />}
     </>
   );
 }

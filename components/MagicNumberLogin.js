@@ -33,15 +33,15 @@ const MagicNumberLogin = () => {
     <div className={styles.overlay}>
       <div className={styles.modal}>
         <form onSubmit={handleSubmit} className={styles.form}>
-          <h2>Enter Magic Number</h2>
+          <h2>JWT Auth</h2>
           
           {error && <div className={styles.error}>{error}</div>}
           
           <input
-            type="number"
+            // type="number"
             value={magicNumber}
             onChange={(e) => setMagicNumber(e.target.value)}
-            placeholder="Your magic number..."
+            placeholder="Pick your favorite number"
             className={styles.input}
             autoFocus
           />
