@@ -1,6 +1,31 @@
 import '../styles/globals.css';
-function MyApp({ Component, pageProps }) {
-  return <Component {...pageProps} />
+import { AuthProvider, useAuth } from '../context/AuthContext';
+import MagicNumberLogin from '../components/MagicNumberLogin';
+
+function AppContent({ Component, pageProps }) {
+  const { isAuthenticated, loading } = useAuth();
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  return (
+    <>
+      {isAuthenticated ? (
+        <Component {...pageProps} />
+      ) : (
+        <MagicNumberLogin />
+      )}
+    </>
+  );
 }
 
-export default MyApp
+function MyApp({ Component, pageProps }) {
+  return (
+    <AuthProvider>
+      <AppContent Component={Component} pageProps={pageProps} />
+    </AuthProvider>
+  );
+}
+
+export default MyApp;
