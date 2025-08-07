@@ -71,18 +71,18 @@ export default function Home() {
               </div>
 
               <div className={`${styles.projectCard} ${styles.botCard}`}>
-                <h3>Discord Bot and Telegram Bot</h3>
+                <h3>NIFTY Stock Algo Trading Bot</h3>
                 <p> API, Python</p>
                 <p className={styles.projectDescription}>
-                  Dedicated Discord and telegram bots to interact with users.
+                  Created a Backtesting Bot for NIFTY Stock, generating high returns and signals.
                 </p>
               </div>
 
               <div className={`${styles.projectCard} ${styles.goCard}`}>
-                <h3>WAV to FLAC Stream</h3>
-                <p> Golang, Data Streaming</p>
+                <h3>Tab Reminder: Google Chrome Extension</h3>
+                <p> Javascript, Node.js</p>
                 <p className={styles.projectDescription}>
-                  Data streaming client & server to convert WAV files into FLAC.
+                  Created and deployed a Google Chrome Extension that reopens closed tabs after a certain time.
                 </p>
               </div>
             </div>
