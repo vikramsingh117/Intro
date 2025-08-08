@@ -9,9 +9,25 @@ import { useState } from "react";
 export default function Home() {
   const { getToken, isAuthenticated, user } = useAuth();
   const [showToken, setShowToken] = useState(false);
+  const [showUserInfo, setShowUserInfo] = useState(false);
+  const [userInfo, setUserInfo] = useState(null);
 
   const handleShowToken = () => {
     setShowToken(!showToken);
+  };
+
+  const handleShowUserInfo = async () => {
+    if (!showUserInfo && !userInfo) {
+      // Fetch user info if not already loaded
+      try {
+        const response = await fetch('/api/user-info');
+        const data = await response.json();
+        setUserInfo(data);
+      } catch (error) {
+        console.error('Error fetching user info:', error);
+      }
+    }
+    setShowUserInfo(!showUserInfo);
   };
 
   return (
@@ -125,7 +141,44 @@ export default function Home() {
                     e.target.style.boxShadow = 'none';
                   }}
                 >
-                  {showToken ? 'Who Cares?' : 'Show Token'}
+                  {showToken ? 'Hide Token' : 'Show Token'}
+                </button>
+
+                <button
+                  onClick={handleShowUserInfo}
+                  style={{
+                    margin: '0.5rem',
+                    padding: '1.0rem',
+                    textAlign: 'center',
+                    color: '#834bbe',
+                    background: 'transparent',
+                    textDecoration: 'none',
+                    border: '2px solid #c55f5f',
+                    borderRadius: '1rem 1rem 1rem 1rem',
+                    fontSize: '1.1rem',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    textTransform: 'uppercase',
+                    letterSpacing: '1px',
+                    transition: 'all 0.5s',
+                    backdropFilter: 'blur(0px)',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.color = '#ed5181';
+                    e.target.style.border = '2px solid #663c92';
+                    e.target.style.fontSize = '1.2rem';
+                    e.target.style.backdropFilter = 'blur(10px)';
+                    e.target.style.boxShadow = '0 0 10px rgba(255, 0, 255, 0.3)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.color = '#834bbe';
+                    e.target.style.border = '2px solid #c55f5f';
+                    e.target.style.fontSize = '1.1rem';
+                    e.target.style.backdropFilter = 'blur(0px)';
+                    e.target.style.boxShadow = 'none';
+                  }}
+                >
+                  {showUserInfo ? 'Hide Info' : 'Show Info'}
                 </button>
                 
                 {showToken && (
@@ -154,6 +207,41 @@ export default function Home() {
                     <code style={{ color: '#834bbe' }}>
                       {getToken()}
                     </code>
+                  </div>
+                )}
+
+                {showUserInfo && userInfo && (
+                  <div style={{
+                    marginTop: '0.5rem',
+                    padding: '1.0rem',
+                    background: 'transparent',
+                    border: '2px solid #c55f5f',
+                    borderRadius: '1rem 1rem 1rem 1rem',
+                    maxWidth: '800px',
+                    margin: '1rem auto',
+                    fontFamily: 'monospace',
+                    fontSize: '0.9rem',
+                    color: '#834bbe',
+                    lineHeight: '1.5',
+                    backdropFilter: 'blur(10px)',
+                    transition: 'all 0.5s ease-in-out',
+                    animation: 'tokenSlideIn 0.5s ease-out',
+                    opacity: showUserInfo ? 1 : 0,
+                    transform: showUserInfo ? 'translateY(0)' : 'translateY(-20px)',
+                  }}>
+                    <p style={{ color: '#834bbe', margin: "0 0 0.5rem 0", fontWeight: 'bold' }}>
+                      Your System & Location Information:
+                    </p>
+                    <div style={{ color: '#834bbe', textAlign: 'left' }}>
+                      <strong>IP Address:</strong> {userInfo.ip}<br/>
+                      <strong>Operating System:</strong> {userInfo.os}<br/>
+                      <strong>Browser:</strong> {userInfo.browser}<br/>
+                      <br/>
+                      <strong>Country:</strong> {userInfo.country}<br/>
+                      <strong>State/Region:</strong> {userInfo.region}<br/>
+                      <strong>City:</strong> {userInfo.city}<br/>
+                      <strong>Timezone:</strong> {userInfo.timezone}
+                    </div>
                   </div>
                 )}
               </div>
