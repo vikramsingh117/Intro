@@ -11,6 +11,37 @@ body {
   transition: filter 0.3s ease;
 }
 
+/* Auth button responsive styles */
+.auth-button {
+  /* Base styles are in inline styles */
+}
+
+@media (max-width: 480px) {
+  .auth-button {
+    padding: 0.6rem 0.8rem !important;
+    font-size: 0.85rem !important;
+    min-width: 100px !important;
+    border-radius: 0.3rem !important; /* Much less rounded */
+  }
+  
+  .auth-button:hover {
+    font-size: 0.9rem !important;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+  .auth-button {
+    padding: 0.8rem 1rem !important;
+    font-size: 0.95rem !important;
+    min-width: 110px !important;
+    border-radius: 0.5rem !important; /* Less rounded */
+  }
+  
+  .auth-button:hover {
+    font-size: 1rem !important;
+  }
+}
+
 @keyframes fadeInAnimation {
   0% {
     opacity: 0;
@@ -23,7 +54,7 @@ body {
 @keyframes tokenSlideIn {
   0% {
     opacity: 0;
-    transform: translateY(-20px) scale(0.8);
+    transform: translateY(-20px) scale(0.95);
   }
   100% {
     opacity: 1;
