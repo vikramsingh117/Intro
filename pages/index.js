@@ -7,26 +7,15 @@ import { useAuth } from "../context/AuthContext";
 import { useState } from "react";
 
 export default function Home() {
-  const { getToken, isAuthenticated, user } = useAuth();
+  const { getToken, isAuthenticated, user, userInfo } = useAuth();
   const [showToken, setShowToken] = useState(false);
   const [showUserInfo, setShowUserInfo] = useState(false);
-  const [userInfo, setUserInfo] = useState(null);
 
   const handleShowToken = () => {
     setShowToken(!showToken);
   };
 
-  const handleShowUserInfo = async () => {
-    if (!showUserInfo && !userInfo) {
-      // Fetch user info if not already loaded
-      try {
-        const response = await fetch('/api/user-info');
-        const data = await response.json();
-        setUserInfo(data);
-      } catch (error) {
-        console.error('Error fetching user info:', error);
-      }
-    }
+  const handleShowUserInfo = () => {
     setShowUserInfo(!showUserInfo);
   };
 
@@ -230,7 +219,7 @@ export default function Home() {
                     transform: showUserInfo ? 'translateY(0)' : 'translateY(-20px)',
                   }}>
                     <p style={{ color: '#834bbe', margin: "0 0 0.5rem 0", fontWeight: 'bold' }}>
-                      Your System & Location Information:
+                      Your System, Location & Weather Information:
                     </p>
                     <div style={{ color: '#834bbe', textAlign: 'left' }}>
                       <strong>IP Address:</strong> {userInfo.ip}<br/>
@@ -240,7 +229,16 @@ export default function Home() {
                       <strong>Country:</strong> {userInfo.country}<br/>
                       <strong>State/Region:</strong> {userInfo.region}<br/>
                       <strong>City:</strong> {userInfo.city}<br/>
-                      <strong>Timezone:</strong> {userInfo.timezone}
+                      <strong>Timezone:</strong> {userInfo.timezone}<br/>
+                      <br/>
+                      {userInfo.weather && (
+                        <>
+                          <strong>Temperature:</strong> {userInfo.weather.temperature}<br/>
+                          <strong>Weather:</strong> {userInfo.weather.description}<br/>
+                          <strong>Humidity:</strong> {userInfo.weather.humidity}<br/>
+                          <strong>Wind Speed:</strong> {userInfo.weather.windSpeed}
+                        </>
+                      )}
                     </div>
                   </div>
                 )}

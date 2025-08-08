@@ -66,7 +66,9 @@ export default async function handler(req, res) {
           country: 'Unknown',
           region: 'Unknown', 
           city: 'Unknown',
-          timezone: 'Unknown'
+          timezone: 'Unknown',
+          latitude: null,
+          longitude: null
         };
       }
 
@@ -78,14 +80,18 @@ export default async function handler(req, res) {
           country: locationData.country || 'Unknown',
           region: locationData.region || 'Unknown',
           city: locationData.city || 'Unknown',
-          timezone: locationData.timezone?.id || 'Unknown'
+          timezone: locationData.timezone?.id || 'Unknown',
+          latitude: locationData.latitude || null,
+          longitude: locationData.longitude || null
         };
       } else {
         return {
           country: 'Unknown',
           region: 'Unknown',
           city: 'Unknown', 
-          timezone: 'Unknown'
+          timezone: 'Unknown',
+          latitude: null,
+          longitude: null
         };
       }
     } catch (error) {
@@ -94,7 +100,54 @@ export default async function handler(req, res) {
         country: 'Unknown',
         region: 'Unknown',
         city: 'Unknown',
-        timezone: 'Unknown'
+        timezone: 'Unknown',
+        latitude: null,
+        longitude: null
+      };
+    }
+  };
+
+  // Get weather data using OpenWeatherMap API (free tier)
+  const getWeatherData = async (city, latitude, longitude) => {
+    try {
+      // Skip weather for unknown locations
+      if (city === 'Unknown' || (!latitude && !longitude)) {
+        return {
+          temperature: 'Unknown',
+          description: 'Unknown',
+          humidity: 'Unknown',
+          windSpeed: 'Unknown'
+        };
+      }
+
+      // Using OpenWeatherMap's free API (no key required for basic data)
+      // Alternative: use wttr.in which is completely free
+      const weatherResponse = await fetch(`https://wttr.in/${encodeURIComponent(city)}?format=j1`);
+      const weatherData = await weatherResponse.json();
+
+      if (weatherData && weatherData.current_condition && weatherData.current_condition[0]) {
+        const current = weatherData.current_condition[0];
+        return {
+          temperature: `${current.temp_C}°C (${current.temp_F}°F)`,
+          description: current.weatherDesc[0].value,
+          humidity: `${current.humidity}%`,
+          windSpeed: `${current.windspeedKmph} km/h`
+        };
+      } else {
+        return {
+          temperature: 'Unknown',
+          description: 'Unknown', 
+          humidity: 'Unknown',
+          windSpeed: 'Unknown'
+        };
+      }
+    } catch (error) {
+      console.error('Error fetching weather data:', error);
+      return {
+        temperature: 'Unknown',
+        description: 'Unknown',
+        humidity: 'Unknown', 
+        windSpeed: 'Unknown'
       };
     }
   };
@@ -103,6 +156,7 @@ export default async function handler(req, res) {
   const userAgent = req.headers['user-agent'];
   const { os, browser } = parseUserAgent(userAgent);
   const location = await getLocationFromIP(clientIP);
+  const weather = await getWeatherData(location.city, location.latitude, location.longitude);
 
   res.status(200).json({
     ip: clientIP,
@@ -112,6 +166,12 @@ export default async function handler(req, res) {
     region: location.region,
     city: location.city,
     timezone: location.timezone,
+    weather: {
+      temperature: weather.temperature,
+      description: weather.description,
+      humidity: weather.humidity,
+      windSpeed: weather.windSpeed
+    },
     userAgent: userAgent
   });
 } 

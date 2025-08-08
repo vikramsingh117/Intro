@@ -13,48 +13,63 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [userInfo, setUserInfo] = useState(null);
+
+  // Function to fetch user info
+  const fetchUserInfo = async () => {
+    try {
+      const response = await fetch('/api/user-info');
+      const data = await response.json();
+      setUserInfo(data);
+    } catch (error) {
+      console.error('Error fetching user info:', error);
+    }
+  };
+
+  // Check if user is logged in on app load
+  const checkAuth = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setLoading(false);
+      return;
+    }
+
+    // Quick expiration check for UX (optional)
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      if (payload.exp * 1000 <= Date.now()) {
+        localStorage.removeItem('token');
+        setLoading(false);
+        return;
+      }
+    } catch (error) {
+      localStorage.removeItem('token');
+      setLoading(false);
+      return;
+    }
+
+    // Proper server-side verification
+    try {
+      const response = await fetch('/api/auth/verify', {
+        headers: { 'Authorization': token },
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setUser({ userId: data.userId });
+        // Fetch user info immediately after successful auth verification
+        fetchUserInfo();
+      } else {
+        localStorage.removeItem('token');
+      }
+    } catch (error) {
+      localStorage.removeItem('token');
+    }
+    
+    setLoading(false);
+  };
 
   useEffect(() => {
-    const checkAuth = async () => {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        setLoading(false);
-        return;
-      }
-  
-      // Quick expiration check for UX (optional)
-      try {
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        if (payload.exp * 1000 <= Date.now()) {
-          localStorage.removeItem('token');
-          setLoading(false);
-          return;
-        }
-      } catch (error) {
-        localStorage.removeItem('token');
-        setLoading(false);
-        return;
-      }
-  
-      // Proper server-side verification
-      try {
-        const response = await fetch('/api/auth/verify', {
-          headers: { 'Authorization': token },
-        });
-        
-        if (response.ok) {
-          const data = await response.json();
-          setUser({ userId: data.userId });
-        } else {
-          localStorage.removeItem('token');
-        }
-      } catch (error) {
-        localStorage.removeItem('token');
-      }
-      
-      setLoading(false);
-    };
-  
     checkAuth();
   }, []);
 
@@ -73,6 +88,8 @@ export const AuthProvider = ({ children }) => {
       if (response.ok) {
         localStorage.setItem('token', data.token);
         setUser({ userId: data.userId });
+        // Fetch user info immediately after successful login
+        fetchUserInfo();
         return { success: true };
       } else {
         return { success: false, error: data.message };
@@ -85,6 +102,7 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     localStorage.removeItem('token');
     setUser(null);
+    setUserInfo(null); // Clear user info on logout
   };
 
   const getToken = () => {
@@ -94,6 +112,7 @@ export const AuthProvider = ({ children }) => {
   const value = {
     user,
     loading,
+    userInfo,
     loginWithMagicNumber,
     logout,
     getToken,
