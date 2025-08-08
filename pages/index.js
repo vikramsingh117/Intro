@@ -219,26 +219,19 @@ export default function Home() {
                     transform: showUserInfo ? 'translateY(0)' : 'translateY(-20px)',
                   }}>
                     <p style={{ color: '#834bbe', margin: "0 0 0.5rem 0", fontWeight: 'bold' }}>
-                      Your System, Location & Weather Information:
+                      Your System & Location Information:
                     </p>
                     <div style={{ color: '#834bbe', textAlign: 'left' }}>
                       <strong>IP Address:</strong> {userInfo.ip}<br/>
-                      <strong>Operating System:</strong> {userInfo.os}<br/>
+                      <strong>Coordinates:</strong> {userInfo.latitude && userInfo.longitude 
+                        ? `${userInfo.latitude}, ${userInfo.longitude}` 
+                        : 'Unknown'}<br/>
+                      <strong>OS & Device:</strong> {userInfo.os}<br/>
                       <strong>Browser:</strong> {userInfo.browser}<br/>
-                      <br/>
-                      <strong>Country:</strong> {userInfo.country}<br/>
-                      <strong>State/Region:</strong> {userInfo.region}<br/>
-                      <strong>City:</strong> {userInfo.city}<br/>
-                      <strong>Timezone:</strong> {userInfo.timezone}<br/>
-                      <br/>
-                      {userInfo.weather && (
-                        <>
-                          <strong>Temperature:</strong> {userInfo.weather.temperature}<br/>
-                          <strong>Weather:</strong> {userInfo.weather.description}<br/>
-                          <strong>Humidity:</strong> {userInfo.weather.humidity}<br/>
-                          <strong>Wind Speed:</strong> {userInfo.weather.windSpeed}
-                        </>
-                      )}
+                      <strong>State:</strong> {userInfo.state}<br/>
+                      <strong>Postal Code:</strong> {userInfo.postalCode}<br/>
+                      <strong>Temperature:</strong> {userInfo.temperature}<br/>
+                      <strong>Edge Server:</strong> {userInfo.edgeServer}
                     </div>
                   </div>
                 )}

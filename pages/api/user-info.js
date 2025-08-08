@@ -11,9 +11,17 @@ export default async function handler(req, res) {
     );
   };
 
-  // Parse User Agent for OS and Browser info
+  // Parse User Agent for OS, Device Type and Browser info
   const parseUserAgent = (userAgent) => {
-    if (!userAgent) return { os: 'Unknown', browser: 'Unknown' };
+    if (!userAgent) return { os: 'Unknown', deviceType: 'Unknown', browser: 'Unknown' };
+
+    // Device Type Detection
+    let deviceType = 'Desktop';
+    if (userAgent.includes('Mobile') && !userAgent.includes('Tablet')) {
+      deviceType = 'Mobile';
+    } else if (userAgent.includes('Tablet') || userAgent.includes('iPad')) {
+      deviceType = 'Tablet';
+    }
 
     // OS Detection
     let os = 'Unknown';
@@ -54,7 +62,7 @@ export default async function handler(req, res) {
       browser = edgeMatch ? `Edge ${edgeMatch[1]}` : 'Edge';
     }
 
-    return { os, browser };
+    return { os, deviceType, browser };
   };
 
   // Get location data from IP using ipwho.is
@@ -63,10 +71,8 @@ export default async function handler(req, res) {
       // Skip location lookup for localhost or private IPs
       if (ip === 'Unknown' || ip.startsWith('127.') || ip.startsWith('192.168.') || ip.startsWith('10.')) {
         return {
-          country: 'Unknown',
-          region: 'Unknown', 
-          city: 'Unknown',
-          timezone: 'Unknown',
+          state: 'Unknown',
+          postalCode: 'Unknown',
           latitude: null,
           longitude: null
         };
@@ -77,101 +83,90 @@ export default async function handler(req, res) {
 
       if (locationData.success) {
         return {
-          country: locationData.country || 'Unknown',
-          region: locationData.region || 'Unknown',
-          city: locationData.city || 'Unknown',
-          timezone: locationData.timezone?.id || 'Unknown',
+          state: locationData.region || 'Unknown',
+          postalCode: locationData.postal || 'Unknown',
           latitude: locationData.latitude || null,
-          longitude: locationData.longitude || null
+          longitude: locationData.longitude || null,
+          city: locationData.city || 'Unknown'
         };
       } else {
         return {
-          country: 'Unknown',
-          region: 'Unknown',
-          city: 'Unknown', 
-          timezone: 'Unknown',
+          state: 'Unknown',
+          postalCode: 'Unknown',
           latitude: null,
-          longitude: null
+          longitude: null,
+          city: 'Unknown'
         };
       }
     } catch (error) {
       console.error('Error fetching location data:', error);
       return {
-        country: 'Unknown',
-        region: 'Unknown',
-        city: 'Unknown',
-        timezone: 'Unknown',
+        state: 'Unknown',
+        postalCode: 'Unknown',
         latitude: null,
-        longitude: null
+        longitude: null,
+        city: 'Unknown'
       };
     }
   };
 
-  // Get weather data using OpenWeatherMap API (free tier)
-  const getWeatherData = async (city, latitude, longitude) => {
+  // Get temperature from weather API
+  const getTemperature = async (city) => {
     try {
-      // Skip weather for unknown locations
-      if (city === 'Unknown' || (!latitude && !longitude)) {
-        return {
-          temperature: 'Unknown',
-          description: 'Unknown',
-          humidity: 'Unknown',
-          windSpeed: 'Unknown'
-        };
+      if (city === 'Unknown') {
+        return 'Unknown';
       }
 
-      // Using OpenWeatherMap's free API (no key required for basic data)
-      // Alternative: use wttr.in which is completely free
-      const weatherResponse = await fetch(`https://wttr.in/${encodeURIComponent(city)}?format=j1`);
-      const weatherData = await weatherResponse.json();
-
-      if (weatherData && weatherData.current_condition && weatherData.current_condition[0]) {
-        const current = weatherData.current_condition[0];
-        return {
-          temperature: `${current.temp_C}°C (${current.temp_F}°F)`,
-          description: current.weatherDesc[0].value,
-          humidity: `${current.humidity}%`,
-          windSpeed: `${current.windspeedKmph} km/h`
-        };
-      } else {
-        return {
-          temperature: 'Unknown',
-          description: 'Unknown', 
-          humidity: 'Unknown',
-          windSpeed: 'Unknown'
-        };
-      }
+      const weatherResponse = await fetch(`https://wttr.in/${encodeURIComponent(city)}?format=%t`);
+      const temperature = await weatherResponse.text();
+      
+      return temperature.trim() || 'Unknown';
     } catch (error) {
-      console.error('Error fetching weather data:', error);
-      return {
-        temperature: 'Unknown',
-        description: 'Unknown',
-        humidity: 'Unknown', 
-        windSpeed: 'Unknown'
-      };
+      console.error('Error fetching temperature:', error);
+      return 'Unknown';
     }
+  };
+
+  // Get edge server info from Vercel headers
+  const getEdgeInfo = (req) => {
+    // Try various Vercel headers to get edge/region info
+    const vercelRegion = req.headers['x-vercel-id'];
+    const vercelDeploymentUrl = req.headers['x-vercel-deployment-url']; 
+    const vercelCache = req.headers['x-vercel-cache'];
+    const vercelEdge = req.headers['x-vercel-edge-region'];
+    
+    // Extract region from x-vercel-id (format: region-randomstring)
+    let region = 'Unknown';
+    if (vercelRegion) {
+      const regionCode = vercelRegion.split('-')[0];
+      region = regionCode ? regionCode.toUpperCase() : 'Unknown';
+    }
+    
+    // Return the most useful info we can get
+    return {
+      region: region,
+      deploymentUrl: vercelDeploymentUrl || 'Unknown',
+      cache: vercelCache || 'Unknown',
+      edgeRegion: vercelEdge || 'Unknown'
+    };
   };
 
   const clientIP = getClientIP(req);
   const userAgent = req.headers['user-agent'];
-  const { os, browser } = parseUserAgent(userAgent);
+  const { os, deviceType, browser } = parseUserAgent(userAgent);
   const location = await getLocationFromIP(clientIP);
-  const weather = await getWeatherData(location.city, location.latitude, location.longitude);
+  const temperature = await getTemperature(location.city);
+  const edgeInfo = getEdgeInfo(req);
 
   res.status(200).json({
     ip: clientIP,
-    os: os,
+    latitude: location.latitude,
+    longitude: location.longitude,
+    os: `${os} (${deviceType})`,
     browser: browser,
-    country: location.country,
-    region: location.region,
-    city: location.city,
-    timezone: location.timezone,
-    weather: {
-      temperature: weather.temperature,
-      description: weather.description,
-      humidity: weather.humidity,
-      windSpeed: weather.windSpeed
-    },
-    userAgent: userAgent
+    state: location.state,
+    postalCode: location.postalCode,
+    temperature: temperature,
+    edgeServer: edgeInfo.region
   });
 } 
