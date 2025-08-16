@@ -17,11 +17,6 @@ const nextConfig = {
   
   // Static optimization
   trailingSlash: false,
-  
-  // Enable experimental features for better CDN performance
-  experimental: {
-    optimizeCss: true,
-  },
 
   // Headers for better CDN caching
   async headers() {
