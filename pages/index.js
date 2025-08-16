@@ -1,4 +1,5 @@
 import Head from "next/head";
+import Image from "next/image";
 import Header from "../components/Header";
 import ContactCard from "../components/ContactCard";
 import ActivityCard from "../components/ActivityCard";
@@ -21,16 +22,16 @@ export default function Home() {
 
   return (
     <>
-      <div
-        style={{
-          backgroundImage: `url("wallpaper.jpg")`,
-          backgroundRepeat: "no-repeat",
-          backgroundSize: "cover",
-          backgroundAttachment: "scroll",
-          backgroundPosition: "center",
-          minHeight: "105vh",
-        }}
-      >
+      <div className={styles.backgroundContainer}>
+        {/* Optimized background image */}
+        <Image
+          src="/wallpaper.jpg"
+          alt="Background"
+          layout="fill"
+          objectFit="cover"
+          priority
+          quality={85}
+        />
         <div className={styles.container}>
           <Head>
             <title>Vikram Singh</title>

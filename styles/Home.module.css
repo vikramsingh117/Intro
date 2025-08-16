@@ -1,5 +1,14 @@
+/* Background container for optimized image */
+.backgroundContainer {
+  position: relative;
+  min-height: 105vh;
+  overflow: hidden;
+}
+
 .container {
-  padding: 0 1rem;
+  padding: 0 2rem;
+  position: relative;
+  z-index: 1;
 }
 
 .main {
