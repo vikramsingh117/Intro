@@ -1,7 +1,16 @@
 // pages/api/auth/verify.js
 import { verifyToken } from '../../../backend/auth';
+import { basicRateLimit } from '../../../backend/middleware';
 
 export default async function handler(req, res) {
+  // Apply rate limiting (called on every page refresh)
+  await new Promise((resolve, reject) => {
+    basicRateLimit(req, res, (err) => {
+      if (err) reject(err);
+      else resolve();
+    });
+  });
+
   if (req.method !== 'GET') {
     return res.status(405).json({ message: 'Method not allowed' });
   }

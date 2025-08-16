@@ -1,3 +1,5 @@
+import { getRedisClient, isRedisAvailable } from '../../backend/redis';
+
 export default async function handler(req, res) {
   // Get IP address
   const getClientIP = (req) => {
@@ -151,12 +153,41 @@ export default async function handler(req, res) {
     };
   };
 
+  // Get rate limit info
+  const getRateLimitInfo = async () => {
+    try {
+      const redisAvailable = await isRedisAvailable();
+      if (!redisAvailable) {
+        return { requestsUsed: 'Unknown', requestsRemaining: 'Unknown', resetTime: 'Unknown' };
+      }
+
+      const ip = req.ip || req.connection.remoteAddress || 'unknown';
+      const key = `rate_limit:${ip}`;
+      
+      const redis = await getRedisClient();
+      let currentCount = await redis.get(key);
+      currentCount = currentCount ? parseInt(currentCount, 10) : 0;
+      
+      const ttl = await redis.ttl(key);
+      
+      return {
+        requestsUsed: currentCount,
+        requestsRemaining: Math.max(0, 30 - currentCount),
+        resetTime: ttl > 0 ? `${ttl} seconds` : 'Reset'
+      };
+    } catch (error) {
+      console.error('Error getting rate limit info:', error);
+      return { requestsUsed: 'Error', requestsRemaining: 'Error', resetTime: 'Error' };
+    }
+  };
+
   const clientIP = getClientIP(req);
   const userAgent = req.headers['user-agent'];
   const { os, deviceType, browser } = parseUserAgent(userAgent);
   const location = await getLocationFromIP(clientIP);
   const temperature = await getTemperature(location.city);
   const edgeInfo = getEdgeInfo(req);
+  const rateLimitInfo = await getRateLimitInfo();
 
   res.status(200).json({
     ip: clientIP,
@@ -167,6 +198,7 @@ export default async function handler(req, res) {
     state: location.state,
     postalCode: location.postalCode,
     temperature: temperature,
-    edgeServer: edgeInfo.region
+    edgeServer: edgeInfo.region,
+    rateLimit: rateLimitInfo
   });
 } 

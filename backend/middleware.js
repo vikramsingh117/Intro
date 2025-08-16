@@ -1,4 +1,5 @@
 import { verifyToken } from "./auth";
+import { basicRateLimit, createRateLimiter } from "./rateLimiter.js";
 
 export const authenticateUser = (req,res,next)=>{
     const token = req.headers.authorization;
@@ -12,3 +13,6 @@ export const authenticateUser = (req,res,next)=>{
     req.user = decoded;
     next();
 }
+
+// Export basic rate limiter
+export { basicRateLimit, createRateLimiter };

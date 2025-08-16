@@ -231,7 +231,14 @@ export default function Home() {
                       <strong>State:</strong> {userInfo.state}<br/>
                       <strong>Postal Code:</strong> {userInfo.postalCode}<br/>
                       <strong>Temperature:</strong> {userInfo.temperature}<br/>
-                      <strong>Edge Server:</strong> {userInfo.edgeServer}
+                      <strong>Edge Server:</strong> {userInfo.edgeServer}<br/>
+                      {userInfo.rateLimit && (
+                        <>
+                          <strong>Rate Limit:</strong> {userInfo.rateLimit.requestsUsed}/30 requests used<br/>
+                          <strong>Requests Remaining:</strong> {userInfo.rateLimit.requestsRemaining}<br/>
+                          <strong>Reset Time:</strong> {userInfo.rateLimit.resetTime}
+                        </>
+                      )}
                     </div>
                   </div>
                 )}
