@@ -3,6 +3,7 @@ import Image from "next/image";
 import Header from "../components/Header";
 import ContactCard from "../components/ContactCard";
 import ActivityCard from "../components/ActivityCard";
+import ActivityTimeline from "../components/ActivityTimeline";
 import styles from "../styles/Home.module.css";
 import { useAuth } from "../context/AuthContext";
 import { useState } from "react";
@@ -249,7 +250,10 @@ export default function Home() {
             {/* Typing Animation */}
             <Header />
 
-            {/* GitHub and LeetCode Activity */}
+            {/* Activity Timeline - Recent coding activities */}
+            <ActivityTimeline />
+
+            {/* GitHub and LeetCode Activity Cards */}
             <ActivityCard />
           </main>
         </div>
