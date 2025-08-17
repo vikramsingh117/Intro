@@ -190,7 +190,7 @@
 }
 
 .activityContainer {
-  margin-top: 20vh;
+  margin-top: 4vh;
   flex-direction: column;
 }
 
@@ -199,8 +199,52 @@
   justify-content: center;
   align-items: center;
   gap: 50px;
-  flex-wrap: wrap; /* Ensures images wrap on smaller screens */
-  width: 100%; /* Ensures container takes up full width */
+  flex-wrap: wrap;
+  width: 100%;
+  position: relative;
+}
+
+.activityImage {
+  width: 100%;
+  max-width: 500px;
+  height: auto;
+  object-fit: contain;
+  border-radius: 10px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 10px 14px 16px rgba(29, 236, 226, 0.568);
+  animation: float 3s ease-in-out infinite;
+}
+
+@media (max-width: 600px) {
+  .activityImages {
+    flex-direction: column;
+  }
+
+  .activityImage {
+    width: 90%;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .invisibleOverlay {
+    width: 90%;
+    height: 260px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .invisibleOverlay:first-child {
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .invisibleOverlay:last-child {
+    top: calc(100% - 260px);
+    left: 50%;
+    transform: translateX(-50%);
+  }
 }
 
 .activityImage {
@@ -212,6 +256,10 @@
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   box-shadow: 10px 14px 16px rgba(29, 236, 226, 0.568);
   animation: float 3s ease-in-out infinite; /* Floating effect */
+}
+
+.activityImage:hover {
+  transform: scale(1.02);
 }
 
 @keyframes float {
@@ -239,8 +287,12 @@
     flex-direction: column; /* Stacks the images vertically on small screens */
   }
 
+  .activityLink {
+    width: 90%; /* Makes the link take 90% of the container width on small screens */
+  }
+
   .activityImage {
-    width: 90%; /* Makes the image take 90% of the container width on small screens */
+    width: 100%; /* Makes the image take full width of its parent link */
     max-width: 100%; /* Allows image to grow with the container */
   }
 }
@@ -375,6 +427,49 @@
   }
   50% {
     border-color: black;
+  }
+}
+
+.overlayContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.invisibleOverlay {
+  position: absolute;
+  width: 500px;
+  height: 260px;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.githubOverlay {
+  left: 50px;
+  top: 0;
+}
+
+.leetcodeOverlay {
+  right: 50px;
+  top: 0;
+}
+
+@media (max-width: 600px) {
+  .invisibleOverlay {
+    width: 90%;
+    left: 5%;
+  }
+  
+  .githubOverlay {
+    top: 0;
+  }
+  
+  .leetcodeOverlay {
+    top: 310px;
   }
 }
 
