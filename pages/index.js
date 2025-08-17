@@ -249,38 +249,6 @@ export default function Home() {
             {/* Typing Animation */}
             <Header />
 
-            {/* Contact Cards */}
-            <div className={styles.grid}>
-              <ContactCard
-                href="https://www.instagram.com/ss.vikram_/"
-                title="Instagram"
-              />
-              <ContactCard
-                href="https://www.linkedin.com/in/vikram-singh-9b48a4220"
-                title="LinkedIn"
-              />
-              <ContactCard
-                href="mailto:vikramandanshu@gmail.com"
-                title="Mail"
-              />
-              <ContactCard
-                href="https://leetcode.com/u/vikramandanshu/"
-                title="LeetCode"
-                isCard1={true}
-              />
-
-              <ContactCard
-                href="https://github.com/vikramsingh117"
-                title="GitHub"
-                isCard1={true}
-              />
-              <ContactCard
-                href="http://matias.ma/nsfw/"
-                title="?"
-                isCard2={true} // Ensure the special card has `isCard2` set to true
-              />
-            </div>
-
             {/* GitHub and LeetCode Activity */}
             <ActivityCard />
           </main>
