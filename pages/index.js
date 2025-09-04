@@ -9,12 +9,33 @@ import { useAuth } from "../context/AuthContext";
 import { useState } from "react";
 
 export default function Home() {
-  const { getToken, isAuthenticated, user, userInfo } = useAuth();
+  const { getToken, isAuthenticated, user, userInfo, generateJWT } = useAuth();
   const [showToken, setShowToken] = useState(false);
   const [showUserInfo, setShowUserInfo] = useState(false);
+  const [jwtGenerated, setJwtGenerated] = useState(false);
+  const [jwtLoading, setJwtLoading] = useState(false);
+  const [jwtError, setJwtError] = useState('');
 
-  const handleShowToken = () => {
-    setShowToken(!showToken);
+  const handleShowToken = async () => {
+    if (!jwtGenerated) {
+      // Generate JWT token first
+      setJwtLoading(true);
+      setJwtError('');
+      
+      const result = await generateJWT('123'); // Using a default magic number
+      
+      if (result.success) {
+        setJwtGenerated(true);
+        setShowToken(true);
+      } else {
+        setJwtError(result.error || 'Failed to generate JWT');
+      }
+      
+      setJwtLoading(false);
+    } else {
+      // Toggle token display
+      setShowToken(!showToken);
+    }
   };
 
   const handleShowUserInfo = () => {
@@ -99,40 +120,47 @@ export default function Home() {
               <div style={{ marginTop: '0.1rem', marginBottom: '1rem', textAlign: 'center' }}>
                 <button
                   onClick={handleShowToken}
+                  disabled={jwtLoading}
                   style={{
                     margin: '0.5rem',
                     padding: '1.0rem',
                     textAlign: 'center',
-                    color: '#834bbe',
+                    color: jwtLoading ? '#666' : '#834bbe',
                     background: 'transparent',
                     textDecoration: 'none',
                     border: '2px solid #c55f5f',
                     borderRadius: '1rem 1rem 1rem 1rem',
                     fontSize: '1.1rem',
                     fontWeight: '600',
-                    cursor: 'pointer',
+                    cursor: jwtLoading ? 'not-allowed' : 'pointer',
                     textTransform: 'uppercase',
                     letterSpacing: '1px',
                     transition: 'all 0.5s',
                     backdropFilter: 'blur(0px)',
-
+                    opacity: jwtLoading ? 0.6 : 1,
                   }}
                   onMouseEnter={(e) => {
-                    e.target.style.color = '#ed5181';
-                    e.target.style.border = '2px solid #663c92';
-                    e.target.style.fontSize = '1.2rem';
-                    e.target.style.backdropFilter = 'blur(10px)';
-                    e.target.style.boxShadow = '0 0 10px rgba(255, 0, 255, 0.3)';
+                    if (!jwtLoading) {
+                      e.target.style.color = '#ed5181';
+                      e.target.style.border = '2px solid #663c92';
+                      e.target.style.fontSize = '1.2rem';
+                      e.target.style.backdropFilter = 'blur(10px)';
+                      e.target.style.boxShadow = '0 0 10px rgba(255, 0, 255, 0.3)';
+                    }
                   }}
                   onMouseLeave={(e) => {
-                    e.target.style.color = '#834bbe';
-                    e.target.style.border = '2px solid #c55f5f';
-                    e.target.style.fontSize = '1.1rem';
-                    e.target.style.backdropFilter = 'blur(0px)';
-                    e.target.style.boxShadow = 'none';
+                    if (!jwtLoading) {
+                      e.target.style.color = '#834bbe';
+                      e.target.style.border = '2px solid #c55f5f';
+                      e.target.style.fontSize = '1.1rem';
+                      e.target.style.backdropFilter = 'blur(0px)';
+                      e.target.style.boxShadow = 'none';
+                    }
                   }}
                 >
-                  {showToken ? 'Hide Token' : 'Show Token'}
+                  {jwtLoading ? 'Generating JWT...' : 
+                   jwtGenerated ? (showToken ? 'Hide Token' : 'Show Token') : 
+                   'Generate JWT'}
                 </button>
 
                 <button
@@ -172,7 +200,27 @@ export default function Home() {
                   {showUserInfo ? 'Hide Info' : 'Show Info'}
                 </button>
                 
-                {showToken && (
+                {jwtError && (
+                  <div style={{
+                    marginTop: '0.5rem',
+                    padding: '1.0rem',
+                    background: 'transparent',
+                    border: '2px solid #ff4444',
+                    borderRadius: '1rem 1rem 1rem 1rem',
+                    maxWidth: '800px',
+                    margin: '1rem auto',
+                    fontFamily: 'monospace',
+                    fontSize: '0.9rem',
+                    color: '#ff4444',
+                    lineHeight: '1.5',
+                    backdropFilter: 'blur(10px)',
+                    textAlign: 'center',
+                  }}>
+                    Error: {jwtError}
+                  </div>
+                )}
+                
+                {showToken && jwtGenerated && (
                   <div style={{
                     marginTop: '0.5rem',
                     padding: '1.0rem',

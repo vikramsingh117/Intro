@@ -11,8 +11,8 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  // Auto-authenticate with a default user ID immediately
+  const [user, setUser] = useState({ userId: 'auto-user-' + Date.now() });
   const [userInfo, setUserInfo] = useState(null);
 
   // Function to fetch user info
@@ -26,54 +26,12 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Check if user is logged in on app load
-  const checkAuth = async () => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      setLoading(false);
-      return;
-    }
-
-    // Quick expiration check for UX (optional)
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      if (payload.exp * 1000 <= Date.now()) {
-        localStorage.removeItem('token');
-        setLoading(false);
-        return;
-      }
-    } catch (error) {
-      localStorage.removeItem('token');
-      setLoading(false);
-      return;
-    }
-
-    // Proper server-side verification
-    try {
-      const response = await fetch('/api/auth/verify', {
-        headers: { 'Authorization': token },
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        setUser({ userId: data.userId });
-        // Fetch user info immediately after successful auth verification
-        fetchUserInfo();
-      } else {
-        localStorage.removeItem('token');
-      }
-    } catch (error) {
-      localStorage.removeItem('token');
-    }
-    
-    setLoading(false);
-  };
-
+  // Fetch user info on app load
   useEffect(() => {
-    checkAuth();
+    fetchUserInfo();
   }, []);
 
-  const loginWithMagicNumber = async (magicNumber) => {
+  const generateJWT = async (magicNumber) => {
     try {
       const response = await fetch('/api/auth/magic', {
         method: 'POST',
@@ -87,10 +45,7 @@ export const AuthProvider = ({ children }) => {
 
       if (response.ok) {
         localStorage.setItem('token', data.token);
-        setUser({ userId: data.userId });
-        // Fetch user info immediately after successful login
-        fetchUserInfo();
-        return { success: true };
+        return { success: true, token: data.token };
       } else {
         return { success: false, error: data.message };
       }
@@ -111,9 +66,8 @@ export const AuthProvider = ({ children }) => {
 
   const value = {
     user,
-    loading,
     userInfo,
-    loginWithMagicNumber,
+    generateJWT,
     logout,
     getToken,
     isAuthenticated: !!user,
