@@ -31,14 +31,14 @@ export const AuthProvider = ({ children }) => {
     fetchUserInfo();
   }, []);
 
-  const generateJWT = async (magicNumber) => {
+  const generateJWT = async () => {
     try {
       const response = await fetch('/api/auth/magic', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ magicNumber: parseInt(magicNumber) }),
+        body: JSON.stringify({ magicNumber: 123 }), // Use a default magic number
       });
 
       const data = await response.json();

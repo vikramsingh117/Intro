@@ -22,7 +22,7 @@ export default function Home() {
       setJwtLoading(true);
       setJwtError('');
       
-      const result = await generateJWT('123'); // Using a default magic number
+      const result = await generateJWT();
       
       if (result.success) {
         setJwtGenerated(true);
