@@ -1,24 +1,30 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  
+
   // Image optimization for CDN
   images: {
     domains: ['github-readme-stats.vercel.app', 'leetcard.jacoblin.cool'],
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
-    // Enable modern image formats
     formats: ['image/webp', 'image/avif'],
   },
 
   // Performance optimizations
   compress: true,
   poweredByHeader: false,
-  
-  // Static optimization
   trailingSlash: false,
 
-  // Headers for better CDN caching
+  // Enable top-level await support
+  webpack: (config) => {
+    config.experiments = {
+      ...config.experiments,
+      topLevelAwait: true,
+    };
+    return config;
+  },
+
+  // CDN & caching headers
   async headers() {
     return [
       {
@@ -41,7 +47,6 @@ const nextConfig = {
       },
     ];
   },
-}
+};
 
-module.exports = nextConfig
-
+module.exports = nextConfig;

@@ -47,6 +47,14 @@
   text-align: center;
   animation: wave 6s linear infinite;
 }
+@media (max-width: 600px) {
+  .title {
+    font-size: 3rem; /* smaller font size for mobile */
+    padding-top: 2vh;
+    padding-bottom: 4vh; /* slightly reduced padding for balance */
+  }
+}
+
 
 @keyframes wave {
   0% {

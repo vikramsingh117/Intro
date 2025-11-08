@@ -12,9 +12,7 @@ body {
 }
 
 /* Auth button responsive styles */
-.auth-button {
-  /* Base styles are in inline styles */
-}
+
 
 @media (max-width: 480px) {
   .auth-button {

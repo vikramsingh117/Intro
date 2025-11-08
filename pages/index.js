@@ -7,6 +7,7 @@ import ActivityTimeline from "../components/ActivityTimeline";
 import styles from "../styles/Home.module.css";
 import { useAuth } from "../context/AuthContext";
 import { useState } from "react";
+import LeetCodeChat from "../components/LeetCodeChat";
 
 export default function Home() {
   const { getToken, isAuthenticated, user, userInfo, generateJWT } = useAuth();
@@ -298,8 +299,8 @@ export default function Home() {
             {/* Typing Animation */}
             <Header />
 
-            {/* Activity Timeline - Recent coding activities */}
-            <ActivityTimeline />
+            {/* <ActivityTimeline /> */}
+            <LeetCodeChat />
 
             {/* GitHub and LeetCode Activity Cards */}
             <ActivityCard />
