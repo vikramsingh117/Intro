@@ -285,7 +285,7 @@ export default function Home() {
                       <strong>Edge Server:</strong> {userInfo.edgeServer}<br/>
                       {userInfo.rateLimit && (
                         <>
-                          <strong>Rate Limit:</strong> {userInfo.rateLimit.requestsUsed}/30 requests used<br/>
+                          <strong>Rate Limit:</strong> {userInfo.rateLimit.requestsUsed}/15 requests used<br/>
                           <strong>Requests Remaining:</strong> {userInfo.rateLimit.requestsRemaining}<br/>
                           <strong>Reset Time:</strong> {userInfo.rateLimit.resetTime}
                         </>

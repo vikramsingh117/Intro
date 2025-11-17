@@ -1,55 +1,60 @@
-import { useState } from 'react';
-import styles from '../styles/LeetCodeChat.module.css';
+import { useState } from "react";
+import { useAuth } from "../context/AuthContext";
+import styles from "../styles/LeetCodeChat.module.css";
 
 const LeetCodeChat = () => {
-  const [prompt, setPrompt] = useState('');
-  const [reply, setReply] = useState('');
+  const [prompt, setPrompt] = useState("");
+  const [reply, setReply] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-const dynamicStyle = {
-  height: !reply
-    ? '170px' // default before any response
-    : reply.length < 150
-    ? '100px' // shorter for brief answers
-    : 'auto', // expand for long replies
-  minHeight: '100px',
-  maxHeight: '400px',
-};
+  const dynamicStyle = {
+    height: !reply
+      ? "170px" // default before any response
+      : reply.length < 150
+      ? "100px" // shorter for brief answers
+      : "auto", // expand for long replies
+    minHeight: "100px",
+    maxHeight: "400px",
+  };
+  const { getToken } = useAuth();
+const token = typeof window !== "undefined" ? getToken() : null;
+  // console.log("User Token in LeetCodeChat:", token);
 
 
-
-console.log('Reply length:', reply ? reply.length : 0);
-console.log('Dynamic style height:', dynamicStyle.height);
   const sendPrompt = async () => {
     if (!prompt.trim()) return;
+    if (!token) {
+      setError("User not authenticated: Please Click on Generate JWT");
+      return;
+    }
     setLoading(true);
     setError(null);
 
     try {
-      const res = await fetch('/api/gemini_leetcode', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/gemini_leetcode", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ prompt }),
       });
       const data = await res.json();
       if (data.error) setError(data.error);
       else setReply(data.reply);
     } catch (err) {
-      console.error('Error:', err);
-      setError('Failed to fetch');
+      console.error("Error:", err);
+      setError("Failed to fetch");
     } finally {
       setLoading(false);
-      setPrompt('');
+      setPrompt("");
     }
   };
 
   const clearResponse = () => {
-    setReply('');
+    setReply("");
     setError(null);
-    setPrompt('');
+    setPrompt("");
   };
   const handleKeyDown = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       sendPrompt();
     }
@@ -69,8 +74,7 @@ console.log('Dynamic style height:', dynamicStyle.height);
         <h2 className={styles.title}>Vikram’s Insights</h2>
       </div>
 
-  <div className={styles.activityFeed} style={dynamicStyle}>
-
+      <div className={styles.activityFeed} style={dynamicStyle}>
         {loading && <p className={styles.loading}>Analyzing your queries...</p>}
 
         {!loading && !error && reply && (
@@ -113,23 +117,23 @@ console.log('Dynamic style height:', dynamicStyle.height);
           onKeyDown={handleKeyDown}
           placeholder="Ask about Vikram's LeetCode progress..."
           className={styles.input}
-        /> 
+        />
         <div className={styles.buttonGroup}>
-         <button
+          <button
             onClick={clearResponse}
             disabled={loading}
             className={styles.loadMoreButton}
-            >
+          >
             Clear
           </button>
-        <button
-          onClick={sendPrompt}
-          disabled={loading}
-          className={styles.loadMoreButton}
+          <button
+            onClick={sendPrompt}
+            disabled={loading}
+            className={styles.loadMoreButton}
           >
-          {loading ? 'Sending...' : 'Ask'}
-        </button>
-            </div>
+            {loading ? "Sending..." : "Ask"}
+          </button>
+        </div>
       </div>
     </div>
   );

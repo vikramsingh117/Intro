@@ -17,7 +17,7 @@ const Header = () => {
         cursorStyle="_"
         typeSpeed={70}
         deleteSpeed={50}
-        delaySpeed={2000}
+        delaySpeed={5000}
       />
     </h1>
   );

@@ -172,7 +172,7 @@ export default async function handler(req, res) {
       
       return {
         requestsUsed: currentCount,
-        requestsRemaining: Math.max(0, 30 - currentCount),
+        requestsRemaining: Math.max(0, 15 - currentCount),
         resetTime: ttl > 0 ? `${ttl} seconds` : 'Reset'
       };
     } catch (error) {

@@ -1,7 +1,7 @@
 import { getRedisClient, isRedisAvailable } from './redis.js';
 
 // Simple rate limiter middleware
-export const createRateLimiter = (windowSeconds = 60, maxRequests = 30) => {
+export const createRateLimiter = (windowSeconds = 60, maxRequests = 15) => {
   return async (req, res, next) => {
     try {
       // Check if Redis is available, if not, allow request
@@ -47,5 +47,5 @@ export const createRateLimiter = (windowSeconds = 60, maxRequests = 30) => {
   };
 };
 
-// Basic rate limiter (30 requests per minute)
-export const basicRateLimit = createRateLimiter(60, 30); 
+// Basic rate limiter (15 requests per minute)
+export const basicRateLimit = createRateLimiter(60, 15);2
