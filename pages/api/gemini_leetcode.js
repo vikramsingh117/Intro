@@ -1,4 +1,4 @@
-import { getGeminiLeetCodeResponse } from "../../backend/agent/gemini_leetcode";
+import { getGeminiLeetCodeResponse } from "./backend/agent/gemini_leetcode";
 
 export default async function handler(req, res) {
 

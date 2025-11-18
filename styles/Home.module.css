@@ -465,6 +465,62 @@
   right: 50px;
   top: 0;
 }
+.toggleWrapper {
+  display: flex;
+  align-items: center;
+  margin: 1rem 0;
+}
+
+.toggleLabel {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  gap: 0.8rem;
+}
+
+.toggleText {
+  color: #834bbe;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+/* Hide original checkbox */
+.toggleInput {
+  display: none;
+}
+
+/* Slider container */
+.toggleSlider {
+  width: 48px;
+  height: 26px;
+  background: #ccc;
+  border-radius: 20px;
+  position: relative;
+  transition: 0.3s ease;
+}
+
+/* Slider circle */
+.toggleSlider::before {
+  content: "";
+  width: 22px;
+  height: 22px;
+  background: white;
+  border-radius: 50%;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  transition: 0.3s ease;
+}
+
+/* Checked State */
+.toggleInput:checked + .toggleSlider {
+  background: #834bbe;
+}
+
+.toggleInput:checked + .toggleSlider::before {
+  transform: translateX(22px);
+}
+
 
 @media (max-width: 600px) {
   .invisibleOverlay {

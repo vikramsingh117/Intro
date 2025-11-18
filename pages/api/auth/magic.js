@@ -1,5 +1,5 @@
-import { createToken } from '../../../backend/auth';
-import { basicRateLimit } from '../../../backend/middleware';
+import { createToken } from '../backend/auth';
+import { basicRateLimit } from '../backend/middleware';
 
 export default async function handler(req, res) {
   // Apply rate limiting at the entry point

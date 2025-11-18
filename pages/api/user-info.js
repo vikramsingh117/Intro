@@ -1,4 +1,4 @@
-import { getRedisClient, isRedisAvailable } from '../../backend/redis';
+import { getRedisClient, isRedisAvailable } from './backend/redis';
 
 export default async function handler(req, res) {
   // Get IP address
