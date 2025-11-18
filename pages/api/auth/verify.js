@@ -1,6 +1,6 @@
 // pages/api/auth/verify.js
-import { verifyToken } from '../../../backend/auth';
-import { basicRateLimit } from '../../../backend/middleware';
+import { verifyToken } from '../backend/auth';
+import { basicRateLimit } from '../backend/middleware';
 
 export default async function handler(req, res) {
   // Apply rate limiting (called on every page refresh)
