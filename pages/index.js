@@ -120,53 +120,13 @@ export default function Home() {
 
             {/* Show Token Button - Only show if authenticated */}
             {isAuthenticated && (
-              <div
-                style={{
-                  marginTop: "0.1rem",
-                  marginBottom: "1rem",
-                  textAlign: "center",
-                }}
-              >
+              <div className={styles.actionButtonsWrapper}>
                 <button
                   onClick={handleShowToken}
                   disabled={jwtLoading}
-                  style={{
-                    margin: "0.5rem",
-                    padding: "1.0rem",
-                    textAlign: "center",
-                    color: jwtLoading ? "#666" : "#834bbe",
-                    background: "transparent",
-                    textDecoration: "none",
-                    border: "2px solid #c55f5f",
-                    borderRadius: "1rem 1rem 1rem 1rem",
-                    fontSize: "1.1rem",
-                    fontWeight: "600",
-                    cursor: jwtLoading ? "not-allowed" : "pointer",
-                    textTransform: "uppercase",
-                    letterSpacing: "1px",
-                    transition: "all 0.5s",
-                    backdropFilter: "blur(0px)",
-                    opacity: jwtLoading ? 0.6 : 1,
-                  }}
-                  onMouseEnter={(e) => {
-                    if (!jwtLoading) {
-                      e.target.style.color = "#ed5181";
-                      e.target.style.border = "2px solid #663c92";
-                      e.target.style.fontSize = "1.2rem";
-                      e.target.style.backdropFilter = "blur(10px)";
-                      e.target.style.boxShadow =
-                        "0 0 10px rgba(255, 0, 255, 0.3)";
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (!jwtLoading) {
-                      e.target.style.color = "#834bbe";
-                      e.target.style.border = "2px solid #c55f5f";
-                      e.target.style.fontSize = "1.1rem";
-                      e.target.style.backdropFilter = "blur(0px)";
-                      e.target.style.boxShadow = "none";
-                    }
-                  }}
+                  className={`${styles.actionButton} ${
+                    jwtLoading ? styles.actionButtonDisabled : ""
+                  }`}
                 >
                   {jwtLoading
                     ? "Generating JWT..."
@@ -179,134 +139,40 @@ export default function Home() {
 
                 <button
                   onClick={handleShowUserInfo}
-                  style={{
-                    margin: "0.5rem",
-                    padding: "1.0rem",
-                    textAlign: "center",
-                    color: "#834bbe",
-                    background: "transparent",
-                    textDecoration: "none",
-                    border: "2px solid #c55f5f",
-                    borderRadius: "1rem 1rem 1rem 1rem",
-                    fontSize: "1.1rem",
-                    fontWeight: "600",
-                    cursor: "pointer",
-                    textTransform: "uppercase",
-                    letterSpacing: "1px",
-                    transition: "all 0.5s",
-                    backdropFilter: "blur(0px)",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.target.style.color = "#ed5181";
-                    e.target.style.border = "2px solid #663c92";
-                    e.target.style.fontSize = "1.2rem";
-                    e.target.style.backdropFilter = "blur(10px)";
-                    e.target.style.boxShadow =
-                      "0 0 10px rgba(255, 0, 255, 0.3)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.target.style.color = "#834bbe";
-                    e.target.style.border = "2px solid #c55f5f";
-                    e.target.style.fontSize = "1.1rem";
-                    e.target.style.backdropFilter = "blur(0px)";
-                    e.target.style.boxShadow = "none";
-                  }}
+                  className={styles.actionButton}
                 >
                   {showUserInfo ? "Hide Info" : "Show Info"}
                 </button>
 
                 {jwtError && (
-                  <div
-                    style={{
-                      marginTop: "0.5rem",
-                      padding: "1.0rem",
-                      background: "transparent",
-                      border: "2px solid #ff4444",
-                      borderRadius: "1rem 1rem 1rem 1rem",
-                      maxWidth: "800px",
-                      margin: "1rem auto",
-                      fontFamily: "monospace",
-                      fontSize: "0.9rem",
-                      color: "#ff4444",
-                      lineHeight: "1.5",
-                      backdropFilter: "blur(10px)",
-                      textAlign: "center",
-                    }}
-                  >
+                  <div className={`${styles.boxed} ${styles.errorBox}`}>
                     Error: {jwtError}
                   </div>
                 )}
 
                 {showToken && jwtGenerated && (
                   <div
-                    style={{
-                      marginTop: "0.5rem",
-                      padding: "1.0rem",
-                      background: "transparent",
-                      border: "2px solid #c55f5f",
-                      borderRadius: "1rem 1rem 1rem 1rem",
-                      maxWidth: "800px",
-                      margin: "1rem auto",
-                      wordBreak: "break-all",
-                      fontFamily: "monospace",
-                      fontSize: "0.9rem",
-                      color: "#834bbe",
-                      lineHeight: "1.5",
-                      backdropFilter: "blur(10px)",
-                      transition: "all 0.5s ease-in-out",
-                      animation: "tokenSlideIn 0.5s ease-out",
-                      opacity: showToken ? 1 : 0,
-                      transform: showToken
-                        ? "translateY(0)"
-                        : "translateY(-20px)",
-                    }}
+                    className={`${styles.boxed} ${
+                      showToken ? styles.tokenVisible : styles.tokenHidden
+                    }`}
                   >
-                    <p
-                      style={{
-                        color: "#834bbe",
-                        margin: "0",
-                        fontWeight: "bold",
-                      }}
-                    >
+                    <p className={styles.tokenHeading}>
                       Your JWT Token (User ID: {user?.userId}):
                     </p>
-                    <code style={{ color: "#834bbe" }}>{getToken()}</code>
+                    <code className={styles.monocode}>{getToken()}</code>
                   </div>
                 )}
 
                 {showUserInfo && userInfo && (
                   <div
-                    style={{
-                      marginTop: "0.5rem",
-                      padding: "1.0rem",
-                      background: "transparent",
-                      border: "2px solid #c55f5f",
-                      borderRadius: "1rem 1rem 1rem 1rem",
-                      maxWidth: "800px",
-                      margin: "1rem auto",
-                      fontFamily: "monospace",
-                      fontSize: "0.9rem",
-                      color: "#834bbe",
-                      lineHeight: "1.5",
-                      backdropFilter: "blur(10px)",
-                      transition: "all 0.5s ease-in-out",
-                      animation: "tokenSlideIn 0.5s ease-out",
-                      opacity: showUserInfo ? 1 : 0,
-                      transform: showUserInfo
-                        ? "translateY(0)"
-                        : "translateY(-20px)",
-                    }}
+                    className={`${styles.boxed} ${
+                      showUserInfo ? styles.tokenVisible : styles.tokenHidden
+                    }`}
                   >
-                    <p
-                      style={{
-                        color: "#834bbe",
-                        margin: "0 0 0.5rem 0",
-                        fontWeight: "bold",
-                      }}
-                    >
+                    <p className={styles.tokenHeading}>
                       Your System & Location Information:
                     </p>
-                    <div style={{ color: "#834bbe", textAlign: "left" }}>
+                    <div className={styles.infoContent}>
                       <strong>IP Address:</strong> {userInfo.ip}
                       <br />
                       <strong>Coordinates:</strong>{" "}
@@ -344,7 +210,6 @@ export default function Home() {
               </div>
             )}
 
-            {/* Typing Animation */}
             <Header />
 
             <div className={styles.toggleWrapper}>
@@ -362,10 +227,6 @@ export default function Home() {
 
             {AIToggle ? <LeetCodeChat /> : <ActivityTimeline />}
 
-            {/* <ActivityTimeline /> */}
-            {/* <LeetCodeChat /> */}
-
-            {/* GitHub and LeetCode Activity Cards */}
             <ActivityCard />
           </main>
         </div>
