@@ -71,7 +71,7 @@ export const AuthProvider = ({ children }) => {
     logout,
     getToken,
     isAuthenticated: !!user,
-  };
+    fetchUserInfo,};
 
   return (
     <AuthContext.Provider value={value}>

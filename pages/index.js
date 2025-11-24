@@ -5,11 +5,11 @@ import ActivityCard from "../components/ActivityCard";
 import ActivityTimeline from "../components/ActivityTimeline";
 import styles from "../styles/Home.module.css";
 import { useAuth } from "../context/AuthContext";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import LeetCodeChat from "../components/LeetCodeChat";
 
 export default function Home() {
-  const { getToken, isAuthenticated, user, userInfo, generateJWT } = useAuth();
+  const { getToken, isAuthenticated, user, userInfo, generateJWT, fetchUserInfo } = useAuth();
   const [showToken, setShowToken] = useState(false);
   const [showUserInfo, setShowUserInfo] = useState(false);
   const [jwtGenerated, setJwtGenerated] = useState(false);
@@ -17,34 +17,40 @@ export default function Home() {
   const [jwtError, setJwtError] = useState("");
   const [AIToggle, setAIToggle] = useState(true);
 
+  useEffect(() => {
+    const saveIp = async () => {
+      await fetch("/api/save-ip");
+    };
+    saveIp();
+  }, []);
+
   const handleShowToken = async () => {
-    if (!jwtGenerated) {
-      // Generate JWT token first
-      setJwtLoading(true);
-      setJwtError("");
+    // Generate JWT token first
+    setJwtLoading(true);
+    setJwtError("");
 
-      const result = await generateJWT();
+    const result = await generateJWT();
 
-      if (result.success) {
-        setJwtGenerated(true);
-        setShowToken(true);
-      } else {
-        setJwtError(result.error || "Failed to generate JWT");
-      }
-
-      setJwtLoading(false);
+    if (result.success) {
+      setJwtGenerated(true);
+      setShowToken(true);
     } else {
-      // Toggle token display
-      setShowToken(!showToken);
+      setJwtError(result.error || "Failed to generate JWT");
     }
+
+    setJwtLoading(false);
   };
 
-  const handleShowUserInfo = () => {
-    setShowUserInfo(!showUserInfo);
+  const handleShowUserInfo = async () => {
+    setShowUserInfo((v) => !v);
+    await fetchUserInfo();
   };
 
   return (
+    
     <>
+
+
       <div className={styles.backgroundContainer}>
         {/* Optimized background image */}
         <Image
@@ -128,13 +134,7 @@ export default function Home() {
                     jwtLoading ? styles.actionButtonDisabled : ""
                   }`}
                 >
-                  {jwtLoading
-                    ? "Generating JWT..."
-                    : jwtGenerated
-                    ? showToken
-                      ? "Hide Token"
-                      : "Show Token"
-                    : "Generate JWT"}
+                  {jwtLoading ? "Generating JWT..." : "Generate New"}
                 </button>
 
                 <button
