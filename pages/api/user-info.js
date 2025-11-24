@@ -184,11 +184,15 @@ export default async function handler(req, res) {
   const clientIP = getClientIP(req);
   const userAgent = req.headers['user-agent'];
   const { os, deviceType, browser } = parseUserAgent(userAgent);
+  console.log('Client IP:', clientIP);
   const location = await getLocationFromIP(clientIP);
+  console.log('Location Data:', location);
   const temperature = await getTemperature(location.city);
+  console.log('Temperature Data:', temperature);
   const edgeInfo = getEdgeInfo(req);
+  console.log('Edge Info:', edgeInfo);
   const rateLimitInfo = await getRateLimitInfo();
-
+  console.log('Rate Limit Info:', rateLimitInfo);
   res.status(200).json({
     ip: clientIP,
     latitude: location.latitude,
