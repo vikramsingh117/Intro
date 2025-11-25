@@ -54,6 +54,17 @@ export default async function handler(req, res) {
         returnDocument: "after",
       }
     );
+     // THIS WAS MISSING
+    return res.status(200).json({
+      success: true,
+      ip,
+      location,
+      postalCode,
+      latitude,
+      longitude,
+      city,
+      visits: result.value?.visits || 1,
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ success: false, error: err.message });
