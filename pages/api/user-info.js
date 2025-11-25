@@ -113,21 +113,26 @@ export default async function handler(req, res) {
   };
 
   // Get temperature from weather API
-  const getTemperature = async (city) => {
-    try {
-      if (city === 'Unknown') {
-        return 'Unknown';
-      }
+  // Get temperature from Open-Meteo using latitude & longitude
+const getTemperature = async (lat, lon) => {
+  try {
+    if (!lat || !lon) return 'Unknown';
 
-      const weatherResponse = await fetch(`https://wttr.in/${encodeURIComponent(city)}?format=%t`);
-      const temperature = await weatherResponse.text();
-      
-      return temperature.trim() || 'Unknown';
-    } catch (error) {
-      console.error('Error fetching temperature:', error);
-      return 'Unknown';
-    }
-  };
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`;
+
+    const res = await fetch(url, { headers: { "User-Agent": "node" } });
+    const data = await res.json();
+    console.log("Weather API response:", data);
+    const temp = data?.current_weather?.temperature;
+    if (temp === undefined || temp === null) return 'Unknown';
+
+    return `${temp}°C`;
+  } catch (error) {
+    console.error("Error fetching temperature:", error);
+    return "Unknown";
+  }
+};
+
 
   // Get edge server info from Vercel headers
   const getEdgeInfo = (req) => {
@@ -184,15 +189,20 @@ export default async function handler(req, res) {
   const clientIP = getClientIP(req);
   const userAgent = req.headers['user-agent'];
   const { os, deviceType, browser } = parseUserAgent(userAgent);
-  console.log('Client IP:', clientIP);
+  // console.log('Client IP:', clientIP);
+  console.log(1);
   const location = await getLocationFromIP(clientIP);
-  console.log('Location Data:', location);
-  const temperature = await getTemperature(location.city);
-  console.log('Temperature Data:', temperature);
+  // console.log('Location Data:', location);
+  console.log(2);
+const temperature = await getTemperature(location.latitude, location.longitude);
+  // console.log('Temperature Data:', temperature);
+  console.log(3);
   const edgeInfo = getEdgeInfo(req);
-  console.log('Edge Info:', edgeInfo);
+  // console.log('Edge Info:', edgeInfo);
+  console.log(4);
   const rateLimitInfo = await getRateLimitInfo();
-  console.log('Rate Limit Info:', rateLimitInfo);
+  console.log(5);
+  // console.log('Rate Limit Info:', rateLimitInfo);
   res.status(200).json({
     ip: clientIP,
     latitude: location.latitude,

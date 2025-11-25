@@ -30,7 +30,9 @@ export default async function handler(req, res) {
     }
 
     // Better: store UTC timestamp, not localized string
-    const now = new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" });
+    const now = new Date().toLocaleString("en-IN", {
+      timeZone: "Asia/Kolkata",
+    });
 
     const result = await db.collection("userIPs").findOneAndUpdate(
       { ip },
@@ -52,12 +54,6 @@ export default async function handler(req, res) {
         returnDocument: "after",
       }
     );
-
-    res.status(200).json({
-      success: true,
-      ip,
-      visits: result.value.visits,
-    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ success: false, error: err.message });
