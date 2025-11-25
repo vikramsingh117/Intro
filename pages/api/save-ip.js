@@ -8,43 +8,58 @@ export default async function handler(req, res) {
       req.headers["x-forwarded-for"]?.split(",")[0] ||
       req.socket.remoteAddress ||
       "unknown";
-    const response = await fetch(`https://ipwho.is/${ip}`);
-    const ipdata= await response.json();
-    if (ipdata.success) {
-      const location = ipdata.region || 'Unknown';
-      const postalCode = ipdata.postal || 'Unknown';
-      const latitude = ipdata.latitude || null;
-      const longitude = ipdata.longitude || null;
-      const city = ipdata.city || 'Unknown';
-        
+
+    // Default values
+    let location = "Unknown";
+    let postalCode = "Unknown";
+    let latitude = null;
+    let longitude = null;
+    let city = "Unknown";
+
+    if (ip !== "unknown") {
+      const response = await fetch(`https://ipwho.is/${ip}`);
+      const ipdata = await response.json();
+
+      if (ipdata.success) {
+        location = ipdata.region || "Unknown";
+        postalCode = ipdata.postal || "Unknown";
+        latitude = ipdata.latitude ?? null;
+        longitude = ipdata.longitude ?? null;
+        city = ipdata.city || "Unknown";
+      }
     }
-    const indiantime = new Date().toLocaleString("en-US", {
-      timeZone: "Asia/Kolkata",
-    });
 
-    // console.log(location, postalCode, latitude, longitude, city);
-
+    // Better: store UTC timestamp, not localized string
+    const now = new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" });
 
     const result = await db.collection("userIPs").findOneAndUpdate(
-      { ip }, // find existing
+      { ip },
       {
-        $setOnInsert: { ip, firstVisit: new Date(indiantime), location, postalCode, latitude, longitude, city },
-        $set: { lastVisit: new Date(indiantime) },
+        $setOnInsert: {
+          ip,
+          firstVisit: now,
+          location,
+          postalCode,
+          latitude,
+          longitude,
+          city,
+        },
+        $set: { lastVisit: now },
         $inc: { visits: 1 },
-
       },
       {
         upsert: true,
-        returnDocument: "after" // returns updated doc
+        returnDocument: "after",
       }
     );
 
     res.status(200).json({
       success: true,
       ip,
-      visits: result.value.visits
+      visits: result.value.visits,
     });
   } catch (err) {
+    console.error(err);
     res.status(500).json({ success: false, error: err.message });
   }
 }
