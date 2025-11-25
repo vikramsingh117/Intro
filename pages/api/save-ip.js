@@ -8,13 +8,30 @@ export default async function handler(req, res) {
       req.headers["x-forwarded-for"]?.split(",")[0] ||
       req.socket.remoteAddress ||
       "unknown";
+    const response = await fetch(`https://ipwho.is/${ip}`);
+    const ipdata= await response.json();
+    if (ipdata.success) {
+      const location = ipdata.region || 'Unknown';
+      const postalCode = ipdata.postal || 'Unknown';
+      const latitude = ipdata.latitude || null;
+      const longitude = ipdata.longitude || null;
+      const city = ipdata.city || 'Unknown';
+        
+    }
+    const indiantime = new Date().toLocaleString("en-US", {
+      timeZone: "Asia/Kolkata",
+    });
+
+    // console.log(location, postalCode, latitude, longitude, city);
+
 
     const result = await db.collection("userIPs").findOneAndUpdate(
       { ip }, // find existing
       {
-        $set: { updatedAt: new Date() },          // always update
-        $inc: { visits: 1 },                      // increment counter
-        $setOnInsert: { createdAt: new Date() }   // only on first insert
+        $setOnInsert: { ip, firstVisit: new Date(indiantime), location, postalCode, latitude, longitude, city },
+        $set: { lastVisit: new Date(indiantime) },
+        $inc: { visits: 1 },
+
       },
       {
         upsert: true,
