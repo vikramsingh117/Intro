@@ -93,19 +93,18 @@ export default function Home() {
               </div>
 
               <div className={`${styles.projectCard} ${styles.figmaCard}`}>
-                <h3>Figma Clone</h3>
-                <p> Next.js, Codeblocks</p>
+                <h3>Web Crawler & Search Indexer</h3>
+                <p> Go, MongoDB</p>
                 <p className={styles.projectDescription}>
-                  Implemented live collaboration features and improved SEO.
+                  Created a web crawler and search indexer that crawls the web and indexes the content.
                 </p>
               </div>
 
               <div className={`${styles.projectCard} ${styles.bwappCard}`}>
-                <h3>bWAPP Attack</h3>
-                <p> SQL Injection, Phishing, Crawlers</p>
+                <h3>LeetCode Extension</h3>
+                <p> Javascript, Chrome Extension</p>
                 <p className={styles.projectDescription}>
-                  Accessed unprotected CCTV cameras and exploited
-                  vulnerabilities.
+                  Created a Chrome Extension to bring back old TestCase UI of LeetCode.
                 </p>
               </div>
 
