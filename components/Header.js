@@ -9,8 +9,7 @@ const Header = () => {
           "Welcome, I am Vikram Singh",
           "I am a Full Stack Developer",
           "Competitive Programmer",
-          "And passionate about Open Source",
-          "I made this before AI became popular"
+          "Open Source Contributor",
         ]}
         loop={Infinity}
         cursor
