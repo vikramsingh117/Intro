@@ -23,11 +23,11 @@ const ActivityCard = () => {
         </div>
         
         {/* GitHub Stats */}
-        <img
+        {/* <img
           src="https://github-readme-stats.vercel.app/api?username=vikramsingh117&show_icons=true&theme=radical"
           alt="GitHub Stats"
           className={styles.activityImage}
-        />
+        /> */}
         {/* LeetCode Monthly Activity Graph */}
         <img
           className={styles.activityImage}

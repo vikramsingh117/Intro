@@ -12,7 +12,7 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }) => {
   // Auto-authenticate with a default user ID immediately
-  const [user, setUser] = useState({ userId: 'auto-user-' + Date.now() });
+  const [user, setUser] = useState({ userId: 'Identity-' + Date.now() });
   const [userInfo, setUserInfo] = useState(null);
 
   // Function to fetch user info
