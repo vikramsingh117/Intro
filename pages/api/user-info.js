@@ -122,7 +122,7 @@ const getTemperature = async (lat, lon) => {
 
     const res = await fetch(url, { headers: { "User-Agent": "node" } });
     const data = await res.json();
-    console.log("Weather API response:", data);
+    // console.log("Weather API response:", data);
     const temp = data?.current_weather?.temperature;
     if (temp === undefined || temp === null) return 'Unknown';
 

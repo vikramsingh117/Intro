@@ -7,6 +7,7 @@ import styles from "../styles/Home.module.css";
 import { useAuth } from "../context/AuthContext";
 import { useEffect, useState } from "react";
 import LeetCodeChat from "../components/LeetCodeChat";
+import CityVisitsChart from "../components/CityVisitsChart";
 
 export default function Home() {
   const { getToken, isAuthenticated, user, userInfo, generateJWT, fetchUserInfo } = useAuth();
@@ -240,6 +241,7 @@ export default function Home() {
             {AIToggle ? <LeetCodeChat /> : <ActivityTimeline />}
 
             <ActivityCard />
+            <CityVisitsChart />
           </main>
         </div>
       </div>

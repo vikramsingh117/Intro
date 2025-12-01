@@ -244,7 +244,7 @@ result = await chat.sendMessage([
     }
 
     const finalText = response.text();
-    console.log("Gemini:", finalText);
+    // console.log("Gemini:", finalText);
 
     return finalText || "I couldn’t generate a response.";
   } catch (error) {

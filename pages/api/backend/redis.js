@@ -24,15 +24,15 @@ const createRedisClient = () => {
   });
 
   client.on('connect', () => {
-    console.log('Redis Client Connected');
+    // console.log('Redis Client Connected');
   });
 
   client.on('ready', () => {
-    console.log('Redis Client Ready');
+    // console.log('Redis Client Ready');
   });
 
   client.on('end', () => {
-    console.log('Redis Client Disconnected');
+    // console.log('Redis Client Disconnected');
   });
 
   return client;

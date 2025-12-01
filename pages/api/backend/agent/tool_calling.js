@@ -230,13 +230,13 @@ export default {
 
 // Test run
 if (import.meta.url === `file://${process.argv[1]}`) {
-  console.log("Testing LeetCode API for", USERNAME);
-  console.log(await getProfileStats());
-  console.log(await getUserSubmissionStats());
-  console.log(await getUserRankingHistory());
-  console.log(await getRecentSubmissions());
-  console.log(await getLastMediumSolved());
-  console.log(await getContestRankingHistory());
-  console.log(await getUserCalendarData());
-  console.log(await getUserLanguageStats());
+  // console.log("Testing LeetCode API for", USERNAME);
+  // console.log(await getProfileStats());
+  // console.log(await getUserSubmissionStats());
+  // console.log(await getUserRankingHistory());
+  // console.log(await getRecentSubmissions());
+  // console.log(await getLastMediumSolved());
+  // console.log(await getContestRankingHistory());
+  // console.log(await getUserCalendarData());
+  // console.log(await getUserLanguageStats());
 }

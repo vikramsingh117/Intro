@@ -6,7 +6,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Only POST method allowed" });
     const authorization = req.headers.authorization;
   const token = authorization && authorization.split(" ")[1];
-  console.log("Authorization Token:", token);
+  // console.log("Authorization Token:", token);
   const { prompt } = req.body;
 
   if (!prompt || typeof prompt !== "string") {

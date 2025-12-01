@@ -3,7 +3,7 @@ export default async function handler(req, res) {
   try {
     const { limit = 10, offset = 0 } = req.query;
     
-    console.log(`Fetching activity timeline (limit: ${limit}, offset: ${offset})`);
+    // console.log(`Fetching activity timeline (limit: ${limit}, offset: ${offset})`);
     
     // Fetch GitHub activities
     const githubActivities = await fetchGitHubActivities();

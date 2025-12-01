@@ -13,8 +13,8 @@ export default async function handler(req, res) {
   };
   
   const clientIP = getClientIP(req);
-  console.log('\n=== DETERMINED IP ===');
-  console.log('Best guess IP:', clientIP);
+  // console.log('\n=== DETERMINED IP ===');
+  // console.log('Best guess IP:', clientIP);
   
   // Response with all the data
   res.status(200).json({

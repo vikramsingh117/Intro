@@ -1,7 +1,7 @@
 import styles from '../styles/Home.module.css';
 
 const ContactCard = ({ href, title, isCard1 }) => {
-    console.log("Rendering card:", title);
+    // console.log("Rendering card:", title);
 
   // Apply card2 style specifically for the "?" card
   const cardStyle =

@@ -10,7 +10,7 @@ async function connectDB() {
   client = new MongoClient(uri);
   await client.connect();
 
-  db = client.db("Portfolio"); // choose your DB name
+  db = client.db("Portfolio");
   return db;
 }
 
