@@ -2,6 +2,7 @@
   max-width: 800px;
   margin: 0 auto;
   padding: 1.5rem 1rem;
+  width: 100%;
 }
 
 .header {
@@ -147,6 +148,8 @@
 @media (max-width: 768px) {
   .container {
     padding: 1rem 0.5rem;
+    padding-left: 0.2rem;
+    padding-right: 0.2rem;
   }
 
   .title {
@@ -178,7 +181,7 @@
 }
 @media (max-width: 600px) {
   .suggestionTitle {
-    margin: 3rem 0 0.5rem 0; /* more spacing for stacked layout */
+    margin: 3rem 0 0.5rem 0;
     font-size: 1.4rem; /* optional – slightly bigger for readability */
   }
 }

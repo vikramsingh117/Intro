@@ -240,9 +240,10 @@ export default function Home() {
 
             {AIToggle ? <LeetCodeChat /> : <ActivityTimeline />}
 
-            
+            <div className={styles.chartandleetcode}>
             <ActivityCard />
             <CityVisitsChart />
+            </div>
           </main>
         </div>
       </div>

@@ -24,6 +24,7 @@ export default function TestChart() {
   const [cityData, setCityData] = useState([]);
   const [cityLoading, setCityLoading] = useState(false);
   const [cityError, setCityError] = useState(null);
+  const [isClicked, setIsClicked] = useState(false);
 
   // Fetch data from API
   useEffect(() => {
@@ -62,6 +63,7 @@ export default function TestChart() {
     const date = state.activeLabel; // X-axis label, e.g. "2025-11-30"
 
     try {
+      setIsClicked(true);
       setSelectedDate(date);
       setCityLoading(true);
       setCityError(null);
@@ -80,12 +82,19 @@ export default function TestChart() {
       setCityError(err.message);
     } finally {
       setCityLoading(false);
+      setTimeout(() => {
+          setSelectedDate(null);
+          setCityData([]);
+          setCityLoading(false);
+          setCityError(null);
+          setIsClicked(false);
+      }, 5000);
     }
   };
 
   return (
     <div className={styles.chartContainer}>
-      <h2 className={styles.chartTitle}>Visits Timeline</h2>
+      {/* <h2 className={styles.chartTitle}>Visits Timeline</h2> */}
 
       {loading && <p className={styles.loadingText}>Loading...</p>}
       {error && <p className={styles.errorText}>Error: {error}</p>}
@@ -93,25 +102,7 @@ export default function TestChart() {
       {!loading && !error && (
         <>
           {/* RANGE BUTTONS */}
-          <div className={styles.rangeButtons}>
-            <button
-              onClick={() => setRange("7")}
-              className={`${styles.rangeButton} ${
-                range === "7" ? styles.rangeButtonActive : ""
-              }`}
-            >
-              Last 7 Days
-            </button>
-
-            <button
-              onClick={() => setRange("30")}
-              className={`${styles.rangeButton} ${
-                range === "30" ? styles.rangeButtonActive : ""
-              }`}
-            >
-              Last 30 Days
-            </button>
-          </div>
+          
 
           {/* CHARTS CONTAINER - SIDE BY SIDE */}
           {filtered.length > 0 ? (
@@ -123,7 +114,7 @@ export default function TestChart() {
                     <XAxis dataKey="date" />
                     <YAxis />
                     <Tooltip />
-                    <Line dataKey="visits" stroke="#8884d8" strokeWidth={2} />
+                    <Line dataKey="visits" stroke="#834bbe" strokeWidth={2} />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
@@ -131,9 +122,7 @@ export default function TestChart() {
               {/* CITY BAR CHART FOR SELECTED DATE - SIDE BY SIDE */}
               {selectedDate && (
                 <div className={styles.barChartContainer}>
-                  <h3 className={styles.cityBreakdownTitle}>
-                    City-wise visits for {selectedDate}
-                  </h3>
+
                   {cityLoading && (
                     <p className={styles.loadingText}>Loading city data...</p>
                   )}
@@ -156,7 +145,7 @@ export default function TestChart() {
                           {cityData.map((entry, index) => (
                             <Cell 
                               key={`cell-${index}`}
-                              fill={entry.isBot ? "#ff4d4f" : "#82ca9d"}
+                              fill={entry.isBot ? "#ff4d4f" : "#834bbe"}
                             />
                           ))}
                         </Bar>
@@ -165,10 +154,30 @@ export default function TestChart() {
                   )}
                 </div>
               )}
+              
             </div>
           ) : (
             <p className={styles.noDataText}>No data available for the selected range.</p>
           )}
+          <div className={styles.rangeButtons}>
+            <button
+              onClick={() => setRange("7")}
+              className={`${styles.rangeButton} ${
+                range === "7" ? styles.rangeButtonActive : ""
+              }`}
+            >
+              Last 7 Days
+            </button>
+
+            <button
+              onClick={() => setRange("30")}
+              className={`${styles.rangeButton} ${
+                range === "30" ? styles.rangeButtonActive : ""
+              }`}
+            >
+              Last 30 Days
+            </button>
+          </div>
         </>
       )}
     </div>

@@ -1,12 +1,29 @@
 .chartContainer {
+  margin-top: 20px;
   padding: 20px;
+  box-shadow: 12px 14px 16px rgba(29, 236, 226, 0.568);
+  border-radius: 10px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  animation: float 3s ease-in-out infinite;
+
+
 }
+@keyframes float {
+    0%,
+    100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
 
 .chartTitle {
-  margin: 0 0 12px 0;
+  margin: 10px 0 12px 0;
   color: #834bbe;
-  font-size: 1.4rem;
+  font-size: 2.4rem;
   font-weight: 600;
+  text-align: center;
 }
 
 .rangeButtons {
@@ -28,7 +45,7 @@
 }
 
 .rangeButtonActive {
-  background: #8884d8;
+  background: #834bbe;
   color: #fff;
 }
 
@@ -50,7 +67,7 @@
 
 .chartsWrapper {
   display: flex;
-  gap: 20px;
+  /* gap: 20px; */
   align-items: flex-start;
   flex-wrap: wrap;
 }
@@ -63,8 +80,6 @@
 .barChartContainer {
   flex: 1;
   min-width: 300px;
-  padding-left: 20px;
-  border-left: 2px solid #834bbe;
 }
 
 .cityBreakdownTitle {
@@ -86,4 +101,3 @@
     border-top: 2px solid #834bbe;
   }
 }
-

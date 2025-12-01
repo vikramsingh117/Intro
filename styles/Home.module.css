@@ -551,8 +551,8 @@
 
 .invisibleOverlay {
   position: absolute;
-  width: 500px;
-  height: 260px;
+  width: 350px;
+  height: 200px;
   cursor: pointer;
   pointer-events: auto;
 }
@@ -635,6 +635,30 @@
   
   .leetcodeOverlay {
     top: 310px;
+  }
+}
+
+.chartandleetcode {
+  display: flex;
+  /* width: 100%; */
+  /* gap: 20px; */
+  align-items: flex-start;
+  flex-wrap: wrap;
+  /* margin-top: 2rem; */
+}
+
+.chartandleetcode > * {
+  /* flex: 1; */
+  min-width: 300px;
+}
+
+@media (max-width: 768px) {
+  .chartandleetcode {
+    flex-direction: column;
+  }
+  
+  .chartandleetcode > * {
+    min-width: 100%;
   }
 }
 
