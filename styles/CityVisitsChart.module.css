@@ -1,0 +1,89 @@
+.chartContainer {
+  padding: 20px;
+}
+
+.chartTitle {
+  margin: 0 0 12px 0;
+  color: #834bbe;
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.rangeButtons {
+  margin-bottom: 20px;
+  display: flex;
+  gap: 10px;
+}
+
+.rangeButton {
+  padding: 6px 12px;
+  background: #ddd;
+  color: #000;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.1s ease;
+}
+
+.rangeButtonActive {
+  background: #8884d8;
+  color: #fff;
+}
+
+.rangeButton:hover {
+  transform: translateY(-1px);
+}
+
+.loadingText {
+  color: #8884d8;
+}
+
+.errorText {
+  color: #ff4d4f;
+}
+
+.noDataText {
+  color: #999;
+}
+
+.chartsWrapper {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.lineChartContainer {
+  flex: 1;
+  min-width: 300px;
+}
+
+.barChartContainer {
+  flex: 1;
+  min-width: 300px;
+  padding-left: 20px;
+  border-left: 2px solid #834bbe;
+}
+
+.cityBreakdownTitle {
+  margin: 0 0 20px 0;
+  color: #834bbe;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .chartsWrapper {
+    flex-direction: column;
+  }
+
+  .barChartContainer {
+    padding-left: 0;
+    padding-top: 20px;
+    border-left: none;
+    border-top: 2px solid #834bbe;
+  }
+}
+

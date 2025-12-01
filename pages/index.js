@@ -240,6 +240,7 @@ export default function Home() {
 
             {AIToggle ? <LeetCodeChat /> : <ActivityTimeline />}
 
+            
             <ActivityCard />
             <CityVisitsChart />
           </main>

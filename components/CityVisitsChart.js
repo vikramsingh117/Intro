@@ -1,13 +1,29 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  CartesianGrid,
+  Cell,
+} from "recharts";
+import styles from "../styles/CityVisitsChart.module.css";
 
 export default function TestChart() {
   const [range, setRange] = useState("7");
   const [rawData, setRawData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [cityData, setCityData] = useState([]);
+  const [cityLoading, setCityLoading] = useState(false);
+  const [cityError, setCityError] = useState(null);
 
   // Fetch data from API
   useEffect(() => {
@@ -40,71 +56,120 @@ export default function TestChart() {
     return diff <= Number(range);
   });
 
-  if (loading) {
-    return (
-      <div style={{ padding: 20 }}>
-        <h2>Visits Timeline</h2>
-        <p>Loading...</p>
-      </div>
-    );
-  }
+  // Handle point click on line chart
+  const handlePointClick = async (state) => {
+    if (!state || !state.activeLabel) return;
+    const date = state.activeLabel; // X-axis label, e.g. "2025-11-30"
 
-  if (error) {
-    return (
-      <div style={{ padding: 20 }}>
-        <h2>Visits Timeline</h2>
-        <p style={{ color: "red" }}>Error: {error}</p>
-      </div>
-    );
-  }
+    try {
+      setSelectedDate(date);
+      setCityLoading(true);
+      setCityError(null);
+      setCityData([]);
+
+      const response = await fetch(
+        `/api/graph?breakdown=city&date=${encodeURIComponent(date)}`
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch city breakdown");
+      }
+      const data = await response.json();
+      setCityData(data);
+    } catch (err) {
+      console.error("Error fetching city breakdown:", err);
+      setCityError(err.message);
+    } finally {
+      setCityLoading(false);
+    }
+  };
 
   return (
-    <div style={{ padding: 20 }}>
-      <h2>Visits Timeline</h2>
+    <div className={styles.chartContainer}>
+      <h2 className={styles.chartTitle}>Visits Timeline</h2>
 
-      {/* RANGE BUTTONS */}
-      <div style={{ marginBottom: 20, display: "flex", gap: 10 }}>
-        <button
-          onClick={() => setRange("7")}
-          style={{
-            padding: "6px 12px",
-            background: range === "7" ? "#8884d8" : "#ddd",
-            color: range === "7" ? "white" : "black",
-            borderRadius: 6,
-            border: "none",
-            cursor: "pointer",
-          }}
-        >
-          Last 7 Days
-        </button>
+      {loading && <p className={styles.loadingText}>Loading...</p>}
+      {error && <p className={styles.errorText}>Error: {error}</p>}
 
-        <button
-          onClick={() => setRange("30")}
-          style={{
-            padding: "6px 12px",
-            background: range === "30" ? "#8884d8" : "#ddd",
-            color: range === "30" ? "white" : "black",
-            borderRadius: 6,
-            border: "none",
-            cursor: "pointer",
-          }}
-        >
-          Last 30 Days
-        </button>
-      </div>
+      {!loading && !error && (
+        <>
+          {/* RANGE BUTTONS */}
+          <div className={styles.rangeButtons}>
+            <button
+              onClick={() => setRange("7")}
+              className={`${styles.rangeButton} ${
+                range === "7" ? styles.rangeButtonActive : ""
+              }`}
+            >
+              Last 7 Days
+            </button>
 
-      {/* CHART */}
-      {filtered.length > 0 ? (
-        <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={filtered}>
-            <XAxis dataKey="date" />
-            <YAxis />
-            <Tooltip />
-            <Line dataKey="visits" stroke="#8884d8" strokeWidth={2} />
-          </LineChart>
-        </ResponsiveContainer>
-      ) : (
-        <p>No data available for the selected range.</p>
+            <button
+              onClick={() => setRange("30")}
+              className={`${styles.rangeButton} ${
+                range === "30" ? styles.rangeButtonActive : ""
+              }`}
+            >
+              Last 30 Days
+            </button>
+          </div>
+
+          {/* CHARTS CONTAINER - SIDE BY SIDE */}
+          {filtered.length > 0 ? (
+            <div className={styles.chartsWrapper}>
+              {/* LINE CHART */}
+              <div className={styles.lineChartContainer}>
+                <ResponsiveContainer width="100%" height={300}>
+                  <LineChart data={filtered} onClick={handlePointClick}>
+                    <XAxis dataKey="date" />
+                    <YAxis />
+                    <Tooltip />
+                    <Line dataKey="visits" stroke="#8884d8" strokeWidth={2} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+
+              {/* CITY BAR CHART FOR SELECTED DATE - SIDE BY SIDE */}
+              {selectedDate && (
+                <div className={styles.barChartContainer}>
+                  <h3 className={styles.cityBreakdownTitle}>
+                    City-wise visits for {selectedDate}
+                  </h3>
+                  {cityLoading && (
+                    <p className={styles.loadingText}>Loading city data...</p>
+                  )}
+                  {cityError && (
+                    <p className={styles.errorText}>Error: {cityError}</p>
+                  )}
+                  {!cityLoading && !cityError && cityData.length === 0 && (
+                    <p className={styles.noDataText}>
+                      No city data available for this date.
+                    </p>
+                  )}
+                  {!cityLoading && !cityError && cityData.length > 0 && (
+                    <ResponsiveContainer width="100%" height={300}>
+                      <BarChart data={cityData}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="city" />
+                        <YAxis />
+                        <Tooltip />
+                        <Bar dataKey="visits">
+                          {cityData.map((entry, index) => (
+                            <Cell 
+                              key={`cell-${index}`}
+                              fill={entry.isBot ? "#ff4d4f" : "#82ca9d"}
+                            />
+                          ))}
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  )}
+                </div>
+              )}
+            </div>
+          ) : (
+            <p className={styles.noDataText}>No data available for the selected range.</p>
+          )}
+        </>
       )}
     </div>
   );
