@@ -24,6 +24,18 @@ export default function Home() {
     saveIp();
   }, []);
 
+  // Automatically hide the JWT message after 3 seconds
+  useEffect(() => {
+    if (jwtGenerated && showToken) {
+      const timer = setTimeout(() => {
+        setShowToken(false);
+        setJwtGenerated(false);
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [jwtGenerated, showToken]);
+
   const handleShowToken = async () => {
     // Generate JWT token first
     setJwtLoading(true);
@@ -134,7 +146,7 @@ export default function Home() {
                     jwtLoading ? styles.actionButtonDisabled : ""
                   }`}
                 >
-                  {jwtLoading ? "Generating JWT..." : "Generate New"}
+                  {jwtLoading ? "Generating JWT..." : "Generate JWT"}
                 </button>
 
                 <button
