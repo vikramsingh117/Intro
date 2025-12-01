@@ -286,7 +286,8 @@
   }
 
   .activityImage {
-    width: 45%; /* Each image takes 45% of the container's width on large screens */
+    width: 70%; /* Make single LeetCode activity card visually larger */
+    max-width: 700px; /* Allow it to grow a bit more on desktop */
   }
 }
 
