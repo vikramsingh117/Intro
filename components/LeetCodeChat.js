@@ -24,7 +24,7 @@ const token = typeof window !== "undefined" ? getToken() : null;
   const sendPrompt = async () => {
     if (!prompt.trim()) return;
     if (!token) {
-      setError("You are not authenticated: Please Click on Generate JWT");
+      setError("Please Click on Generate JWT once");
       return;
     }
     setLoading(true);

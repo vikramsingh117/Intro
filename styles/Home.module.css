@@ -49,7 +49,7 @@
 }
 @media (max-width: 600px) {
   .title {
-    font-size: 3rem; /* smaller font size for mobile */
+    font-size: 2.8rem; /* smaller font size for mobile */
     padding-top: 2vh;
     padding-bottom: 4vh; /* slightly reduced padding for balance */
   }
