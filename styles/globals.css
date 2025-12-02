@@ -68,3 +68,10 @@ a {
 * {
   box-sizing: border-box;
 }
+
+/* Highlight effect for the Generate JWT button when prompted by AI */
+.jwt-highlight {
+  box-shadow: 0 0 18px 4px rgba(255, 215, 0, 0.95);
+  transform: scale(1.05);
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}

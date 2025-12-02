@@ -140,6 +140,7 @@ export default function Home() {
             {isAuthenticated && (
               <div className={styles.actionButtonsWrapper}>
                 <button
+                  id="generate-jwt-btn"
                   onClick={handleShowToken}
                   disabled={jwtLoading}
                   className={`${styles.actionButton} ${

@@ -17,14 +17,28 @@ const LeetCodeChat = () => {
     maxHeight: "400px",
   };
   const { getToken } = useAuth();
-const token = typeof window !== "undefined" ? getToken() : null;
+  const token = typeof window !== "undefined" ? getToken() : null;
   // console.log("User Token in LeetCodeChat:", token);
 
 
   const sendPrompt = async () => {
     if (!prompt.trim()) return;
     if (!token) {
-      setError("Please Click on Generate JWT once");
+      setError("Please Click on Generate JWT on top");
+      if (typeof window !== "undefined") {
+        // console.log("Scrolling to top");
+        // Smoothly scroll to the top where the Generate JWT button is
+        window.scrollTo({ top: 0, behavior: "smooth" });
+
+        // Temporarily highlight the Generate JWT button
+        const jwtButton = document.getElementById("generate-jwt-btn");
+        if (jwtButton) {
+          jwtButton.classList.add("jwt-highlight");
+          setTimeout(() => {
+            jwtButton.classList.remove("jwt-highlight");
+          }, 2500);
+        }
+      }
       return;
     }
     setLoading(true);
