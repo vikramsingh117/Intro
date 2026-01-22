@@ -16,7 +16,7 @@ const LeetCodeChat = () => {
     minHeight: "100px",
     maxHeight: "400px",
   };
-  const { getToken } = useAuth();
+  const { getToken, updateRateLimitInfo } = useAuth();
   const token = typeof window !== "undefined" ? getToken() : null;
   // console.log("User Token in LeetCodeChat:", token);
 
@@ -51,8 +51,17 @@ const LeetCodeChat = () => {
         body: JSON.stringify({ prompt }),
       });
       const data = await res.json();
-      if (data.error) setError(data.error);
-      else setReply(data.reply);
+      
+      // Update rate limit info directly from response
+      if (data.rateLimit) {
+        updateRateLimitInfo(data.rateLimit);
+      }
+      
+      if (data.error) {
+        setError(data.error);
+      } else {
+        setReply(data.reply);
+      }
     } catch (err) {
       console.error("Error:", err);
       setError("Failed to fetch");

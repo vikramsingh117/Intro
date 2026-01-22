@@ -1,15 +1,6 @@
 import { createToken } from '../backend/auth';
-import { basicRateLimit } from '../backend/middleware';
 
 export default async function handler(req, res) {
-  // Apply rate limiting at the entry point
-  await new Promise((resolve, reject) => {
-    basicRateLimit(req, res, (err) => {
-      if (err) reject(err);
-      else resolve();
-    });
-  });
-
   if (req.method !== 'POST') {
     return res.status(405).json({ message: 'Method not allowed' });
   }

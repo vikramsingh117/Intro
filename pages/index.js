@@ -11,31 +11,29 @@ import CityVisitsChart from "../components/CityVisitsChart";
 
 export default function Home() {
   const { getToken, isAuthenticated, user, userInfo, generateJWT, fetchUserInfo } = useAuth();
-  const [showToken, setShowToken] = useState(false);
-  const [showUserInfo, setShowUserInfo] = useState(false);
-  const [jwtGenerated, setJwtGenerated] = useState(false);
   const [jwtLoading, setJwtLoading] = useState(false);
   const [jwtError, setJwtError] = useState("");
   const [AIToggle, setAIToggle] = useState(true);
+  const [hasToken, setHasToken] = useState(false);
+  const [isFadingOut, setIsFadingOut] = useState(false);
+
+  // Check if token exists on mount
+  useEffect(() => {
+    const checkToken = () => {
+      const token = typeof window !== "undefined" && getToken();
+      setHasToken(!!token);
+    };
+    checkToken();
+  }, [getToken]);
 
   useEffect(() => {
     const saveIp = async () => {
       await fetch("/api/save-ip");
     };
     saveIp();
+    // Fetch user info on mount
+    fetchUserInfo();
   }, []);
-
-  // Automatically hide the JWT message after 3 seconds
-  useEffect(() => {
-    if (jwtGenerated && showToken) {
-      const timer = setTimeout(() => {
-        setShowToken(false);
-        setJwtGenerated(false);
-      }, 3000);
-
-      return () => clearTimeout(timer);
-    }
-  }, [jwtGenerated, showToken]);
 
   const handleShowToken = async () => {
     // Generate JWT token first
@@ -45,18 +43,18 @@ export default function Home() {
     const result = await generateJWT();
 
     if (result.success) {
-      setJwtGenerated(true);
-      setShowToken(true);
+      // Start fade out animation
+      setIsFadingOut(true);
+      // Wait for fade animation to complete before hiding button
+      setTimeout(() => {
+        setHasToken(true);
+        setIsFadingOut(false);
+      }, 500); // Match CSS transition duration
     } else {
       setJwtError(result.error || "Failed to generate JWT");
     }
 
     setJwtLoading(false);
-  };
-
-  const handleShowUserInfo = async () => {
-    setShowUserInfo((v) => !v);
-    await fetchUserInfo();
   };
 
   return (
@@ -136,90 +134,97 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Show Token Button - Only show if authenticated */}
-            {isAuthenticated && (
+            {/* Show Token Button - Only show if authenticated and token doesn't exist */}
+            {isAuthenticated && !hasToken && (
               <div className={styles.actionButtonsWrapper}>
+                {/* Rate Limit Info - Left */}
+                {userInfo && (
+                  <div 
+                    className={styles.infoElement}
+                    title={userInfo.ip ? `Your IP ${userInfo.ip} is registered in Redis instance` : "Your IP is registered in Redis instance"}
+                  >
+                    <span className={styles.infoLabel}>Rate Limit:</span>
+                    <span className={styles.infoValue}>
+                      {userInfo.rateLimit ? `${userInfo.rateLimit.requestsUsed}/15` : "Unknown"}
+                    </span>
+                  </div>
+                )}
+
                 <button
                   id="generate-jwt-btn"
                   onClick={handleShowToken}
                   disabled={jwtLoading}
                   className={`${styles.actionButton} ${
                     jwtLoading ? styles.actionButtonDisabled : ""
-                  }`}
+                  } ${isFadingOut ? styles.buttonFadeOut : ""}`}
+                  title="This button saves the JWT token for AI tool callings"
                 >
                   {jwtLoading ? "Generating JWT..." : "Generate JWT"}
                 </button>
 
-                <button
-                  onClick={handleShowUserInfo}
-                  className={styles.actionButton}
-                >
-                  {showUserInfo ? "Hide Info" : "Show Info"}
-                </button>
+                {/* Reset Time Info - Right */}
+                {userInfo && (
+                  <div 
+                    className={styles.infoElement}
+                    title="Time remaining until window resets"
+                  >
+                    <span className={styles.infoLabel}>Reset Time:</span>
+                    <span className={styles.infoValue}>
+                      {(() => {
+                        const resetTime = userInfo.rateLimit?.resetTime;
+                        // Show "60 seconds" only if it's truly the initial state (not after timer expired)
+                        if (!resetTime || resetTime === "Unknown") {
+                          return "60 seconds";
+                        }
+                        // If it's "Reset" and we have a countdown that was active, show "Reset"
+                        // Otherwise show the actual value
+                        return resetTime;
+                      })()}
+                    </span>
+                  </div>
+                )}
 
                 {jwtError && (
                   <div className={`${styles.boxed} ${styles.errorBox}`}>
                     Error: {jwtError}
                   </div>
                 )}
+              </div>
+            )}
 
-                {showToken && jwtGenerated && (
-                  <div
-                    className={`${styles.boxed} ${
-                      showToken ? styles.tokenVisible : styles.tokenHidden
-                    }`}
-                  >
-                    <p className={styles.tokenHeading}>
-                      Your JWT Token (User ID: {user?.userId}):
-                    </p>
-                    <code className={styles.monocode}>{getToken()}</code>
-                  </div>
-                )}
+            {/* Show info elements even when button is hidden */}
+            {isAuthenticated && hasToken && userInfo && (
+              <div className={styles.actionButtonsWrapper}>
+                {/* Rate Limit Info - Left */}
+                <div 
+                  className={styles.infoElement}
+                  title={userInfo.ip ? `Your IP ${userInfo.ip} is registered in Redis instance` : "Your IP is registered in Redis instance"}
+                >
+                  <span className={styles.infoLabel}>Rate Limit:</span>
+                  <span className={styles.infoValue}>
+                    {userInfo.rateLimit ? `${userInfo.rateLimit.requestsUsed}/15` : "Unknown"}
+                  </span>
+                </div>
 
-                {showUserInfo && userInfo && (
-                  <div
-                    className={`${styles.boxed} ${
-                      showUserInfo ? styles.tokenVisible : styles.tokenHidden
-                    }`}
-                  >
-                    <p className={styles.tokenHeading}>
-                      Your System & Location Information:
-                    </p>
-                    <div className={styles.infoContent}>
-                      <strong>IP Address:</strong> {userInfo.ip}
-                      <br />
-                      <strong>Coordinates:</strong>{" "}
-                      {userInfo.latitude && userInfo.longitude
-                        ? `${userInfo.latitude}, ${userInfo.longitude}`
-                        : "Unknown"}
-                      <br />
-                      <strong>OS & Device:</strong> {userInfo.os}
-                      <br />
-                      <strong>Browser:</strong> {userInfo.browser}
-                      <br />
-                      <strong>State:</strong> {userInfo.state}
-                      <br />
-                      <strong>Postal Code:</strong> {userInfo.postalCode}
-                      <br />
-                      <strong>Temperature:</strong> {userInfo.temperature}
-                      <br />
-                      <strong>Edge Server:</strong> {userInfo.edgeServer}
-                      <br />
-                      {userInfo.rateLimit && (
-                        <>
-                          <strong>Rate Limit:</strong>{" "}
-                          {userInfo.rateLimit.requestsUsed}/15 requests used
-                          <br />
-                          <strong>Requests Remaining:</strong>{" "}
-                          {userInfo.rateLimit.requestsRemaining}
-                          <br />
-                          <strong>Reset Time:</strong>{" "}
-                          {userInfo.rateLimit.resetTime}
-                        </>
-                      )}
-                    </div>
-                  </div>
-                )}
+                {/* Reset Time Info - Right */}
+                <div 
+                  className={styles.infoElement}
+                  title="Time remaining until window resets"
+                >
+                  <span className={styles.infoLabel}>Reset Time:</span>
+                  <span className={styles.infoValue}>
+                    {(() => {
+                      const resetTime = userInfo.rateLimit?.resetTime;
+                      // Show "60 seconds" only if it's truly the initial state (not after timer expired)
+                      if (!resetTime || resetTime === "Unknown") {
+                        return "60 seconds";
+                      }
+                      // If it's "Reset" and we have a countdown that was active, show "Reset"
+                      // Otherwise show the actual value
+                      return resetTime;
+                    })()}
+                  </span>
+                </div>
               </div>
             )}
 

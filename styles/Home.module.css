@@ -5,6 +5,7 @@
   overflow: hidden;
 }
 
+
 .container {
   padding: 0 2rem;
   position: relative;
@@ -338,6 +339,11 @@
   margin-top: 0.1rem;
   margin-bottom: 1rem;
   text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
 }
 
 .actionButton {
@@ -370,6 +376,66 @@
   color: #666;
   cursor: not-allowed;
   opacity: 0.6;
+}
+
+.buttonFadeOut {
+  opacity: 0;
+  transform: scale(0.95);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  pointer-events: none;
+}
+
+/* Info elements matching button style */
+.infoElement {
+  margin: 0.5rem;
+  padding: 1.0rem;
+  text-align: center;
+  color: #834bbe;
+  background: transparent;
+  text-decoration: none;
+  border: 2px solid #c55f5f;
+  border-radius: 1rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  backdrop-filter: blur(0px);
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: fit-content;
+  transition: all 0.5s;
+  position: relative;
+}
+
+.infoElement:hover {
+  color: #ed5181;
+  border: 2px solid #663c92;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 10px rgba(131, 75, 190, 0.3);
+  transform: scale(1.02);
+}
+
+.infoLabel {
+  font-weight: 600;
+  color: #c55f5f;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  transition: color 0.5s;
+}
+
+.infoElement:hover .infoLabel {
+  color: #ed5181;
+}
+
+.infoValue {
+  color: #834bbe;
+  font-family: monospace;
+  font-size: 1rem;
+  transition: color 0.5s;
+}
+
+.infoElement:hover .infoValue {
+  color: #ed5181;
 }
 
 /* Generic boxed area for token/info/error display */

@@ -189,20 +189,10 @@ const getTemperature = async (lat, lon) => {
   const clientIP = getClientIP(req);
   const userAgent = req.headers['user-agent'];
   const { os, deviceType, browser } = parseUserAgent(userAgent);
-  // console.log('Client IP:', clientIP);
-  console.log(1);
   const location = await getLocationFromIP(clientIP);
-  // console.log('Location Data:', location);
-  console.log(2);
-const temperature = await getTemperature(location.latitude, location.longitude);
-  // console.log('Temperature Data:', temperature);
-  console.log(3);
+  const temperature = await getTemperature(location.latitude, location.longitude);
   const edgeInfo = getEdgeInfo(req);
-  // console.log('Edge Info:', edgeInfo);
-  console.log(4);
   const rateLimitInfo = await getRateLimitInfo();
-  console.log(5);
-  // console.log('Rate Limit Info:', rateLimitInfo);
   res.status(200).json({
     ip: clientIP,
     latitude: location.latitude,
