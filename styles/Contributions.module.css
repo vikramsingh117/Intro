@@ -1,0 +1,8 @@
+.list { margin-top:22px; max-width:520px; }
+.list>a { display:block; padding:15px 0; border-bottom:1px solid var(--line); }
+.top { display:flex; align-items:baseline; justify-content:space-between; gap:14px; }
+.top strong { font-size:13px; font-weight:500; line-height:1.5; }
+.status { font:9px monospace; color:var(--orange); white-space:nowrap; }
+.title { display:block; font-size:12px; line-height:1.7; color:var(--muted); margin-top:5px; }
+.list>a:hover strong { color:var(--orange); }
+.list>small { display:block; font:9px/1.7 monospace; color:var(--muted); margin-top:12px; }

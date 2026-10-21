@@ -1,0 +1,47 @@
+.chat { min-width: 0; border: 1px solid #d2d4c7; background: #fbfaf5; box-shadow: 0 8px 25px #243c3207; }
+.header { padding: 19px 20px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #e2e3d8; }
+.avatar { background: #243c32; color: #f4f1e8; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; font: italic 25px Georgia, serif; position: relative; flex-shrink: 0; }
+.avatar span { font: 13px Arial, sans-serif; position: absolute; bottom: -5px; right: -5px; color: #c54322; background: #fbfaf5; border-radius: 50%; }
+.header strong { font-size: 12px; font-weight: 500; display: block; }
+.header small { font-size: 8px; color: #707569; display: block; line-height: 1.6; margin-top: 4px; }
+.header button { margin-left: auto; font-size: 23px; background: none; border: 0; color: #6b7065; padding: 8px; }
+.feed { height: 318px; overflow-y: auto; padding: 24px 20px; scroll-behavior: smooth; scrollbar-width: thin; scrollbar-color: #c2c8b8 transparent; }
+.assistantMessage, .userMessage { margin-bottom: 22px; max-width: 100%; animation: messageIn .3s ease both; }
+.assistantMessage small, .userMessage small { font: 7px/1.8 monospace; letter-spacing: .8px; color: #74796e; }
+.assistantMessage p, .userMessage p { font-size: 14px; line-height: 1.8; margin: 8px 0 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.userMessage { background: #e9eadf; padding: 12px 15px; margin-left: 28px; border-radius: 3px; }
+.suggestions { display: grid; gap: 8px; margin-top: 25px; }
+.suggestions button { padding: 11px 12px; display: flex; justify-content: space-between; gap: 15px; text-align: left; background: transparent; border: 1px solid #d9ddcf; color: #4a5b4a; font-size: 10px; line-height: 1.5; border-radius: 2px; }
+.suggestions button:hover { border-color: #c54322; }
+.suggestions span { color: #c54322; }
+.composer { display: flex; margin: 0 14px; border: 1px solid #c9cfbe; background: #f4f3eb; align-items: center; padding: 8px; gap: 8px; }
+.composer:focus-within { border-color: #c54322; }
+.composer textarea { resize: vertical; min-width: 0; width: 100%; max-height: 120px; min-height: 34px; border: 0; background: transparent; padding: 8px 4px; font-size: 11px; color: #243c32; line-height: 1.6; }
+.composer textarea:focus { outline: none; }
+.composer textarea::placeholder { color: #777d70; }
+.composer button { width: 32px; height: 32px; background: #243c32; border: 0; border-radius: 2px; color: #f4f1e8; font-size: 20px; flex-shrink: 0; }
+.composer button:disabled { opacity: .4; cursor: default; }
+.note { display: flex; justify-content: space-between; gap: 8px; padding: 12px 14px; font-size: 7px; line-height: 1.6; color: #74796e; }
+.thinking { font-size: 10px; color: #687260; display: flex; align-items: center; gap: 8px; }
+.thinking span { width: 5px; height: 5px; background: #c54322; border-radius: 50%; animation: pulse 1s ease-in-out infinite alternate; }
+.error { color: #a43120; font-size: 11px; line-height: 1.7; }
+.srOnly { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+@keyframes pulse { to { opacity: .2; } }
+.dark { background:#0c171f; color:#eeeae0; border-color:#29403f; border-radius:12px; overflow:hidden; box-shadow:0 24px 90px #0003; }
+.dark .header { border-color:#29403f; }
+.dark .avatar { background:#a0ddc5; color:#0c171f; border-radius:50%; }
+.dark .avatar span { background:#0c171f; color:#a0ddc5; }
+.dark .header small,.dark .header button,.dark .assistantMessage small,.dark .userMessage small,.dark .note,.dark .thinking { color:#9baeb3; }
+.dark .feed { scrollbar-color:#29403f transparent; }
+.dark .userMessage { background:#19302e; }
+.dark .suggestions button { color:#c7d8d2; border-color:#29403f; border-radius:6px; }
+.dark .suggestions button:hover,.dark .composer:focus-within { border-color:#a0ddc5; }
+.dark .suggestions span { color:#a0ddc5; }
+.dark .composer { background:#111f28; border-color:#29403f; border-radius:8px; }
+.dark .composer textarea { color:#eeeae0; }
+.dark .composer textarea::placeholder { color:#9baeb3; }
+.dark .composer button { background:#a0ddc5; color:#0c171f; border-radius:5px; }
+.dark .thinking span { background:#a0ddc5; }
+.dark .error { color:#ffb4a2; }
+@keyframes messageIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@media(max-width: 700px) { .header { padding: 15px 12px; }.feed { padding: 20px 14px; }.note { font-size: 8px; }.header small { font-size: 9px; }.suggestions button, .composer textarea { font-size: 12px; }.assistantMessage p, .userMessage p { font-size: 13px; } }

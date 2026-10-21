@@ -1,0 +1,7 @@
+.details { border-top:1px solid var(--line); margin-top:25px; }
+.details button { display:flex; align-items:center; justify-content:space-between; width:100%; padding:19px 0 8px; background:none; border:0; color:inherit; text-align:left; font-size:11px; }
+.panel { display:grid; grid-template-rows:0fr; opacity:0; visibility:hidden; transition:grid-template-rows .3s ease,opacity .25s ease,visibility .3s; }
+.panel[data-open="true"] { grid-template-rows:1fr; opacity:1; visibility:visible; }
+.panel>div { min-height:0; overflow:hidden; }
+.panel p { margin:12px 0 0; font-size:14px; line-height:1.85; color:var(--muted); max-width:365px; }
+@media(prefers-reduced-motion:reduce) { .panel { transition:none; } }

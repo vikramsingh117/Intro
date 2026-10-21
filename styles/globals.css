@@ -1,77 +1,26 @@
-html,
-body {
-  padding: 0;
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+:root {
+  --paper: #f4f1e8;
+  --ink: #243c32;
+  --muted: #6b7065;
+  --line: #d5d7ca;
+  --orange: #c54322;
 }
-
-.blur-background {
-  filter: blur(5px);
-  transition: filter 0.3s ease;
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 30px; }
+body { margin: 0; background: var(--paper); color: var(--ink); font-family: "Helvetica Neue", Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+a { color: inherit; text-decoration: none; }
+button, input, textarea { font: inherit; }
+button, a, summary { -webkit-tap-highlight-color: transparent; }
+button { cursor: pointer; }
+button:disabled { cursor: wait; }
+::selection { background: #e1a587; color: #18342a; }
+:focus-visible { outline: 2px solid var(--orange); outline-offset: 5px; }
+@media (hover: hover) and (pointer: fine) {
+  body { cursor: url("/cursor.svg") 4 3, auto; }
+  a, summary, [role="button"], [role="tab"] { cursor: pointer; }
+  input, textarea, [contenteditable]:not([contenteditable="false"]) { cursor: text; }
 }
-
-/* Auth button responsive styles */
-
-
-@media (max-width: 480px) {
-  .auth-button {
-    padding: 0.6rem 0.8rem !important;
-    font-size: 0.85rem !important;
-    min-width: 100px !important;
-    border-radius: 0.3rem !important; /* Much less rounded */
-  }
-  
-  .auth-button:hover {
-    font-size: 0.9rem !important;
-  }
-}
-
-@media (min-width: 481px) and (max-width: 768px) {
-  .auth-button {
-    padding: 0.8rem 1rem !important;
-    font-size: 0.95rem !important;
-    min-width: 110px !important;
-    border-radius: 0.5rem !important; /* Less rounded */
-  }
-  
-  .auth-button:hover {
-    font-size: 1rem !important;
-  }
-}
-
-@keyframes fadeInAnimation {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-
-@keyframes tokenSlideIn {
-  0% {
-    opacity: 0;
-    transform: translateY(-20px) scale(0.95);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-/* Highlight effect for the Generate JWT button when prompted by AI */
-.jwt-highlight {
-  box-shadow: 0 0 18px 4px rgba(255, 215, 0, 0.95);
-  transform: scale(1.05);
-  transition: box-shadow 0.25s ease, transform 0.25s ease;
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation: none !important; transition: none !important; }
 }

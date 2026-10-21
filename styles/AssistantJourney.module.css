@@ -1,0 +1,35 @@
+.journey { min-width: 0; background: #fbfaf5; border: 1px solid var(--line); }
+.top { display: flex; align-items: center; justify-content: space-between; padding: 18px 20px; border-bottom: 1px solid var(--line); gap: 10px; }
+.top > span { font: 9px monospace; letter-spacing: 1px; }
+.top button { background: var(--ink); border: 0; color: var(--paper); padding: 10px 13px; border-radius: 3px; font-size: 11px; }
+.steps { display: flex; padding: 20px 14px; gap: 4px; border-bottom: 1px solid var(--line); }
+.steps button { position: relative; flex: 1; min-width: 0; border: 0; background: transparent; padding: 5px 2px; color: var(--muted); }
+.steps button:not(:last-child)::after { content: ""; position: absolute; height: 1px; width: calc(100% - 30px); background: var(--line); top: 20px; left: calc(50% + 17px); }
+.steps button > span { display: flex; align-items: center; justify-content: center; width: 30px; height: 30px; margin: 0 auto 10px; border: 1px solid var(--line); border-radius: 50%; font: 10px monospace; transition: background .2s, color .2s; }
+.steps strong { display: block; font-size: 9px; line-height: 1.5; font-weight: 400; }
+.steps button[aria-pressed="true"] > span { background: var(--orange); color: white; border-color: var(--orange); }
+.steps button[aria-pressed="true"] strong { color: var(--ink); font-weight: 600; }
+.steps .completed > span { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.detail { padding: 23px; min-height: 240px; animation: enter .3s ease both; }
+.detailTop { display: flex; align-items: center; gap: 10px; font: 9px monospace; color: var(--orange); }
+.detailTop small { margin-left: auto; color: var(--muted); }
+.icon { font-size: 25px; }
+.detail > p { font-size: 13px; line-height: 1.8; color: var(--muted); min-height: 70px; }
+.sample { padding: 13px; border: 1px solid var(--line); background: var(--paper); }
+.sample > small { display: block; font: 8px monospace; color: var(--muted); letter-spacing: 1px; margin-bottom: 10px; }
+.sample code, .chunks { font: 11px/1.8 monospace; overflow-wrap: anywhere; }
+.chunks > span { animation: enter .25s both; }
+.chunks .done { display: block; color: var(--orange); font-size: 9px; margin-top: 4px; animation-delay: 1.4s; }
+.source { display: flex; gap: 12px; padding: 18px 23px; border-top: 1px dashed var(--line); background: #eef0e6; }
+.source > span { font-size: 24px; }
+.source strong { font-size: 11px; font-weight: 500; }
+.source p { font: 11px monospace; margin: 8px 0; }
+.source small { display: block; font-size: 10px; line-height: 1.7; color: var(--muted); }
+.safeguards { padding: 18px 23px 0; display: flex; flex-wrap: wrap; gap: 7px; }
+.safeguards span { font: 9px monospace; padding: 6px 8px; border: 1px solid var(--line); border-radius: 3px; }
+.footnote { font-size: 10px; line-height: 1.7; color: var(--muted); padding: 0 23px 18px; }
+@keyframes enter { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
+.dark { background:#0c171f; color:#eeeae0; border-radius:12px; overflow:hidden; }
+.dark .source { background:#14242a; }
+.dark .steps button[aria-pressed="true"] > span { color:#0c171f; }
+@media(max-width: 700px) { .top { padding: 14px; }.detail { padding: 18px; }.steps { padding: 15px 8px; }.steps strong { font-size: 8px; }.source { padding: 16px; }.safeguards { padding: 16px 16px 0; }.footnote { padding: 0 16px 16px; } }

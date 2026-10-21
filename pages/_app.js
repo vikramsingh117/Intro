@@ -1,22 +1,13 @@
 import '../styles/globals.css';
-import { AuthProvider, useAuth } from '../context/AuthContext';
 import { Analytics } from '@vercel/analytics/react';
+import ThemeCursor from '../components/ThemeCursor';
 
-function AppContent({ Component, pageProps }) {
+export default function MyApp({ Component, pageProps }) {
   return (
     <>
       <Component {...pageProps} />
+      <ThemeCursor />
       <Analytics />
     </>
   );
 }
-
-function MyApp({ Component, pageProps }) {
-  return (
-    <AuthProvider>
-      <AppContent Component={Component} pageProps={pageProps} />
-    </AuthProvider>
-  );
-}
-
-export default MyApp;
