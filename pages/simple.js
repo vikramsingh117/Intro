@@ -131,6 +131,9 @@ export default function SimplePortfolio() {
     <a className={styles.skipLink} href="#main">Skip to content</a>
     <div className={styles.readProgress} ref={progress} aria-hidden="true" />
     <div className={styles.page} ref={page}>
+      <nav className={styles.themeNav} aria-label="Portfolio theme">
+        <Link href="/after-hours"><a className={styles.themeSwitch}>After Hours ↗</a></Link>
+      </nav>
       <main id="main">
         <section id="home" className={styles.hero}>
           <div className={styles.heroText}>
@@ -139,7 +142,6 @@ export default function SimplePortfolio() {
             <p className={styles.intro}>I shape product decisions, build real-time AI experiences, and own the systems behind them. Currently at Upliance.ai.</p>
             <p className={styles.openSource}>Merged contributions to <a href="https://github.com/kestra-io/kestra/pull/13219" target="_blank" rel="noreferrer">Kestra ↗</a> and <a href="https://github.com/MCPJam/inspector/pull/737" target="_blank" rel="noreferrer">MCPJam Inspector ↗</a>. Open PR for the <a href="https://github.com/anthropics/claude-agent-sdk-python/pull/259" target="_blank" rel="noreferrer">Claude Agent SDK ↗</a>.</p>
             <div className={styles.heroActions}><a className={styles.primaryLink} href="#ask">Ask my assistant <span>↗</span></a><a className={styles.textLink} href="#work">Explore my work ↓</a><a className={styles.textLink} href="https://github.com/vikramsingh117" target="_blank" rel="noreferrer">GitHub ↗</a></div>
-            <Link href="/after-hours"><a className={styles.themeSwitch}>View After Hours <span>↗</span></a></Link>
           </div>
           <div id="ask" className={styles.heroVisual}>
             <button className={styles.howItWorks} onClick={() => setShowJourney(!showJourney)} aria-expanded={showJourney} aria-controls="assistant-journey">
@@ -155,8 +157,17 @@ export default function SimplePortfolio() {
             </div>
           </div>
         </section>
+        <section id="experience" className={styles.experience} data-reveal>
+          <div className={styles.sectionHead}><div><p className={styles.kicker}>01 / EXPERIENCE</p><h2>Where I’ve <em>worked.</em></h2></div></div>
+          <div className={styles.experienceGrid}>
+            <div className={styles.experienceDrawing}><SystemDrawing selected={activeRole} onSelect={setActiveRole} /></div>
+            <div key={activeRole} id="experience-panel" role="tabpanel" aria-labelledby={"role-" + activeRole} tabIndex={0} className={styles.rolePanel}>
+              <p className={styles.kicker}>{role.current ? "CURRENT CHAPTER" : "PREVIOUS CHAPTER"} / {role.role}</p><h3>{role.summary}</h3><p>{role.description}</p><ul>{role.points.map(point => <li key={point}>{point}</li>)}</ul><p className={styles.roleStack}>{role.stack}</p>
+            </div>
+          </div>
+        </section>
         <section id="work" className={styles.work} data-reveal>
-          <div className={styles.sectionHead}><div><p className={styles.kicker}>01 / SELECTED WORK</p><h2>Selected <em>projects.</em></h2></div></div>
+          <div className={styles.sectionHead}><div><p className={styles.kicker}>02 / SELECTED WORK</p><h2>Selected <em>projects.</em></h2></div></div>
           <div className={styles.projects}>
             <article className={styles.searchProject}>
               <div className={styles.projectLabel}><span>01 / DISCOVERY ENGINE</span><span>2025</span></div>
@@ -164,22 +175,13 @@ export default function SimplePortfolio() {
                 <div className={styles.searchBox}><span>⌕</span> Search the index<i>↵</i></div>
                 <div className={styles.indexRows}><span>01</span><div/><b>CRAWL</b><span>02</span><div/><b>PARSE</b><span>03</span><div/><b>INDEX</b></div>
               </div>
-              <div className={styles.projectCopy}><p className={styles.tags}>GO · MONGODB ATLAS · GOQUERY</p><h3>Go web crawler & search index</h3><p>Turns live webpages into structured observations: extracted text, keyword frequency, and crawl results stored for inspection.</p><ProjectDetails>Built with Go and net/http, GoQuery for HTML parsing, and MongoDB Atlas. Handles Gzip, Brotli, and Deflate responses, with a responsive HTML/CSS interface and environment-based database configuration. April–June 2025.</ProjectDetails><a className={styles.projectLink} href="https://go-web-crawler.onrender.com/" target="_blank" rel="noreferrer">Open the crawler <span>↗</span></a></div>
+              <div className={styles.projectCopy}><p className={styles.tags}>GO · MONGODB ATLAS · GOQUERY</p><h3><a className={styles.cardLink} href="https://go-web-crawler.onrender.com/" target="_blank" rel="noreferrer" aria-label="Go web crawler & search index (opens in a new tab)">Go web crawler & search index ↗</a></h3><p>Turns live webpages into structured observations: extracted text, keyword frequency, and crawl results stored for inspection.</p><div className={styles.cardDetails}><ProjectDetails>Built with Go and net/http, GoQuery for HTML parsing, and MongoDB Atlas. Handles Gzip, Brotli, and Deflate responses, with a responsive HTML/CSS interface and environment-based database configuration. April–June 2025.</ProjectDetails></div></div>
             </article>
             <article className={styles.portfolioProject}>
               <div className={styles.projectLabel}><span>02 / AN EVOLVING EXPERIMENT</span><span>2022 — NOW</span></div>
               <div className={styles.portfolioArt}><span className={styles.largeAsterisk}>✳</span><div><span>vikram</span><span>.dev</span></div><small>2022 — PRESENT</small></div>
               <div className={styles.projectCopy}><p className={styles.tags}>NEXT.JS · REDIS · DOCKER · JWT</p><h3>Personal portfolio</h3><p>A serverless application maintained since 2022, with CDN caching, authentication, and a résumé-grounded AI assistant.</p><a href="#ask" className={styles.projectLink}>Try the portfolio assistant <span>↗</span></a></div>
             </article>
-          </div>
-        </section>
-        <section id="experience" className={styles.experience} data-reveal>
-          <div className={styles.sectionHead}><div><p className={styles.kicker}>02 / EXPERIENCE</p><h2>Where I’ve <em>worked.</em></h2></div></div>
-          <div className={styles.experienceGrid}>
-            <div className={styles.experienceDrawing}><SystemDrawing selected={activeRole} onSelect={setActiveRole} /></div>
-            <div key={activeRole} id="experience-panel" role="tabpanel" aria-labelledby={"role-" + activeRole} tabIndex={0} className={styles.rolePanel}>
-              <p className={styles.kicker}>{role.current ? "CURRENT CHAPTER" : "PREVIOUS CHAPTER"} / {role.role}</p><h3>{role.summary}</h3><p>{role.description}</p><ul>{role.points.map(point => <li key={point}>{point}</li>)}</ul><p className={styles.roleStack}>{role.stack}</p>
-            </div>
           </div>
         </section>
         <section className={styles.about} id="about" data-reveal>
