@@ -10,10 +10,28 @@ export default function ThemeCursor() {
     const node = cursor.current;
     let frame = 0;
     let visible = false;
+    let hoveredTarget = null;
+    let spin = null;
+    const updateHover = target => {
+      const next = target?.tagName === 'CANVAS'
+        ? target.dataset.cursorObject || null
+        : target?.closest("a, button, summary, [role='button'], [role='tab']") || null;
+      node.dataset.interactive = String(!!next);
+      if (next && next !== hoveredTarget && media.matches && target?.closest('[data-cursor-theme="glossy"]')) {
+        spin?.cancel();
+        spin = node.firstElementChild.animate([{ transform: 'rotate(45deg)' }, { transform: 'rotate(135deg)' }], {
+          duration: 700, easing: 'ease-in-out', iterations: 1, fill: 'forwards',
+        });
+      }
+      hoveredTarget = next;
+    };
+    const objectHover = event => updateHover(event.target);
     let x = 0, y = 0, targetX = 0, targetY = 0;
 
     const hide = () => {
       visible = false;
+      hoveredTarget = null;
+      spin?.cancel();
       node.dataset.visible = "false";
       icon.current.dataset.visible = "false";
       delete document.documentElement.dataset.chooserCursor;
@@ -46,7 +64,7 @@ export default function ThemeCursor() {
       icon.current.style.transform = `translate3d(${targetX}px, ${targetY}px, 0)`;
       if (pane) document.documentElement.dataset.chooserCursor = "true";
       else delete document.documentElement.dataset.chooserCursor;
-      node.dataset.interactive = String(!!target?.closest("a, button, summary, [role='button'], [role='tab']"));
+      updateHover(target);
       if (!visible) {
         x = targetX;
         y = targetY;
@@ -58,6 +76,7 @@ export default function ThemeCursor() {
     };
 
     window.addEventListener("pointermove", move, { passive: true });
+    window.addEventListener('cursor-object-change', objectHover);
     window.addEventListener("blur", hide);
     window.addEventListener("scroll", hide, { passive: true, capture: true });
     document.documentElement.addEventListener("pointerleave", hide);
@@ -66,6 +85,7 @@ export default function ThemeCursor() {
     return () => {
       hide();
       window.removeEventListener("pointermove", move);
+      window.removeEventListener('cursor-object-change', objectHover);
       window.removeEventListener("blur", hide);
       window.removeEventListener("scroll", hide, true);
       document.documentElement.removeEventListener("pointerleave", hide);

@@ -1,0 +1,8 @@
+Model Information:
+* title:	Iskra-Unitra RM 312 Radio
+* source:	https://sketchfab.com/3d-models/iskra-unitra-rm-312-radio-384de87761704f848127e8b4460c97e3
+* author:	thecalcman (https://sketchfab.com/calcman)
+
+Model License:
+* license type:	SKETCHFAB Standard (https://sketchfab.com/licenses)
+* requirements:	Under basic restrictions, use worldwide, on all types of media, commercially or not, and in all types of derivative works

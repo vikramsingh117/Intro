@@ -2,13 +2,16 @@ import { Suspense, useEffect, useMemo, useRef } from 'react';
 import { Canvas, useFrame, useLoader, useThree } from '@react-three/fiber';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-import SubwayExterior, { NightEffects, SUBWAY_CENTER, WINDOW_CAMERA } from './SubwayView';
+import CityExterior, { NightEffects } from './CityExterior';
 import Notebook, { NOTEBOOK_TARGET } from './Notebook';
 import InteractiveObject from './InteractiveObject';
 import CozyRoom from './CozyRoom';
 import DeskLamp from './DeskLamp';
+import FlyingPlane from './FlyingPlane';
+import Radio from './Radio';
+import Chair from './Chair';
 import Keyboard from './Keyboard';
-import { ACESFilmicToneMapping, Matrix4, SRGBColorSpace, TextureLoader, Vector3 } from 'three';
+import { ACESFilmicToneMapping, Euler, Quaternion, Matrix4, SRGBColorSpace, TextureLoader, TOUCH, Vector3 } from 'three';
 
 function Monitor({ onEnter, desktopRef, desktop }) {
   const screen = useRef(null);
@@ -37,6 +40,12 @@ function Monitor({ onEnter, desktopRef, desktop }) {
     projection.elements[10] = 1;
     desktopRef.current.style.transform = `matrix3d(${projection.elements.join(',')})`;
     desktopRef.current.style.visibility = 'visible';
+    // Keep touch UI inside the visible part of the physical monitor in portrait.
+    const focusDistance = Math.min(1.16, 1.88 / (size.width / size.height)) / Math.tan(21 * Math.PI / 180) * 1.3;
+    const pixelScale = size.height * 3.76 / (2 * focusDistance * Math.tan(21 * Math.PI / 180) * 1280);
+    desktopRef.current.style.setProperty('--mobile-desktop-width', `${Math.min(1280, size.width / pixelScale - 24)}px`);
+    desktopRef.current.style.setProperty('--mobile-touch', `${Math.max(48, 44 / pixelScale)}px`);
+    desktopRef.current.style.setProperty('--mobile-font', `${Math.max(20, 16 / pixelScale)}px`);
   });
   const { scene } = useLoader(GLTFLoader, '/models/monitor.glb');
   useEffect(() => { scene.traverse(object => { if (object.isMesh) { object.castShadow = true; object.receiveShadow = true; } }); }, [scene]);
@@ -51,19 +60,21 @@ function Monitor({ onEnter, desktopRef, desktop }) {
     </group>
   </group>;
 }
-function Camera({ entered, outside, notebook, reduced, onArrive }) {
+function Camera({ entered, outside, notebook, citySettings, reduced, onArrive }) {
   const { camera, gl, size, invalidate } = useThree();
+  const { cameraX, cameraY, cameraZ, targetX, targetY, targetZ, fov } = citySettings;
   const transition = useRef(null);
   const orbit = useRef(null);
   const roomPosition = useRef(null);
   const wasFocused = useRef(false);
+  const windowLook = useRef({center:null,yaw:0,pitch:0,drag:null});
   useEffect(() => {
     const controls = new OrbitControls(camera, gl.domElement);
     controls.target.set(0, .2128, -.51);
     controls.enablePan = false;
-    controls.touches.ONE = null;
-    controls.touches.TWO = null;
-    gl.domElement.style.touchAction = 'pan-y';
+    controls.touches.ONE = TOUCH.ROTATE;
+    controls.touches.TWO = TOUCH.DOLLY_PAN;
+    gl.domElement.style.touchAction = 'none';
     controls.enableDamping = false;
     controls.minDistance = 6;
     controls.minAzimuthAngle = -.2;
@@ -78,6 +89,39 @@ function Camera({ entered, outside, notebook, reduced, onArrive }) {
     return () => { controls.removeEventListener('change', invalidate); controls.dispose(); orbit.current = null; };
   }, [camera, gl, invalidate]);
   const lookTarget = useRef(new Vector3(0, .2128, -.51));
+  useEffect(() => {
+    const element=gl.domElement, look=windowLook.current;
+    look.center=null;look.drag=null;look.yaw=0;look.pitch=0;
+    if(!outside)return;
+    const rotation=new Quaternion(), angles=new Euler(0,0,0,'YXZ');
+    const down=event=>{
+      if(event.button!==0 || !transition.current?.done || !look.center)return;
+      look.drag={id:event.pointerId,x:event.clientX,y:event.clientY,yaw:look.yaw,pitch:look.pitch};
+      element.setPointerCapture(event.pointerId);
+    };
+    const move=event=>{
+      if(!look.drag || look.drag.id!==event.pointerId)return;
+      look.yaw=Math.max(-.21,Math.min(.21,look.drag.yaw-(event.clientX-look.drag.x)*.002));
+      look.pitch=Math.max(-.14,Math.min(.14,look.drag.pitch-(event.clientY-look.drag.y)*.002));
+      rotation.setFromEuler(angles.set(look.pitch,look.yaw,0,'YXZ'));
+      camera.quaternion.copy(look.center).multiply(rotation);
+      camera.getWorldDirection(lookTarget.current).multiplyScalar(12).add(camera.position);
+      invalidate();
+    };
+    const up=event=>{
+      if(look.drag?.id!==event.pointerId)return;
+      look.drag=null;
+      if(element.hasPointerCapture(event.pointerId))element.releasePointerCapture(event.pointerId);
+    };
+    element.addEventListener('pointerdown',down);element.addEventListener('pointermove',move);
+    element.addEventListener('pointerup',up);element.addEventListener('pointercancel',up);
+    return ()=>{
+      if(look.drag && element.hasPointerCapture(look.drag.id))element.releasePointerCapture(look.drag.id);
+      look.drag=null;
+      element.removeEventListener('pointerdown',down);element.removeEventListener('pointermove',move);
+      element.removeEventListener('pointerup',up);element.removeEventListener('pointercancel',up);
+    };
+  }, [outside,camera,gl,invalidate]);
   const callback = useRef(onArrive);
   callback.current = onArrive;
   useEffect(() => {
@@ -93,9 +137,9 @@ function Camera({ entered, outside, notebook, reduced, onArrive }) {
     // Fill the viewport with the open spread, seen almost straight down.
     const notebookDistance = Math.max(.82, 1.15 / (size.width / size.height)) / Math.tan(21 * Math.PI / 180) * 1.2;
     const notebookCamera = new Vector3(...NOTEBOOK_TARGET).add(new Vector3(0, .96, .28).multiplyScalar(notebookDistance));
-    transition.current = { from:camera.position.clone(), fovFrom:camera.fov, fovTo:outside ? 45 : 42, lookFrom:lookTarget.current.clone(), lookTo:notebook ? new Vector3(...NOTEBOOK_TARGET) : outside ? new Vector3(...SUBWAY_CENTER) : new Vector3(entered ? 1.5 : 0, .2128, -.51), to:notebook ? notebookCamera : outside ? new Vector3(...WINDOW_CAMERA) : entered ? new Vector3(1.5, .2128 + .139173 * distance, -.51 + .990268 * distance) : (roomPosition.current?.clone() || new Vector3(5.5, 3.1, Math.max(11.8, 9 / (size.width / size.height)))), elapsed:0, done:false };
+    transition.current = { from:camera.position.clone(), fovFrom:camera.fov, fovTo:outside ? fov : 42, lookFrom:lookTarget.current.clone(), lookTo:notebook ? new Vector3(...NOTEBOOK_TARGET) : outside ? new Vector3(targetX,targetY,targetZ) : new Vector3(entered ? 1.5 : 0, .2128, -.51), to:notebook ? notebookCamera : outside ? new Vector3(cameraX,cameraY,cameraZ) : entered ? new Vector3(1.5, .2128 + .139173 * distance, -.51 + .990268 * distance)  : (roomPosition.current?.clone() || new Vector3(6, 3.5, Math.max(14.8, 10 / (size.width / size.height)))), elapsed:0, done:false };
     invalidate();
-  }, [entered, outside, notebook, reduced, camera, size.width, size.height, invalidate]);
+  }, [entered, outside, notebook, cameraX, cameraY, cameraZ, targetX, targetY, targetZ, fov, reduced, camera, size.width, size.height, invalidate]);
   useFrame((state, dt) => {
     const t = transition.current;
     if (!t || t.done) return;
@@ -110,6 +154,10 @@ function Camera({ entered, outside, notebook, reduced, onArrive }) {
     if (progress < 1) state.invalidate();
     else {
       t.done = true;
+      if(outside) {
+        windowLook.current.center=camera.quaternion.clone();
+        windowLook.current.yaw=0;windowLook.current.pitch=0;
+      }
       if (!entered && !outside && !notebook && orbit.current) {
         orbit.current.target.copy(lookTarget.current);
         orbit.current.enabled = true;
@@ -120,20 +168,23 @@ function Camera({ entered, outside, notebook, reduced, onArrive }) {
   }, -1);
   return null;
 }
-export default function MonitorScene({ entered, reduced, onEnter, onArrive, lampOn, onLampToggle, onWindowSelect, outside, onSubwayReady, desktopRef, desktop, lighting, notebook, notebookPage, onNotebookOpen, onHover, notebookOpen, onNotebookPageChange, onNotebookExit }) {
-  return <Canvas onPointerMissed={()=>{if(notebook)onNotebookExit();}} shadows camera={{ position:[5.5, 3.1, 11.8], fov:42 }} dpr={[1, 1.5]} frameloop="demand" gl={{alpha:true, antialias:true, toneMapping:ACESFilmicToneMapping, toneMappingExposure:.85}}>
+export default function MonitorScene({ entered, reduced, onEnter, onArrive, lampOn, onLampToggle, onWindowSelect, outside, onCityReady, desktopRef, desktop, notebook, notebookPage, onNotebookOpen, onHover, notebookOpen, onNotebookPageChange, onNotebookExit, citySettings }) {
+  return <Canvas onPointerMissed={()=>{if(notebook)onNotebookExit();}} shadows camera={{ position:[6, 3.5, 14.8], fov:42 }} dpr={[1, 1.5]} frameloop="demand" gl={{alpha:true, antialias:true, toneMapping:ACESFilmicToneMapping, toneMappingExposure:.85}}>
     <color attach="background" args={['#091321']} />
     <group onClick={event=>{if(notebook && event.delta<=5){event.stopPropagation();onNotebookExit();}}}>
-    <NightEffects exposure={outside ? lighting.exposure : .85} glow={outside ? lighting.glow : .55} />
-    <Suspense fallback={null}><SubwayExterior onReady={onSubwayReady} lighting={lighting} /></Suspense>
-    <hemisphereLight args={['#c8d4d0', '#494237', outside ? lighting.ambient : .65]} />
+    <NightEffects exposure={outside ? citySettings.exposure : .85} glow={outside ? citySettings.glow : .55} />
+    <Suspense fallback={null}><CityExterior onReady={onCityReady} settings={citySettings} /></Suspense>
+    <Suspense fallback={null}><FlyingPlane active={outside} reduced={reduced} settings={citySettings}/></Suspense>
+    <hemisphereLight args={['#c8d4d0', '#494237', outside ? citySettings.ambient : .65]} />
     <directionalLight position={[3, 5, 4]} intensity={.8} color="#c7d5df" castShadow shadow-mapSize={[1024, 1024]} shadow-camera-left={-9} shadow-camera-right={9} shadow-camera-top={8} shadow-camera-bottom={-8} shadow-normalBias={.04} />
     <pointLight position={[-4.6, 2, -2.5]} intensity={18} distance={12} decay={2} color="#8abbd9" />
     <Suspense fallback={null}><InteractiveObject label="Monitor · explore my work" onHover={onHover}><Monitor onEnter={notebook ? onNotebookExit : onEnter} desktopRef={desktopRef} desktop={desktop} /></InteractiveObject></Suspense>
-    <Camera {...{entered,outside,notebook,reduced,onArrive}} />
+    <Camera {...{entered,outside,notebook,citySettings,reduced,onArrive}} />
+    <Suspense fallback={null}><Chair/></Suspense>
     <CozyRoom onWindowSelect={notebook ? onNotebookExit : onWindowSelect} onHover={onHover} />
     <InteractiveObject label="Notebook · ideas & sketches" onHover={onHover}><Notebook focused={notebook} open={notebookOpen} onPageChange={onNotebookPageChange} page={notebookPage} reduced={reduced} onOpen={onNotebookOpen} /></InteractiveObject>
     <Suspense fallback={null}><Keyboard /></Suspense>
+    <Suspense fallback={null}><Radio /></Suspense>
     <Suspense fallback={null}><InteractiveObject label={lampOn ? "Lamp · turn off" : "Lamp · turn on"} onHover={onHover}><DeskLamp on={lampOn} onToggle={notebook ? onNotebookExit : onLampToggle} /></InteractiveObject></Suspense>
     <pointLight position={[1.5,.15,.1]} color="#9cc8df" intensity={3} distance={5} />
     </group>

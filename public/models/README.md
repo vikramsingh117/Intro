@@ -26,3 +26,35 @@ Source: https://sketchfab.com/3d-models/lowpoly-berlin-u-bahn-station-2a02d3f2ec
 Author: https://sketchfab.com/n-malmberg
 License: https://creativecommons.org/licenses/by/4.0/
 Original files and license retained in `subway/`. `runtime.gltf` adapts legacy specular/glossiness materials to approximate metallic/roughness materials for Three.js: diffuse maps retained, metallic=0, roughness=0.8. Model centered and scaled at runtime. Loaded behind the room window in the shared 3D scene; the camera moves to the exterior view.
+
+## Chair
+
+“Rustic chair” by Araon, CC BY 4.0.
+Source: https://sketchfab.com/3d-models/rustic-chair-77afa26a76614fc2b8ed845024af0b58
+Author: https://sketchfab.com/araon
+License: https://creativecommons.org/licenses/by/4.0/
+Original download preserved in `chair/`. `runtime.gltf` approximates legacy specular/glossiness materials with metallic=0, roughness=0.8 and the original diffuse, normal and occlusion maps. Scaled, centered, and rotated to face the desk.
+
+## Night city — current window exterior
+
+“Low Poly Night City Building Skyline” by 99.Miles, CC BY 4.0.
+Source: https://sketchfab.com/3d-models/low-poly-night-city-building-skyline-b0035b8713b048bb8ddf311ee67c28c8
+Author: https://sketchfab.com/99.Miles
+License: https://creativecommons.org/licenses/by/4.0/
+Original glTF, binary, textures, and license retained in `city/`. Geometry normalized to a 20-unit maximum dimension and centered, then positioned/scaled/rotated using scene settings. Original PBR materials preserved; emission adjustable. Replaces the subway at runtime; subway files retained for reference.
+
+## Radio
+
+“Iskra-Unitra RM 312 Radio” by thecalcman, Sketchfab Standard License.
+Source: https://sketchfab.com/3d-models/iskra-unitra-rm-312-radio-384de87761704f848127e8b4460c97e3
+Author: https://sketchfab.com/calcman
+License: https://sketchfab.com/licenses
+User-provided download retained in `radio/`, including its license. Original geometry and textures; scaled and placed in front of the lamp as a decorative prop.
+
+## Aircraft
+
+“Lowpoly AC-130” by SIpriv, CC BY 4.0.
+Source: https://sketchfab.com/3d-models/lowpoly-ac-130-63238efa8edd4c5ca518cf8fa7f49747
+Author: https://sketchfab.com/S1Priv
+License: https://creativecommons.org/licenses/by/4.0/
+Original files retained in `plane/`. Normalized to a 0.975-unit wingspan, positioned above the city, and animated on a custom flyby path at 0.18 scene units per second; faint emissive fill and navigation lights added. Bundled landing animation is not played. Motion pauses outside the city view, when hidden/offscreen, and for reduced motion.

@@ -137,9 +137,9 @@ approved for the plan; implement them after the core room interactions.
 
 ### Desktop and window behavior
 
-- [ ] Open, close, minimize, and maximize app windows.
-- [ ] Support dragging windows on desktop; keep controls within reach.
-- [ ] Use the taskbar to switch apps and restore minimized windows.
+- [x] Open, close, minimize, maximize, and restore app windows.
+- [x] Drag title bars and resize edges/corners within desktop bounds, including the projected monitor coordinates.
+- [x] Use the taskbar to switch apps and restore minimized windows.
 - [ ] Search projects, technologies, and decisions from one place.
 - [ ] Keep **Back to desk** visible and use the reverse zoom when leaving.
 - [ ] On mobile, show one full-size app at a time with simple back navigation.
@@ -192,3 +192,43 @@ These additions are deferred until the four core objects feel cohesive.
 - [x] Place the notebook beside the lamp; shift the monitor and keyboard right to make room.
 
 - [x] Add three wooden drawers with dark handles beneath the desk, leaving central legroom.
+
+### Chair
+- [x] Import Araon’s Rustic chair, credit the author, and face it toward the desk.
+- [x] Start slightly farther back; click chair to sit and move closer to the desk.
+- [x] Get up / Escape returns to the room view. Closing a monitor, window, or notebook interaction while seated returns to the seated view.
+
+### Current exterior / chair revision
+- [x] Chair is now decorative: remove click-to-sit, seated camera, and Get up control.
+- [x] Replace the loaded subway with 99.Miles’ night-city skyline.
+- [x] Temporary controls for city position/scale/rotation, camera/target/FOV, brightness, ambient, warm/cool lights, shadow strength, glow, and window emission.
+- [x] Copy settings exports exact values for final tuning; Reset restores defaults.
+
+- [x] Apply the user-selected final city position, camera, and lighting values in `citySettings.js`; remove the visible tuning panel.
+
+- [x] Place the downloaded Iskra-Unitra RM 312 radio in front of the lamp as a decorative prop; retain license and attribution.
+
+### Monitor window controls
+- [x] Multiple windows with focus order, preserved position/size while minimized, and maximize/restore.
+- [x] Keyboard arrow movement/resizing on focused title bar / resize grip; Escape closes the top window.
+- [x] Terminal shortcut and window with a simulated Linux shell, virtual portfolio files, history, and completion.
+- [x] Lint and drag/resize boundary + perspective coordinate checks pass. Browser testing left to the user.
+
+### Terminal commands
+- [x] Add help/man, whoami/id/hostname, pwd/ls/cd/tree, cat/head/tail/grep/wc, echo, mkdir/touch/rm, date/uname/uptime, simulated ping, history/clear/exit.
+- [x] Keep file mutations local to the terminal session; no real shell or network execution.
+- [x] Support quoted arguments, Tab completion, arrow-key history, Ctrl+L and Ctrl+C.
+- [x] Seven command-engine tests pass (paths, parsing, mutations, filters, ping, completion, history).
+
+### City flyby
+- [x] Add the downloaded SIpriv AC-130 with attribution and original textures.
+- [x] Slow, repeating flyby above the skyline, oriented along its path with subtle navigation lights.
+- [x] Pause motion outside the focused city view, when hidden/offscreen, or with reduced motion.
+- [ ] User visual review of aircraft framing and scale.
+
+### Desktop portfolio content
+- [x] Expand My Work with Upliance/Frodo product and engineering contributions, Office Solutions, and Cribble Org.
+- [x] Add Projects with the Go crawler, portfolio, and selected open-source PR links.
+- [x] Expand About Me with product/engineering focus, skills, education, and contact links.
+- [x] Add direct GitHub, LinkedIn, and LeetCode apps using the supplied URLs, opening in new tabs; add an email shortcut.
+- [x] Arrange shortcuts in two columns alongside the existing movable windows.

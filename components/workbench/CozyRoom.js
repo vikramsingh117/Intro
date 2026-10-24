@@ -35,19 +35,19 @@ export default function CozyRoom({ onWindowSelect, onHover }) {
   const wall = '#777c70';
   const trim = '#414c46';
   return <group>
-    {/* Extended shell keeps the room around the camera while preserving the window opening. */}
-    <Block position={[0, -4.9, 24.8]} size={[48.2, .2, 56]} color="#52483c" />
-    <Block position={[0, -2.7, -3.2]} size={[48, 4.2, .2]} color={wall} />
-    <Block position={[0, 13.9, -3.2]} size={[48, 20.2, .2]} color={wall} />
-    <Block position={[-15.15, 1.6, -3.2]} size={[17.7, 4.4, .2]} color={wall} />
+    {/* The left corner sits just beyond the window, with room for its sill. */}
+    <Block position={[8.1, -4.9, 24.8]} size={[32, .2, 56]} color="#52483c" />
+    <Block position={[8.1, -2.7, -3.2]} size={[31.8, 4.2, .2]} color={wall} />
+    <Block position={[8.1, 13.9, -3.2]} size={[31.8, 20.2, .2]} color={wall} />
+    <Block position={[-7.05, 1.6, -3.2]} size={[1.5, 4.4, .2]} color={wall} />
     <Block position={[10.55, 1.6, -3.2]} size={[26.9, 4.4, .2]} color={wall} />
-    <Block position={[-24, 9.6, 21.8]} size={[.2, 28.8, 50]} color="#6b7367" />
+    <Block position={[-7.8, 9.6, 21.8]} size={[.2, 28.8, 50]} color="#6b7367" />
     <Block position={[24, 9.6, 24.8]} size={[.2, 28.8, 56]} color={wall} />
-    <Block position={[0, 24.1, 24.8]} size={[48.2, .2, 56]} color="#929488" />
-    <Block position={[0, -4.64, -3.04]} size={[48, .32, .12]} color={trim} />
-    {[-23.84, 23.84].map(x => <Block key={x} position={[x, -4.64, x < 0 ? 21.8 : 24.8]} size={[.12, .32, x < 0 ? 50 : 56]} color={trim} />)}
-    <InteractiveObject label="Window · Berlin after dark" onHover={onHover}><group onClick={event => { event.stopPropagation(); if (event.delta <= 5) onWindowSelect(); }}>
-    {/* Click the window to explore the subway. */}
+    <Block position={[8.1, 24.1, 24.8]} size={[32, .2, 56]} color="#929488" />
+    <Block position={[8.1, -4.64, -3.04]} size={[31.8, .32, .12]} color={trim} />
+    {[-7.64, 23.84].map(x => <Block key={x} position={[x, -4.64, x < 0 ? 21.8 : 24.8]} size={[.12, .32, x < 0 ? 50 : 56]} color={trim} />)}
+    <InteractiveObject label="Window · city after dark" onHover={onHover}><group onClick={event => { event.stopPropagation(); if (event.delta <= 5) onWindowSelect(); }}>
+    {/* Click the window to explore the city. */}
     <mesh position={[-4.6, 1.6, -3.33]}>
       <planeGeometry args={[3.4, 4.4]} />
       <meshStandardMaterial color="#102532" emissive="#24495d" emissiveIntensity={.1} transparent opacity={.06} depthWrite={false} roughness={.2} metalness={.1} />

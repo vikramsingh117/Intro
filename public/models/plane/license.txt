@@ -1,0 +1,11 @@
+Model Information:
+* title:	Lowpoly AC-130
+* source:	https://sketchfab.com/3d-models/lowpoly-ac-130-63238efa8edd4c5ca518cf8fa7f49747
+* author:	SIpriv (https://sketchfab.com/S1Priv)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Lowpoly AC-130" (https://sketchfab.com/3d-models/lowpoly-ac-130-63238efa8edd4c5ca518cf8fa7f49747) by SIpriv (https://sketchfab.com/S1Priv) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

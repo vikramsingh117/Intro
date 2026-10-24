@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { CanvasTexture, SRGBColorSpace } from 'three';
+import { drawNotebook } from './drawNotebook';
 import { NOTEBOOK_PAGES } from './notebookPages';
 
 export const NOTEBOOK_TARGET = [-1.7, -1.4, .65];
@@ -11,49 +12,7 @@ export default function Notebook({ open, focused, page, reduced, onOpen, onPageC
   const { invalidate } = useThree();
   const textures = useMemo(() => NOTEBOOK_PAGES.map((entry, page) => {
     const canvas = document.createElement('canvas'); canvas.width = 1200; canvas.height = 840;
-    const c = canvas.getContext('2d');
-    c.fillStyle = '#eee1bf'; c.fillRect(0, 0, 1200, 840);
-    c.strokeStyle = '#b3b4a84d'; c.lineWidth = 1;
-    for (let y = 110; y < 820; y += 38) { c.beginPath(); c.moveTo(35, y); c.lineTo(1165, y); c.stroke(); }
-    c.fillStyle = '#544b3b'; c.font = '18px monospace'; c.fillText('VIKRAM / FIELD NOTES', 40, 55);
-    c.font = 'italic 36px Georgia';
-    const wrap = (text, x, y, width, line) => {
-      let row = ''; for (const word of text.split(' ')) {
-        if (c.measureText(row + word).width > width && row) { c.fillText(row.trim(), x, y); y += line; row = ''; }
-        row += word + ' ';
-      } c.fillText(row.trim(), x, y); return y + line;
-    };
-    let y = wrap(entry.title, 40, 118, 495, 45);
-    c.font = '24px Georgia'; y = wrap(entry.text, 40, y + 35, 490, 35);
-    c.fillStyle = '#9a5e43'; c.font = 'italic 28px Georgia'; wrap(entry.question, 40, y + 45, 485, 39);
-    c.save(); c.scale(1, .6);
-    c.strokeStyle = '#5b7470'; c.fillStyle = '#405c58'; c.lineWidth = 4;
-    const box = (x, y, w, h, label) => { c.strokeRect(x, y, w, h); c.font = '22px monospace'; c.fillText(label, x + 12, y + 34); };
-    const arrow = (x, y, xx, yy) => { c.beginPath(); c.moveTo(x,y); c.lineTo(xx,yy); c.lineTo(xx-10,yy-10); c.moveTo(xx,yy); c.lineTo(xx-10,yy+10); c.stroke(); };
-    if (entry.doodle === 'loop') {
-      box(650,160,190,95,'understand'); box(910,160,190,95,'decide');
-      box(650,370,190,95,'observe'); box(910,370,190,95,'build');
-      arrow(845,205,900,205); arrow(1005,265,1005,355); arrow(900,415,850,415); arrow(745,355,745,265);
-      c.font='italic 30px Georgia'; c.fillText('people in the loop',700,570);
-    } else if (entry.doodle === 'recipe') {
-      box(690,170,340,330,'recipe / selected device');
-      c.beginPath(); c.ellipse(860,310,95,45,0,0,Math.PI*2); c.stroke();
-      c.font='25px Georgia'; c.fillText('✓ diet   ✓ allergens',720,440);
-      c.beginPath(); c.moveTo(975,170); c.lineTo(975,260); c.lineTo(995,240); c.lineTo(1015,260); c.lineTo(1015,170); c.stroke();
-      c.font='italic 28px Georgia'; c.fillText('keep my place ↩',735,580);
-    } else {
-      box(650,155,440,115,'chat → recipe result');
-      c.beginPath(); c.moveTo(670,470); c.lineTo(670,315); c.moveTo(670,470); c.lineTo(1090,470); c.moveTo(690,420); c.lineTo(770,400); c.lineTo(840,440); c.lineTo(930,350); c.lineTo(1060,380); c.stroke();
-      c.font='22px monospace'; c.fillText('timing / illustrative',700,510);
-      box(680,590,145,80,'docs'); arrow(840,630,915,630); box(930,590,160,80,'synced');
-    }
-    c.restore();
-    c.fillStyle = '#405c58'; c.font = '22px Georgia';
-    let noteY = 465;
-    entry.notes.forEach(note => { noteY = wrap('• ' + note, 645, noteY, 495, 29) + 14; });
-    c.fillStyle='#bba981'; c.fillRect(592,0,16,840);
-    c.fillStyle='#756c59'; c.font='18px monospace'; c.fillText(String(page*2+1).padStart(2,'0'),45,800); c.fillText(String(page*2+2).padStart(2,'0'),1110,800);
-    c.font='20px Georgia'; if(page>0)c.fillText('←',90,800); if(page<NOTEBOOK_PAGES.length-1)c.fillText('→',1060,800);
+    drawNotebook(canvas, entry, page);
     const map = new CanvasTexture(canvas); map.colorSpace = SRGBColorSpace; map.anisotropy = 8;
     const left = map.clone(), right = map.clone();
     left.repeat.x = right.repeat.x = .5; right.offset.x = .5;
