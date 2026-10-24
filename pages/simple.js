@@ -132,7 +132,6 @@ export default function SimplePortfolio() {
     <div className={styles.readProgress} ref={progress} aria-hidden="true" />
     <div className={styles.page} ref={page}>
       <nav className={styles.themeNav} aria-label="Portfolio theme">
-        <Link href="/after-hours"><a className={styles.themeSwitch}>After Hours ↗</a></Link>
       </nav>
       <main id="main">
         <section id="home" className={styles.hero}>
