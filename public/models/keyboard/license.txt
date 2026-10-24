@@ -1,0 +1,11 @@
+Model Information:
+* title:	Keyboard
+* source:	https://sketchfab.com/3d-models/keyboard-cc7e7ed38d9a469ea499893295bc767a
+* author:	thethieme (https://sketchfab.com/thethieme)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Keyboard" (https://sketchfab.com/3d-models/keyboard-cc7e7ed38d9a469ea499893295bc767a) by thethieme (https://sketchfab.com/thethieme) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

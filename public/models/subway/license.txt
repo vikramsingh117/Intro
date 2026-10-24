@@ -1,0 +1,11 @@
+Model Information:
+* title:	Lowpoly Berlin U-bahn Station
+* source:	https://sketchfab.com/3d-models/lowpoly-berlin-u-bahn-station-2a02d3f2eccf4cd29bbaa1348787395e
+* author:	n-malmberg (https://sketchfab.com/n-malmberg)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Lowpoly Berlin U-bahn Station" (https://sketchfab.com/3d-models/lowpoly-berlin-u-bahn-station-2a02d3f2eccf4cd29bbaa1348787395e) by n-malmberg (https://sketchfab.com/n-malmberg) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
