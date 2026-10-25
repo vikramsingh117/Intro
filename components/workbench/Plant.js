@@ -4,7 +4,7 @@ import { Box3, Vector3 } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
 export default function Plant() {
-  const {scene}=useLoader(GLTFLoader,'/models/plant/scene.gltf');
+  const {scene}=useLoader(GLTFLoader,'/models/plant/optimized.gltf');
   const model=useMemo(()=>{
     const clone=scene.clone(true);
     const bounds=new Box3().setFromObject(clone);

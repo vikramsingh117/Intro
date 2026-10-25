@@ -8,7 +8,7 @@ const HANG_HEIGHT = 5.6;
 const CEILING_HEIGHT = 24;
 export default function CeilingLight({ onHover }) {
   const [on,setOn]=useState(true);
-  const {scene}=useLoader(GLTFLoader,'/models/ceiling-light/scene.gltf');
+  const {scene}=useLoader(GLTFLoader,'/models/ceiling-light/optimized.gltf');
   const {invalidate}=useThree();
   const {model,bulb,lightPosition,materials,bulbMaterials}=useMemo(()=>{
     const model=scene.clone(true),materials=[],bulbMaterials=[];

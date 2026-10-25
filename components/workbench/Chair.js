@@ -4,7 +4,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { Box3, Vector3 } from 'three';
 
 export default function Chair() {
-  const { scene } = useLoader(GLTFLoader, '/models/chair/runtime.gltf');
+  const { scene } = useLoader(GLTFLoader, '/models/chair/optimized.gltf');
   const model = useMemo(() => {
     const clone = scene.clone(true);
     clone.traverse(node => { if(node.isMesh) { node.castShadow=true; node.receiveShadow=true; } });

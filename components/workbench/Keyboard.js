@@ -5,7 +5,7 @@ import { Box3, Vector3 } from 'three';
 
 // Static prop: no pointer handlers or keyboard interaction.
 export default function Keyboard() {
-  const { scene } = useLoader(GLTFLoader, '/models/keyboard/scene.gltf');
+  const { scene } = useLoader(GLTFLoader, '/models/keyboard/optimized.gltf');
   const { model, scale, offset } = useMemo(() => {
     const model = scene.clone(true);
     model.traverse(object => { if (object.isMesh) { object.castShadow = true; object.receiveShadow = true; } });

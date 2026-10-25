@@ -70,3 +70,7 @@ Original files retained in `plane/`. Normalized to a 0.975-unit wingspan, positi
 - Author: Mark Peters (https://sketchfab.com/mark-peters)
 - License: CC BY 4.0; original license retained in ceiling-light/license.txt.
 - Scaled above the plant, with extended suspension, modified bulb emission/transmission and toggleable warm lighting.
+
+## Optimized room textures
+
+Plant, ceiling light, chair, radio, and keyboard load their own `optimized.gltf` manifests. Color textures use WebP quality 85 at up to 1024px, with full-quality alpha; data maps use lossless WebP at up to 512px. Normal vectors are renormalized after resizing. Geometry and material settings are unchanged, and original assets and licenses remain available. Run `scripts/optimize-room.cjs` with Sharp available to regenerate these textures. Both preloading and scene components use the optimized manifests.

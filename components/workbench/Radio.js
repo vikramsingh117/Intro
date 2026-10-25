@@ -46,7 +46,7 @@ export default function Radio({ onHover }) {
       onHover('Radio · unable to play, tap to retry');
     });
   };
-  const { scene } = useLoader(GLTFLoader, '/models/radio/scene.gltf');
+  const { scene } = useLoader(GLTFLoader, '/models/radio/optimized.gltf');
   const model = useMemo(() => {
     const clone = scene.clone(true);
     // The antenna shares the body mesh; its long wall shadow resembles a stray pole.
