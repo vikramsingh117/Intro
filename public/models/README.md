@@ -58,3 +58,15 @@ Source: https://sketchfab.com/3d-models/lowpoly-ac-130-63238efa8edd4c5ca518cf8fa
 Author: https://sketchfab.com/S1Priv
 License: https://creativecommons.org/licenses/by/4.0/
 Original files retained in `plane/`. Normalized to a 0.975-unit wingspan, positioned above the city, and animated on a custom flyby path at 0.18 scene units per second; faint emissive fill and navigation lights added. Bundled landing animation is not played. Motion pauses outside the city view, when hidden/offscreen, and for reduced motion.
+
+### Rhyzome Plant
+- Source: https://sketchfab.com/3d-models/rhyzome-plant-7191a1b935ac452987866573713e4da5
+- Author: Blizzy (https://sketchfab.com/jeffbas)
+- License: CC BY 4.0; original license retained in plant/license.txt.
+- Original geometry and textures; normalized and positioned on the floor to the right of the desk.
+
+### Bar Ceiling Light - 2048px²
+- Source: https://sketchfab.com/3d-models/bar-ceiling-light-2048px2-2ba27702aabe4d37822956a2b7bf43d8
+- Author: Mark Peters (https://sketchfab.com/mark-peters)
+- License: CC BY 4.0; original license retained in ceiling-light/license.txt.
+- Scaled above the plant, with extended suspension, modified bulb emission/transmission and toggleable warm lighting.

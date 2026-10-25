@@ -1,17 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
+import localPoint from './desktopPoint';
 import styles from '../../styles/Workbench.module.css';
 
 const LIMITS = { left: 10, top: 70, right: 1270, bottom: 718 };
 const FULL = { x: 10, y: 70, width: 1260, height: 648 };
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 // The desktop is perspective-projected onto the monitor, not a flat screen overlay.
-function localPoint(element, event) {
-  const parent = element.offsetParent;
-  const bounds = parent.getBoundingClientRect();
-  const matrix = new DOMMatrix(getComputedStyle(element).transform).inverse();
-  const point = matrix.transformPoint(new DOMPoint(event.clientX-bounds.left-parent.clientLeft, event.clientY-bounds.top-parent.clientTop, 0, 1));
-  return { x:point.x/point.w, y:point.y/point.w };
-}
+
 function moved(rect, dx, dy) {
   return {...rect, x:clamp(rect.x+dx,LIMITS.left,LIMITS.right-rect.width), y:clamp(rect.y+dy,LIMITS.top,LIMITS.bottom-rect.height)};
 }
@@ -52,7 +47,7 @@ export default function DesktopWindow({ title, desktopRef, active, minimized, zI
   return <section className={`${styles.desktopWindow} ${active?styles.activeWindow:''}`} aria-label={title} hidden={minimized}
     style={{left:bounds.x,top:bounds.y,width:bounds.width,height:bounds.height,zIndex}} onPointerDownCapture={onFocus} onFocusCapture={onFocus}>
     <header className={styles.windowTitlebar}>
-      <div className={styles.windowDrag} tabIndex={0} role="button" aria-label={`Move ${title}. Use arrow keys to move.`}
+      <div className={styles.windowDrag} data-native-cursor tabIndex={0} role="button" aria-label={`Move ${title}. Use arrow keys to move.`}
         onPointerDown={event=>begin(event,'move')} onPointerMove={move} onPointerUp={end} onPointerCancel={end} onLostPointerCapture={()=>{gesture.current=null;}}
         onKeyDown={event=>keyboard(event,false)} onDoubleClick={()=>setMaximized(value=>!value)}>{title==='Terminal'?'>_':'▰'} &nbsp; {title}</div>
       <div className={styles.windowActions}>
@@ -61,8 +56,8 @@ export default function DesktopWindow({ title, desktopRef, active, minimized, zI
         <button ref={close} onClick={onClose} aria-label={`Close ${title}`}>×</button>
       </div>
     </header>
-    <div className={`${styles.windowBody} ${title==='Terminal'?styles.terminalBody:styles.windowContent}`}>{children}</div>
-    {!maximized && ['n','e','s','w','ne','nw','se','sw'].map(edge=><div key={edge} className={styles.resizeHandle} data-edge={edge}
+    <div className={`${styles.windowBody} ${title==='AI Assistant'?styles.assistantBody:title==='Terminal'?styles.terminalBody:styles.windowContent}`}>{children}</div>
+    {!maximized && ['n','e','s','w','ne','nw','se','sw'].map(edge=><div key={edge} className={styles.resizeHandle} data-native-cursor data-edge={edge}
       role={edge==='se'?'button':undefined} tabIndex={edge==='se'?0:undefined} aria-label={edge==='se'?`Resize ${title}. Use arrow keys to resize.`:undefined}
       onKeyDown={event=>keyboard(event,true)} onPointerDown={event=>begin(event,edge)} onPointerMove={move} onPointerUp={end} onPointerCancel={end} onLostPointerCapture={()=>{gesture.current=null;}} />)}
   </section>;

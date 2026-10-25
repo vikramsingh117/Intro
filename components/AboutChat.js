@@ -4,7 +4,9 @@ import styles from "../styles/AboutChat.module.css";
 const suggestions = ["What are you building at Upliance?", "How is this website built?", "How does this assistant stream replies?"];
 const initialMessage = { role: "assistant", text: "Hi! Ask me about Vikram’s work or how this website and assistant are built.", mode: "intro" };
 
-export default function AboutChat({ theme }) {
+export default function AboutChat({ theme, embedded = false, active = true }) {
+  const activeRef = useRef(active);
+  activeRef.current = active;
   const [messages, setMessages] = useState([initialMessage]);
   const [prompt, setPrompt] = useState("");
   const [loading, setLoading] = useState(false);
@@ -82,11 +84,11 @@ export default function AboutChat({ theme }) {
       controller.abort();
       busy.current = false;
       setLoading(false);
-      input.current?.focus();
+      if (activeRef.current) input.current?.focus({ preventScroll: true });
     }
   }
 
-  return <div className={`${styles.chat} ${theme === "dark" ? styles.dark : ""}`}>
+  return <div className={`${styles.chat} ${theme === "dark" ? styles.dark : ""} ${embedded ? styles.embedded : ""}`}>
     <div className={styles.header}><div className={styles.avatar}>v<span>✳</span></div><div><strong>Ask Vikram’s assistant</strong><small>{mode === "resume" ? "Résumé mode · saved profile answers" : mode === "ai" ? "AI mode · grounded in the résumé" : "Experience, projects & everything between"}</small></div><button aria-label="Start a new conversation" title="New conversation" disabled={loading} onClick={() => { setMessages([initialMessage]); setPrompt(""); setError(""); setMode(""); input.current?.focus(); }}>↺</button></div>
     <div className={styles.feed} ref={feed} role="log" aria-label="Conversation" aria-live="polite" aria-relevant="additions text">
       {messages.map((message, index) => <div className={message.role === "user" ? styles.userMessage : styles.assistantMessage} key={index}><small>{message.role === "user" ? "YOU" : "VS / ASSISTANT"}{message.mode === "resume" ? " · RÉSUMÉ EXCERPT" : ""}</small><p>{message.text}</p></div>)}

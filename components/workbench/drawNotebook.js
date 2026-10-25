@@ -15,14 +15,6 @@ export function drawNotebook(canvas, entry, page) {
     for(const letter of text){c.save();c.translate(offset,(random()-.5)*1.5);c.rotate((random()-.5)*.025);c.fillText(letter,0,0);c.restore();offset+=c.measureText(letter).width;}
     c.restore();
   };
-  const wrap=(text,x,y,width,size=25,spacing=35,color=ink)=>{
-    c.font=`${size}px ${font}`;let row='';
-    for(const word of text.split(' ')){
-      if(c.measureText(row+word).width>width&&row){write(row.trim(),x,y,size,color,(random()-.5)*.012);y+=spacing;row='';}
-      row+=word+' ';
-    }
-    write(row.trim(),x,y,size,color);return y+spacing;
-  };
   const box=(x,y,w,h)=>{line([[x,y+3],[x+w-2,y],[x+w,y+h],[x+2,y+h-2],[x,y+3]]);};
   const ellipse=(x,y,rx,ry,color=ink)=>{
     const points=[];for(let i=0;i<=48;i++){const a=i/48*Math.PI*2;points.push([x+Math.cos(a)*rx,y+Math.sin(a)*ry]);}line(points,color,1.8);
@@ -37,47 +29,103 @@ export function drawNotebook(canvas, entry, page) {
   for(let i=0;i<6500;i++){c.fillStyle=`rgba(98,79,45,${random()*.055})`;c.fillRect(random()*1200,random()*840,random()*2+.3,.6);}
   for(let y=110;y<795;y+=36){line([[35,y],[565,y+1]],'#849caa25',.7);line([[630,y],[1165,y-1]],'#849caa25',.7);}
   line([[58,65],[61,785]],'#b46b5c38',1);line([[642,65],[645,785]],'#b46b5c38',1);
-  write('vikram / work in progress',76,55,19,pencil,-.025);
-  write(['figuring things out…','tiny details matter','notes from the engine room'][page],685,61,22,pencil,.018);
-  const titleEnd=wrap(entry.title,78,115,460,38,47);
-  line([[80,titleEnd-28],[270,titleEnd-25],[410,titleEnd-29]],'#b6754c66',6);
-  wrap(entry.text,78,titleEnd+23,455,24,34);
-  // A sticky question, attached with a small translucent strip of tape.
-  c.save();c.translate(80,502);c.rotate(-.025);c.fillStyle='#98866022';c.fillRect(5,5,450,115);c.fillStyle='#eadb9d';c.fillRect(0,0,450,115);c.fillStyle='#d5bc8766';c.fillRect(170,-10,95,22);wrap(entry.question,15,34,418,26,33,'#745337');c.restore();
-  if(entry.doodle==='loop'){
-    box(690,128,170,75);write('listen',731,174,28);
-    box(938,140,175,75);write('decide',969,183,28);
-    box(925,290,185,75);write('build',972,336,28);
-    box(680,285,180,75);write('observe',703,330,27);
-    arrow(866,164,926,174);arrow(1024,223,1020,277);arrow(917,331,872,327);arrow(756,277,759,213);
-    ellipse(890,251,29,27);ellipse(881,245,1,2);ellipse(900,245,1,2);line([[879,259],[889,264],[902,258]]);
-    write('keep people in the loop',712,421,24,rust,-.03);star(1128,393,10);
-    write('ship it?',99,695,30,pencil,-.04);line([[98,682],[210,686]],rust,2);write('make it useful first.',114,738,25,ink,.02);
-    arrow(406,689,487,651);write('why?',423,724,25,rust,-.13);
-  }else if(entry.doodle==='recipe'){
-    box(700,140,180,230);box(716,152,180,230);
-    write('recipe ideas',734,185,23);line([[738,208],[865,211]],pencil);line([[738,224],[842,225]],pencil);
-    ellipse(805,287,52,20);line([[754,287],[762,326],[844,326],[856,287]]);line([[780,259],[776,247],[784,236]],pencil);line([[809,258],[805,245],[813,234]],pencil);
-    write('diet',965,191,25);write('allergens',965,239,25);write('device',965,287,25);
-    [183,231,279].forEach(y=>{box(929,y-15,23,23);line([[933,y-2],[939,y+4],[951,y-11]],rust,2.5);});
-    arrow(934,330,867,353);write('remember my place!',721,429,24,rust,-.035);
-    line([[85,670],[172,671],[168,723],[91,724],[85,670]]);ellipse(182,693,16,17);line([[109,652],[105,639],[113,626]],pencil);line([[139,653],[134,638],[142,626]],pencil);
-    write('small fix,',225,681,27,ink,.025);write('less friction.',218,721,27,ink,-.015);star(464,690);
+  if(entry.doodle==='recursion'){
+    write('fib / rough',84,82,29,ink,-.035);
+    write('n = 4',104,142,25);write('3 ?',235,146,24,pencil,.06);
+    line([[234,137],[277,149]],rust,1.5);
+    write('f(n) = f(n-1) + f(n-2)',87,208,26,ink,.015);
+    write('f(0) = 0     f(1) = 1',103,252,24,pencil,-.015);
+    write('n     0  1  2  3  4  5  6  7',83,331,22);
+    line([[81,345],[492,349]],pencil,1);
+    write('      0  1  1  2  3  5  8 13',85,383,22,ink,.01);
+    write('f(4) = 2 + 1 = 3',104,448,27,ink,-.03);
+    write('O(n)',100,516,25,pencil);line([[96,505],[162,515]],rust,1.5);
+    write('O(2^n)  /  stack O(n)',190,517,24,ink,.018);
+    arrow(315,537,253,571);write('cache → O(n)',152,602,25,pencil,-.03);
+    write('lc ~600',83,721,23,pencil,-.1);
+    line([[80,733],[188,723]],pencil,1);
+    // A tiny cat in the margin, unrelated to the calculations.
+    line([[392,680],[391,638],[412,653],[439,651],[460,634],[461,681]],pencil,1.7);
+    ellipse(427,684,35,28,pencil);
+    ellipse(414,679,2,3);ellipse(441,679,2,3);
+    line([[424,689],[428,692],[432,688]],pencil,1.4);
+    line([[402,689],[377,684]],pencil,1);line([[402,697],[375,700]],pencil,1);
+    line([[450,688],[478,682]],pencil,1);line([[451,697],[479,701]],pencil,1);
+    line([[410,712],[401,754],[455,752],[446,712]],pencil,1.6);
+    line([[454,744],[483,734],[492,716],[482,708]],pencil,1.7);
+    write('?',482,650,22,pencil,.12);
+
+    const nodes=[[890,112,'f(4)'],[777,195,'f(3)'],[1040,207,'f(2)'],[721,281,'f(2)'],[872,287,'f(1)'],[991,294,'f(1)'],[1108,291,'f(0)'],[685,369,'f(1)'],[785,366,'f(0)']];
+    [[0,1],[0,2],[1,3],[1,4],[2,5],[2,6],[3,7],[3,8]].forEach(([from,to])=>{
+      const a=nodes[from],b=nodes[to];line([[a[0],a[1]+12],[(a[0]+b[0])/2+7,(a[1]+b[1])/2],[b[0],b[1]-22]],ink,1.6);
+    });
+    nodes.forEach(([x,y,label],i)=>write(label,x-24,y,24,i===6?pencil:ink,(i%3-1)*.035));
+    ellipse(721,274,37,25,pencil);ellipse(1040,200,38,26,pencil);
+    write('1',682,406,19,pencil);write('0',786,399,20,pencil);
+    write('memo = {}',675,472,24,pencil,-.025);
+    const code=[['fib(n):',680],['if n <= 1: return n',708],['if n in memo:',706],['return memo[n]',739],['memo[n] = fib(n-1)',708],['          + fib(n-2)',708],['return memo[n]',709]];
+    code.forEach(([text,x],i)=>write(text,x,520+i*35,23,ink,(i%2?1:-1)*.006));
+    line([[1097,661],[1124,670],[1118,703]],pencil,1.2);
+  }else if(entry.doodle==='loop'){
+    write('frodo / bits to check',83,84,28,ink,-.035);
+    write('diet changed',102,151,26);arrow(266,150,328,172);
+    write('allergens?',333,183,24,rust,.025);
+    write('keep everything',109,230,24,pencil,-.02);
+    line([[103,219],[306,230]],rust,1.5);
+    write('prune incompatible',132,277,25,ink,.012);
+    write('unset ≠ saved',94,345,28);ellipse(189,338,110,26,pencil);
+    write('back from recipe',102,425,25,ink,-.025);
+    arrow(280,441,295,474);write('same scroll offset',144,514,24);
+    write('render first!',324,554,22,rust,-.08);
+    line([[103,581],[487,584]],pencil,1);
+    write('device → filter My Creations',88,629,23,ink,.012);
+    write('air fryer / upliance',128,667,23,pencil,-.02);
+    write('loading…  then restore',103,746,22,pencil,.02);
+
+    box(716,103,328,230);write('chat',738,138,25);
+    line([[740,169],[948,171]],pencil,1.5);line([[740,191],[896,193]],pencil,1.5);
+    box(748,244,253,49);write('generate recipe',766,277,24);
+    arrow(1020,272,1100,222);write('backend',1015,188,20,rust,.03);
+    write('always?',724,379,25,pencil,-.03);line([[719,367],[822,383]],rust,1.5);
+    write('only when action exists',735,422,24,ink,.015);
+    write('archived → read only',690,492,26,ink,-.015);
+    const lines=[['if session.archived:',696],['hide input',731],['else:',696],['show allowed actions',731]];
+    lines.forEach(([text,x],i)=>write(text,x,552+i*36,23,ink,(i%2?1:-1)*.008));
+    write('test empty state',716,744,22,pencil,-.04);
+    // A crooked little paper plane in the margin.
+    line([[1001,700],[1112,666],[1064,745],[1048,712],[1001,700],[1067,701],[1112,666]],pencil,1.6);
+    line([[1048,712],[1067,701],[1064,745]],pencil,1.3);
   }else{
-    box(693,126,405,98);write('chat → recipe result',716,165,25);line([[755,224],[739,244],[787,225]]);
-    line([[700,280],[700,378],[1100,378]],pencil);line([[710,351],[758,337],[810,355],[861,304],[920,327],[970,299],[1030,312],[1090,286]],ink,2.5);
-    write('timing sketch (not data)',727,414,22,pencil,-.02);ellipse(866,307,28,27,rust);arrow(962,253,888,292);
-    write('what happened here?',99,678,28,ink,-.025);line([[102,690],[394,694]],rust,2);write('logs + context + patience',103,734,25,pencil,.015);
-    star(477,710);star(491,684,7);
+    write('harness? / reading notes',82,82,27,ink,-.025);
+    write('model + tools',100,151,28);write('= agent?',309,185,24,pencil,.03);
+    line([[310,174],[420,189]],rust,1.4);
+    write('loop / state / limits',111,237,26,ink,-.02);
+    write('context:',89,313,25);
+    write('instructions',128,356,25,ink,.015);
+    write('task + tool results',124,397,25,ink,-.01);
+    write('entire history',129,438,24,pencil);line([[126,427],[303,439]],rust,1.5);
+    write('what fits?',326,468,23,rust,-.07);
+    arrow(343,482,297,517);write('summarize? keep state?',106,555,24,pencil,.02);
+    write('tool failed → retry forever',86,633,23,pencil,-.015);line([[239,620],[470,635]],rust,1.5);
+    write('cap retries + record error',114,681,24,ink,.01);
+    write('todo: try a tiny eval',98,751,23,pencil,-.025);
+
+    write('task',692,121,25);arrow(751,117,812,133);
+    ellipse(881,141,64,32);write('model',841,151,26);
+    arrow(948,156,1040,205);write('tool',1030,245,25);
+    arrow(1062,259,1000,319);write('result',922,352,25);
+    line([[911,344],[797,328],[776,197]],pencil,1.6);arrow(776,197,824,166);
+    write('state',686,277,23,pencil,-.04);
+    write('stop?',1017,123,23,rust,.04);
+    arrow(945,125,1004,117);
+    const code=[['while budget_left:',681],['reply = model(context)',711],['if reply.done: break',712],['check_permission(reply.tool)',706],['result = run_tool(reply)',710],['context.append(result)',713],['save_trace()',711]];
+    code.forEach(([text,x],i)=>write(text,x,446+i*37,22,ink,(i%3-1)*.008));
+    write('timeout / bad args / denied',687,744,21,pencil,-.015);
+    // A tiny planet, drawn while thinking.
+    ellipse(1072,706,21,20,pencil);
+    c.save();c.translate(1072,706);c.rotate(-.35);ellipse(0,0,43,9,pencil);c.restore();
+    star(1136,676,6);star(1020,682,4);
   }
-  // Short handwritten reminders, instead of another formal paragraph block.
-  const notes=[
-    ['When does “generate” actually help?', 'UI ↔ backend: check the edge cases.', 'Archived chat = read-only.'],
-    ['New diet? Recheck saved allergens.', 'Unset ≠ saved. Keep that distinction.', 'Match recipes to the appliance.'],
-    ['Session + user context, together.', 'Messages don’t always look alike.', 'Sync state should agree everywhere.'],
-  ][page];
-  let y=505;notes.forEach((note,index)=>{line([[670,y-9],[675,y-2],[685,y-17]],ink,2);y=wrap(note,700,y,425,25,34)+22;if(index===1)line([[702,y-36],[860,y-33]],'#a35e4544',3);});
-  write(['less magic. more clarity.','don’t lose the user’s context','make the invisible visible'][page],690,744,22,rust,-.025);
   // Pencil hatching and a soft spine crease.
   for(let i=0;i<8;i++)line([[1110+i*5,713],[1126+i*5,698]],'#7b77664d',1);
   const crease=c.createLinearGradient(585,0,615,0);crease.addColorStop(0,'#66533800');crease.addColorStop(.5,'#66533840');crease.addColorStop(1,'#66533800');c.fillStyle=crease;c.fillRect(585,0,30,840);

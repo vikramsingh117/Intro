@@ -1,5 +1,8 @@
 import dynamic from 'next/dynamic';
 import { Component, useEffect, useRef, useState } from 'react';
+import useStickyNotes from './useStickyNotes';
+import StickyNotesUI from './StickyNotesUI';
+import GlassesOverlay from './GlassesOverlay';
 import DesktopWorkspace from './DesktopWorkspace';
 import { NOTEBOOK_PAGES } from './notebookPages';
 import { DEFAULT_CITY_SETTINGS } from './citySettings';
@@ -11,6 +14,8 @@ class Boundary extends Component {
   render() { return this.state.failed ? <div className={styles.fallback}>Your workspace is ready.<br /><button onClick={this.props.onEnter}>Open workspace</button></div> : this.props.children; }
 }
 export default function ProductWorkbench() {
+  const stickyNotes = useStickyNotes();
+  const noteEditorRef = useRef(null);
   const workbenchRef = useRef(null);
   useEffect(() => {
     const viewport = window.visualViewport;
@@ -23,6 +28,8 @@ export default function ProductWorkbench() {
     viewport.addEventListener('resize', resize);
     return () => viewport.removeEventListener('resize', resize);
   }, []);
+  const [wearingGlasses, setWearingGlasses] = useState(false);
+  const removeGlasses = () => { setWearingGlasses(false); requestAnimationFrame(() => enterButton.current?.focus({preventScroll:true})); };
   const citySettings = DEFAULT_CITY_SETTINGS;
   const [notebookOpen,setNotebookOpen] = useState(false);
   const [notebookLoaded,setNotebookLoaded] = useState(false);
@@ -66,10 +73,10 @@ export default function ProductWorkbench() {
   const leaveNotebook = () => { setNotebook(false); restoreFocus(); };
   useEffect(() => { if(notebook) notebookText.current?.focus(); }, [notebook]);
   const leave = () => { setDesktop(false); setEntered(false); restoreFocus(); };
-  return <div ref={workbenchRef} className={styles.workbench} onKeyDown={event=>{if(notebook && (event.key==='ArrowLeft'||event.key==='ArrowRight')){event.preventDefault();setNotebookPage(value=>Math.max(0,Math.min(NOTEBOOK_PAGES.length-1,value+(event.key==='ArrowRight'?1:-1))));} else if(event.key==='Escape'&&notebook){event.preventDefault();leaveNotebook();} else if(event.key==='Escape'&&outside){event.preventDefault();setOutside(false);restoreFocus();} else if(event.key==='Escape'&&entered){event.preventDefault(); leave();}}}>
+  return <div ref={workbenchRef} className={styles.workbench} onKeyDown={event=>{if(stickyNotes.editor || stickyNotes.placing){if(event.key==='Escape'){event.preventDefault();stickyNotes.cancel();}return;}if(notebook && (event.key==='ArrowLeft'||event.key==='ArrowRight')){event.preventDefault();setNotebookPage(value=>Math.max(0,Math.min(NOTEBOOK_PAGES.length-1,value+(event.key==='ArrowRight'?1:-1))));} else if(event.key==='Escape'&&notebook){event.preventDefault();leaveNotebook();} else if(event.key==='Escape'&&outside){event.preventDefault();setOutside(false);restoreFocus();} else if(event.key==='Escape'&&entered){event.preventDefault(); leave();}}}>
     <div className={styles.scene} style={{pointerEvents:entered ? 'none' : undefined}} aria-hidden={desktop} ref={enterButton} role="button" aria-label="Enter workspace by clicking the monitor" tabIndex={desktop || outside || notebook ? -1 : 0} onKeyDown={event=>{if(!outside && !notebook && (event.key==='Enter'||event.key===' ')){event.preventDefault();openMonitor();}}}>
       <div hidden={desktop || outside || notebook} className={styles.sceneLabel}>VIKRAM’S WORKSPACE <span>01 / ENTER TO EXPLORE</span></div>
-      <Boundary onEnter={()=>{setEntered(true);setDesktop(true);}}><Scene citySettings={citySettings} notebookOpen={notebookOpen} onNotebookPageChange={setNotebookPage} onNotebookExit={leaveNotebook} notebook={notebook} notebookPage={notebookPage} onNotebookOpen={openNotebook} onHover={setHoverLabel} desktopRef={desktopRef} desktop={desktop} outside={outside} onCityReady={setCityReady} onWindowSelect={openWindow} lampOn={lampOn} onLampToggle={()=>setLampOn(value=>!value)} entered={entered} reduced={reduced} onEnter={openMonitor} onArrive={()=>setDesktop(true)} /></Boundary>
+      <Boundary onEnter={()=>{setEntered(true);setDesktop(true);}}><Scene noteEditorRef={noteEditorRef} stickyNotes={stickyNotes} wearingGlasses={wearingGlasses} onWearGlasses={()=>setWearingGlasses(true)} citySettings={citySettings} notebookOpen={notebookOpen} onNotebookPageChange={setNotebookPage} onNotebookExit={leaveNotebook} notebook={notebook} notebookPage={notebookPage} onNotebookOpen={openNotebook} onHover={setHoverLabel} desktopRef={desktopRef} desktop={desktop} outside={outside} onCityReady={setCityReady} onWindowSelect={openWindow} lampOn={lampOn} onLampToggle={()=>setLampOn(value=>!value)} entered={entered} reduced={reduced} onEnter={openMonitor} onArrive={()=>setDesktop(true)} /></Boundary>
       <div hidden={desktop || notebook} className={styles.enterRow}><span>{outside ? (cityReady ? "CITY AFTER DARK · Drag to look around" : "Loading the city…") : entered ? "Entering workspace…" : hoverLabel || "Drag to look around · Pinch to zoom · Tap to explore"}</span></div>
     </div>
     {outside && <div className={styles.subwayToolbar}><span>OUTSIDE / NIGHT CITY</span><button ref={windowBack} onClick={()=>{setOutside(false);restoreFocus();}}>← Back to desk</button></div>}
@@ -83,6 +90,8 @@ export default function ProductWorkbench() {
         <p>{NOTEBOOK_PAGES[notebookPage].caption}</p>
       </article>
     </>}
+    <StickyNotesUI api={stickyNotes} elementRef={noteEditorRef}/>
+    {wearingGlasses && <GlassesOverlay reduced={reduced} onRemove={removeGlasses}/>}
     <section ref={desktopRef} className={`${styles.desktop} ${styles.monitorDesktop}`}
       style={{pointerEvents:desktop ? 'auto' : 'none', opacity:outside || notebook ? 0 : 1}}
       inert={desktop ? undefined : ''} aria-hidden={!desktop} aria-label="Vikram’s monitor desktop">

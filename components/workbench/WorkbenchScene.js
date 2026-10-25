@@ -5,10 +5,14 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import CityExterior, { NightEffects } from './CityExterior';
 import Notebook, { NOTEBOOK_TARGET } from './Notebook';
 import InteractiveObject from './InteractiveObject';
+import NoteProjection from './NoteProjection';
+import StickyNotes from './StickyNotes';
 import CozyRoom from './CozyRoom';
 import DeskLamp from './DeskLamp';
 import FlyingPlane from './FlyingPlane';
 import Radio from './Radio';
+import CeilingLight from './CeilingLight';
+import Plant from './Plant';
 import Chair from './Chair';
 import Keyboard from './Keyboard';
 import { ACESFilmicToneMapping, Euler, Quaternion, Matrix4, SRGBColorSpace, TextureLoader, TOUCH, Vector3 } from 'three';
@@ -60,7 +64,7 @@ function Monitor({ onEnter, desktopRef, desktop }) {
     </group>
   </group>;
 }
-function Camera({ entered, outside, notebook, citySettings, reduced, onArrive }) {
+function Camera({ entered, outside, notebook, citySettings, reduced, onArrive, interactionBlocked, noteMode, noteX, noteY }) {
   const { camera, gl, size, invalidate } = useThree();
   const { cameraX, cameraY, cameraZ, targetX, targetY, targetZ, fov } = citySettings;
   const transition = useRef(null);
@@ -88,6 +92,9 @@ function Camera({ entered, outside, notebook, citySettings, reduced, onArrive })
     orbit.current = controls;
     return () => { controls.removeEventListener('change', invalidate); controls.dispose(); orbit.current = null; };
   }, [camera, gl, invalidate]);
+  useEffect(() => {
+    if(orbit.current) orbit.current.enabled = !interactionBlocked && !entered && !outside && !notebook && !!transition.current?.done;
+  }, [interactionBlocked, entered, outside, notebook]);
   const lookTarget = useRef(new Vector3(0, .2128, -.51));
   useEffect(() => {
     const element=gl.domElement, look=windowLook.current;
@@ -125,7 +132,7 @@ function Camera({ entered, outside, notebook, citySettings, reduced, onArrive })
   const callback = useRef(onArrive);
   callback.current = onArrive;
   useEffect(() => {
-    const focused = entered || outside || notebook;
+    const focused = entered || outside || notebook || !!noteMode;
     if (focused && !wasFocused.current) roomPosition.current = camera.position.clone();
     wasFocused.current = focused;
     if (orbit.current) {
@@ -137,14 +144,19 @@ function Camera({ entered, outside, notebook, citySettings, reduced, onArrive })
     // Fill the viewport with the open spread, seen almost straight down.
     const notebookDistance = Math.max(.82, 1.15 / (size.width / size.height)) / Math.tan(21 * Math.PI / 180) * 1.2;
     const notebookCamera = new Vector3(...NOTEBOOK_TARGET).add(new Vector3(0, .96, .28).multiplyScalar(notebookDistance));
-    transition.current = { from:camera.position.clone(), fovFrom:camera.fov, fovTo:outside ? fov : 42, lookFrom:lookTarget.current.clone(), lookTo:notebook ? new Vector3(...NOTEBOOK_TARGET) : outside ? new Vector3(targetX,targetY,targetZ) : new Vector3(entered ? 1.5 : 0, .2128, -.51), to:notebook ? notebookCamera : outside ? new Vector3(cameraX,cameraY,cameraZ) : entered ? new Vector3(1.5, .2128 + .139173 * distance, -.51 + .990268 * distance)  : (roomPosition.current?.clone() || new Vector3(6, 3.5, Math.max(14.8, 10 / (size.width / size.height)))), elapsed:0, done:false };
+    const noteDistance = Math.max(.43, .43/(size.width/size.height))/Math.tan(21*Math.PI/180)*1.2;
+    const noteTarget = noteMode==='wall' ? new Vector3(1.875,2.8,-3.075) : noteMode==='read' ? new Vector3(noteX,noteY,-3.075) : new Vector3(3.7,-1.397,.8);
+    const noteCamera = noteMode==='wall'
+      ? noteTarget.clone().add(new Vector3(0,0,Math.max(2.5,4.9/(size.width/size.height))/Math.tan(21*Math.PI/180)))
+      : noteTarget.clone().add(noteMode==='read'?new Vector3(0,0,noteDistance):new Vector3(0,.995,.1).multiplyScalar(noteDistance));
+    transition.current = { from:camera.position.clone(), fovFrom:camera.fov, fovTo:outside ? fov : 42, lookFrom:lookTarget.current.clone(), lookTo:noteMode ? noteTarget : notebook ? new Vector3(...NOTEBOOK_TARGET) : outside ? new Vector3(targetX,targetY,targetZ) : new Vector3(entered ? 1.5 : 0, .2128, -.51), to:noteMode ? noteCamera : notebook ? notebookCamera : outside ? new Vector3(cameraX,cameraY,cameraZ) : entered ? new Vector3(1.5, .2128 + .139173 * distance, -.51 + .990268 * distance)  : (roomPosition.current?.clone() || new Vector3(6, 3.5, Math.max(14.8, 10 / (size.width / size.height)))), elapsed:noteMode==='wall' && !reduced ? -.65 : 0, done:false };
     invalidate();
-  }, [entered, outside, notebook, cameraX, cameraY, cameraZ, targetX, targetY, targetZ, fov, reduced, camera, size.width, size.height, invalidate]);
+  }, [noteMode, noteX, noteY, entered, outside, notebook, cameraX, cameraY, cameraZ, targetX, targetY, targetZ, fov, reduced, camera, size.width, size.height, invalidate]);
   useFrame((state, dt) => {
     const t = transition.current;
     if (!t || t.done) return;
     t.elapsed += Math.min(dt, .05);
-    const progress = reduced ? 1 : Math.min(1, t.elapsed / 1.45);
+    const progress = reduced ? 1 : Math.max(0, Math.min(1, t.elapsed / 1.45));
     const ease = progress < .5 ? 4 * progress ** 3 : 1 - (-2 * progress + 2) ** 3 / 2;
     camera.position.lerpVectors(t.from, t.to, ease);
     lookTarget.current.lerpVectors(t.lookFrom, t.lookTo, ease);
@@ -158,9 +170,9 @@ function Camera({ entered, outside, notebook, citySettings, reduced, onArrive })
         windowLook.current.center=camera.quaternion.clone();
         windowLook.current.yaw=0;windowLook.current.pitch=0;
       }
-      if (!entered && !outside && !notebook && orbit.current) {
+      if (!entered && !outside && !notebook && !noteMode && orbit.current) {
         orbit.current.target.copy(lookTarget.current);
-        orbit.current.enabled = true;
+        orbit.current.enabled = !interactionBlocked;
         orbit.current.update();
       }
       if (entered && !outside) callback.current();
@@ -168,7 +180,7 @@ function Camera({ entered, outside, notebook, citySettings, reduced, onArrive })
   }, -1);
   return null;
 }
-export default function MonitorScene({ entered, reduced, onEnter, onArrive, lampOn, onLampToggle, onWindowSelect, outside, onCityReady, desktopRef, desktop, notebook, notebookPage, onNotebookOpen, onHover, notebookOpen, onNotebookPageChange, onNotebookExit, citySettings }) {
+export default function MonitorScene({ entered, reduced, onEnter, onArrive, lampOn, onLampToggle, onWindowSelect, outside, onCityReady, desktopRef, desktop, notebook, notebookPage, onNotebookOpen, onHover, notebookOpen, onNotebookPageChange, onNotebookExit, citySettings, wearingGlasses, onWearGlasses, stickyNotes, noteEditorRef }) {
   return <Canvas onPointerMissed={()=>{if(notebook)onNotebookExit();}} shadows camera={{ position:[6, 3.5, 14.8], fov:42 }} dpr={[1, 1.5]} frameloop="demand" gl={{alpha:true, antialias:true, toneMapping:ACESFilmicToneMapping, toneMappingExposure:.85}}>
     <color attach="background" args={['#091321']} />
     <group onClick={event=>{if(notebook && event.delta<=5){event.stopPropagation();onNotebookExit();}}}>
@@ -179,12 +191,16 @@ export default function MonitorScene({ entered, reduced, onEnter, onArrive, lamp
     <directionalLight position={[3, 5, 4]} intensity={.8} color="#c7d5df" castShadow shadow-mapSize={[1024, 1024]} shadow-camera-left={-9} shadow-camera-right={9} shadow-camera-top={8} shadow-camera-bottom={-8} shadow-normalBias={.04} />
     <pointLight position={[-4.6, 2, -2.5]} intensity={18} distance={12} decay={2} color="#8abbd9" />
     <Suspense fallback={null}><InteractiveObject label="Monitor · explore my work" onHover={onHover}><Monitor onEnter={notebook ? onNotebookExit : onEnter} desktopRef={desktopRef} desktop={desktop} /></InteractiveObject></Suspense>
-    <Camera {...{entered,outside,notebook,citySettings,reduced,onArrive}} />
+    <Camera {...{entered,outside,notebook,citySettings,reduced,onArrive}} noteMode={stickyNotes.editor ? (stickyNotes.editor.id?'read':'write') : stickyNotes.placing?'wall':null} noteX={stickyNotes.editor?.x} noteY={stickyNotes.editor?.y} interactionBlocked={stickyNotes.dragging || !!stickyNotes.editor || !!stickyNotes.placing}/>
+    <StickyNotes api={stickyNotes} onHover={onHover} reduced={reduced}/>
+    {stickyNotes.editor && <NoteProjection editor={stickyNotes.editor} elementRef={noteEditorRef}/>}
     <Suspense fallback={null}><Chair/></Suspense>
-    <CozyRoom onWindowSelect={notebook ? onNotebookExit : onWindowSelect} onHover={onHover} />
+    <Suspense fallback={null}><Plant/></Suspense>
+    <Suspense fallback={null}><CeilingLight onHover={onHover}/></Suspense>
+    <CozyRoom reduced={reduced} wearingGlasses={wearingGlasses} onWearGlasses={onWearGlasses} onWindowSelect={notebook ? onNotebookExit : onWindowSelect} onHover={onHover} />
     <InteractiveObject label="Notebook · ideas & sketches" onHover={onHover}><Notebook focused={notebook} open={notebookOpen} onPageChange={onNotebookPageChange} page={notebookPage} reduced={reduced} onOpen={onNotebookOpen} /></InteractiveObject>
     <Suspense fallback={null}><Keyboard /></Suspense>
-    <Suspense fallback={null}><Radio /></Suspense>
+    <Suspense fallback={null}><Radio onHover={onHover}/></Suspense>
     <Suspense fallback={null}><InteractiveObject label={lampOn ? "Lamp · turn off" : "Lamp · turn on"} onHover={onHover}><DeskLamp on={lampOn} onToggle={notebook ? onNotebookExit : onLampToggle} /></InteractiveObject></Suspense>
     <pointLight position={[1.5,.15,.1]} color="#9cc8df" intensity={3} distance={5} />
     </group>

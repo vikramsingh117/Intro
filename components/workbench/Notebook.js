@@ -7,6 +7,7 @@ import { NOTEBOOK_PAGES } from './notebookPages';
 export const NOTEBOOK_TARGET = [-1.7, -1.4, .65];
 export default function Notebook({ open, focused, page, reduced, onOpen, onPageChange }) {
   const cover = useRef(null), sheet = useRef(null), turn = useRef(null);
+  const coverMotion = useRef(null), wasFocused = useRef(false);
   const [shownPage, setShownPage] = useState(page);
   const [flip, setFlip] = useState(null);
   const { invalidate } = useThree();
@@ -26,6 +27,17 @@ export default function Notebook({ open, focused, page, reduced, onOpen, onPageC
     turn.current=next; setFlip(next); invalidate();
   }, [page, shownPage, reduced, open, invalidate]);
   useEffect(() => { invalidate(); }, [open, reduced, flip, invalidate]);
+  useEffect(() => {
+    const from = cover.current?.rotation.z || 0;
+    const revisiting = open && focused && !wasFocused.current && from > Math.PI - .05;
+    wasFocused.current = focused;
+    coverMotion.current = {
+      from, to: open ? Math.PI : 0, elapsed: 0,
+      // An already-open notebook lifts slightly and settles when approached again.
+      lift: revisiting, duration: revisiting ? 1.1 : 1.45,
+    };
+    invalidate();
+  }, [open, focused, reduced, invalidate]);
   useFrame((state, dt) => {
     if (turn.current && sheet.current) {
       const t = turn.current; t.elapsed += Math.min(dt,.05);
@@ -36,10 +48,16 @@ export default function Notebook({ open, focused, page, reduced, onOpen, onPageC
       else state.invalidate();
     }
     if (!cover.current) return;
-    const goal = open ? Math.PI : 0;
-    cover.current.rotation.z = reduced ? goal : cover.current.rotation.z + (goal-cover.current.rotation.z)*Math.min(1,dt*7);
-    if (Math.abs(goal-cover.current.rotation.z) > .001) state.invalidate();
-    else cover.current.rotation.z = goal;
+    const motion = coverMotion.current;
+    if (!motion) return;
+    motion.elapsed += Math.min(dt, .05);
+    const progress = reduced ? 1 : Math.max(0, Math.min(1, (motion.elapsed - .15) / motion.duration));
+    const ease = progress * progress * progress * (progress * (progress * 6 - 15) + 10);
+    cover.current.rotation.z = motion.lift
+      ? Math.PI - Math.sin(ease * Math.PI) * .5
+      : motion.from + (motion.to - motion.from) * ease;
+    if (progress < 1) state.invalidate();
+    else { cover.current.rotation.z = motion.to; coverMotion.current = null; }
   });
   const leftIndex = flip && !flip.forward ? flip.to : shownPage;
   const rightIndex = flip && flip.forward ? flip.to : shownPage;
@@ -47,13 +65,12 @@ export default function Notebook({ open, focused, page, reduced, onOpen, onPageC
     event.stopPropagation();
     if(event.delta>5) return;
     if(!focused) { onOpen(); return; }
-    if(!turn.current) onPageChange(Math.max(0, Math.min(NOTEBOOK_PAGES.length-1, shownPage+direction)));
+    if(!turn.current && !coverMotion.current) onPageChange(Math.max(0, Math.min(NOTEBOOK_PAGES.length-1, shownPage+direction)));
   };
   return <group position={NOTEBOOK_TARGET} onClick={event=>{event.stopPropagation();if(event.delta<=5)onOpen();}}>
     <mesh position={[.55,-.055,0]} castShadow receiveShadow><boxGeometry args={[1.16,.08,1.65]}/><meshStandardMaterial color="#354d43" roughness={.9}/></mesh>
     <mesh position={[.55,0,0]} receiveShadow><boxGeometry args={[1.08,.07,1.55]}/><meshStandardMaterial color="#ded1ae"/></mesh>
     {open && <>
-      <mesh rotation={[-Math.PI/2,0,0]} position={[-.55,.045,0]} receiveShadow onClick={event=>selectPage(event,-1)}><planeGeometry args={[1.1,1.55]}/><meshStandardMaterial map={textures[leftIndex].left} roughness={.95}/></mesh>
       <mesh rotation={[-Math.PI/2,0,0]} position={[.55,.045,0]} receiveShadow onClick={event=>selectPage(event,1)}><planeGeometry args={[1.1,1.55]}/><meshStandardMaterial map={textures[rightIndex].right} roughness={.95}/></mesh>
       {flip && <group ref={sheet} position={[0,.055,0]} rotation={[0,0,flip.forward ? 0 : Math.PI]}>
         <mesh position={[.55,.002,0]} rotation={[-Math.PI/2,0,0]} castShadow receiveShadow><planeGeometry args={[1.1,1.55]}/><meshStandardMaterial map={textures[flip.forward ? flip.from : flip.to].right} roughness={.95}/></mesh>
@@ -62,6 +79,8 @@ export default function Notebook({ open, focused, page, reduced, onOpen, onPageC
     </>}
     <group ref={cover}>
       <mesh position={[.55,.055,0]} castShadow receiveShadow><boxGeometry args={[1.16,.035,1.65]}/><meshStandardMaterial color="#405c4c" roughness={.85}/></mesh>
+      {/* The inside page travels with the cover and is concealed while closed. */}
+      <mesh position={[.55,.036,0]} rotation={[Math.PI/2,0,Math.PI]} receiveShadow onClick={event=>selectPage(event,-1)}><planeGeometry args={[1.1,1.55]}/><meshStandardMaterial map={textures[leftIndex].left} roughness={.95}/></mesh>
       <mesh position={[.55,.076,-.12]} rotation={[-Math.PI/2,0,0]}><planeGeometry args={[.65,.36]}/><meshStandardMaterial color="#c7b58a" roughness={.9}/></mesh>
     </group>
     <mesh position={[1.4,-.035,.08]} rotation={[Math.PI/2,0,-.12]} castShadow><cylinderGeometry args={[.025,.025,1.35,8]}/><meshStandardMaterial color="#263e3e" metalness={.3} roughness={.5}/></mesh>

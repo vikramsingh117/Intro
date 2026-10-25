@@ -51,7 +51,7 @@ export default function ThemeCursor() {
     const move = event => {
       const target = event.target instanceof Element ? event.target : null;
       if (!media.matches || event.pointerType !== "mouse" || target?.closest('[data-calm="true"]') ||
-          target?.closest("input, textarea, select, [contenteditable]:not([contenteditable='false']), iframe, :disabled")) {
+          target?.closest("input, textarea, select, [data-native-cursor], [contenteditable]:not([contenteditable='false']), iframe, :disabled")) {
         hide();
         return;
       }

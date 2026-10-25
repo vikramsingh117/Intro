@@ -1,3 +1,4 @@
+import GlassesDrawer from './GlassesDrawer';
 import InteractiveObject from './InteractiveObject';
 import { useEffect, useMemo } from 'react';
 import { CanvasTexture, SRGBColorSpace } from 'three';
@@ -9,7 +10,7 @@ function Block({ position, size, color, map, roughness = .85 }) {
   </mesh>;
 }
 
-export default function CozyRoom({ onWindowSelect, onHover }) {
+export default function CozyRoom({ onWindowSelect, onHover, reduced, wearingGlasses, onWearGlasses }) {
   const wood = useMemo(() => {
     const canvas = document.createElement('canvas');
     canvas.width = 1024; canvas.height = 256;
@@ -67,8 +68,12 @@ export default function CozyRoom({ onWindowSelect, onHover }) {
       <Block position={[x, -4.8, -.05]} size={[.5, .08, 3.8]} color="#252d29" />
     </group>)}
     {/* Three inset drawers; leave the center clear for a chair. */}
-    <Block position={[-3.15,-3.12,-.12]} size={[2.05,2.6,3.45]} color="#6e5039" map={wood} />
-    {[-2.27,-3.08,-3.89].map(y => <group key={y}>
+    {/* Cabinet shell leaves the top drawer cavity open. */}
+    {[-4.12,-2.18].map(x => <Block key={x} position={[x,-3.12,-.12]} size={[.11,2.6,3.45]} color="#6e5039" map={wood}/>)}
+    <Block position={[-3.15,-3.52,-.12]} size={[1.85,1.8,3.45]} color="#6e5039" map={wood}/>
+    <Block position={[-3.15,-2.22,-1.8]} size={[1.85,.8,.1]} color="#6e5039" map={wood}/>
+    <GlassesDrawer wood={wood} reduced={reduced} onHover={onHover} wearing={wearingGlasses} onWear={onWearGlasses}/>
+    {[-3.08,-3.89].map(y => <group key={y}>
       <Block position={[-3.15,y,1.66]} size={[1.9,.73,.12]} color="#ba9168" map={wood} roughness={.65}/>
       <Block position={[-3.15,y+.05,1.78]} size={[.65,.065,.09]} color="#33413a" roughness={.4}/>
     </group>)}
