@@ -1,7 +1,9 @@
+import notePaper from './notePaper';
 import noteDate from './noteDate';
 import styles from '../../styles/Workbench.module.css';
 export default function StickyNotesUI({ api, elementRef }) {
-  if(api.editor)return <div ref={elementRef} className={styles.noteSheet} onKeyDown={event=>{event.stopPropagation();if(event.key==='Escape')api.cancel();}}>
+  const paper=notePaper(api.editor?.id||'');
+  if(api.editor)return <div ref={elementRef} className={styles.noteSheet} style={{"--note-light":paper.light,"--note-base":paper.base,"--note-shade":paper.shade,"--note-band":paper.band}} onKeyDown={event=>{event.stopPropagation();if(event.key==='Escape')api.cancel();}}>
     <form className={styles.noteEditor} onSubmit={api.save} aria-label="Wall note">
       <header><strong>{api.editor.id?'':'Leave a little note'}</strong><button disabled={api.busy} type="button" onClick={api.cancel} aria-label="Close note">×</button></header>
       <label htmlFor="wall-note-text">Message</label>

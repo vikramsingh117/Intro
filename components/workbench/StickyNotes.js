@@ -1,23 +1,27 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { CanvasTexture, DoubleSide, Plane, SRGBColorSpace, Vector3 } from 'three';
+import notePaper from './notePaper';
 import noteDate from './noteDate';
 import InteractiveObject from './InteractiveObject';
 
 const clamp = (value,min,max) => Math.max(min,Math.min(max,value));
-function useNoteTexture(text,createdAt) {
+function useNoteTexture(text,createdAt,id) {
   const texture = useMemo(() => {
     const canvas=document.createElement('canvas');canvas.width=512;canvas.height=512;
     const c=canvas.getContext('2d');
+    const colors=notePaper(id);
     const paper=c.createLinearGradient(0,0,430,512);
-    paper.addColorStop(0,'#fff0ac');paper.addColorStop(.65,'#efd583');paper.addColorStop(1,'#dfbc65');
+    paper.addColorStop(0,colors.light);paper.addColorStop(.65,colors.base);paper.addColorStop(1,colors.shade);
     c.fillStyle=paper;c.fillRect(0,0,512,512);
     // Deterministic paper grain keeps redraws stable.
     for(let i=0;i<1700;i++){c.fillStyle=i%2?'#704a1410':'#ffffff28';c.fillRect((i*137)%512,(i*227)%512,1,2);}
-    c.fillStyle='#c7a14b28';c.fillRect(0,0,512,46);
+    c.fillStyle=colors.band;c.fillRect(0,0,512,46);
     c.fillStyle='#fff6ca55';c.fillRect(0,46,512,2);
     c.fillStyle='#b28c4438';c.beginPath();c.moveTo(469,512);c.lineTo(512,467);c.lineTo(512,512);c.fill();
-    c.fillStyle='#fff2b8';c.beginPath();c.moveTo(475,512);c.lineTo(475,475);c.lineTo(512,475);c.closePath();c.fill();
+    c.fillStyle=colors.light;c.beginPath();c.moveTo(475,512);c.lineTo(475,475);c.lineTo(512,475);c.closePath();c.fill();
+    c.strokeStyle='#52605b26';c.lineWidth=1;
+    for(let y=103;y<450;y+=36){c.beginPath();c.moveTo(32,y);c.lineTo(476,y);c.stroke();}
     c.fillStyle='#403c31';c.font='28px "Chalkboard SE", "Comic Sans MS", sans-serif';
     let row='',y=95;
     for(const character of text){
@@ -28,7 +32,7 @@ function useNoteTexture(text,createdAt) {
     c.fillText(row,38,y);
     c.fillStyle='#786842';c.font='18px sans-serif';c.fillText(noteDate(createdAt),38,486);
     const map=new CanvasTexture(canvas);map.colorSpace=SRGBColorSpace;return map;
-  },[text,createdAt]);
+  },[text,createdAt,id]);
   useEffect(()=>()=>texture.dispose(),[texture]);
   return texture;
 }
@@ -36,7 +40,7 @@ function WallNote({ note, api, onHover }) {
   const { invalidate } = useThree();
   const drag = useRef(null);
   const mesh = useRef(null);
-  const texture = useNoteTexture(note.text,note.createdAt);
+  const texture = useNoteTexture(note.text,note.createdAt,note.id);
   const wall = useMemo(()=>new Plane(new Vector3(0,0,1),3.075),[]);
   const point = useMemo(()=>new Vector3(),[]);
   return <InteractiveObject label={note.canEdit ? "Your note · drag to move, tap to edit" : "Visitor note · tap to read"} onHover={onHover}>
@@ -75,7 +79,7 @@ function WallNote({ note, api, onHover }) {
 function FlyingNote({ api, reduced }) {
   const mesh=useRef(null), motion=useRef({elapsed:0,target:new Vector3(1.8,2.8,-2.6),paste:null});
   const {invalidate}=useThree();
-  const texture=useNoteTexture(api.placing.text);
+  const texture=useNoteTexture(api.placing.text,undefined,api.placing.id);
   const placeRef=useRef(api.place);placeRef.current=api.place;
   useEffect(()=>{invalidate();},[invalidate]);
   useEffect(()=>{if(api.error){motion.current.paste=null;motion.current.target.z=-2.6;invalidate();}},[api.error,invalidate]);
