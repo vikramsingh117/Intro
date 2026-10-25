@@ -3,13 +3,14 @@ import DesktopContextMenu from './DesktopContextMenu';
 import localPoint from './desktopPoint';
 import PortfolioApps, { PROFILE_LINKS } from './PortfolioApps';
 import Terminal from './Terminal';
+import TaskManager from './TaskManager';
 import AssetCredits from './AssetCredits';
 import AboutChat from '../AboutChat';
 import DesktopWindow from './DesktopWindow';
 import styles from '../../styles/Workbench.module.css';
 
-const apps=[['My Work','▰'],['About Me','◉'],['Projects','⌘'],['AI Assistant','✳'],['Terminal','>_'],['Credits','ⓘ']];
-export default function DesktopWorkspace({ desktopRef, interactive, exitRef, onLeave }) {
+const apps=[['My Work','▰'],['About Me','◉'],['Projects','⌘'],['AI Assistant','✳'],['Terminal','>_'],['Credits','ⓘ'],['Task Manager','▥']];
+export default function DesktopWorkspace({ desktopRef, interactive, exitRef, onLeave, room }) {
   const [windows,setWindows]=useState([]);
   const [menu,setMenu]=useState(null);
   const [iconsVisible,setIconsVisible]=useState(true);
@@ -42,7 +43,7 @@ export default function DesktopWorkspace({ desktopRef, interactive, exitRef, onL
     </div>
     {windows.map((window,index)=><DesktopWindow key={window.title} title={window.title} desktopRef={desktopRef} active={interactive && top===window.title} minimized={window.minimized} zIndex={index+2}
       onFocus={()=>focus(window.title)} onClose={()=>close(window.title)} onMinimize={()=>minimize(window.title)}>
-      {window.title==='AI Assistant'?<AboutChat theme="dark" embedded active={interactive && !window.minimized && top===window.title}/>:window.title==='Terminal'?<Terminal onExit={()=>close('Terminal')}/>:window.title==='Credits'?<AssetCredits/>:<PortfolioApps title={window.title}/>}
+      {window.title==='AI Assistant'?<AboutChat theme="dark" embedded active={interactive && !window.minimized && top===window.title}/>:window.title==='Task Manager'?<TaskManager windows={windows} activeTitle={top} onFocus={focus} onClose={close} room={room}/>:window.title==='Terminal'?<Terminal windows={windows} onExit={()=>close('Terminal')}/>:window.title==='Credits'?<AssetCredits/>:<PortfolioApps title={window.title}/>}
     </DesktopWindow>)}
     {menu && interactive && <DesktopContextMenu point={menu} width={menu.width} iconsVisible={iconsVisible} onClose={closeMenu}
       onToggleIcons={()=>setIconsVisible(value=>!value)} onRefresh={()=>setRefreshTick(value=>value+1)} onOpen={open}

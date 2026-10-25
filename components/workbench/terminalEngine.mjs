@@ -1,5 +1,10 @@
 export const HOME = '/home/vikram';
 const MANUAL = {
+  sudo:'sudo [-u root | -u vikram] COMMAND — simulate a user for one command; no real privileges or password',
+  top:'top — one snapshot of open desktop apps; run again to refresh',
+  ps:'ps [aux | -ef] — list open desktop apps',
+  free:'free [-h] — explain browser memory availability',
+  df:'df [-h] — show session filesystem usage',
   help:'help — list supported commands', whoami:'whoami — print the current user',
   pwd:'pwd — print the working directory', ls:'ls [-a] [-l] [path] — list files',
   cd:'cd [path | -] — change directory; defaults to ~', cat:'cat FILE... — print files',
@@ -55,7 +60,7 @@ function children(fs,path) {
   const prefix=path==='/'?'/':path+'/';
   return Object.keys(fs).filter(key=>key.startsWith(prefix)&&key!==path&&!key.slice(prefix.length).includes('/')).sort();
 }
-export function runCommand(line,state,now=Date.now()) {
+export function runCommand(line,state,now=Date.now(),runtime={}) {
   const next={...state,history:[...state.history,line].slice(-100),fs:{...state.fs}};
   const result=(output='',action)=>({state:next,output:String(output).slice(0,20000),action});
   const fail=message=>{throw Error(message);};
@@ -63,6 +68,16 @@ export function runCommand(line,state,now=Date.now()) {
   try {
     const parts=tokens(line); command=parts.shift(); const args=parts;
     if(!command)return {state,output:''};
+    let user='vikram';
+    if(command==='sudo'){
+      if(!args.length || args[0]==='--help')return result(MANUAL.sudo);
+      user='root';
+      if(args[0]==='-u'){args.shift();user=args.shift();if(!['root','vikram'].includes(user))fail('supported simulated users: root, vikram');}
+      if(args[0]==='--')args.shift();
+      if(!args.length || args[0].startsWith('-'))fail(MANUAL.sudo);
+      command=args.shift();
+      if(['sudo','cd','exit','history'].includes(command))fail('this command cannot run through simulated sudo');
+    }
     if(!Object.prototype.hasOwnProperty.call(MANUAL,command))return result(`${command}: command not found. Type help.`);
     if(args.includes('--help'))return result(MANUAL[command]);
     const path=value=>resolvePath(value,next.cwd);
@@ -71,12 +86,28 @@ export function runCommand(line,state,now=Date.now()) {
     const requireCount=(min,max=min)=>{if(args.length<min||args.length>max)fail(MANUAL[command]);};
     if(command==='help')return result('Simulated Linux terminal · no server access\n\n'+COMMANDS.map(name=>MANUAL[name]).join('\n')+'\n\n↑/↓ history · Tab completion · Ctrl+L clear · Ctrl+C cancel input');
     if(command==='man'){requireCount(1);return result(Object.prototype.hasOwnProperty.call(MANUAL,args[0])?MANUAL[args[0]]:`No manual entry for ${args[0]}`);}
-    if(command==='whoami')return result('vikram');
+    if(command==='whoami')return result(user);
     if(command==='hostname')return result('workspace');
-    if(command==='id')return result('uid=1000(vikram) gid=1000(vikram) groups=1000(vikram) [simulated]');
+    if(command==='id')return result(user==='root'?'uid=0(root) gid=0(root) groups=0(root) [simulated]':'uid=1000(vikram) gid=1000(vikram) groups=1000(vikram) [simulated]');
     if(command==='uname')return result(args.includes('-a')?'Linux workspace 1.0.0 portfolio-sim browser GNU/Linux (simulated)':'Linux (simulated)');
     if(command==='date')return result(new Date(now).toString());
     if(command==='uptime')return result(`up ${Math.floor((now-state.started)/60000)} minutes, 1 simulated user`);
+    if(command==='top'||command==='ps'){
+      if(command==='top')requireCount(0);
+      else if(args.length>1 || (args.length && !['aux','-ef'].includes(args[0])))fail(MANUAL.ps);
+      const apps=runtime.windows || [{title:'Terminal',minimized:false}];
+      return result('Desktop app snapshot · simulated processes, not OS processes\nCPU / RAM metrics unavailable\n\nSTATE       APP\n'+apps.map(app=>`${(app.minimized?'minimized':'open').padEnd(12)}${app.title}`).join('\n')+(command==='top'?'\n\nRun top again to refresh.':''));
+    }
+    if(command==='free'){
+      if(args.length>1 || (args.length && args[0]!=='-h'))fail(MANUAL.free);
+      return result('System RAM is unavailable in this browser terminal. No simulated memory figures are reported.');
+    }
+    if(command==='df'){
+      if(args.length>1 || (args.length && args[0]!=='-h'))fail(MANUAL.df);
+      const files=Object.values(next.fs).filter(value=>value!==null);
+      const bytes=files.reduce((sum,value)=>sum+new TextEncoder().encode(value).length,0);
+      return result(`Session-only virtual filesystem\n${files.length} files · ${args[0]==='-h'?(bytes/1024).toFixed(2)+' KiB':bytes+' bytes'} of text\nHost disk capacity is unavailable.`);
+    }
     if(command==='pwd')return result(next.cwd);
     if(command==='echo')return result(args.join(' '));
     if(command==='history')return result(next.history.map((entry,i)=>`${String(i+1).padStart(3)}  ${entry}`).join('\n'));
@@ -138,7 +169,7 @@ export function completeInput(input,state) {
   if(/["'\\|;&<>]/.test(input))return {input,matches:[]};
   const parts=input.split(/\s+/),word=parts.at(-1);
   let matches;
-  if(parts.length===1)matches=COMMANDS.filter(name=>name.startsWith(word));
+  if(parts.length===1 || (parts[0]==='sudo' && parts.length===2))matches=COMMANDS.filter(name=>name.startsWith(word));
   else {
     const slash=word.lastIndexOf('/'),prefix=slash>=0?word.slice(0,slash+1):'';
     const base=resolvePath(prefix||'.',state.cwd),fragment=word.slice(slash+1);

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { completeInput, createTerminalState, HOME, runCommand } from './terminalEngine.mjs';
 import styles from '../../styles/Workbench.module.css';
 
-export default function Terminal({ onExit }) {
+export default function Terminal({ onExit, windows }) {
   const [session,setSession]=useState(()=>createTerminalState());
   const [input,setInput]=useState('');
   const [entries,setEntries]=useState([]);
@@ -16,7 +16,7 @@ export default function Terminal({ onExit }) {
   const append=entry=>setEntries(current=>[...current,entry].slice(-150));
   const submit=()=>{
     if(!input.trim()){setInput('');return;}
-    const result=runCommand(input,session);
+    const result=runCommand(input,session,Date.now(),{windows});
     setSession(result.state);setInput('');historyIndex.current=null;draft.current='';
     if(result.action==='clear')setEntries([]);
     else append({prompt,input,output:result.output});

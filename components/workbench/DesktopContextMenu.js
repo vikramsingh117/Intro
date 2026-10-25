@@ -36,6 +36,7 @@ export default function DesktopContextMenu({ point, width, iconsVisible, onClose
     <button role="menuitem" onClick={()=>action(onRefresh)}><span>↻</span>Refresh</button>
     <div role="separator"/>
     <button role="menuitem" onClick={()=>action(()=>onOpen('Terminal'))}><span>›_</span>Open in Terminal</button>
+    <button role="menuitem" onClick={()=>action(()=>onOpen('Task Manager'))}><span>▥</span>Task Manager</button>
     <button role="menuitem" disabled={!hasWindows} onClick={()=>action(onShowDesktop)}><span>▱</span>Show desktop</button>
     {more && <>
       <div role="separator"/>

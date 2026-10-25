@@ -41,7 +41,7 @@ Original download preserved in `chair/`. `runtime.gltf` approximates legacy spec
 Source: https://sketchfab.com/3d-models/low-poly-night-city-building-skyline-b0035b8713b048bb8ddf311ee67c28c8
 Author: https://sketchfab.com/99.Miles
 License: https://creativecommons.org/licenses/by/4.0/
-Original glTF, binary, textures, and license retained in `city/`. Geometry normalized to a 20-unit maximum dimension and centered, then positioned/scaled/rotated using scene settings. Original PBR materials preserved; emission adjustable. Replaces the subway at runtime; subway files retained for reference.
+Original glTF, binary, textures, and license retained in `city/`. Geometry normalized to a 20-unit maximum dimension and centered, then positioned/scaled/rotated using scene settings. Original PBR materials preserved; emission adjustable. Replaces the subway at runtime; subway files retained for reference. Runtime uses `city/optimized.gltf`: 1536px WebP color and emissive maps (quality 80/85), with 512px lossless WebP normal, roughness/metallic and clearcoat maps. Runtime city payload is approximately 1.47 MB versus the original 10 MB. Resized normals are renormalized. Rebuild using `scripts/optimize-city.cjs` with Sharp available. Original assets remain unchanged.
 
 ## Radio
 

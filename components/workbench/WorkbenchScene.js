@@ -59,7 +59,7 @@ function Monitor({ onEnter, desktopRef, desktop }) {
     <group position={[.196344, -.15, 0]}>
       <primitive object={scene} />
       <mesh ref={screen} position={[-.196344, .17128, .051]} rotation={[Math.PI + .139626, 0, Math.PI]}>
-        <planeGeometry args={[.376, .232]} /><meshBasicMaterial map={wallpaper} toneMapped={false} />
+        <planeGeometry args={[.376, .232]} /><meshBasicMaterial key={size.width <= 760 ? 'plain' : 'wallpaper'} map={size.width <= 760 ? null : wallpaper} color={size.width <= 760 ? '#172536' : '#ffffff'} toneMapped={false} />
       </mesh>
     </group>
   </group>;

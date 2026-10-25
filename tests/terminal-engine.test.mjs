@@ -68,3 +68,25 @@ test('history, clear, exit, uptime and limits',()=>{
   for(let i=0;i<110;i++)state=runCommand('whoami',state).state;
   assert.equal(state.history.length,100);
 });
+
+test('sudo stays virtual and scoped to one command',()=>{
+  const state=createTerminalState();
+  const root=runCommand('sudo whoami',state);
+  assert.equal(root.output,'root');
+  assert.equal(runCommand('whoami',root.state).output,'vikram');
+  assert.match(runCommand('sudo id',state).output,/uid=0.*simulated/);
+  assert.match(runCommand('sudo -u nobody whoami',state).output,/supported simulated users/);
+  assert.match(runCommand('sudo rm -rf /',state).output,/recursive removal are not supported/);
+  assert.equal(completeInput('sudo top',state).input,'sudo top ');
+});
+
+test('process snapshots reflect open windows without invented resource metrics',()=>{
+  const state=createTerminalState();
+  const runtime={windows:[{title:'Terminal',minimized:false},{title:'My Work',minimized:true}]};
+  const result=runCommand('sudo top',state,Date.now(),runtime);
+  assert.match(result.output,/minimized\s+My Work/);
+  assert.match(result.output,/CPU \/ RAM metrics unavailable/);
+  assert.match(runCommand('ps aux',state,Date.now(),runtime).output,/Terminal/);
+  assert.match(runCommand('free -h',state).output,/unavailable/);
+  assert.match(runCommand('df -h',state).output,/KiB/);
+});

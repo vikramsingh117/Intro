@@ -42,7 +42,7 @@ export function NightEffects({ exposure = .85, glow = .55 }) {
   return null;
 }
 export default function CityExterior({ onReady, settings }) {
-  const { scene } = useLoader(GLTFLoader, '/models/city/scene.gltf');
+  const { scene } = useLoader(GLTFLoader, '/models/city/optimized.gltf');
   const { invalidate } = useThree();
   const model = useMemo(() => {
     const clone = scene.clone(true);
