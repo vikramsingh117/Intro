@@ -3,6 +3,7 @@ import { Component, useEffect, useRef, useState } from 'react';
 import useStickyNotes from './useStickyNotes';
 import StickyNotesUI from './StickyNotesUI';
 import GlassesOverlay from './GlassesOverlay';
+import { DEFAULT_PROP_PLACEMENT } from './propPlacement';
 import DesktopWorkspace from './DesktopWorkspace';
 import { NOTEBOOK_PAGES } from './notebookPages';
 import { DEFAULT_CITY_SETTINGS } from './citySettings';
@@ -15,6 +16,7 @@ class Boundary extends Component {
 }
 export default function ProductWorkbench() {
   const stickyNotes = useStickyNotes();
+  const propPlacement=DEFAULT_PROP_PLACEMENT;
   const noteEditorRef = useRef(null);
   const workbenchRef = useRef(null);
   useEffect(() => {
@@ -76,7 +78,7 @@ export default function ProductWorkbench() {
   return <div ref={workbenchRef} className={styles.workbench} onKeyDown={event=>{if(stickyNotes.editor || stickyNotes.placing){if(event.key==='Escape'){event.preventDefault();stickyNotes.cancel();}return;}if(notebook && (event.key==='ArrowLeft'||event.key==='ArrowRight')){event.preventDefault();setNotebookPage(value=>Math.max(0,Math.min(NOTEBOOK_PAGES.length-1,value+(event.key==='ArrowRight'?1:-1))));} else if(event.key==='Escape'&&notebook){event.preventDefault();leaveNotebook();} else if(event.key==='Escape'&&outside){event.preventDefault();setOutside(false);restoreFocus();} else if(event.key==='Escape'&&entered){event.preventDefault(); leave();}}}>
     <div className={styles.scene} style={{pointerEvents:entered ? 'none' : undefined}} aria-hidden={desktop} ref={enterButton} role="button" aria-label="Enter workspace by clicking the monitor" tabIndex={desktop || outside || notebook ? -1 : 0} onKeyDown={event=>{if(!outside && !notebook && (event.key==='Enter'||event.key===' ')){event.preventDefault();openMonitor();}}}>
       <div hidden={desktop || outside || notebook} className={styles.sceneLabel}>VIKRAM’S WORKSPACE <span>01 / ENTER TO EXPLORE</span></div>
-      <Boundary onEnter={()=>{setEntered(true);setDesktop(true);}}><Scene noteEditorRef={noteEditorRef} stickyNotes={stickyNotes} wearingGlasses={wearingGlasses} onWearGlasses={()=>setWearingGlasses(true)} citySettings={citySettings} notebookOpen={notebookOpen} onNotebookPageChange={setNotebookPage} onNotebookExit={leaveNotebook} notebook={notebook} notebookPage={notebookPage} onNotebookOpen={openNotebook} onHover={setHoverLabel} desktopRef={desktopRef} desktop={desktop} outside={outside} onCityReady={setCityReady} onWindowSelect={openWindow} lampOn={lampOn} onLampToggle={()=>setLampOn(value=>!value)} entered={entered} reduced={reduced} onEnter={openMonitor} onArrive={()=>setDesktop(true)} /></Boundary>
+      <Boundary onEnter={()=>{setEntered(true);setDesktop(true);}}><Scene propPlacement={propPlacement} noteEditorRef={noteEditorRef} stickyNotes={stickyNotes} wearingGlasses={wearingGlasses} onWearGlasses={()=>setWearingGlasses(true)} citySettings={citySettings} notebookOpen={notebookOpen} onNotebookPageChange={setNotebookPage} onNotebookExit={leaveNotebook} notebook={notebook} notebookPage={notebookPage} onNotebookOpen={openNotebook} onHover={setHoverLabel} desktopRef={desktopRef} desktop={desktop} outside={outside} onCityReady={setCityReady} onWindowSelect={openWindow} lampOn={lampOn} onLampToggle={()=>setLampOn(value=>!value)} entered={entered} reduced={reduced} onEnter={openMonitor} onArrive={()=>setDesktop(true)} /></Boundary>
       <div hidden={desktop || notebook} className={styles.enterRow}><span>{outside ? (cityReady ? "CITY AFTER DARK · Drag to look around" : "Loading the city…") : entered ? "Entering workspace…" : hoverLabel || "Drag to look around · Pinch to zoom · Tap to explore"}</span></div>
     </div>
     {outside && <div className={styles.subwayToolbar}><span>OUTSIDE / NIGHT CITY</span><button ref={windowBack} onClick={()=>{setOutside(false);restoreFocus();}}>← Back to desk</button></div>}

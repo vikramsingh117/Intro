@@ -9,7 +9,7 @@ export default function TaskManager({ windows, activeTitle, onFocus, onClose, ro
     ['Glasses',room.wearingGlasses?'Wearing':'In drawer'],['Shared wall',room.notesReady?`${room.noteCount} notes`:'Connecting'],
     ['Sticky note pad','Write and place notes'],['Window / city',room.cityReady?'Loaded':'Loading'],
     ['Airplane','Flyby visible from window'],['Radio','Music playback'],['Ceiling light','Toggleable lighting'],
-    ['Keyboard','Decorative'],['Chair','Decorative'],['Plant','Decorative'],['Room','Walls, ceiling & floor'],
+    ['Keyboard','Decorative'],['Chair','Decorative'],['Plant','Decorative'],['Stool','Decorative'],['Pascal','Soft toy'],['Upliance','Appliance model'],['Room','Walls, ceiling & floor'],
   ];
   return <section className={styles.taskManager} aria-label="Task Manager">
     <nav aria-label="Task Manager views">{[['apps',`Apps (${windows.length})`],['room',`Room components (${components.length})`]].map(([id,label])=><button key={id} aria-pressed={tab===id} onClick={()=>setTab(id)}>{label}</button>)}</nav>

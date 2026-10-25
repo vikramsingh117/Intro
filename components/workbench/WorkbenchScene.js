@@ -13,6 +13,9 @@ import FlyingPlane from './FlyingPlane';
 import Radio from './Radio';
 import CeilingLight from './CeilingLight';
 import Plant from './Plant';
+import Pascal from './Pascal';
+import Stool from './Stool';
+import Upliance from './Upliance';
 import Chair from './Chair';
 import Keyboard from './Keyboard';
 import { ACESFilmicToneMapping, Euler, Quaternion, Matrix4, SRGBColorSpace, TextureLoader, TOUCH, Vector3 } from 'three';
@@ -180,7 +183,7 @@ function Camera({ entered, outside, notebook, citySettings, reduced, onArrive, i
   }, -1);
   return null;
 }
-export default function MonitorScene({ entered, reduced, onEnter, onArrive, lampOn, onLampToggle, onWindowSelect, outside, onCityReady, desktopRef, desktop, notebook, notebookPage, onNotebookOpen, onHover, notebookOpen, onNotebookPageChange, onNotebookExit, citySettings, wearingGlasses, onWearGlasses, stickyNotes, noteEditorRef }) {
+export default function MonitorScene({ propPlacement, entered, reduced, onEnter, onArrive, lampOn, onLampToggle, onWindowSelect, outside, onCityReady, desktopRef, desktop, notebook, notebookPage, onNotebookOpen, onHover, notebookOpen, onNotebookPageChange, onNotebookExit, citySettings, wearingGlasses, onWearGlasses, stickyNotes, noteEditorRef }) {
   return <Canvas onPointerMissed={()=>{if(notebook)onNotebookExit();}} shadows camera={{ position:[6, 3.5, 14.8], fov:42 }} dpr={[1, 1.5]} frameloop="demand" gl={{alpha:true, antialias:true, toneMapping:ACESFilmicToneMapping, toneMappingExposure:.85}}>
     <color attach="background" args={['#091321']} />
     <group onClick={event=>{if(notebook && event.delta<=5){event.stopPropagation();onNotebookExit();}}}>
@@ -196,6 +199,9 @@ export default function MonitorScene({ entered, reduced, onEnter, onArrive, lamp
     {stickyNotes.editor && <NoteProjection editor={stickyNotes.editor} elementRef={noteEditorRef}/>}
     <Suspense fallback={null}><Chair/></Suspense>
     <Suspense fallback={null}><Plant/></Suspense>
+    <Suspense fallback={null}><Stool placement={propPlacement?.stool}/></Suspense>
+    <Suspense fallback={null}><Pascal placement={propPlacement?.pascal}/></Suspense>
+    <Suspense fallback={null}><Upliance placement={propPlacement?.upliance}/></Suspense>
     <Suspense fallback={null}><CeilingLight onHover={onHover}/></Suspense>
     <CozyRoom reduced={reduced} wearingGlasses={wearingGlasses} onWearGlasses={onWearGlasses} onWindowSelect={notebook ? onNotebookExit : onWindowSelect} onHover={onHover} />
     <InteractiveObject label="Notebook · ideas & sketches" onHover={onHover}><Notebook focused={notebook} open={notebookOpen} onPageChange={onNotebookPageChange} page={notebookPage} reduced={reduced} onOpen={onNotebookOpen} /></InteractiveObject>

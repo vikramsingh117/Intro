@@ -111,24 +111,19 @@ illustrative animations clearly. Never include keys in docs or client assets.
 Extend this system rather than introducing another palette or component theme.
 Prefer native CSS, SVG, and React to new animation dependencies for small effects.
 
-## After Hours — separate cinematic experience
+## After Hours — cozy interactive room
 
-Implemented at `/after-hours`; Simple remains unchanged. The chooser is always
-the entry point. Do not persist a preference or bypass it.
+`/after-hours` shares the fullscreen React Three Fiber scene at `/workbench`.
+Simple remains a readable portfolio; the homepage chooser is the entry point.
 
-- Palette: midnight `#080f17`, instrument surface `#0c171f`, bone `#eeeae0`,
-  oxidized mint `#a0ddc5`, muted text `#9baeb3`, amber for illustrative labels.
-- Large, tightly tracked sans-serif headings with occasional Georgia italic.
-  Monospace is reserved for chapter labels and engineering annotations.
-- Use the restored scroll-driven story: conversation, scale, craft and open source,
-  followed by projects and contact. The Signal Room experiment is removed.
-- Preserve the sticky animated signal, generous spacing and dark assistant.
-  Product decisions and ownership remain part of the AI Product Engineer identity.
-- Use native SVG/CSS and throttled scroll updates. Keep normal scrolling,
-  chapter links and mobile layouts functional.
-- Label diagrams illustrative. Do not invent product metrics, roadmap decisions
-  or contribution details.
-- Respect reduced motion and the page control; keep every fact accessible.
-- Reuse the real assistant with scoped dark styles. Explanation toggles keep
-  it mounted; changing routes intentionally resets the conversation.
-- Main files: `pages/after-hours.js`, `styles/AfterHours.module.css`.
+- Olive walls, warm wood, amber desk lighting, dark metal, and cool city-window light.
+- The homepage preview is a lightweight SVG illustration of the actual arrangement: plant left, city window, lamp/Pascal/notebook/radio, monitor and chair, appliance on stool right, raised ceiling light. Update `public/images/after-hours-workbench.svg` when the room changes. Keep its bottom-up asset-loading fill; no notification popup.
+- Portfolio facts live in readable HTML apps projected onto the physical monitor. Keep windows mounted while minimized; closing intentionally resets them.
+- Use smooth camera focus/return transitions; respect reduced motion. No separate content popup for notebook pages or the exterior.
+- Handwritten notebook pages should resemble rough working notes, diagrams and doodles, not polished motivational copy.
+- Mobile uses plain monitor wallpaper, full-width app windows, large controls, and touch orbit/pinch.
+- The mint square cursor turns subtly 90 degrees on hover. Preserve native pointers for window dragging/resizing and input controls.
+- Props remain decorative unless an interaction has a clear purpose. Audio begins only with a user gesture.
+- Model originals and licenses are preserved. Optimize runtime geometry/textures, and preload exactly the URLs used by scene components. Do not add fake CPU/RAM numbers or byte-progress claims.
+- Shared notes use real MongoDB persistence; browser ownership is not login authentication. Document configuration and failures honestly.
+- Core files: `components/workbench/`, `styles/Workbench.module.css`, `components/AfterHoursPreload.js`. Final object placement is source-controlled, not overridden by old temporary browser settings.

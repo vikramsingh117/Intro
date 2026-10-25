@@ -25,7 +25,7 @@ Original glTF, binary, and textures retained in `keyboard/`; scaled and position
 Source: https://sketchfab.com/3d-models/lowpoly-berlin-u-bahn-station-2a02d3f2eccf4cd29bbaa1348787395e
 Author: https://sketchfab.com/n-malmberg
 License: https://creativecommons.org/licenses/by/4.0/
-Original files and license retained in `subway/`. `runtime.gltf` adapts legacy specular/glossiness materials to approximate metallic/roughness materials for Three.js: diffuse maps retained, metallic=0, roughness=0.8. Model centered and scaled at runtime. Loaded behind the room window in the shared 3D scene; the camera moves to the exterior view.
+Original files and license retained in `subway/`. `runtime.gltf` adapts legacy specular/glossiness materials to approximate metallic/roughness materials for Three.js: diffuse maps retained, metallic=0, roughness=0.8. Model centered and scaled at runtime. Legacy asset, retained for reference but not loaded; the current exterior is the night city.
 
 ## Chair
 
@@ -49,7 +49,7 @@ Original glTF, binary, textures, and license retained in `city/`. Geometry norma
 Source: https://sketchfab.com/3d-models/iskra-unitra-rm-312-radio-384de87761704f848127e8b4460c97e3
 Author: https://sketchfab.com/calcman
 License: https://sketchfab.com/licenses
-User-provided download retained in `radio/`, including its license. Original geometry and textures; scaled and placed in front of the lamp as a decorative prop.
+User-provided download retained in `radio/`, including its license. Geometry preserved; optimized textures loaded at runtime. Placed in front of the lamp, with click-to-play/pause user-provided audio.
 
 ## Aircraft
 
@@ -63,14 +63,36 @@ Original files retained in `plane/`. Normalized to a 0.975-unit wingspan, positi
 - Source: https://sketchfab.com/3d-models/rhyzome-plant-7191a1b935ac452987866573713e4da5
 - Author: Blizzy (https://sketchfab.com/jeffbas)
 - License: CC BY 4.0; original license retained in plant/license.txt.
-- Original geometry and textures; normalized and positioned on the floor to the right of the desk.
+- Original geometry and textures; normalized and positioned on the floor to the left of the desk at [-6.65, -4.8, 0.2].
 
 ### Bar Ceiling Light - 2048px²
 - Source: https://sketchfab.com/3d-models/bar-ceiling-light-2048px2-2ba27702aabe4d37822956a2b7bf43d8
 - Author: Mark Peters (https://sketchfab.com/mark-peters)
 - License: CC BY 4.0; original license retained in ceiling-light/license.txt.
-- Scaled above the plant, with extended suspension, modified bulb emission/transmission and toggleable warm lighting.
+- Suspended above the right side of the desk, with modified bulb emission/transmission and toggleable warm lighting. Suspension shortened by 30%: fixture anchor Y=11.12, ceiling Y=24. The cord and ceiling cap remain connected.
 
 ## Optimized room textures
 
 Plant, ceiling light, chair, radio, and keyboard load their own `optimized.gltf` manifests. Color textures use WebP quality 85 at up to 1024px, with full-quality alpha; data maps use lossless WebP at up to 512px. Normal vectors are renormalized after resizing. Geometry and material settings are unchanged, and original assets and licenses remain available. Run `scripts/optimize-room.cjs` with Sharp available to regenerate these textures. Both preloading and scene components use the optimized manifests.
+
+## Upliance appliance
+
+User-provided Autodesk OBJ/MTL: `Upliance Gen ll Assembly v29`, with originals retained in Downloads (not shipped with the website). `upliance/model.glb` preserves the assembly and supplied material colors, approximates metal roughness, removes unused UVs, combines compatible parts, simplifies geometry, and quantizes vertex attributes. Approximately 1,946,197 triangles reduced to 186,102; runtime GLB is 4,492,860 bytes. No textures or external decoder required. Rendered as a static appliance on the stool to the right of the desk; final position [6.61, -1.36, -0.17], rotation 0°, scale 0.79.
+
+Rebuild with `scripts/optimize-upliance.mjs INPUT.obj TOOL_DIRECTORY`; the temporary tool directory needs `@gltf-transform/core`, `@gltf-transform/functions`, `@gltf-transform/extensions`, and `meshoptimizer`. Original OBJ and matching MTL must be alongside one another.
+
+## Pascal soft toy
+
+“Pascal” by Nordban, CC BY-NC 4.0.
+Source: https://sketchfab.com/3d-models/pascal-bc8582ae72e24ae6a30816ea452f50a0
+Author: https://sketchfab.com/Nordban
+License: https://creativecommons.org/licenses/by-nc/4.0/
+Original files and license retained in `pascal/`. Runtime uses `pascal/optimized.gltf`, with WebP color textures at up to 1024px and lossless data maps at up to 512px. Normal vectors renormalized after resizing. Approximately 2.92 MB reduced to 1.03 MB; geometry preserved. Static toy placed beside the desk lamp at [-4.02, -1.53, -1.11], rotation -31°, scale 1. Rebuild using `scripts/optimize-room.cjs pascal` with Sharp available.
+
+## Wooden stool
+
+“wooden stool” by diana_ver, CC BY 4.0.
+Source: https://sketchfab.com/3d-models/wooden-stool-79847abac75a4211a4f072c45516fbea
+Author: https://sketchfab.com/diana_ver
+License: https://creativecommons.org/licenses/by/4.0/
+Originals and license retained in `stool/`. Runtime `optimized.gltf` uses 1024px WebP color and 512px lossless WebP data maps, with renormalized normals. Payload reduced from 7.70 MB to 0.56 MB; original geometry preserved in the asset, with a runtime deformation to extend the legs 30% while retaining the seat size. Regenerate with `scripts/optimize-room.cjs stool` with Sharp available. Initial height is 2.4 scene units, before the 30% leg extension. Final position [6.53, -4.8, 0.13], rotation 0°, scale 1.12. Temporary placement controls have been removed.

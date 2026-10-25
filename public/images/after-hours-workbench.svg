@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="460" viewBox="0 0 720 460">
+<defs>
+ <linearGradient id="wall" x2="1" y2="1"><stop stop-color="#475348"/><stop offset="1" stop-color="#202b28"/></linearGradient>
+ <linearGradient id="night" x2="0" y2="1"><stop stop-color="#101b2e"/><stop offset="1" stop-color="#42616a"/></linearGradient>
+ <linearGradient id="wood" x2="0" y2="1"><stop stop-color="#c28c53"/><stop offset="1" stop-color="#745033"/></linearGradient>
+ <linearGradient id="screen" x2="1" y2="1"><stop stop-color="#27535b"/><stop offset=".6" stop-color="#162c3f"/><stop offset="1" stop-color="#805647"/></linearGradient>
+ <radialGradient id="warm"><stop stop-color="#ffe0a1" stop-opacity=".45"/><stop offset="1" stop-color="#ffd28b" stop-opacity="0"/></radialGradient>
+ <pattern id="windows" width="18" height="22" patternUnits="userSpaceOnUse"><rect x="5" y="5" width="5" height="8" fill="#e9c587" opacity=".7"/></pattern>
+ <filter id="glow"><feGaussianBlur stdDeviation="5"/></filter>
+ <clipPath id="window"><rect x="91" y="59" width="182" height="185"/></clipPath>
+</defs>
+<!-- Olive room, cool city window and a warm wooden desk. -->
+<rect width="720" height="460" fill="url(#wall)"/>
+<path d="M0 0L52 28V362L0 401Z" fill="#303e34"/>
+<path d="M0 401L52 362H720V460H0Z" fill="#37352d"/>
+<path d="M52 355H720V364H52Z" fill="#182c25"/>
+<ellipse cx="245" cy="214" rx="230" ry="205" fill="url(#warm)"/>
+<rect x="83" y="51" width="198" height="201" rx="2" fill="#a6aa95"/>
+<rect x="91" y="59" width="182" height="185" fill="url(#night)"/>
+<g clip-path="url(#window)">
+ <path d="M91 140H118V104H145V160H166V89H193V130H219V73H253V151H273V244H91Z" fill="#172e36"/>
+ <path d="M91 140H118V104H145V160H166V89H193V130H219V73H253V151H273V244H91Z" fill="url(#windows)"/>
+ <path d="M91 214H120V172H154V202H185V156H218V198H242V176H273V244H91Z" fill="#1b3841"/>
+ <path d="M91 214H120V172H154V202H185V156H218V198H242V176H273V244H91Z" fill="url(#windows)" opacity=".65"/>
+ <path d="M177 94L193 92L185 88L185 86L197 91L205 92L197 94L186 100L184 99L191 94Z" fill="#b4c6c0"/>
+</g>
+<path d="M182 57V247M88 155H276" stroke="#9caa9d" stroke-width="6"/>
+<path d="M77 249H285L292 259H70Z" fill="#b9aa89"/>
+<!-- Hanging light, raised high above the appliance. -->
+<path d="M609 0V83" stroke="#111f1c" stroke-width="3"/>
+<path d="M596 83Q609 76 622 83L633 100H585Z" fill="#172521"/>
+<ellipse cx="609" cy="101" rx="24" ry="4" fill="#ffdca3"/>
+<ellipse cx="609" cy="107" rx="27" ry="7" fill="#ffdca3" filter="url(#glow)" opacity=".55"/>
+<!-- Personal notes on the wall. -->
+<g transform="rotate(-7 337 155)"><rect x="320" y="138" width="27" height="28" fill="#d4b775"/><path d="M326 147H341M326 152H337M326 157H339" stroke="#8f794c"/></g>
+<g transform="rotate(5 372 151)"><rect x="360" y="132" width="26" height="29" fill="#a3bba0"/><path d="M365 141H379M365 146H376" stroke="#577665"/></g>
+<!-- Plant now left of the desk. -->
+<path d="M76 374L82 327M80 346L59 316M81 340L101 306" stroke="#607756" stroke-width="4"/>
+<g fill="#718e56"><path d="M81 334Q57 291 69 279Q91 292 81 334Z"/><path d="M60 321Q34 308 40 288Q63 288 60 321Z"/><path d="M91 323Q94 287 119 285Q118 315 91 323Z"/><path d="M79 353Q47 339 48 321Q74 323 79 353Z"/></g>
+<path d="M56 361H102L95 407H64Z" fill="#8c7960"/><ellipse cx="79" cy="361" rx="23" ry="6" fill="#514d3a"/>
+<!-- Desk top, legs, drawers. -->
+<path d="M138 276H508L550 307H111Z" fill="#be8c55"/>
+<path d="M111 307H550V320H111Z" fill="url(#wood)"/>
+<path d="M128 320H143V416H128ZM515 320H530V421H515Z" fill="#25352d"/>
+<rect x="151" y="320" width="99" height="91" fill="#704c32"/>
+<g fill="#99704a" stroke="#62472f"><rect x="154" y="324" width="92" height="25"/><rect x="154" y="353" width="92" height="25"/><rect x="154" y="382" width="92" height="25"/></g>
+<path d="M188 334H211M188 363H211M188 392H211" stroke="#2c3931" stroke-width="4" stroke-linecap="round"/>
+<!-- Architect lamp and Pascal. -->
+<ellipse cx="236" cy="285" rx="23" ry="5" fill="#283b32"/>
+<path d="M236 280L217 240L239 205" fill="none" stroke="#263b32" stroke-width="7"/>
+<circle cx="217" cy="239" r="5" fill="#577160"/>
+<path d="M228 207Q244 189 258 207L268 221L231 228Z" fill="#2a4035"/>
+<path d="M234 227L266 221" stroke="#ffe1a0" stroke-width="5"/>
+<ellipse cx="267" cy="266" rx="46" ry="31" fill="url(#warm)"/>
+<g fill="#75974f"><ellipse cx="179" cy="277" rx="20" ry="10"/><circle cx="193" cy="267" r="11"/><path d="M161 279Q143 267 152 259Q162 253 164 262Q164 267 156 266" fill="none" stroke="#75974f" stroke-width="6"/></g>
+<circle cx="198" cy="264" r="6" fill="#bacb81"/><circle cx="200" cy="264" r="3" fill="#22392b"/>
+<!-- Radio, open notebook, keyboard. -->
+<rect x="204" y="281" width="40" height="24" rx="3" fill="#57594d"/><rect x="207" y="286" width="15" height="15" fill="#283731"/><rect x="225" y="286" width="15" height="5" fill="#b7ad84"/><path d="M210 281V253" stroke="#a5ad9c"/>
+<path d="M254 282L281 279L298 294L272 298Z" fill="#d7cfac"/><path d="M281 279L304 282L321 295L298 294Z" fill="#eee0b9"/><path d="M262 286L278 284M268 290L285 288M291 285L301 287" stroke="#7d8c76"/>
+<path d="M361 290H424L439 302H367Z" fill="#172a29"/><path d="M367 294H422M371 298H427" stroke="#64736a" stroke-width="2"/>
+<!-- Main monitor with live desktop motif. -->
+<path d="M392 269V285M378 286H410" stroke="#253b36" stroke-width="10"/>
+<rect x="328" y="187" width="149" height="84" rx="4" fill="#152b2b" stroke="#57716b" stroke-width="3"/>
+<rect x="334" y="193" width="137" height="70" fill="url(#screen)"/>
+<g fill="none" stroke="#9caead" opacity=".3" stroke-width="3"><ellipse cx="433" cy="237" rx="30" ry="43" transform="rotate(-35 433 237)"/><ellipse cx="427" cy="237" rx="30" ry="43" transform="rotate(-35 427 237)"/></g>
+<g fill="#d1b57d"><rect x="341" y="201" width="6" height="6" rx="1"/><rect x="341" y="213" width="6" height="6" rx="1"/><rect x="341" y="225" width="6" height="6" rx="1"/></g>
+<g fill="#82b4a2"><rect x="353" y="201" width="6" height="6" rx="1"/><rect x="353" y="213" width="6" height="6" rx="1"/></g>
+<text x="375" y="224" fill="#eee7d5" font-size="10" font-family="Georgia,serif" font-style="italic">Ideas into</text><text x="375" y="237" fill="#eee7d5" font-size="10" font-family="Georgia,serif" font-style="italic">working products.</text>
+<path d="M334 258H471" stroke="#11252b" stroke-width="6"/>
+<!-- Stool with appliance, where the plant used to stand. -->
+<path d="M580 332L571 416M625 332L638 418M581 386H632M590 335L589 399M617 336L619 400" stroke="#947344" stroke-width="9"/>
+<ellipse cx="604" cy="330" rx="39" ry="12" fill="#b29461"/><ellipse cx="604" cy="326" rx="39" ry="11" fill="#cab081"/>
+<path d="M574 308L579 272H609L632 287V317H579Z" fill="#d6d7c8" stroke="#7e8983" stroke-width="2"/>
+<path d="M578 273V302Q589 310 602 301V273Z" fill="#aab6ae"/>
+<ellipse cx="590" cy="273" rx="15" ry="6" fill="#263c33"/><path d="M584 268V263H596V268" fill="#35483d"/>
+<path d="M606 283L630 290L626 307L603 300Z" fill="#172e32" stroke="#667b72" stroke-width="2"/><circle cx="614" cy="311" r="3" fill="#334b40"/>
+<!-- A low chair in front of the desk. -->
+<path d="M333 352L326 439M405 352L418 439" stroke="#473f32" stroke-width="8"/>
+<path d="M322 349L396 343L416 367L341 375Z" fill="#776249"/><path d="M326 312L394 307L397 346L332 351Z" fill="#8d7658" stroke="#514a38" stroke-width="6"/>
+</svg>

@@ -3,7 +3,7 @@
 const fs=require('node:fs/promises');
 const path=require('node:path');
 const sharp=require('sharp');
-const assets=['plant','ceiling-light','chair','radio','keyboard'];
+const assets=process.argv.length>2?process.argv.slice(2):['plant','ceiling-light','chair','radio','keyboard','pascal','stool'];
 async function bytes(root,manifest){
   const g=JSON.parse(await fs.readFile(path.join(root,manifest),'utf8'));
   const files=new Set([manifest,...g.images.map(i=>i.uri),...g.buffers.map(b=>b.uri)]);

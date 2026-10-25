@@ -36,7 +36,7 @@ export default function ThemeChooser() {
           if (!ready && stage !== 'error') setSelected(true);
           else router.push('/after-hours').catch(onError);
         }}>
-          <div className={`${styles.glossyPreview} ${styles.loadingPreview}`} style={{ "--download-progress": `${progress}%` }} aria-hidden="true"><div className={styles.unloadedCover}/><div className={styles.previewBar}>V / S <span>02 — AFTER HOURS</span></div><div className={styles.orb}/><div className={styles.glass}><span>VIKRAM SINGH</span><strong>Step into<br/><em>my workspace.</em></strong><div><i/><i/><i/></div></div><span className={styles.concept}>EXPLORE THE ROOM</span></div>
+          <div className={`${styles.glossyPreview} ${styles.loadingPreview}`} style={{ "--download-progress": `${progress}%` }} aria-hidden="true"><div className={styles.unloadedCover}/><div className={styles.previewBar}>V / S <span>02 — AFTER HOURS</span></div><span className={styles.concept}>EXPLORE THE ROOM</span></div>
           <div className={styles.description}><h2>After Hours</h2><span className={styles.soon}>↗</span></div>
           <span className={styles.srOnly} role="progressbar" aria-label="After Hours download" aria-valuenow={Math.round(progress)} aria-valuemin={0} aria-valuemax={100}/>
         </a>

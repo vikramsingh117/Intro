@@ -1,7 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import Router, { useRouter } from 'next/router';
-import Link from 'next/link';
-import styles from '../styles/AfterHoursNotice.module.css';
 
 const PreloadContext = createContext({ stage: 'simple', progress: 0, ready: false });
 export const useAfterHoursPreload = () => useContext(PreloadContext);
@@ -15,7 +13,6 @@ export default function AfterHoursPreload({ children }) {
   const [total, setTotal] = useState(8);
   const [loaded, setLoaded] = useState(0);
   const [codeReady, setCodeReady] = useState(false);
-  const [dismissed, setDismissed] = useState(false);
   const completed = useRef(new Set());
   const onLoaded = useCallback(url => {
     completed.current.add(url);
@@ -49,18 +46,10 @@ export default function AfterHoursPreload({ children }) {
     return () => { active = false; };
   }, [started]);
   const ready = loaded === total && codeReady && stage !== 'error';
-  useEffect(() => {
-    if (pathname === '/after-hours' || pathname === '/workbench') setDismissed(true);
-  }, [pathname]);
   // Reserve the last step for the scene code, so a full card means ready to enter.
   const progress = ready ? 100 : Math.min(99, loaded / total * 100);
   return <PreloadContext.Provider value={{ stage, progress, ready, onError }}>
     {children}
     {Preloader && <Preloader onLoaded={onLoaded} onError={onError}/>}
-    {ready && eligible && !dismissed && <aside className={styles.notice} data-cursor-theme="glossy" aria-label="After Hours notification">
-      <button className={styles.dismiss} aria-label="Dismiss After Hours notification" onClick={() => setDismissed(true)}>×</button>
-      <div role="status"><span className={styles.eyebrow}>AFTER HOURS</span><h2>The lights are on.</h2><p>Your workspace is ready to explore.</p></div>
-      <Link href="/after-hours"><a onClick={() => setDismissed(true)}>Step inside <span aria-hidden="true">↗</span></a></Link>
-    </aside>}
   </PreloadContext.Provider>;
 }

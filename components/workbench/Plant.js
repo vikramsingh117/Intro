@@ -15,5 +15,5 @@ export default function Plant() {
     clone.traverse(node=>{if(node.isMesh){node.castShadow=true;node.receiveShadow=true;}});
     return clone;
   },[scene]);
-  return <group position={[6.8,-4.8,-.45]}><primitive object={model}/></group>;
+  return <group position={[-6.65,-4.8,.2]}><primitive object={model}/></group>;
 }

@@ -4,8 +4,9 @@ import { Box3, Object3D, Vector3 } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import InteractiveObject from './InteractiveObject';
 
-const HANG_HEIGHT = 5.6;
 const CEILING_HEIGHT = 24;
+// Shorten the original ceiling-to-fixture suspension by 30%.
+const HANG_HEIGHT = 5.6 + (CEILING_HEIGHT - 5.6) * .3;
 export default function CeilingLight({ onHover }) {
   const [on,setOn]=useState(true);
   const {scene}=useLoader(GLTFLoader,'/models/ceiling-light/optimized.gltf');
