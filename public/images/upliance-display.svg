@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="640" viewBox="0 0 1024 640">
+<rect width="1024" height="640" rx="20" fill="#e8eae5"/>
+<g font-family="Arial,sans-serif">
+<text x="34" y="42" fill="#172d54" font-size="22" font-weight="700">upliance.ai</text><text x="774" y="42" fill="#5f6975" font-size="17">COOKING ASSISTANT</text>
+<rect x="25" y="73" width="167" height="532" rx="19" fill="#fafbf7"/>
+<text x="47" y="119" fill="#133566" font-size="26">234</text><text x="47" y="145" fill="#7e8792" font-size="17">Calories (kcal)</text>
+<path d="M45 171H170M45 289H170M45 410H170" stroke="#e2e6e0"/>
+<text x="47" y="221" fill="#133566" font-size="27">65.5 g</text><text x="47" y="249" fill="#7e8792" font-size="18">Carbs</text>
+<text x="47" y="340" fill="#133566" font-size="27">4.3 g</text><text x="47" y="371" fill="#7e8792" font-size="18">Fat</text>
+<text x="47" y="459" fill="#133566" font-size="27">8.2 g</text><text x="47" y="489" fill="#7e8792" font-size="18">Protein</text>
+<text x="47" y="560" fill="#9aa39e" font-size="14">Per serving</text>
+<rect x="212" y="73" width="786" height="532" rx="19" fill="#f6f8f2"/>
+<rect x="230" y="91" width="211" height="107" rx="14" fill="#5048d1"/>
+<g transform="translate(251 106)"><path d="M6 12L22 0H47L61 12V71H6Z" fill="#dbeaf3"/><path d="M22 0V15H61M6 12H22" fill="none" stroke="#a6c0d6" stroke-width="3"/><path d="M6 36H61V62H6Z" fill="#79aac7"/><path d="M32 39Q47 57 32 59Q18 57 32 39" fill="#fff"/></g>
+<text x="330" y="138" fill="#fff" font-size="24">Milk</text><text x="330" y="168" fill="#dedbff" font-size="17">60 g</text>
+<g transform="translate(463 109)"><ellipse cx="30" cy="48" rx="29" ry="17" fill="#c58d4c"/><path d="M0 47Q30 76 60 47L51 72H9Z" fill="#ac713e"/><ellipse cx="30" cy="43" rx="26" ry="13" fill="#edc56f"/></g>
+<text x="535" y="138" fill="#364353" font-size="23">Besan</text><text x="535" y="168" fill="#929b9c" font-size="17">100 g</text>
+<g fill="#73924a" transform="translate(678 114)"><path d="M17 60Q-3 32 7 6Q36 23 17 60Z"/><path d="M20 60Q22 20 44 2Q53 43 20 60Z"/><path d="M20 60Q44 24 60 28Q59 62 20 60Z"/></g>
+<text x="748" y="138" fill="#364353" font-size="23">Curry leaves</text>
+<path d="M230 217H980" stroke="#e4e8e1" stroke-width="2"/>
+<rect x="234" y="234" width="89" height="37" rx="18" fill="#80c8a6"/><text x="251" y="260" fill="white" font-size="21">60 g ✓</text><text x="337" y="259" fill="#729494" font-size="18">Perfect!</text>
+<text x="602" y="339" text-anchor="middle" fill="#8a9691" font-size="20">ADD MILK</text>
+<text x="591" y="447" text-anchor="middle" fill="#103569" font-size="114" font-weight="300">60</text><text x="669" y="442" fill="#103569" font-size="40">g</text>
+<rect x="545" y="480" width="130" height="49" rx="24" fill="#ffb68f"/><text x="610" y="512" text-anchor="middle" fill="#fff" font-size="19">Reset</text>
+<text x="610" y="576" text-anchor="middle" fill="#9ba69f" font-size="15">READY FOR THE NEXT INGREDIENT</text>
+</g></svg>

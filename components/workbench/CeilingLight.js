@@ -5,8 +5,8 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import InteractiveObject from './InteractiveObject';
 
 const CEILING_HEIGHT = 24;
-// Shorten the original ceiling-to-fixture suspension by 30%.
-const HANG_HEIGHT = 5.6 + (CEILING_HEIGHT - 5.6) * .3;
+// Keep the shade in the room framing while retaining the ceiling connection.
+const HANG_HEIGHT = 7.2;
 export default function CeilingLight({ onHover }) {
   const [on,setOn]=useState(true);
   const {scene}=useLoader(GLTFLoader,'/models/ceiling-light/optimized.gltf');

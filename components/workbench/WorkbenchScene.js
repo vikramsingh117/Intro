@@ -201,7 +201,7 @@ export default function MonitorScene({ propPlacement, entered, reduced, onEnter,
     <Suspense fallback={null}><Plant/></Suspense>
     <Suspense fallback={null}><Stool placement={propPlacement?.stool}/></Suspense>
     <Suspense fallback={null}><Pascal placement={propPlacement?.pascal}/></Suspense>
-    <Suspense fallback={null}><Upliance placement={propPlacement?.upliance}/></Suspense>
+    <Suspense fallback={null}><Upliance placement={propPlacement?.upliance} reduced={reduced} interactive={!entered && !outside && !notebook && !stickyNotes.editor && !stickyNotes.placing} onHover={onHover}/></Suspense>
     <Suspense fallback={null}><CeilingLight onHover={onHover}/></Suspense>
     <CozyRoom reduced={reduced} wearingGlasses={wearingGlasses} onWearGlasses={onWearGlasses} onWindowSelect={notebook ? onNotebookExit : onWindowSelect} onHover={onHover} />
     <InteractiveObject label="Notebook · ideas & sketches" onHover={onHover}><Notebook focused={notebook} open={notebookOpen} onPageChange={onNotebookPageChange} page={notebookPage} reduced={reduced} onOpen={onNotebookOpen} /></InteractiveObject>

@@ -69,7 +69,7 @@ Original files retained in `plane/`. Normalized to a 0.975-unit wingspan, positi
 - Source: https://sketchfab.com/3d-models/bar-ceiling-light-2048px2-2ba27702aabe4d37822956a2b7bf43d8
 - Author: Mark Peters (https://sketchfab.com/mark-peters)
 - License: CC BY 4.0; original license retained in ceiling-light/license.txt.
-- Suspended above the right side of the desk, with modified bulb emission/transmission and toggleable warm lighting. Suspension shortened by 30%: fixture anchor Y=11.12, ceiling Y=24. The cord and ceiling cap remain connected.
+- Suspended above the right side of the desk, with modified bulb emission/transmission and toggleable warm lighting. Fixture lowered into the room framing: anchor Y=7.2, ceiling Y=24. The cord and ceiling cap remain connected.
 
 ## Optimized room textures
 
@@ -77,7 +77,7 @@ Plant, ceiling light, chair, radio, and keyboard load their own `optimized.gltf`
 
 ## Upliance appliance
 
-User-provided Autodesk OBJ/MTL: `Upliance Gen ll Assembly v29`, with originals retained in Downloads (not shipped with the website). `upliance/model.glb` preserves the assembly and supplied material colors, approximates metal roughness, removes unused UVs, combines compatible parts, simplifies geometry, and quantizes vertex attributes. Approximately 1,946,197 triangles reduced to 186,102; runtime GLB is 4,492,860 bytes. No textures or external decoder required. Rendered as a static appliance on the stool to the right of the desk; final position [6.61, -1.36, -0.17], rotation 0°, scale 0.79.
+User-provided Autodesk OBJ/MTL: `Upliance Gen ll Assembly v29`, with originals retained in Downloads (not shipped with the website). `upliance/interactive.glb` preserves the assembly and supplied material colors, approximates metal roughness, removes unused UVs, combines compatible parts, simplifies geometry, and quantizes vertex attributes. Approximately 1,946,197 triangles reduced to 186,504; runtime interactive GLB is 4,491,216 bytes. Named body, lid assembly, light guides and screen nodes are retained for interaction. No textures or external decoder required. Rendered as a hover-activated appliance on the stool to the right of the desk; final position [6.61, -1.36, -0.17], rotation 0°, scale 0.79.
 
 Rebuild with `scripts/optimize-upliance.mjs INPUT.obj TOOL_DIRECTORY`; the temporary tool directory needs `@gltf-transform/core`, `@gltf-transform/functions`, `@gltf-transform/extensions`, and `meshoptimizer`. Original OBJ and matching MTL must be alongside one another.
 
@@ -96,3 +96,5 @@ Source: https://sketchfab.com/3d-models/wooden-stool-79847abac75a4211a4f072c4551
 Author: https://sketchfab.com/diana_ver
 License: https://creativecommons.org/licenses/by/4.0/
 Originals and license retained in `stool/`. Runtime `optimized.gltf` uses 1024px WebP color and 512px lossless WebP data maps, with renormalized normals. Payload reduced from 7.70 MB to 0.56 MB; original geometry preserved in the asset, with a runtime deformation to extend the legs 30% while retaining the seat size. Regenerate with `scripts/optimize-room.cjs stool` with Sharp available. Initial height is 2.4 scene units, before the 30% leg extension. Final position [6.53, -4.8, 0.13], rotation 0°, scale 1.12. Temporary placement controls have been removed.
+
+The upliance lid opens and blue LEDs/display fade on together on hover, reversing on pointer exit; touch and pen tap to toggle. The original lid pieces move as one assembly around a presentation pivot. The SVG cooking screen is drawn from the supplied reference, not a live recipe or appliance backend. Runtime screen geometry follows the measured CAD panel plane. LED segments are instanced in one draw call. The former static `upliance/model.glb` is retained but no longer preloaded.

@@ -22,17 +22,22 @@ for(const line of (await fs.readFile(input.replace(/\.obj$/i,'.mtl'),'utf8')).sp
 const object=new OBJLoader().parse(await fs.readFile(input,'utf8'));
 console.log('Original bounds',new Box3().setFromObject(object).getSize(new Vector3()).toArray());
 const doc=new Document(),buffer=doc.createBuffer(),scene=doc.createScene('Upliance');
+// Preserve the complete lid assembly and the light guides as independently addressable parts.
+const lidParts=new Set(['Lid  (1)','Body1:113','Body1:114','Body8:2','Body1:115','Body1:116','Body1:117','Body1:118','Body1:119','Body3:2','Holder-Crown-Silicone']);
+const roleMeshes=new Map(['Body','JarLid','LightGuides','ScreenPanel'].map(role=>[role,doc.createMesh(role)]));
 const materials=new Map();let triangles=0;
 object.traverse(node=>{
   if(!node.isMesh)return;
   const geom=node.geometry,position=geom.attributes.position,normal=geom.attributes.normal;
   const mats=Array.isArray(node.material)?node.material:[node.material];
   const groups=geom.groups.length?geom.groups:[{start:0,count:position.count,materialIndex:0}];
-  const mesh=doc.createMesh(node.name);
+  const role=lidParts.has(node.name)?'JarLid':/^(Top Led Light Guide|Front Led Led Guide)$/.test(node.name)?'LightGuides':node.name==='Body4'?'ScreenPanel':'Body';
+  const mesh=roleMeshes.get(role);
   for(const group of groups){
     const materialName=mats[group.materialIndex]?.name||'Default';
     if(!materials.has(materialName)){
-      const c=new Color().setRGB(...(colors.get(materialName)||[.65,.65,.65]),'srgb');
+      const color=materialName==='Glass_(Clear)'?[.025,.03,.035]:(colors.get(materialName)||[.65,.65,.65]);
+      const c=new Color().setRGB(...color,'srgb');
       const metal=/steel|alumin|brass/i.test(materialName);
       materials.set(materialName,doc.createMaterial(materialName).setBaseColorFactor([c.r,c.g,c.b,1]).setMetallicFactor(metal?.65:0).setRoughnessFactor(metal?.4:.65).setDoubleSided(true));
     }
@@ -42,13 +47,13 @@ object.traverse(node=>{
     if(normal)primitive.setAttribute('NORMAL',doc.createAccessor().setType('VEC3').setArray(normal.array.slice(start,end)).setBuffer(buffer));
     mesh.addPrimitive(primitive);triangles+=group.count/3;
   }
-  scene.addChild(doc.createNode(node.name).setMesh(mesh));
   geom.dispose();
 });
+for(const [role,mesh] of roleMeshes)scene.addChild(doc.createNode(role).setMesh(mesh));
 console.log('Input triangles',triangles);
-await doc.transform(dedup(),weld(),join(),simplify({simplifier:MeshoptSimplifier,ratio:.08,error:.003}),prune(),quantize({quantizePosition:14,quantizeNormal:10}));
+await doc.transform(dedup(),weld(),join({keepMeshes:true}),simplify({simplifier:MeshoptSimplifier,ratio:.08,error:.003}),prune(),quantize({quantizePosition:14,quantizeNormal:10}));
 let count=0,draws=0;
 for(const mesh of doc.getRoot().listMeshes())for(const p of mesh.listPrimitives()){count+=(p.getIndices()?.getCount()||p.getAttribute('POSITION').getCount())/3;draws++;}
-const out=path.resolve('public/models/upliance/model.glb');await fs.mkdir(path.dirname(out),{recursive:true});
+const out=path.resolve('public/models/upliance/interactive.glb');await fs.mkdir(path.dirname(out),{recursive:true});
 await new NodeIO().registerExtensions(ALL_EXTENSIONS).write(out,doc);
 console.log({triangles:count,draws,bytes:(await fs.stat(out)).size});

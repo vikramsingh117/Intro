@@ -32,10 +32,10 @@ React Three Fiber and Three.js render the room. Click the monitor, notebook, or 
 - Monitor: persistent projected HTML desktop with My Work, About Me, Projects, AI Assistant, Terminal, Task Manager, Credits, social links, and email. Windows drag, resize, minimize, maximize, and close. Mobile uses larger controls and a plain screen background. Desktop right-click offers refresh and app shortcuts.
 - Terminal: simulated Linux commands, session-only files, history and completion; `sudo`, `top`, `ps`, `df`, and `free` are simulated. App snapshots use actual open desktop windows; CPU/RAM figures are not invented. No host shell or network access.
 - Notebook: rough product notes, recursion/pseudocode and ~600 LeetCode problems, agent-harness learning doodles; animated opening/page turns and locally saved page state.
-- Atmosphere: toggleable desk and ceiling lights, click-to-play radio music, night city and slow airplane flyby. Audio never autoplays.
+- Atmosphere: toggleable desk and ceiling lights, click-to-play radio music with a brief static burst on toggles and a green playback indicator, night city and slow airplane flyby. Audio never autoplays.
 - Drawer: opens to reveal glasses; putting them on blurs the lens regions while preserving room exploration.
-- Sticky notes: write on projected paper, peel and place notes on the wall, and read other visitors' messages via MongoDB.
-- Props: chair, keyboard, plant left of the desk, Pascal beside the lamp, and the upliance appliance on a stool to the right. Stool legs are 30% longer; ceiling suspension is 30% shorter. Final coordinates live in `components/workbench/propPlacement.js`; temporary placement sliders/storage are removed.
+- Sticky notes: write on projected paper, peel and place notes on the wall, and read other visitors' messages via MongoDB. Notes display their content and creation date without public-wall/creator notices.
+- Props: chair, keyboard, plant left of the desk, Pascal beside the lamp, and the upliance appliance on a stool to the right. Hovering the appliance opens its real lid assembly, fades on blue jar LEDs, and wakes a reference-inspired cooking display; leaving closes it and switches it off. Touch/pen taps toggle the preview. The screen is a visual demo, not live appliance control. Stool legs are 30% longer; ceiling light is positioned to remain in the room view. Final coordinates live in `components/workbench/propPlacement.js`; temporary placement sliders/storage are removed.
 
 ## Environment and assistant knowledge
 
@@ -58,7 +58,7 @@ The wall displays the latest 200 notes, up to 240 characters each, polling every
 
 See `public/models/README.md` for source links, licenses, and modifications. The Credits app supplies visible attribution. Pascal is CC BY-NC 4.0; other asset terms differ.
 
-Runtime manifests preload the same URLs used by scene components. Original downloads are preserved; unused subway assets are not loaded. City textures are 1.47 MB including geometry; plant, ceiling light, chair, radio, and keyboard together use about 2.94 MB of referenced resources. Pascal is 1.03 MB and the stool 0.56 MB. The upliance CAD OBJ was converted from ~240 MB to a 4.49 MB GLB with ~90% fewer triangles; original OBJ/MTL remain in Downloads.
+Runtime manifests preload the same URLs used by scene components. Original downloads are preserved; unused subway assets are not loaded. City textures are 1.47 MB including geometry; plant, ceiling light, chair, radio, and keyboard together use about 2.94 MB of referenced resources. Pascal is 1.03 MB and the stool 0.56 MB. The upliance CAD OBJ was converted from ~240 MB to a 4.49 MB interactive GLB with ~90% fewer triangles and a separately retained lid; original OBJ/MTL remain in Downloads.
 
 - `scripts/optimize-city.cjs`: city WebP textures and reduced data maps.
 - `scripts/optimize-room.cjs [asset ...]`: selected room texture optimization.
