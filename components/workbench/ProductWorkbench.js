@@ -1,3 +1,6 @@
+import { UPLIANCE_WORK } from './uplianceWork';
+import Link from 'next/link';
+import useFocusHistory from './useFocusHistory';
 import dynamic from 'next/dynamic';
 import { Component, useEffect, useRef, useState } from 'react';
 import useStickyNotes from './useStickyNotes';
@@ -42,6 +45,11 @@ export default function ProductWorkbench() {
   const [cityReady,setCityReady] = useState(false);
   const windowBack = useRef(null);
   const desktopRef = useRef(null);
+  const [upliance,setUpliance] = useState(null);
+  const [upliancePage,setUpliancePage] = useState(0);
+  const [uplianceArrived,setUplianceArrived] = useState(false);
+  const uplianceBack=useRef(null);
+  useEffect(()=>{if(uplianceArrived&&upliance)uplianceBack.current?.focus();},[uplianceArrived,upliance]);
   const [outside,setOutside] = useState(false);
   const [lampOn,setLampOn] = useState(true);
   const [entered,setEntered] = useState(false);
@@ -69,18 +77,33 @@ export default function ProductWorkbench() {
     const target = returnFocus.current;
     if (target?.isConnected && target !== document.body) target.focus(); else enterButton.current?.focus();
   });
-  const openNotebook = () => { if(entered || outside || notebook) return; rememberFocus(); setNotebookOpen(true); setNotebook(true); };
-  const openMonitor = () => { if(entered || outside || notebook) return; rememberFocus(); setEntered(true); };
-  const openWindow = () => { if(entered || outside || notebook) return; rememberFocus(); setOutside(true); };
+  const openNotebook = () => { if(entered || outside || notebook || upliance) return; rememberFocus(); setNotebookOpen(true); setNotebook(true); };
+  const openMonitor = () => { if(entered || outside || notebook || upliance) return; rememberFocus(); setEntered(true); };
+  const openWindow = () => { if(entered || outside || notebook || upliance) return; rememberFocus(); setOutside(true); };
   const leaveNotebook = () => { setNotebook(false); restoreFocus(); };
   useEffect(() => { if(notebook) notebookText.current?.focus(); }, [notebook]);
   const leave = () => { setDesktop(false); setEntered(false); restoreFocus(); };
-  return <div ref={workbenchRef} className={styles.workbench} onKeyDown={event=>{if(stickyNotes.editor || stickyNotes.placing){if(event.key==='Escape'){event.preventDefault();stickyNotes.cancel();}return;}if(notebook && (event.key==='ArrowLeft'||event.key==='ArrowRight')){event.preventDefault();setNotebookPage(value=>Math.max(0,Math.min(NOTEBOOK_PAGES.length-1,value+(event.key==='ArrowRight'?1:-1))));} else if(event.key==='Escape'&&notebook){event.preventDefault();leaveNotebook();} else if(event.key==='Escape'&&outside){event.preventDefault();setOutside(false);restoreFocus();} else if(event.key==='Escape'&&entered){event.preventDefault(); leave();}}}>
-    <div className={styles.scene} style={{pointerEvents:entered ? 'none' : undefined}} aria-hidden={desktop} ref={enterButton} role="button" aria-label="Enter workspace by clicking the monitor" tabIndex={desktop || outside || notebook ? -1 : 0} onKeyDown={event=>{if(!outside && !notebook && (event.key==='Enter'||event.key===' ')){event.preventDefault();openMonitor();}}}>
-      <div hidden={desktop || outside || notebook} className={styles.sceneLabel}>VIKRAM’S WORKSPACE <span>01 / ENTER TO EXPLORE</span></div>
-      <Boundary onEnter={()=>{setEntered(true);setDesktop(true);}}><Scene propPlacement={propPlacement} noteEditorRef={noteEditorRef} stickyNotes={stickyNotes} wearingGlasses={wearingGlasses} onWearGlasses={()=>setWearingGlasses(true)} citySettings={citySettings} notebookOpen={notebookOpen} onNotebookPageChange={setNotebookPage} onNotebookExit={leaveNotebook} notebook={notebook} notebookPage={notebookPage} onNotebookOpen={openNotebook} onHover={setHoverLabel} desktopRef={desktopRef} desktop={desktop} outside={outside} onCityReady={setCityReady} onWindowSelect={openWindow} lampOn={lampOn} onLampToggle={()=>setLampOn(value=>!value)} entered={entered} reduced={reduced} onEnter={openMonitor} onArrive={()=>setDesktop(true)} /></Boundary>
-      <div hidden={desktop || notebook} className={styles.enterRow}><span>{outside ? (cityReady ? "CITY AFTER DARK · Drag to look around" : "Loading the city…") : entered ? "Entering workspace…" : hoverLabel || "Drag to look around · Pinch to zoom · Tap to explore"}</span></div>
+  const focused=!!(entered||outside||notebook||upliance||stickyNotes.editor||stickyNotes.placing);
+  const closeUpliance=()=>{setUpliance(null);setUplianceArrived(false);restoreFocus();};
+  useFocusHistory(focused,()=>{
+    setDesktop(false);setEntered(false);setOutside(false);setNotebook(false);
+    setUpliance(null);setUplianceArrived(false);stickyNotes.cancel(true);restoreFocus();
+  });
+  return <div ref={workbenchRef} className={styles.workbench} onKeyDown={event=>{if(upliance && event.key==='Escape'){event.preventDefault();closeUpliance();return;}if(stickyNotes.editor || stickyNotes.placing){if(event.key==='Escape'){event.preventDefault();stickyNotes.cancel();}return;}if(notebook && (event.key==='ArrowLeft'||event.key==='ArrowRight')){event.preventDefault();setNotebookPage(value=>Math.max(0,Math.min(NOTEBOOK_PAGES.length-1,value+(event.key==='ArrowRight'?1:-1))));} else if(event.key==='Escape'&&notebook){event.preventDefault();leaveNotebook();} else if(event.key==='Escape'&&outside){event.preventDefault();setOutside(false);restoreFocus();} else if(event.key==='Escape'&&entered){event.preventDefault(); leave();}}}>
+    <div className={styles.scene} style={{pointerEvents:entered || upliance ? 'none' : undefined}} aria-hidden={desktop} ref={enterButton} role="button" aria-label="Enter workspace by clicking the monitor" tabIndex={desktop || outside || notebook || !!upliance ? -1 : 0} onKeyDown={event=>{if(!outside && !notebook && !upliance && (event.key==='Enter'||event.key===' ')){event.preventDefault();openMonitor();}}}>
+      <div hidden={desktop || outside || notebook || !!upliance} className={styles.sceneLabel}>VIKRAM’S WORKSPACE <span>01 / ENTER TO EXPLORE</span></div>
+      <Boundary onEnter={()=>{setEntered(true);setDesktop(true);}}><Scene upliance={upliance} upliancePage={upliancePage} uplianceControlsRef={uplianceBack} onUplianceArrive={()=>setUplianceArrived(true)} onUplianceSelect={view=>{if(entered||outside||notebook||stickyNotes.editor||stickyNotes.placing)return;rememberFocus();setUplianceArrived(false);setUpliance(view);}} propPlacement={propPlacement} noteEditorRef={noteEditorRef} stickyNotes={stickyNotes} wearingGlasses={wearingGlasses} onWearGlasses={()=>setWearingGlasses(true)} citySettings={citySettings} notebookOpen={notebookOpen} onNotebookPageChange={setNotebookPage} onNotebookExit={leaveNotebook} notebook={notebook} notebookPage={notebookPage} onNotebookOpen={openNotebook} onHover={setHoverLabel} desktopRef={desktopRef} desktop={desktop} outside={outside} onCityReady={setCityReady} onWindowSelect={openWindow} lampOn={lampOn} onLampToggle={()=>setLampOn(value=>!value)} entered={entered} reduced={reduced} onEnter={openMonitor} onArrive={()=>setDesktop(true)} /></Boundary>
+      <div hidden={desktop || notebook || !!upliance} className={styles.enterRow}><span>{outside ? (cityReady ? "CITY AFTER DARK · Drag to look around" : "Loading the city…") : entered ? "Entering workspace…" : hoverLabel || "Drag to look around · Pinch to zoom · Tap to explore"}</span></div>
     </div>
+    {upliance && <div ref={uplianceBack} tabIndex={-1} className={styles.uplianceControls} onClick={event=>{if(event.target===event.currentTarget)closeUpliance();}} style={{opacity:uplianceArrived?1:0}} inert={uplianceArrived?undefined:''} aria-hidden={!uplianceArrived} aria-label="Upliance work. Press Escape to return to the desk." onKeyDown={event=>{
+      if(event.key==='ArrowLeft'||event.key==='ArrowRight'){event.preventDefault();setUpliancePage(value=>Math.max(0,Math.min(UPLIANCE_WORK.length-1,value+(event.key==='ArrowRight'?1:-1))));}
+    }}>
+      <div data-display-surface="true" className={styles.uplianceSurface}/>
+      <button aria-label="Previous upliance page" disabled={upliancePage===0} onClick={()=>setUpliancePage(value=>value-1)}>‹</button>
+      <button aria-label="Next upliance page" disabled={upliancePage===UPLIANCE_WORK.length-1} onClick={()=>setUpliancePage(value=>value+1)}>›</button>
+      <button aria-label="Zoom out to desk" className={styles.uplianceClose} onClick={closeUpliance}>×</button>
+      <article aria-live="polite" className={styles.screenReaderOnly}><h2>{UPLIANCE_WORK[upliancePage].title}</h2><p>{UPLIANCE_WORK[upliancePage].lines.join(' ')}</p></article>
+    </div>}
     {outside && <div className={styles.subwayToolbar}><span>OUTSIDE / NIGHT CITY</span><button ref={windowBack} onClick={()=>{setOutside(false);restoreFocus();}}>← Back to desk</button></div>}
     {notebook && <>
       <button className={styles.mobileNotebookBack} onClick={leaveNotebook}>← Back to desk</button>
@@ -92,10 +115,11 @@ export default function ProductWorkbench() {
         <p>{NOTEBOOK_PAGES[notebookPage].caption}</p>
       </article>
     </>}
+    {!focused && <Link href="/"><a className={styles.homeLink} aria-label="Back to home">← Home</a></Link>}
     <StickyNotesUI api={stickyNotes} elementRef={noteEditorRef}/>
     {wearingGlasses && <GlassesOverlay reduced={reduced} onRemove={removeGlasses}/>}
     <section ref={desktopRef} className={`${styles.desktop} ${styles.monitorDesktop}`}
-      style={{pointerEvents:desktop ? 'auto' : 'none', opacity:outside || notebook ? 0 : 1}}
+      style={{pointerEvents:desktop ? 'auto' : 'none', opacity:outside || notebook || upliance ? 0 : 1}}
       inert={desktop ? undefined : ''} aria-hidden={!desktop} aria-label="Vikram’s monitor desktop">
       <DesktopWorkspace room={{lampOn,notebookOpen,notebookPage,wearingGlasses,cityReady,notesReady:stickyNotes.ready,noteCount:stickyNotes.notes.length}} desktopRef={desktopRef} interactive={desktop} exitRef={exitButton} onLeave={leave}/>
     </section>

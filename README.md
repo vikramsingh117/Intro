@@ -22,6 +22,7 @@ Stop the dev server before `npm run build`; both use `.next`. Then `npm start` s
 - `/after-hours`: fullscreen room; `/workbench` shares the same implementation.
 - `/api/about`: assistant streaming endpoint.
 - `/api/wall-notes`: shared sticky-note CRUD endpoint.
+- `/api/photos`: shared gallery, image/thumbnail delivery, upload and owner deletion.
 
 The After Hours card fills as model/texture loader groups complete (not byte-level progress). There is no loading/ready notification popup. Clicking it while loading enters automatically when ready. The illustration is `public/images/after-hours-workbench.svg` and does not require WebGL.
 
@@ -29,7 +30,7 @@ The After Hours card fills as model/texture loader groups complete (not byte-lev
 
 React Three Fiber and Three.js render the room. Click the monitor, notebook, or window for smooth camera transitions; orbit the main room and use limited look-around at the window. Touch, pinch zoom, reduced motion, and mobile monitor layouts are supported.
 
-- Monitor: persistent projected HTML desktop with My Work, About Me, Projects, AI Assistant, Terminal, Task Manager, Credits, social links, and email. Windows drag, resize, minimize, maximize, and close. Mobile uses larger controls and a plain screen background. Desktop right-click offers refresh and app shortcuts.
+- Monitor: persistent projected HTML desktop with My Work, About Me, Projects, AI Assistant, Terminal, Task Manager, Photos, Credits, social links, and email. Windows drag, resize, minimize, maximize, and close. Mobile uses larger controls and a plain screen background. Desktop right-click offers refresh and app shortcuts.
 - Terminal: simulated Linux commands, session-only files, history and completion; `sudo`, `top`, `ps`, `df`, and `free` are simulated. App snapshots use actual open desktop windows; CPU/RAM figures are not invented. No host shell or network access.
 - Notebook: rough product notes, recursion/pseudocode and ~600 LeetCode problems, agent-harness learning doodles; animated opening/page turns and locally saved page state.
 - Atmosphere: toggleable desk and ceiling lights, click-to-play radio music with a brief static burst on toggles and a green playback indicator, night city and slow airplane flyby. Audio never autoplays.
@@ -78,3 +79,9 @@ Texture scripts require Sharp in the tool environment. CAD tooling is documented
 - `COZY_WORKSPACE_TODO.md`: implemented scope and remaining work.
 
 Visual/browser review is performed by the owner; lint, command/API tests, model parsing, and asset checks complement that review.
+
+## Shared Photos app
+
+The monitor Photos app shows visitor images in pages of 40, with Load more for older uploads. Visitors can choose JPG/PNG/WebP files or explicitly enable their camera inside the app, capture a frame, preview it with a retro scanline filter, and press Share photo. Camera audio is disabled; streams stop when hidden, minimized, unfocused, or closed. Camera access needs HTTPS or localhost and browser permission.
+
+The browser redraws images as JPEG at up to 1280px (under 600 KB) and creates 320px thumbnails. `/api/photos` checks JPEG markers, header dimensions and size, then stores binary images in the same configured MongoDB database's `photos` collection. Public image endpoints return JPEG with nosniff headers. Browser ownership tokens allow deleting one's own uploads; no login is required. Clearing browser storage loses deletion access. Upload limits are process-local (10/hour/address), not distributed moderation. Gallery auto-refresh runs every 30 seconds while active; image thumbnails load lazily.

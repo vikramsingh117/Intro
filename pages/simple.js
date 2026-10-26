@@ -131,7 +131,8 @@ export default function SimplePortfolio() {
     <a className={styles.skipLink} href="#main">Skip to content</a>
     <div className={styles.readProgress} ref={progress} aria-hidden="true" />
     <div className={styles.page} ref={page}>
-      <nav className={styles.themeNav} aria-label="Portfolio theme">
+      <nav className={styles.themeNav} aria-label="Portfolio navigation">
+        <Link href="/"><a className={styles.themeSwitch}>← Home</a></Link>
       </nav>
       <main id="main">
         <section id="home" className={styles.hero}>

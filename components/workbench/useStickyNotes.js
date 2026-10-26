@@ -55,7 +55,7 @@ export default function useStickyNotes() {
     } catch(err) {if(mounted.current)setError(err.name==='AbortError'?'The request timed out. Please try again.':err.message);}
     finally {working.current=false;if(mounted.current)setBusy(false);}
   };
-  const cancel = () => { if(!busy){setEditor(null);setPlacing(null);setError('');} };
+  const cancel = force => { if(!busy || force===true){setEditor(null);setPlacing(null);setError('');} };
   const edit = note => {if(busy)return;setEditor(note || {id:null,canEdit:true});setDraft(note?.text || '');setPlacing(null);setError('');};
   const save = event => {
     event.preventDefault();const text=draft.trim();if(!text || !editor?.canEdit || busy)return;

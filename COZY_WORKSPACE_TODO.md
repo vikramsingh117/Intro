@@ -7,7 +7,7 @@ Current implementation on `main` (updated 2026-10-26). `/after-hours` and `/work
 - [x] Wooden desk, drawers, extended room shell and ceiling, window with night-city skyline.
 - [x] Smooth monitor/window/notebook camera transitions, main-room orbit/pinch zoom and bounded window look-around.
 - [x] Perspective-projected desktop remains on the monitor in room and focused views.
-- [x] My Work, About Me, Projects, AI Assistant, Terminal, Task Manager and Credits apps; GitHub, LinkedIn, LeetCode and email shortcuts.
+- [x] My Work, About Me, Projects, AI Assistant, Terminal, Task Manager, Photos and Credits apps; GitHub, LinkedIn, LeetCode and email shortcuts.
 - [x] Movable/resizable windows, minimize/maximize/restore, taskbar and desktop context menu. Native drag/resize pointers; themed square cursor elsewhere.
 - [x] Mobile app layout, larger controls, plain monitor background and software-keyboard-aware sizing.
 - [x] Simulated terminal with virtual files, history/completion, common Linux commands and sudo. Top/ps report desktop app snapshots, not OS telemetry.
@@ -21,6 +21,9 @@ Current implementation on `main` (updated 2026-10-26). `/after-hours` and `/work
 - [x] Stool legs lengthened 30% without changing seat size. Final placement settings applied; temporary controls removed.
 - [x] Simple loads before After Hours. Homepage room illustration fills silently with asset progress; no ready/loading popup.
 - [x] Optimized city and room textures; simplified/quantized upliance GLB; original source assets and attribution preserved.
+
+- [x] Shared Photos gallery backed by MongoDB, in-monitor camera, retro scanline preview, explicit upload, owner deletion, and camera cleanup on leaving the app.
+- [x] Upliance uses the same subtle hover boundary outline as other interactive room objects.
 
 ## Final placement
 
