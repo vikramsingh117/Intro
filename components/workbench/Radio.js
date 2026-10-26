@@ -1,4 +1,4 @@
-import { takeRadioEntrance } from './radioEntrance';
+import { RADIO_VOLUME, takeRadioEntrance } from './radioEntrance';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useLoader, useThree } from '@react-three/fiber';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
@@ -42,7 +42,7 @@ export default function Radio({ onHover }) {
     const player = entrance?.player || new Audio('/audio/cozy-nordic-quiet-spot.m4a');
     player.preload = 'none';
     player.loop = true;
-    if(!entrance)player.volume = .4;
+    if(!entrance)player.volume = RADIO_VOLUME;
     audio.current = player;
     const error = () => {
       requested.current = false; setOn(false); setFailed(true);

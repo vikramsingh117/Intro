@@ -156,6 +156,8 @@ function Camera({ upliance, onUplianceArrive, entered, outside, notebook, citySe
     if (orbit.current) {
       orbit.current.enabled = false;
       orbit.current.maxDistance = Math.max(18, 12 / (size.width / size.height));
+      orbit.current.minAzimuthAngle = size.width <= 760 ? -.75 : -.2;
+      orbit.current.maxAzimuthAngle = size.width <= 760 ? 1.15 : .65;
     }
     // Approach perpendicular to the screen until its surface covers the viewport.
     const distance = Math.min(1.16, 1.88 / (size.width / size.height)) / Math.tan(21 * Math.PI / 180) * 1.3;

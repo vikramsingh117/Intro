@@ -1,3 +1,4 @@
+export const RADIO_VOLUME = .4 * .7;
 let pending = null;
 
 // Called directly by the Home click, before loading or navigation can lose the audio gesture.
@@ -26,11 +27,11 @@ export function prepareRadioEntrance() {
       if (!await started || player.paused) return false;
       if (gain) {
         gain.gain.setValueAtTime(0, context.currentTime);
-        gain.gain.linearRampToValueAtTime(.4, context.currentTime + 11);
+        gain.gain.linearRampToValueAtTime(RADIO_VOLUME, context.currentTime + 11);
       } else {
         const start = performance.now();
         const tick = now => {
-          player.volume = .4 * Math.min(1, (now - start) / 11000);
+          player.volume = RADIO_VOLUME * Math.min(1, (now - start) / 11000);
           if (now - start < 11000) frame = requestAnimationFrame(tick);
         };
         frame = requestAnimationFrame(tick);
@@ -39,8 +40,8 @@ export function prepareRadioEntrance() {
     },
     normalVolume() {
       cancelAnimationFrame(frame);
-      if (gain) { gain.gain.cancelScheduledValues(context.currentTime); gain.gain.setValueAtTime(.4, context.currentTime); context.resume().catch(() => {}); }
-      else player.volume = .4;
+      if (gain) { gain.gain.cancelScheduledValues(context.currentTime); gain.gain.setValueAtTime(RADIO_VOLUME, context.currentTime); context.resume().catch(() => {}); }
+      else player.volume = RADIO_VOLUME;
     },
     dispose() {
       cancelAnimationFrame(frame);
