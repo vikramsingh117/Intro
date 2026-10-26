@@ -23,9 +23,10 @@ export default async function handler(req,res){
   const bucket=buckets.get(visitorId)||{start:now,count:0};
   if(bucket.count>=90||(!buckets.has(visitorId)&&buckets.size>=10000))return res.status(429).end();
   bucket.count++;buckets.set(visitorId,bucket);
-  const {visitId,landingPath,events}=req.body||{};
-  if(!validId(visitId)||!paths.has(landingPath)||!Array.isArray(events)||events.length<1||events.length>25)return res.status(400).end();
+  const {visitId,landingPath,events,durationSeconds=0,activeSeconds=0}=req.body||{};
+  if(!validId(visitId)||!paths.has(landingPath)||!Array.isArray(events)||events.length>25)return res.status(400).end();
   if(events.some(e=>!e||!validId(e.id)||!paths.has(e.path)||typeof e.action!=='string'||! /^[a-z_]{1,48}$/.test(e.action)||typeof e.target!=='string'||e.target.length>100||typeof e.at!=='string'||!Number.isFinite(Date.parse(e.at))))return res.status(400).end();
+  if(!Number.isSafeInteger(durationSeconds)||durationSeconds<0||durationSeconds>31536000||!Number.isSafeInteger(activeSeconds)||activeSeconds<0||activeSeconds>durationSeconds)return res.status(400).end();
   const clean=events.map(({id,action,target,path,at})=>({id,action,target,path,at}));
   const country=String(req.headers['x-vercel-ip-country']||'').slice(0,2);
   const regionCode=String(req.headers['x-vercel-ip-country-region']||'').replace(/^IN-/,'').slice(0,8);
@@ -37,7 +38,7 @@ export default async function handler(req,res){
     await indexes;
     const result=await visits.updateOne({_id:visitId,visitorId},{$setOnInsert:{visitorId,ip,country,regionCode,state,landingPath,landedAt:new Date(),events:[]}},{upsert:true});
     // Replayed batches are idempotent. Bound the document size for long-running tabs.
-    await visits.updateOne({_id:visitId,visitorId},[{$set:{lastSeen:new Date(),events:{$slice:[{$setUnion:['$events',{$literal:clean}]},1000]}}}]);
+    await visits.updateOne({_id:visitId,visitorId},[{$set:{lastSeen:new Date(),durationSeconds:{$max:[{$ifNull:['$durationSeconds',0]},durationSeconds]},activeSeconds:{$max:[{$ifNull:['$activeSeconds',0]},activeSeconds]},events:{$slice:[{$setUnion:['$events',{$literal:clean}]},1000]}}}]);
     if(result.upsertedCount===1){
       const landingCount=await visits.countDocuments({visitorId});
       await visitors.updateOne({_id:visitorId},{$set:{ip,country,regionCode,state,lastSeen:new Date()},$setOnInsert:{firstSeen:new Date()},$max:{landingCount}},{upsert:true});

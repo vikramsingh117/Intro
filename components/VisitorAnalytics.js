@@ -1,11 +1,11 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { flushActivity, trackInteraction } from '../lib/visitor-analytics';
+import { flushActivity, trackInteraction, syncVisitVisibility } from '../lib/visitor-analytics';
 
 export default function VisitorAnalytics(){
   const router=useRouter();
   useEffect(()=>{
-    trackInteraction('page_view');flushActivity();
+    syncVisitVisibility();trackInteraction('page_view');flushActivity();
   },[router.pathname]);
   useEffect(()=>{
     const click=event=>{
@@ -17,13 +17,15 @@ export default function VisitorAnalytics(){
       const label=element.dataset.track||element.getAttribute('aria-label')||element.querySelector('[data-app]')?.dataset.app||destination||element.tagName.toLowerCase();
       trackInteraction('click',label);
     };
-    const hidden=()=>{if(document.hidden)flushActivity(true);};
-    const leave=()=>flushActivity(true);
+    const hidden=()=>{syncVisitVisibility();if(document.hidden)flushActivity(true);};
+    const leave=()=>{syncVisitVisibility(true);flushActivity(true);};
+    const resume=()=>syncVisitVisibility();
     const timer=setInterval(()=>flushActivity(),4000);
     document.addEventListener('click',click,true);
     document.addEventListener('visibilitychange',hidden);
     window.addEventListener('pagehide',leave);
-    return()=>{clearInterval(timer);document.removeEventListener('click',click,true);document.removeEventListener('visibilitychange',hidden);window.removeEventListener('pagehide',leave);};
+    window.addEventListener('pageshow',resume);
+    return()=>{clearInterval(timer);document.removeEventListener('click',click,true);document.removeEventListener('visibilitychange',hidden);window.removeEventListener('pagehide',leave);window.removeEventListener('pageshow',resume);};
   },[]);
   return null;
 }

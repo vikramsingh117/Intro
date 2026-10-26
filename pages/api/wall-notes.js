@@ -1,3 +1,4 @@
+import { notifyStickyNote } from '../../lib/photo-notifications';
 import { createHash } from 'crypto';
 import { wallNotesCollection } from '../../lib/mongodb';
 import { NOTE_LIMIT, publicNote, validId, validNote } from '../../lib/wall-notes.mjs';
@@ -40,7 +41,8 @@ export default async function handler(req, res) {
     }
     if (req.method === 'POST') {
       // The client keeps the same id on retries, preventing duplicate notes.
-      await collection.updateOne(filter, {$setOnInsert:{text:text.trim(),x,y,createdAt:new Date(),updatedAt:new Date()}}, {upsert:true});
+      const result=await collection.updateOne(filter, {$setOnInsert:{text:text.trim(),x,y,createdAt:new Date(),updatedAt:new Date()}}, {upsert:true});
+      if(result.upsertedCount===1)await notifyStickyNote(text.trim());
     } else {
       const result = await collection.updateOne(filter, {$set:{text:text.trim(),x,y,updatedAt:new Date()}});
       if (!result.matchedCount) return res.status(404).json({error:'This note is unavailable or belongs to another visitor.'});
