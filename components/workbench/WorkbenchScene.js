@@ -37,6 +37,7 @@ function Monitor({ onEnter, desktopRef, desktop }) {
   const screen = useRef(null);
   const { camera, size, invalidate } = useThree();
   const projection = useMemo(() => new Matrix4(), []);
+  const edgePoints = useMemo(() => [new Vector3(), new Vector3(), new Vector3()], []);
   useEffect(() => { invalidate(); }, [desktop, invalidate]);
   useFrame(() => {
     if (!screen.current || !desktopRef.current) return;
@@ -60,6 +61,15 @@ function Monitor({ onEnter, desktopRef, desktop }) {
     projection.elements[10] = 1;
     desktopRef.current.style.transform = `matrix3d(${projection.elements.join(',')})`;
     desktopRef.current.style.visibility = 'visible';
+    // The HTML screen sits above WebGL, so SMAA cannot smooth its outer boundary.
+    // Feather only that boundary by about one display pixel, including during zoom.
+    edgePoints[0].set(0, 0, 0).applyMatrix4(projection);
+    edgePoints[1].set(1280, 0, 0).applyMatrix4(projection);
+    edgePoints[2].set(0, 780, 0).applyMatrix4(projection);
+    const edgeX = Math.min(12, Math.max(.5, 1280 / Math.max(1, edgePoints[0].distanceTo(edgePoints[1]))));
+    const edgeY = Math.min(12, Math.max(.5, 780 / Math.max(1, edgePoints[0].distanceTo(edgePoints[2]))));
+    desktopRef.current.style.setProperty('--screen-edge-x', `${edgeX}px`);
+    desktopRef.current.style.setProperty('--screen-edge-y', `${edgeY}px`);
     // Keep touch UI inside the visible part of the physical monitor in portrait.
     const focusDistance = Math.min(1.16, 1.88 / (size.width / size.height)) / Math.tan(21 * Math.PI / 180) * 1.3;
     const pixelScale = size.height * 3.76 / (2 * focusDistance * Math.tan(21 * Math.PI / 180) * 1280);

@@ -6,6 +6,7 @@ import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass';
 import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass';
+import { SMAAPass } from 'three/examples/jsm/postprocessing/SMAAPass';
 
 export function NightEffects({ exposure = .85, glow = .55 }) {
   const { gl, scene, camera, size, invalidate } = useThree();
@@ -18,16 +19,31 @@ export function NightEffects({ exposure = .85, glow = .55 }) {
     const bloom = new UnrealBloomPass(new Vector2(size.width, size.height), .55, .45, 1.05);
     bloomPass.current = bloom;
     const output = new OutputPass();
+    const smaa = new SMAAPass(size.width * gl.getPixelRatio(), size.height * gl.getPixelRatio());
+    // SMAA operates on the final display colors, after bloom and tone mapping.
+    // Its embedded lookup images load asynchronously; wake the demand renderer when ready.
+    smaa.enabled = false;
+    const lookupImages = [smaa.areaTexture.image, smaa.searchTexture.image];
+    const enableSmaa = () => {
+      if (lookupImages.every(image => image.complete && image.naturalWidth > 0)) {
+        smaa.enabled = true;
+        invalidate();
+      }
+    };
+    lookupImages.forEach(image => image.addEventListener('load', enableSmaa));
+    enableSmaa();
     composer.addPass(render);
     composer.addPass(bloom);
     composer.addPass(output);
+    composer.addPass(smaa);
     composer.setSize(size.width, size.height);
     pipeline.current = composer;
     invalidate();
     return () => {
       pipeline.current = null;
       bloomPass.current = null;
-      render.dispose(); bloom.dispose(); output.dispose(); composer.dispose();
+      lookupImages.forEach(image => image.removeEventListener('load', enableSmaa));
+      render.dispose(); bloom.dispose(); output.dispose(); smaa.dispose(); composer.dispose();
     };
   }, [gl, scene, camera, size.width, size.height, invalidate]);
   useEffect(() => {

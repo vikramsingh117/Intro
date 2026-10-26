@@ -87,3 +87,11 @@
 .homeLink{position:absolute;right:max(22px,env(safe-area-inset-right));bottom:max(22px,env(safe-area-inset-bottom));z-index:20;display:inline-flex;align-items:center;min-height:44px;padding:0 4px;border:0;background:transparent;color:#b7beb0;text-decoration:none;font:10px monospace;letter-spacing:.08em;text-shadow:0 1px 4px #0009}.homeLink:hover{color:#e6d5b5}.homeLink:focus-visible{outline:2px solid #e6c994;outline-offset:4px}@media(max-width:760px){.homeLink{right:16px;bottom:calc(65px + env(safe-area-inset-bottom))}}
 
 .uplianceSurface{position:absolute;inset:0;pointer-events:auto}.uplianceControls>button.uplianceClose{font-size:22px}
+
+/* Smooth the projected HTML perimeter without softening desktop text. */
+.monitorDesktop{
+  -webkit-mask-image:linear-gradient(to right,transparent,#000 var(--screen-edge-x,1px),#000 calc(100% - var(--screen-edge-x,1px)),transparent),linear-gradient(to bottom,transparent,#000 var(--screen-edge-y,1px),#000 calc(100% - var(--screen-edge-y,1px)),transparent);
+  mask-image:linear-gradient(to right,transparent,#000 var(--screen-edge-x,1px),#000 calc(100% - var(--screen-edge-x,1px)),transparent),linear-gradient(to bottom,transparent,#000 var(--screen-edge-y,1px),#000 calc(100% - var(--screen-edge-y,1px)),transparent);
+  -webkit-mask-composite:source-in;
+  mask-composite:intersect;
+}
