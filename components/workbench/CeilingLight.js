@@ -1,3 +1,4 @@
+import useTrackedState from './useTrackedState';
 import { useEffect, useMemo, useState } from 'react';
 import { useLoader, useThree } from '@react-three/fiber';
 import { Box3, Object3D, Vector3 } from 'three';
@@ -50,6 +51,7 @@ export default function CeilingLight({ onHover }) {
     bulbMaterials.forEach(material=>{material.emissiveIntensity=on?3.5:0;});invalidate();
   },[on,bulbMaterials,invalidate]);
   useEffect(()=>()=>materials.forEach(material=>material.dispose()),[materials]);
+  useTrackedState({ceilingLight:on});
   return <group position={[6.8,HANG_HEIGHT,-.45]}>
     {/* Extend the fixture's suspension up to the existing high ceiling. */}
     <mesh position={[0,(CEILING_HEIGHT-HANG_HEIGHT)/2,0]} castShadow receiveShadow>

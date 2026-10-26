@@ -51,6 +51,7 @@ export default function ThemeChooser() {
         </a>
         </div>
       </div>
+      <Link href="/privacy"><a className={styles.privacyLink}>Privacy</a></Link>
     </main>
   </>;
 }

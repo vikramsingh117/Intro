@@ -1,8 +1,10 @@
+import useTrackedState from './useTrackedState';
 import { useEffect, useRef, useState } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import InteractiveObject from './InteractiveObject';
 
 function Wood({ position, size, map, color = '#aa805b' }) {
+  useTrackedState({drawer:open});
   return <mesh position={position} castShadow receiveShadow><boxGeometry args={size}/><meshStandardMaterial color={color} map={map} roughness={.8}/></mesh>;
 }
 export default function GlassesDrawer({ wood, reduced, onHover, wearing, onWear }) {

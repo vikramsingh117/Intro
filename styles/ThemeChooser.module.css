@@ -81,3 +81,5 @@
   .description h2{position:relative;white-space:nowrap}
   .description .recommended{position:absolute;top:100%;left:0;margin:6px 0 0;font-size:9px}
 }
+
+.privacyLink{position:absolute;bottom:14px;left:24px;z-index:2;font:10px monospace;color:#65695e;text-decoration:underline;text-underline-offset:3px}

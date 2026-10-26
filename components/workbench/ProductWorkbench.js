@@ -1,3 +1,4 @@
+import useTrackedState from './useTrackedState';
 import { UPLIANCE_WORK } from './uplianceWork';
 import Link from 'next/link';
 import useFocusHistory from './useFocusHistory';
@@ -83,6 +84,7 @@ export default function ProductWorkbench() {
   const leaveNotebook = () => { setNotebook(false); restoreFocus(); };
   useEffect(() => { if(notebook) notebookText.current?.focus(); }, [notebook]);
   const leave = () => { setDesktop(false); setEntered(false); restoreFocus(); };
+  useTrackedState({monitor:entered,window:outside,notebook,notebookPage:notebook?notebookPage:'closed',upliance:!!upliance,upliancePage:upliance?upliancePage:'closed',lamp:lampOn,glasses:wearingGlasses,noteEditor:!!stickyNotes.editor,notePlacement:!!stickyNotes.placing});
   const focused=!!(entered||outside||notebook||upliance||stickyNotes.editor||stickyNotes.placing);
   const closeUpliance=()=>{setUpliance(null);setUplianceArrived(false);restoreFocus();};
   useFocusHistory(focused,()=>{

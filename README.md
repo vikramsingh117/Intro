@@ -89,3 +89,9 @@ The browser redraws images as JPEG at up to 1280px (under 600 KB) and creates 32
 ### Photo upload alerts
 
 Set the server-only `NTFY_PHOTO_TOPIC` environment variable to a long, random topic on ntfy.sh, then subscribe to that topic in the ntfy app. Keep the topic out of source control: free topics are accessible to anyone who knows their name. No account or email is required. Newly inserted photos trigger a text notification linking to the saved photo; duplicate retries and failed saves do not notify. Delivery is best-effort with a three-second timeout and cannot fail a successful upload. ntfy outages or rate limits can cause missed alerts; there is no delivery retry queue.
+
+### Visitor analytics
+
+Production requests to `/api/visit` record the IP address and Vercel country/region headers in MongoDB. `visitor_activity` holds one document per browser page load, including the landing route and up to 1,000 deduplicated timestamped actions; `visitor_totals` records IP-based landing counts. Client-side route changes are page views, not new landings. IPs identify network connections, not reliably individual people (shared networks, VPNs and changing addresses affect counts). Geolocation is approximate; missing state information remains unknown.
+
+The existing private ntfy topic receives a notice for each new landing located in India. No IP address or interaction history is sent to ntfy. Alerts use the same free-service quota as photo alerts and are best-effort. Analytics are batched every four seconds and flushed when the page hides; blocking scripts, abrupt closes or network failures can cause missing events. Only control/action labels are recorded, not typed messages, note text, terminal commands or image contents. There is no public analytics read endpoint. Counts are based on retained visit documents, and no automatic retention deletion is configured.

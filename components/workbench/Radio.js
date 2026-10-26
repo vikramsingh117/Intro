@@ -1,3 +1,4 @@
+import useTrackedState from './useTrackedState';
 import { RADIO_VOLUME, takeRadioEntrance } from './radioEntrance';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useLoader, useThree } from '@react-three/fiber';
@@ -87,6 +88,7 @@ export default function Radio({ onHover }) {
       onHover('Radio · unable to play, tap to retry');
     });
   };
+  useTrackedState({radio:on});
   const { scene } = useLoader(GLTFLoader, '/models/radio/optimized.gltf');
   const model = useMemo(() => {
     const clone = scene.clone(true);

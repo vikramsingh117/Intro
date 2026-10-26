@@ -72,7 +72,7 @@ function SystemDrawing({ selected, onSelect }) {
     </svg>
     </div>
     <div className={styles.diagramControls} role="tablist" aria-label="Work experience">
-      {roles.map((item, index) => <button key={item.company} id={"role-" + index} role="tab" aria-selected={selected === index} aria-controls="experience-panel" tabIndex={selected === index ? 0 : -1} onClick={() => onSelect(index)} onKeyDown={event => {
+      {roles.map((item, index) => <button data-track={`experience:${item.company}`} key={item.company} id={"role-" + index} role="tab" aria-selected={selected === index} aria-controls="experience-panel" tabIndex={selected === index ? 0 : -1} onClick={() => onSelect(index)} onKeyDown={event => {
         const next = event.key === "ArrowRight" ? (index + 1) % roles.length : event.key === "ArrowLeft" ? (index + roles.length - 1) % roles.length : event.key === "Home" ? 0 : event.key === "End" ? roles.length - 1 : null;
         if (next !== null) { event.preventDefault(); onSelect(next); document.getElementById("role-" + next).focus(); }
       }}><span>0{index + 1}</span>{item.company}</button>)}
@@ -146,7 +146,7 @@ export default function SimplePortfolio() {
             <div className={styles.heroActions}><a className={styles.primaryLink} href="#ask">Ask my assistant <span>↗</span></a><a className={styles.textLink} href="#work">Explore my work ↓</a><a className={styles.textLink} href="https://github.com/vikramsingh117" target="_blank" rel="noreferrer">GitHub ↗</a></div>
           </div>
           <div id="ask" className={styles.heroVisual}>
-            <button className={styles.howItWorks} onClick={() => setShowJourney(!showJourney)} aria-expanded={showJourney} aria-controls="assistant-journey">
+            <button data-track="assistant:how_it_works" className={styles.howItWorks} onClick={() => setShowJourney(!showJourney)} aria-expanded={showJourney} aria-controls="assistant-journey">
               {showJourney ? "Back to assistant" : "How this assistant works"}
             </button>
             <div className={styles.flipCard}>
@@ -192,7 +192,7 @@ export default function SimplePortfolio() {
         </section>
         <footer className={styles.footer}>
           <p className={styles.kicker}>GET IN TOUCH</p><a className={styles.footerTitle} href="mailto:vikramandanshu@gmail.com">Say <em>hello.</em><span>↗</span></a>
-          <div className={styles.footerBottom}><a href="mailto:vikramandanshu@gmail.com">vikramandanshu@gmail.com</a><div><a href="https://github.com/vikramsingh117" target="_blank" rel="noreferrer">GitHub ↗</a><a href="https://leetcode.com/u/vikramandanshu/" target="_blank" rel="noreferrer">LeetCode ↗</a><a href="#home">Back to top ↑</a></div><span>© {new Date().getFullYear()} VIKRAM SINGH</span></div>
+          <div className={styles.footerBottom}><a href="mailto:vikramandanshu@gmail.com">vikramandanshu@gmail.com</a><div><a href="https://github.com/vikramsingh117" target="_blank" rel="noreferrer">GitHub ↗</a><a href="https://leetcode.com/u/vikramandanshu/" target="_blank" rel="noreferrer">LeetCode ↗</a><a href="#home">Back to top ↑</a><Link href="/privacy"><a>Privacy</a></Link></div><span>© {new Date().getFullYear()} VIKRAM SINGH</span></div>
         </footer>
       </main>
     </div>

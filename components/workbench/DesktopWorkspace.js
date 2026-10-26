@@ -1,3 +1,4 @@
+import { trackInteraction } from '../../lib/visitor-analytics';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import DesktopContextMenu from './DesktopContextMenu';
 import localPoint from './desktopPoint';
@@ -33,9 +34,9 @@ export default function DesktopWorkspace({ desktopRef, interactive, exitRef, onL
     if(index<0 || (index===current.length-1 && !current[index].minimized))return current;
     return [...current.filter(window=>window.title!==title),{...current[index],minimized:false}];
   });
-  const open=title=>setWindows(current=>[...current.filter(window=>window.title!==title),{title,minimized:false}]);
-  const close=title=>{setWindows(current=>current.filter(window=>window.title!==title));requestAnimationFrame(()=>shortcuts.current[title]?.focus());};
-  const minimize=title=>{setWindows(current=>current.map(window=>window.title===title?{...window,minimized:true}:window));requestAnimationFrame(()=>shortcuts.current[title]?.focus());};
+  const open=title=>{trackInteraction('app_open',title);setWindows(current=>[...current.filter(window=>window.title!==title),{title,minimized:false}]);};
+  const close=title=>{trackInteraction('app_close',title);setWindows(current=>current.filter(window=>window.title!==title));requestAnimationFrame(()=>shortcuts.current[title]?.focus());};
+  const minimize=title=>{trackInteraction('app_minimize',title);setWindows(current=>current.map(window=>window.title===title?{...window,minimized:true}:window));requestAnimationFrame(()=>shortcuts.current[title]?.focus());};
   return <div ref={workspace} tabIndex={-1} className={styles.desktopWorkspace} onContextMenu={contextMenu} onKeyDown={event=>{if((event.key==='ContextMenu'||(event.shiftKey&&event.key==='F10'))&&interactive){event.preventDefault();event.stopPropagation();setMenu({x:24,y:100,width:workspace.current.offsetWidth});return;}if(event.key==='Escape'&&top){event.preventDefault();event.stopPropagation();close(top);}}}>
     <div className={styles.desktopTop}><span>VIKRAM / BEYOND HOURS</span><button ref={exitRef} onClick={onLeave}>← Back to desk</button></div>
     <div key={refreshTick} className={`${styles.shortcuts} ${styles.desktopIconsFresh}`} style={{visibility:iconsVisible?undefined:'hidden'}}>{apps.map(([title,icon])=><button key={title} ref={node=>{shortcuts.current[title]=node;}} onClick={()=>open(title)}><span className={styles.appIcon} data-app={title}>{icon}</span>{title}</button>)}
