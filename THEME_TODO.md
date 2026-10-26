@@ -1,10 +1,8 @@
 # After Hours implementation / original planning archive
 
-Status: the Signal Room experiment has been removed. After Hours at /after-hours
-again uses the scroll-driven layout with the animated signal, assistant,
-projects and contact. Simple remains at /simple.
+Status (2026-10-27): historical planning archive only. Both the Signal Room experiment and scroll-driven After Hours layout are superseded by the fullscreen cozy 3D workspace. Current implemented behavior is documented in README.md and COZY_WORKSPACE_TODO.md. Do not use unchecked historical items below as the current roadmap.
 Vikram's title is AI Product Engineer, including product decisions and ownership.
-No tests or browser review run, per the user's code-only preference.
+No automated tests or browser review by default; the owner handles visual review.
 
 Current decisions superseding the original plan below:
 - Always show the chooser; do not persist a theme preference.

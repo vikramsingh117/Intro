@@ -31,8 +31,8 @@ function Work() {
       <p>Voice onboarding with WebSockets, backend maintenance for a platform serving 4,000+ daily active customers, GCP SQL triggers, and centralized SSH access with device-specific policies.</p>
     </article>
     <article><small>MAR — JUN 2025 · BACKEND TRAINEE</small><h3>Office Solutions</h3>
-      <ul><li>Delivered a benchmarking tool in three weeks.</li><li>Simplified database relationships and removed unnecessary queries for a 50% performance improvement.</li><li>Wrote 50+ Cucumber and JUnit tests and implemented Redis rate limiting.</li></ul>
-      <p className={styles.appStack}>Java · Spring Boot · Redis · Azure · Cucumber · JUnit</p>
+      <ul><li>Delivered a Java/Spring Boot Power BI report benchmarking tool in three weeks, measuring report loading time.</li><li>Integrated a small Node.js server for Microsoft Power BI embedding APIs and used Selenium to automate the browser workflow.</li><li>Used multithreading in Spring Boot, Cucumber for BDD, and JUnit for testing.</li><li>Simplified database relationships and removed unnecessary queries for a 50% performance improvement.</li><li>Wrote 50+ Cucumber and JUnit tests and implemented Redis rate limiting.</li></ul>
+      <p className={styles.appStack}>Java · Spring Boot · Node.js · Power BI · Selenium · Redis · Azure · Cucumber · JUnit</p>
     </article>
     <article><small>JAN — MAR 2025 · SWE INTERN</small><h3>Cribble Org</h3>
       <ul><li>Worked on a Telegram MiniApp for a community of 3,000+ members.</li><li>Implemented 50+ global and component-level Winston logs.</li><li>Maintained and optimized Firestore deployments on Google Cloud.</li></ul>

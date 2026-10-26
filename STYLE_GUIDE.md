@@ -127,3 +127,13 @@ Simple remains a readable portfolio; the homepage chooser is the entry point.
 - Model originals and licenses are preserved. Optimize runtime geometry/textures, and preload exactly the URLs used by scene components. Do not add fake CPU/RAM numbers or byte-progress claims.
 - Shared notes use real MongoDB persistence; browser ownership is not login authentication. Document configuration and failures honestly.
 - Core files: `components/workbench/`, `styles/Workbench.module.css`, `components/AfterHoursPreload.js`. Final object placement is source-controlled, not overridden by old temporary browser settings.
+
+### Current interaction details
+
+- Home entry uses a preview zoom, fade through black, then a gentle scene reveal. Respect reduced motion. On phones, the small recommended label sits below After Hours without adding card height.
+- Keep the room Home link small and unboxed; hide it during focused views. Browser Back returns to the room before leaving the route.
+- Upliance work content stays on its physical display. Plain chevrons sit inside the left/right edges, with a small × at the top right; reveal controls after arrival. The left arrow has space before the text indent.
+- Home entry can start radio playback using the entry gesture, fading to 0.28 over 11 seconds. Direct visits remain silent. Manual toggles keep the static effect and playback indicator.
+- Apply SMAA after output conversion to all scene views. Feather only the projected HTML monitor perimeter; do not blur its text.
+- Photos use a retro CRT filter with horizontal scanlines, baked into newly shared images and visible in the camera preview.
+- Analytics record control labels, never typed content. Explain actual data collection at /privacy; note messages are shared with ntfy only when explicitly published.

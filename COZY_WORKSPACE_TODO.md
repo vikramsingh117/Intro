@@ -1,6 +1,6 @@
 # After Hours — cozy workspace
 
-Current implementation on `main` (updated 2026-10-26). `/after-hours` and `/workbench` share the fullscreen room. The Simple portfolio remains the readable alternative.
+Current implementation on `main` (updated 2026-10-27). `/after-hours` and `/workbench` share the fullscreen room. The Simple portfolio remains the readable alternative.
 
 ## Implemented
 
@@ -12,18 +12,27 @@ Current implementation on `main` (updated 2026-10-26). `/after-hours` and `/work
 - [x] Mobile app layout, larger controls, plain monitor background and software-keyboard-aware sizing.
 - [x] Simulated terminal with virtual files, history/completion, common Linux commands and sudo. Top/ps report desktop app snapshots, not OS telemetry.
 - [x] Desk lamp and suspended ceiling light toggle; fixture shadow artifacts reduced. Ceiling fixture lowered into the room framing.
-- [x] Radio music starts only after interaction; pauses/resumes and stops on leaving the room.
+- [x] Home entry primes radio playback and fades to volume 0.28 over 11 seconds; manual toggles and exit cleanup remain supported. Direct visits start silent.
 - [x] Physical notebook opening/page-turn animations, three rough-note spreads, local page/open state, readable projected pages and accessible text.
 - [x] Drawer and glasses animations; lens blur allows continued exploration.
 - [x] Shared MongoDB sticky notes with in-scene writing, peeling, placement, reading, browser ownership and validated CRUD.
 - [x] Night-city view, slow AC-130 flyby, navigation lights and subtle trails. Aircraft pauses outside the city view, when hidden, or with reduced motion.
-- [x] Decorative chair, keyboard, plant, Pascal soft toy and stool; hover-driven upliance lid, blue LEDs and cooking display with touch toggle and reduced-motion support.
+- [x] Decorative chair, keyboard, plant, Pascal soft toy and stool; hover-driven upliance lid, blue LEDs and cooking display with click/tap work-display focus and reduced-motion support.
 - [x] Stool legs lengthened 30% without changing seat size. Final placement settings applied; temporary controls removed.
 - [x] Simple loads before After Hours. Homepage room illustration fills silently with asset progress; no ready/loading popup.
 - [x] Optimized city and room textures; simplified/quantized upliance GLB; original source assets and attribution preserved.
 
 - [x] Shared Photos gallery backed by MongoDB, in-monitor camera, retro scanline preview, explicit upload, owner deletion, and camera cleanup on leaving the app.
 - [x] Upliance uses the same subtle hover boundary outline as other interactive room objects.
+
+- [x] Home entry zoom/black fade/room reveal; stable mobile recommended label and themed Home links.
+- [x] Focused views consume browser Back before page navigation; Home link hidden while focused.
+- [x] Upliance work display with four pages, plain inside-edge arrows, × close, outside-click and Escape exit.
+- [x] SMAA scene antialiasing and a separate projected-monitor edge mask; bounded mobile orbit (-0.3 to 1.15 radians).
+- [x] Shared screenshot-based Open Graph/Twitter previews.
+- [x] Production MongoDB IP-based landing counts, action history, elapsed/visible-tab duration, and privacy disclosure.
+- [x] Best-effort ntfy notifications for new photos, India landings, and newly shared sticky-note messages.
+- [x] Office Solutions Power BI benchmarking details aligned across Simple, monitor apps, and assistant knowledge.
 
 ## Final placement
 
