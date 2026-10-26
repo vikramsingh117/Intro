@@ -1,3 +1,4 @@
+import { notifyPhotoUpload } from '../../lib/photo-notifications';
 import { createHash } from 'crypto';
 import { Binary } from 'mongodb';
 import { portfolioCollection } from '../../lib/mongodb';
@@ -71,7 +72,8 @@ export default async function handler(req,res){
       const result=await collection.deleteOne(filter);
       return result.deletedCount?res.status(200).json({id:req.body.id}):res.status(404).json({error:'Photo unavailable or belongs to another visitor.'});
     }
-    await collection.updateOne(filter,{$setOnInsert:{image:new Binary(image),thumbnail:new Binary(thumbnail),createdAt:new Date()}},{upsert:true});
+    const result=await collection.updateOne(filter,{$setOnInsert:{image:new Binary(image),thumbnail:new Binary(thumbnail),createdAt:new Date()}},{upsert:true});
+    if(result.upsertedCount===1)await notifyPhotoUpload(req.body.id);
     return res.status(201).json({id:req.body.id});
   }catch(error){return res.status(error.code===11000?409:503).json({error:error.code===11000?'Photo ID already exists.':'The shared gallery is unavailable. Please try again.'});}
 }
