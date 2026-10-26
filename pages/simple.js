@@ -1,3 +1,4 @@
+import SocialPreview from "../components/SocialPreview";
 import Head from "next/head";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
@@ -122,6 +123,7 @@ export default function SimplePortfolio() {
   }, []);
   const role = roles[activeRole];
   return <>
+    <SocialPreview path="/simple" title="Vikram Singh — AI Product Engineer" description="My experience, projects, and contributions across AI engineering, product development, and backend systems." />
     <Head>
       <title>Vikram Singh — AI Product Engineer & Systems Builder</title>
       <meta name="description" content="AI product engineer in Mumbai. Building real-time AI experiences, reliable backends, and useful software. Explore Vikram Singh’s work and ask his portfolio assistant." />

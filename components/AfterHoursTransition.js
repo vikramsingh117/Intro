@@ -1,3 +1,4 @@
+import { cancelRadioEntrance } from './workbench/radioEntrance';
 import { createContext, useCallback, useContext, useRef } from 'react';
 import { useRouter } from 'next/router';
 
@@ -66,6 +67,7 @@ export default function AfterHoursTransition({ children }) {
       host.replaceChildren();
       host.style.display = 'none';
       busy.current = false;
+      cancelRadioEntrance();
     }
   }, [router]);
   return <TransitionContext.Provider value={{ enter, sceneReady }}>

@@ -1,3 +1,4 @@
+import { takeRadioEntrance } from './radioEntrance';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useLoader, useThree } from '@react-three/fiber';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
@@ -6,6 +7,7 @@ import InteractiveObject from './InteractiveObject';
 
 export default function Radio({ onHover }) {
   const audio = useRef(null);
+  const entranceSession=useRef(null);
   const staticContext=useRef(null);
   const {invalidate}=useThree();
   const requested = useRef(false);
@@ -35,10 +37,12 @@ export default function Radio({ onHover }) {
   };
   useEffect(()=>()=>{const context=staticContext.current;staticContext.current=null;if(context&&context.state!=='closed')context.close().catch(()=>{});},[]);
   useEffect(() => {
-    const player = new Audio('/audio/cozy-nordic-quiet-spot.m4a');
+    const entrance=takeRadioEntrance();
+    entranceSession.current=entrance;
+    const player = entrance?.player || new Audio('/audio/cozy-nordic-quiet-spot.m4a');
     player.preload = 'none';
     player.loop = true;
-    player.volume = .4;
+    if(!entrance)player.volume = .4;
     audio.current = player;
     const error = () => {
       requested.current = false; setOn(false); setFailed(true);
@@ -47,11 +51,18 @@ export default function Radio({ onHover }) {
     const playing=()=>{if(requested.current)setOn(true);};
     player.addEventListener('playing',playing);
     player.addEventListener('error', error);
+    let mounted=true;
+    if(entrance){
+      requested.current=true;
+      entrance.fadeIn().then(started=>{if(!mounted)return;requested.current=started;setOn(started);});
+    }
     return () => {
+      mounted=false;
       requested.current = false;
       player.removeEventListener('playing',playing);
       player.removeEventListener('error', error);
       player.pause(); player.removeAttribute('src'); player.load();
+      entrance?.dispose();entranceSession.current=null;
       audio.current = null;
     };
   }, [onHover]);
@@ -65,6 +76,7 @@ export default function Radio({ onHover }) {
       onHover('Radio · play music');
       return;
     }
+    entranceSession.current?.normalVolume();
     if (failed) player.load();
     requested.current = true; setFailed(false);
     onHover('Radio · turn music off');

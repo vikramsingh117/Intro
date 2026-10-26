@@ -73,3 +73,5 @@
 }
 
 .loadingPreview{isolation:isolate}.unloadedCover{position:absolute;inset:0;z-index:5;pointer-events:none;background:#0c1420c9;backdrop-filter:grayscale(1);clip-path:inset(0 0 var(--download-progress,0%) 0);transition:clip-path .7s ease}@media(prefers-reduced-motion:reduce){.unloadedCover{transition:none}}
+
+.recommended{display:inline-block;margin-left:8px;font:10px monospace;letter-spacing:.03em;color:#a9b9ad;vertical-align:middle}
