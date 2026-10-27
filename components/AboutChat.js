@@ -102,5 +102,6 @@ export default function AboutChat({ theme, embedded = false, active = true }) {
       <button type="submit" disabled={loading || !prompt.trim()} aria-label="Send message">↑</button>
     </form>
     <div className={styles.note}><span>{mode === "resume" ? "Saved résumé answers · AI is currently unavailable" : "AI can make mistakes. Details come from my résumé."}</span><span>{prompt.length}/1000</span></div>
+    <div className={styles.note}><span>Questions and replies are saved; questions notify Vikram via ntfy. <a href="/privacy" target="_blank" rel="noreferrer">Privacy</a></span></div>
   </div>;
 }

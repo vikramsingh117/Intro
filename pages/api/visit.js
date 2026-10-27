@@ -1,3 +1,4 @@
+import { databaseTime, indianTime } from '../../lib/database-time.mjs';
 import { createHash } from 'crypto';
 import { isIP } from 'net';
 import { portfolioCollection } from '../../lib/mongodb';
@@ -27,7 +28,7 @@ export default async function handler(req,res){
   if(!validId(visitId)||!paths.has(landingPath)||!Array.isArray(events)||events.length>25)return res.status(400).end();
   if(events.some(e=>!e||!validId(e.id)||!paths.has(e.path)||typeof e.action!=='string'||! /^[a-z_]{1,48}$/.test(e.action)||typeof e.target!=='string'||e.target.length>100||typeof e.at!=='string'||!Number.isFinite(Date.parse(e.at))))return res.status(400).end();
   if(!Number.isSafeInteger(durationSeconds)||durationSeconds<0||durationSeconds>31536000||!Number.isSafeInteger(activeSeconds)||activeSeconds<0||activeSeconds>durationSeconds)return res.status(400).end();
-  const clean=events.map(({id,action,target,path,at})=>({id,action,target,path,at}));
+  const clean=events.map(({id,action,target,path,at})=>({id,action,target,path,at,atIST:indianTime(new Date(at))}));
   const country=String(req.headers['x-vercel-ip-country']||'').slice(0,2);
   const regionCode=String(req.headers['x-vercel-ip-country-region']||'').replace(/^IN-/,'').slice(0,8);
   const state=country==='IN'?(INDIA_REGIONS[regionCode]||null):null;
@@ -36,12 +37,12 @@ export default async function handler(req,res){
     const visitors=await portfolioCollection('visitor_totals');
     if(!indexes)indexes=visits.createIndex({visitorId:1,landedAt:-1}).catch(error=>{indexes=null;throw error;});
     await indexes;
-    const result=await visits.updateOne({_id:visitId,visitorId},{$setOnInsert:{visitorId,ip,country,regionCode,state,landingPath,landedAt:new Date(),events:[]}},{upsert:true});
+    const result=await visits.updateOne({_id:visitId,visitorId},{$setOnInsert:{visitorId,ip,country,regionCode,state,landingPath,...databaseTime('landedAt'),events:[]}},{upsert:true});
     // Replayed batches are idempotent. Bound the document size for long-running tabs.
-    await visits.updateOne({_id:visitId,visitorId},[{$set:{lastSeen:new Date(),durationSeconds:{$max:[{$ifNull:['$durationSeconds',0]},durationSeconds]},activeSeconds:{$max:[{$ifNull:['$activeSeconds',0]},activeSeconds]},events:{$slice:[{$setUnion:['$events',{$literal:clean}]},1000]}}}]);
+    await visits.updateOne({_id:visitId,visitorId},[{$set:{...databaseTime('lastSeen'),durationSeconds:{$max:[{$ifNull:['$durationSeconds',0]},durationSeconds]},activeSeconds:{$max:[{$ifNull:['$activeSeconds',0]},activeSeconds]},events:{$slice:[{$setUnion:['$events',{$literal:clean}]},1000]}}}]);
     if(result.upsertedCount===1){
       const landingCount=await visits.countDocuments({visitorId});
-      await visitors.updateOne({_id:visitorId},{$set:{ip,country,regionCode,state,lastSeen:new Date()},$setOnInsert:{firstSeen:new Date()},$max:{landingCount}},{upsert:true});
+      await visitors.updateOne({_id:visitorId},{$set:{ip,country,regionCode,state,...databaseTime('lastSeen')},$setOnInsert:{...databaseTime('firstSeen')},$max:{landingCount}},{upsert:true});
       if(country==='IN')await notifyIndiaVisit(state);
     }
     return res.status(204).end();

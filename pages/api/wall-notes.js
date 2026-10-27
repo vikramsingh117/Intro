@@ -1,3 +1,4 @@
+import { databaseTime } from '../../lib/database-time.mjs';
 import { notifyStickyNote } from '../../lib/photo-notifications';
 import { createHash } from 'crypto';
 import { wallNotesCollection } from '../../lib/mongodb';
@@ -41,10 +42,10 @@ export default async function handler(req, res) {
     }
     if (req.method === 'POST') {
       // The client keeps the same id on retries, preventing duplicate notes.
-      const result=await collection.updateOne(filter, {$setOnInsert:{text:text.trim(),x,y,createdAt:new Date(),updatedAt:new Date()}}, {upsert:true});
+      const result=await collection.updateOne(filter, {$setOnInsert:{text:text.trim(),x,y,...databaseTime('createdAt'),...databaseTime('updatedAt')}}, {upsert:true});
       if(result.upsertedCount===1)await notifyStickyNote(text.trim());
     } else {
-      const result = await collection.updateOne(filter, {$set:{text:text.trim(),x,y,updatedAt:new Date()}});
+      const result = await collection.updateOne(filter, {$set:{text:text.trim(),x,y,...databaseTime('updatedAt')}});
       if (!result.matchedCount) return res.status(404).json({error:'This note is unavailable or belongs to another visitor.'});
     }
     const note = await collection.findOne(filter);

@@ -1,6 +1,9 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { profile, resumeAnswer } from "../../lib/profile";
 import { masterPrompt, repositoryContext } from "../../lib/assistant-context";
+import { startChatActivity, finishChatActivity } from "../../lib/chat-activity";
+import { notifyChatResponse } from "../../lib/photo-notifications";
+import { indianTime } from "../../lib/database-time.mjs";
 
 // Bounded, process-local protection. Production can layer a shared gateway limit.
 const requests = new Map();
@@ -25,6 +28,10 @@ export default async function handler(req, res) {
   if (!Array.isArray(history) || history.length > 8 || history.some(item => !item || !["user", "assistant"].includes(item.role) || typeof item.text !== "string" || item.text.length > 6000)) return res.status(400).json({ error: "Please start a new conversation." });
   if (limited(req)) { res.setHeader("Retry-After", "60"); return res.status(429).json({ error: "A few too many questions at once. Please try again in a minute." }); }
 
+  const activity = startChatActivity(prompt.trim());
+  const createdAtIST = indianTime();
+  let responseText = "", responseMode = null, completed = false;
+
   res.setHeader("Content-Type", "text/event-stream; charset=utf-8");
   res.setHeader("Cache-Control", "no-store, no-transform");
   res.setHeader("X-Accel-Buffering", "no");
@@ -39,7 +46,10 @@ export default async function handler(req, res) {
     }
   };
   const fallback = () => {
-    emit({ type: "delta", text: resumeAnswer(prompt), mode: "resume" });
+    responseText = resumeAnswer(prompt);
+    responseMode = "resume";
+    completed = true;
+    emit({ type: "delta", text: responseText, mode: responseMode });
     emit({ type: "done" });
   };
   const timer = setTimeout(() => controller.abort(), 20000);
@@ -61,10 +71,13 @@ export default async function handler(req, res) {
       const text = chunk.text();
       if (text) {
         receivedText = true;
+        responseText += text;
+        responseMode = "ai";
         emit({ type: "delta", text, mode: "ai" });
       }
     }
     if (!receivedText) throw new Error("empty response");
+    completed = true;
     emit({ type: "done" });
   } catch {
     if (!res.destroyed) {
@@ -75,6 +88,13 @@ export default async function handler(req, res) {
     clearTimeout(timer);
     controller.abort();
     res.off("close", disconnect);
+    await Promise.all([
+      activity.then(record => finishChatActivity(record, {
+        response: responseText, mode: responseMode,
+        status: completed ? 'completed' : res.destroyed ? 'disconnected' : 'interrupted',
+      })),
+      completed ? notifyChatResponse({prompt: prompt.trim(), mode: responseMode, createdAtIST}) : Promise.resolve(),
+    ]);
     if (!res.destroyed) res.end();
   }
 }
