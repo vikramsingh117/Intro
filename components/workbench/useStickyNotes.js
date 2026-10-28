@@ -28,7 +28,9 @@ export default function useStickyNotes() {
     try {
       const data=await apiRequest();
       if(mounted.current && version===requestVersion.current){setNotes(data.notes);setReady(true);setError('');}
-    } catch { if(mounted.current && version===requestVersion.current)setError('Could not load the shared wall. Tap Retry to reconnect.'); }
+    } catch {
+      // Background loading failures stay silent; polling retries and existing notes remain visible.
+    }
   }, [apiRequest]);
   useEffect(() => {
     mounted.current=true;
