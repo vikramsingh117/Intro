@@ -11,7 +11,7 @@ import styles from "../styles/Home.module.css";
 const roles = [
   { company: "Upliance.ai", role: "AI Product Engineer", date: "JAN 2026 — PRESENT", current: true,
     summary: "Real-time AI & voice onboarding",
-    description: "Shaping product decisions and owning the real-time layer between people and AI-powered appliances.",
+    description: "Shaping product decisions and owning the real-time layer between people and upliance.",
     points: ["Integrated Server-Sent Events for real-time LLM updates in the Airfryer app.", "Built voice-enabled onboarding with WebSockets.", "Maintain the backend of an AI platform serving 4,000+ daily active customers.", "Deployed 10+ GCP triggers, each containing over 100 lines of SQL code.", "Built a centralized VPS for SSH access and device-specific policies."],
     stack: "SSE / WebSockets / AI infrastructure" },
   { company: "Office Solutions", role: "Backend Trainee", date: "MAR — JUN 2025",

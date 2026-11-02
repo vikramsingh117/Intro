@@ -1,12 +1,12 @@
 import useTrackedState from './useTrackedState';
 import { RADIO_VOLUME, takeRadioEntrance } from './radioEntrance';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useLoader, useThree } from '@react-three/fiber';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { Box3, Vector3 } from 'three';
 import InteractiveObject from './InteractiveObject';
 
-export default function Radio({ onHover }) {
+export default function Radio({ keyboardFocused, registerRoomAction, onHover }) {
   const audio = useRef(null);
   const entranceSession=useRef(null);
   const staticContext=useRef(null);
@@ -15,7 +15,7 @@ export default function Radio({ onHover }) {
   const [on, setOn] = useState(false);
   const [failed, setFailed] = useState(false);
   useEffect(()=>{invalidate();},[on,invalidate]);
-  const playStatic=()=>{
+  const playStatic=useCallback(()=>{
     try {
       const AudioContext=window.AudioContext||window.webkitAudioContext;
       if(!AudioContext)return;
@@ -35,7 +35,7 @@ export default function Radio({ onHover }) {
       };
       if(context.state==='running')burst();else context.resume().then(burst).catch(()=>{});
     } catch {} // An unavailable sound effect must not prevent music playback.
-  };
+  },[]);
   useEffect(()=>()=>{const context=staticContext.current;staticContext.current=null;if(context&&context.state!=='closed')context.close().catch(()=>{});},[]);
   useEffect(() => {
     const entrance=takeRadioEntrance();
@@ -67,9 +67,9 @@ export default function Radio({ onHover }) {
       audio.current = null;
     };
   }, [onHover]);
-  const toggle = event => {
-    event.stopPropagation();
-    if (event.delta > 5 || !audio.current) return;
+  const toggle = useCallback(event => {
+    event?.stopPropagation();
+    if ((event?.delta ?? 0) > 5 || !audio.current) return;
     const player = audio.current;
     playStatic();
     if (requested.current) {
@@ -87,7 +87,8 @@ export default function Radio({ onHover }) {
       requested.current = false; setOn(false); setFailed(true);
       onHover('Radio · unable to play, tap to retry');
     });
-  };
+  },[failed,onHover,playStatic]);
+  useEffect(()=>registerRoomAction?.('radio',()=>toggle()),[registerRoomAction,toggle]);
   useTrackedState({radio:on});
   const { scene } = useLoader(GLTFLoader, '/models/radio/optimized.gltf');
   const model = useMemo(() => {
@@ -101,7 +102,7 @@ export default function Radio({ onHover }) {
     clone.position.set(-center.x*scale, -bounds.min.y*scale, -center.z*scale);
     return clone;
   }, [scene]);
-  return <InteractiveObject label={failed ? 'Radio · tap to retry' : on ? 'Radio · turn music off' : 'Radio · play music'} onHover={onHover}>
+  return <InteractiveObject focused={keyboardFocused} label={failed ? 'Radio · tap to retry' : on ? 'Radio · turn music off' : 'Radio · play music'} onHover={onHover}>
     <group position={[-3.65,-1.49,1.05]} rotation={[0,.12,0]} onClick={toggle}><primitive object={model}/>
       <mesh position={[.44,.6,.237]}><sphereGeometry args={[.029,12,8]}/><meshStandardMaterial color="#212921" roughness={.7}/></mesh>
       <mesh position={[.44,.6,.258]}><sphereGeometry args={[.018,12,8]}/><meshStandardMaterial color={on?'#b9ef89':'#40513b'} emissive="#8ee65c" emissiveIntensity={on?2.5:0} toneMapped={false}/></mesh>

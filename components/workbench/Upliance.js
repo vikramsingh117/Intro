@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { UPLIANCE_WORK } from './uplianceWork';
 import { DEFAULT_PROP_PLACEMENT } from './propPlacement';
 import { useFrame, useLoader, useThree } from '@react-three/fiber';
@@ -7,10 +7,13 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
 const noRaycast=()=>{};
 const LEDS=Array.from({length:56},(_,i)=>i*Math.PI*2/56);
-export default function Upliance({ placement=DEFAULT_PROP_PLACEMENT.upliance, reduced=false, interactive=true, onHover=()=>{}, focused=false, workPage=0, onSelect=()=>{}, controlsRef }) {
+const WORK_IMAGE_URLS=['/images/upliance-airfryer.jpg','/images/upliance-airfryer-mobile.jpg','/images/upliance-appui.jpg'];
+export default function Upliance({ keyboardFocused=false, registerRoomAction, placement=DEFAULT_PROP_PLACEMENT.upliance, reduced=false, interactive=true, onHover=()=>{}, focused=false, workPage=0, onSelect=()=>{}, controlsRef }) {
   const {scene}=useLoader(GLTFLoader,'/models/upliance/interactive.glb');
   const display=useLoader(TextureLoader,'/images/upliance-display.svg');
+  const workImages=useLoader(TextureLoader,WORK_IMAGE_URLS);
   display.colorSpace=SRGBColorSpace;
+  workImages.forEach(texture=>{texture.colorSpace=SRGBColorSpace;});
   const {invalidate,gl,camera,size,scene:renderScene}=useThree();
   const projectedEdge=useMemo(()=>new Vector3(),[]);
   const [hovered,setHovered]=useState(false),[latched,setLatched]=useState(false);
@@ -18,19 +21,26 @@ export default function Upliance({ placement=DEFAULT_PROP_PLACEMENT.upliance, re
   const workTexture=useMemo(()=>{
     const canvas=document.createElement('canvas');canvas.width=1200;canvas.height=740;
     const ctx=canvas.getContext('2d'),page=UPLIANCE_WORK[workPage];
+    const overviewImages=workPage===0&&workImages.every(texture=>texture.image?.width);
+    const pageImage=workPage===1&&workImages[2]?.image?.width;
     ctx.fillStyle='#eaf0e8';ctx.fillRect(0,0,1200,740);
-    ctx.fillStyle='#214c69';ctx.font='24px monospace';ctx.fillText(page.subtitle,100,66);
-    ctx.fillStyle='#102e43';ctx.font='bold 44px sans-serif';ctx.fillText(page.title,100,145);
-    ctx.font='32px sans-serif';page.lines.forEach((line,i)=>ctx.fillText(line,100,225+i*57));
+    ctx.fillStyle='#214c69';ctx.font='24px monospace';ctx.fillText(page.subtitle,80,66);
+    ctx.fillStyle='#102e43';ctx.font='bold 44px sans-serif';ctx.fillText(page.title,80,145);
+    ctx.font=`${overviewImages||pageImage?27:32}px sans-serif`;page.lines.forEach((line,i)=>ctx.fillText(line,80,225+i*57));
+    if(overviewImages){
+      ctx.drawImage(workImages[0].image,760,160,410,266);
+      ctx.drawImage(workImages[1].image,760,438,410,235);
+    }
+    if(pageImage)ctx.drawImage(workImages[2].image,680,220,490,281);
     ctx.fillStyle='#397eff';ctx.fillRect(60,686,1080*(workPage+1)/UPLIANCE_WORK.length,5);
     const texture=new CanvasTexture(canvas);texture.colorSpace=SRGBColorSpace;return texture;
-  },[workPage]);
+  },[workPage,workImages]);
   useEffect(()=>()=>workTexture.dispose(),[workTexture]);
   const progress=useRef(0),screenMaterial=useRef(null),leds=useRef(null),spill=useRef(null),hitArea=useRef(null);
   const ledMaterial=useMemo(()=>new MeshStandardMaterial({color:'#b0d4ff',emissive:'#3878ff',emissiveIntensity:0,transparent:true,opacity:0,depthWrite:false}),[]);
   useEffect(()=>()=>ledMaterial.dispose(),[ledMaterial]);
   useLayoutEffect(()=>{const transform=new Object3D();LEDS.forEach((angle,i)=>{transform.position.set(Math.cos(angle)*9.95,0,Math.sin(angle)*9.95);transform.rotation.y=-angle;transform.updateMatrix();leds.current.setMatrixAt(i,transform.matrix);});leds.current.instanceMatrix.needsUpdate=true;invalidate();},[invalidate]);
-  const active=focused||(interactive&&(hovered||latched));
+  const active=focused||(interactive&&(hovered||latched||keyboardFocused));
   const {model,lidPivot,scale,offset,hitSize,hitCenter,glowMaterials}=useMemo(()=>{
     const model=scene.clone(true);
     const bounds=new Box3().setFromObject(model),size=bounds.getSize(new Vector3()),center=bounds.getCenter(new Vector3());
@@ -57,17 +67,25 @@ export default function Upliance({ placement=DEFAULT_PROP_PLACEMENT.upliance, re
     return ()=>window.removeEventListener('blur',reset);
   },[]);
   useEffect(()=>{
-    if(!hovered||!interactive)return;
+    if((!hovered&&!keyboardFocused)||!interactive)return;
     const outline=new BoxHelper(hitArea.current,'#e8c595');
     outline.material.transparent=true;outline.material.opacity=.35;outline.raycast=noRaycast;renderScene.add(outline);invalidate();
     const id=hitArea.current.uuid;
-    gl.domElement.dataset.cursorObject=id;
-    gl.domElement.dispatchEvent(new CustomEvent('cursor-object-change',{bubbles:true}));
+    if(hovered){gl.domElement.dataset.cursorObject=id;gl.domElement.dispatchEvent(new CustomEvent('cursor-object-change',{bubbles:true}));}
     return ()=>{
       renderScene.remove(outline);outline.geometry.dispose();outline.material.dispose();invalidate();
       if(gl.domElement.dataset.cursorObject===id){delete gl.domElement.dataset.cursorObject;gl.domElement.dispatchEvent(new CustomEvent('cursor-object-change',{bubbles:true}));}
     };
-  },[hovered,interactive,gl,renderScene,invalidate,placement]);
+  },[hovered,keyboardFocused,interactive,gl,renderScene,invalidate,placement]);
+  const select=useCallback(()=>{
+    if(!interactive||!panel.current)return;
+    panel.current.updateWorldMatrix(true,false);
+    const target=panel.current.getWorldPosition(new Vector3());
+    const normal=new Vector3(0,0,1).transformDirection(panel.current.matrixWorld);
+    const worldScale=panel.current.getWorldScale(new Vector3());
+    onHover('');onSelect({target:target.toArray(),normal:normal.toArray(),width:17.28*worldScale.x,height:10.68*worldScale.y});
+  },[interactive,onHover,onSelect]);
+  useEffect(()=>registerRoomAction?.('upliance',select),[registerRoomAction,select]);
   useFrame((_,dt)=>{
     if(focused && panel.current && controlsRef?.current){
       panel.current.updateWorldMatrix(true,false);camera.updateMatrixWorld();
@@ -105,13 +123,7 @@ export default function Upliance({ placement=DEFAULT_PROP_PLACEMENT.upliance, re
         onPointerOver={event=>{event.stopPropagation();if(event.pointerType!=='touch'&&event.pointerType!=='pen'){setHovered(true);onHover('Upliance · explore my work');}}}
         onPointerOut={()=>{setHovered(false);onHover('');}}
         onPointerCancel={()=>{setHovered(false);setLatched(false);onHover('');}}
-        onClick={event=>{event.stopPropagation();if(event.delta>5)return;
-          panel.current.updateWorldMatrix(true,false);
-          const target=panel.current.getWorldPosition(new Vector3());
-          const normal=new Vector3(0,0,1).transformDirection(panel.current.matrixWorld);
-          const worldScale=panel.current.getWorldScale(new Vector3());
-          onHover('');onSelect({target:target.toArray(),normal:normal.toArray(),width:17.28*worldScale.x,height:10.68*worldScale.y});
-        }}>
+        onClick={event=>{event.stopPropagation();if(event.delta<=5)select();}}>
         <boxGeometry args={hitSize.toArray()}/><meshBasicMaterial transparent opacity={0} depthWrite={false} colorWrite={false}/>
       </mesh>
       <group ref={panel} position={[18.65,12.65,10.71]} rotation={[-Math.atan2(.551928,.833892),0,0]}>

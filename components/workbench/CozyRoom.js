@@ -10,7 +10,7 @@ function Block({ position, size, color, map, roughness = .85 }) {
   </mesh>;
 }
 
-export default function CozyRoom({ onWindowSelect, onHover, reduced, wearingGlasses, onWearGlasses }) {
+export default function CozyRoom({ keyboardTarget, registerRoomAction, onWindowSelect, onHover, reduced, wearingGlasses, onWearGlasses }) {
   const wood = useMemo(() => {
     const canvas = document.createElement('canvas');
     canvas.width = 1024; canvas.height = 256;
@@ -47,7 +47,7 @@ export default function CozyRoom({ onWindowSelect, onHover, reduced, wearingGlas
     <Block position={[7.35, 24.1, 24.8]} size={[33.5, .2, 56]} color="#929488" />
     <Block position={[7.35, -4.64, -3.04]} size={[33.3, .32, .12]} color={trim} />
     {[-9.14, 23.84].map(x => <Block key={x} position={[x, -4.64, x < 0 ? 21.8 : 24.8]} size={[.12, .32, x < 0 ? 50 : 56]} color={trim} />)}
-    <InteractiveObject label="Window · city after dark" onHover={onHover}><group onClick={event => { event.stopPropagation(); if (event.delta <= 5) onWindowSelect(); }}>
+    <InteractiveObject focused={keyboardTarget==='window'} label="Window · city after dark" onHover={onHover}><group onClick={event => { event.stopPropagation(); if (event.delta <= 5) onWindowSelect(); }}>
     {/* Click the window to explore the city. */}
     <mesh position={[-4.6, 1.6, -3.33]}>
       <planeGeometry args={[3.4, 4.4]} />
@@ -72,7 +72,7 @@ export default function CozyRoom({ onWindowSelect, onHover, reduced, wearingGlas
     {[-4.12,-2.18].map(x => <Block key={x} position={[x,-3.12,-.12]} size={[.11,2.6,3.45]} color="#6e5039" map={wood}/>)}
     <Block position={[-3.15,-3.52,-.12]} size={[1.85,1.8,3.45]} color="#6e5039" map={wood}/>
     <Block position={[-3.15,-2.22,-1.8]} size={[1.85,.8,.1]} color="#6e5039" map={wood}/>
-    <GlassesDrawer wood={wood} reduced={reduced} onHover={onHover} wearing={wearingGlasses} onWear={onWearGlasses}/>
+    <GlassesDrawer keyboardFocused={keyboardTarget==='drawer'} registerRoomAction={registerRoomAction} wood={wood} reduced={reduced} onHover={onHover} wearing={wearingGlasses} onWear={onWearGlasses}/>
     {[-3.08,-3.89].map(y => <group key={y}>
       <Block position={[-3.15,y,1.66]} size={[1.9,.73,.12]} color="#ba9168" map={wood} roughness={.65}/>
       <Block position={[-3.15,y+.05,1.78]} size={[.65,.065,.09]} color="#33413a" roughness={.4}/>

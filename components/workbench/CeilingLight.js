@@ -1,5 +1,5 @@
 import useTrackedState from './useTrackedState';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useLoader, useThree } from '@react-three/fiber';
 import { Box3, Object3D, Vector3 } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
@@ -8,7 +8,7 @@ import InteractiveObject from './InteractiveObject';
 const CEILING_HEIGHT = 24;
 // Keep the shade in the room framing while retaining the ceiling connection.
 const HANG_HEIGHT = 7.2;
-export default function CeilingLight({ onHover }) {
+export default function CeilingLight({ keyboardFocused, registerRoomAction, onHover }) {
   const [on,setOn]=useState(true);
   const {scene}=useLoader(GLTFLoader,'/models/ceiling-light/optimized.gltf');
   const {invalidate}=useThree();
@@ -51,6 +51,8 @@ export default function CeilingLight({ onHover }) {
     bulbMaterials.forEach(material=>{material.emissiveIntensity=on?3.5:0;});invalidate();
   },[on,bulbMaterials,invalidate]);
   useEffect(()=>()=>materials.forEach(material=>material.dispose()),[materials]);
+  const toggle=useCallback(()=>{setOn(value=>!value);onHover(on?'Ceiling light · turn on':'Ceiling light · turn off');},[on,onHover]);
+  useEffect(()=>registerRoomAction?.('ceiling-light',toggle),[registerRoomAction,toggle]);
   useTrackedState({ceilingLight:on});
   return <group position={[6.8,HANG_HEIGHT,-.45]}>
     {/* Extend the fixture's suspension up to the existing high ceiling. */}
@@ -60,8 +62,8 @@ export default function CeilingLight({ onHover }) {
     <mesh position={[0,CEILING_HEIGHT-HANG_HEIGHT-.04,0]} castShadow receiveShadow>
       <cylinderGeometry args={[.18,.18,.08,24]}/><meshStandardMaterial color="#34332e" metalness={.35} roughness={.6}/>
     </mesh>
-    <InteractiveObject label={on?'Ceiling light · turn off':'Ceiling light · turn on'} onHover={onHover}>
-      <group onClick={event=>{event.stopPropagation();if(event.delta<=5){setOn(value=>!value);onHover(on?'Ceiling light · turn on':'Ceiling light · turn off');}}}>
+    <InteractiveObject focused={keyboardFocused} label={on?'Ceiling light · turn off':'Ceiling light · turn on'} onHover={onHover}>
+      <group onClick={event=>{event.stopPropagation();if(event.delta<=5)toggle();}}>
         <primitive object={model}/>
       </group>
     </InteractiveObject>

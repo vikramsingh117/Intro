@@ -2,21 +2,23 @@ import { useEffect, useRef, useState } from 'react';
 import { useThree } from '@react-three/fiber';
 import { BoxHelper } from 'three';
 
-export default function InteractiveObject({ label, onHover, children }) {
+export default function InteractiveObject({ label, onHover, focused = false, children }) {
   const target = useRef(null);
   const [hovered, setHovered] = useState(false);
   const { scene, gl, invalidate } = useThree();
   useEffect(() => {
-    if (!hovered || !target.current) return;
+    if ((!hovered && !focused) || !target.current) return;
     const objectId = target.current.uuid;
     const outline = new BoxHelper(target.current, '#e8c595');
     outline.material.transparent = true;
     outline.material.opacity = .35;
     outline.raycast = () => {};
     scene.add(outline);
-    gl.domElement.style.cursor = 'pointer';
-    gl.domElement.dataset.cursorObject = objectId;
-    gl.domElement.dispatchEvent(new CustomEvent('cursor-object-change', { bubbles: true }));
+    if (hovered) {
+      gl.domElement.style.cursor = 'pointer';
+      gl.domElement.dataset.cursorObject = objectId;
+      gl.domElement.dispatchEvent(new CustomEvent('cursor-object-change', { bubbles: true }));
+    }
     invalidate();
     return () => {
       scene.remove(outline); outline.geometry.dispose(); outline.material.dispose();
@@ -27,7 +29,7 @@ export default function InteractiveObject({ label, onHover, children }) {
       }
       invalidate();
     };
-  }, [hovered, scene, gl, invalidate]);
+  }, [hovered, focused, scene, gl, invalidate]);
   return <group ref={target}
     onPointerOver={event => { event.stopPropagation(); setHovered(true); onHover(label); }}
     onPointerOut={() => { setHovered(false); onHover(''); }}>

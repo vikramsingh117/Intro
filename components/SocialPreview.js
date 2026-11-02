@@ -15,7 +15,7 @@ export default function SocialPreview({ title, description, path = '/' }) {
     <meta property="og:image:type" content="image/png" key="og:image:type" />
     <meta property="og:image:width" content="2864" key="og:image:width" />
     <meta property="og:image:height" content="1508" key="og:image:height" />
-    <meta property="og:image:alt" content="Vikram’s cozy interactive workspace, with a monitor, notebook, city window, and upliance appliance." key="og:image:alt" />
+    <meta property="og:image:alt" content="Vikram’s cozy interactive workspace, with a monitor, notebook, city window, and upliance." key="og:image:alt" />
     <meta name="twitter:card" content="summary_large_image" key="twitter:card" />
     <meta name="twitter:title" content={title} key="twitter:title" />
     <meta name="twitter:description" content={description} key="twitter:description" />

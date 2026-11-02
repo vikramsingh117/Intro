@@ -26,7 +26,7 @@ export function createTerminalState(now=Date.now()) {
     '/':null,'/home':null,[HOME]:null,[`${HOME}/projects`]:null,[`${HOME}/notes`]:null,
     [`${HOME}/readme.txt`]:'Welcome to Vikram’s workspace.\nThis is a simulated Linux terminal, running in your browser.\nTry: ls, cat about.txt, cd projects, or help.\nFiles and changes last for this terminal session only.\n',
     [`${HOME}/about.txt`]:'Vikram Singh\nAI Product Engineer\nI work across product decisions, user experience, AI integration, and production systems.\n',
-    [`${HOME}/projects/upliance.txt`]:'Upliance / Frodo\nAI cooking experiences: ADK chatbot integration and recipe-generation actions.\nDiscovery: device-aware recipes, diet/allergen preferences, scroll restoration.\nOperations: chatbot-session inspection, recipe-generation timing, document synchronization.\n',
+    [`${HOME}/projects/upliance.txt`]:'upliance\nAI cooking experiences: ADK chatbot integration and recipe-generation actions.\nDiscovery: device-aware recipes, diet/allergen preferences, scroll restoration.\nOperations: chatbot-session inspection, recipe-generation timing, document synchronization.\n',
     [`${HOME}/notes/product.txt`]:'What should happen next for the person using this?\nWhat context should the product remember?\nCan the team understand what just happened?\n',
     [`${HOME}/.profile`]:'USER=vikram\nHOSTNAME=workspace\nHOME=/home/vikram\n',
   }};

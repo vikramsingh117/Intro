@@ -1,6 +1,6 @@
 export const NOTEBOOK_PAGES = [
   {
-    title: 'frodo / bits to check', subtitle: 'SCRATCH WORK', doodle: 'loop',
+    title: 'upliance / bits to check', subtitle: 'SCRATCH WORK', doodle: 'loop',
     text: 'Rough notes on diet changes, pruning incompatible allergens, unset versus saved preferences, restoring scroll after rendering, and device-aware recipe filtering.',
     question: '',
     notes: ['Chat sketch: show Generate recipe only when the backend action exists.', 'Archived session: hide input. Otherwise show allowed actions.', 'Test empty state.'],

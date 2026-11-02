@@ -1,7 +1,7 @@
 export const UPLIANCE_WORK = [
   { title: 'AI engineering × product', subtitle: 'Vikram Singh / upliance.ai', lines: [
     'I help decide how features should work,', 'then build the experience people use.', '',
-    'Appliance touchscreen · companion app', 'AI operations tools · React + TypeScript', '',
+    'upliance touchscreen · upliance mobile app', 'AI operations tools · React + TypeScript', '',
     'Explore three parts of my work →',
   ] },
   { title: 'Cooking, made personal', subtitle: '01 / upliance app', lines: [

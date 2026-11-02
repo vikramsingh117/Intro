@@ -67,7 +67,7 @@ export function drawNotebook(canvas, entry, page) {
     code.forEach(([text,x],i)=>write(text,x,520+i*35,23,ink,(i%2?1:-1)*.006));
     line([[1097,661],[1124,670],[1118,703]],pencil,1.2);
   }else if(entry.doodle==='loop'){
-    write('frodo / bits to check',83,84,28,ink,-.035);
+    write('upliance / bits to check',83,84,28,ink,-.035);
     write('diet changed',102,151,26);arrow(266,150,328,172);
     write('allergens?',333,183,24,rust,.025);
     write('keep everything',109,230,24,pencil,-.02);
