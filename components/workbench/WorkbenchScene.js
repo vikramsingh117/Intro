@@ -1,5 +1,5 @@
 import { useAfterHoursTransition } from '../AfterHoursTransition';
-import { Suspense, useEffect, useMemo, useRef } from 'react';
+import { Suspense, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { Canvas, useFrame, useLoader, useThree } from '@react-three/fiber';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
@@ -93,11 +93,21 @@ function Monitor({ onEnter, desktopRef, desktop }) {
 function Camera({ upliance, onUplianceArrive, entered, outside, notebook, citySettings, reduced, onArrive, interactionBlocked, noteMode, noteX, noteY }) {
   const { camera, gl, size, invalidate } = useThree();
   const { cameraX, cameraY, cameraZ, targetX, targetY, targetZ, fov } = citySettings;
+  const roomCameraZ=size.width<=760?Math.max(18.5,11.2/(size.width/size.height)):14.8;
   const transition = useRef(null);
   const orbit = useRef(null);
   const roomPosition = useRef(null);
   const wasFocused = useRef(false);
   const windowLook = useRef({center:null,yaw:0,pitch:0,drag:null});
+  const initialRoomCamera=useRef(false);
+  useLayoutEffect(()=>{
+    if(initialRoomCamera.current)return;
+    initialRoomCamera.current=true;
+    camera.position.set(6,3.5,roomCameraZ);
+    camera.lookAt(0,.2128,-.51);
+    camera.updateProjectionMatrix();
+    invalidate();
+  },[camera,roomCameraZ,invalidate]);
   useEffect(() => {
     const controls = new OrbitControls(camera, gl.domElement);
     controls.target.set(0, .2128, -.51);
@@ -182,9 +192,9 @@ function Camera({ upliance, onUplianceArrive, entered, outside, notebook, citySe
     const applianceTarget=upliance ? new Vector3(...upliance.target) : null;
     const applianceDistance=upliance ? Math.max(upliance.height/2,upliance.width/2/(size.width/size.height))/Math.tan(21*Math.PI/180)*1.35 : 0;
     const applianceCamera=upliance ? applianceTarget.clone().add(new Vector3(...upliance.normal).multiplyScalar(applianceDistance)) : null;
-    transition.current = { from:camera.position.clone(), fovFrom:camera.fov, fovTo:outside ? fov : 42, lookFrom:lookTarget.current.clone(), lookTo:upliance ? applianceTarget : noteMode ? noteTarget : notebook ? new Vector3(...NOTEBOOK_TARGET) : outside ? new Vector3(targetX,targetY,targetZ) : new Vector3(entered ? 1.5 : 0, .2128, -.51), to:upliance ? applianceCamera : noteMode ? noteCamera : notebook ? notebookCamera : outside ? new Vector3(cameraX,cameraY,cameraZ) : entered ? new Vector3(1.5, .2128 + .139173 * distance, -.51 + .990268 * distance)  : (roomPosition.current?.clone() || new Vector3(6, 3.5, Math.max(14.8, 10 / (size.width / size.height)))), elapsed:noteMode==='wall' && !reduced ? -.65 : 0, done:false };
+    transition.current = { from:camera.position.clone(), fovFrom:camera.fov, fovTo:outside ? fov : 42, lookFrom:lookTarget.current.clone(), lookTo:upliance ? applianceTarget : noteMode ? noteTarget : notebook ? new Vector3(...NOTEBOOK_TARGET) : outside ? new Vector3(targetX,targetY,targetZ) : new Vector3(entered ? 1.5 : 0, .2128, -.51), to:upliance ? applianceCamera : noteMode ? noteCamera : notebook ? notebookCamera : outside ? new Vector3(cameraX,cameraY,cameraZ) : entered ? new Vector3(1.5, .2128 + .139173 * distance, -.51 + .990268 * distance)  : (roomPosition.current?.clone() || new Vector3(6,3.5,roomCameraZ)), elapsed:noteMode==='wall' && !reduced ? -.65 : 0, done:false };
     invalidate();
-  }, [upliance, noteMode, noteX, noteY, entered, outside, notebook, cameraX, cameraY, cameraZ, targetX, targetY, targetZ, fov, reduced, camera, size.width, size.height, invalidate]);
+  }, [upliance, noteMode, noteX, noteY, entered, outside, notebook, cameraX, cameraY, cameraZ, targetX, targetY, targetZ, fov, reduced, camera, size.width, size.height, roomCameraZ, invalidate]);
   useFrame((state, dt) => {
     const t = transition.current;
     if (!t || t.done) return;

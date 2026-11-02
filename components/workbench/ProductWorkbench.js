@@ -60,6 +60,7 @@ export default function ProductWorkbench() {
   const [upliancePage,setUpliancePage] = useState(0);
   const [uplianceArrived,setUplianceArrived] = useState(false);
   const uplianceBack=useRef(null);
+  const uplianceReturnToMonitor=useRef(false);
   useEffect(()=>{if(uplianceArrived&&upliance)uplianceBack.current?.focus();},[uplianceArrived,upliance]);
   const [outside,setOutside] = useState(false);
   const [lampOn,setLampOn] = useState(true);
@@ -102,7 +103,13 @@ export default function ProductWorkbench() {
   const leave = () => { setDesktop(false); setEntered(false); restoreFocus(); };
   useTrackedState({monitor:entered,window:outside,notebook,notebookPage:notebook?notebookPage:'closed',upliance:!!upliance,upliancePage:upliance?upliancePage:'closed',lamp:lampOn,glasses:wearingGlasses,noteEditor:!!stickyNotes.editor,notePlacement:!!stickyNotes.placing});
   const focused=!!(entered||outside||notebook||upliance||stickyNotes.editor||stickyNotes.placing);
-  const closeUpliance=()=>{setUpliance(null);setUplianceArrived(false);restoreFocus();};
+  const closeUpliance=()=>{
+    const returnToMonitor=uplianceReturnToMonitor.current;
+    uplianceReturnToMonitor.current=false;
+    setUpliance(null);setUplianceArrived(false);
+    if(returnToMonitor){setDesktop(false);setEntered(true);}
+    restoreFocus();
+  };
   const keyboardTarget=keyboardObject>=0?ROOM_OBJECTS[keyboardObject]:null;
   useEffect(()=>{if(!focused&&keyboardTarget)setHoverLabel(keyboardTarget.label);},[focused,keyboardTarget]);
   const handleHover=label=>setHoverLabel(label||keyboardTarget?.label||'');
@@ -120,6 +127,7 @@ export default function ProductWorkbench() {
     else roomActions.current.get(id)?.();
   };
   const openUplianceFromMonitor=()=>{
+    uplianceReturnToMonitor.current=true;
     setDesktop(false);setEntered(false);setHoverLabel('');
     requestAnimationFrame(()=>requestAnimationFrame(()=>{
       enterButton.current?.focus({preventScroll:true});
@@ -148,6 +156,7 @@ export default function ProductWorkbench() {
     if(event.key==='Escape'&&keyboardObject>=0){event.preventDefault();setKeyboardObject(-1);setHoverLabel('');}
   };
   useFocusHistory(focused,()=>{
+    uplianceReturnToMonitor.current=false;
     setDesktop(false);setEntered(false);setOutside(false);setNotebook(false);
     setUpliance(null);setUplianceArrived(false);stickyNotes.cancel(true);restoreFocus();
   });
@@ -160,7 +169,12 @@ export default function ProductWorkbench() {
     {upliance && <div ref={uplianceBack} tabIndex={-1} className={styles.uplianceControls} onClick={event=>{if(event.target===event.currentTarget)closeUpliance();}} style={{opacity:uplianceArrived?1:0}} inert={uplianceArrived?undefined:''} aria-hidden={!uplianceArrived} aria-label="Upliance work. Press Escape to return to the desk." onKeyDown={event=>{
       if(event.key==='ArrowLeft'||event.key==='ArrowRight'){event.preventDefault();setUpliancePage(value=>Math.max(0,Math.min(UPLIANCE_WORK.length-1,value+(event.key==='ArrowRight'?1:-1))));}
     }}>
-      <div data-display-surface="true" className={styles.uplianceSurface}/>
+      <div data-display-surface="true" className={styles.uplianceSurface} onClick={event=>{
+        if(!window.matchMedia('(max-width:760px)').matches)return;
+        event.stopPropagation();
+        const direction=event.clientX<window.innerWidth/2?-1:1;
+        setUpliancePage(value=>Math.max(0,Math.min(UPLIANCE_WORK.length-1,value+direction)));
+      }}/>
       <button aria-label="Previous upliance page" disabled={upliancePage===0} onClick={()=>setUpliancePage(value=>value-1)}>‹</button>
       <button aria-label="Next upliance page" disabled={upliancePage===UPLIANCE_WORK.length-1} onClick={()=>setUpliancePage(value=>value+1)}>›</button>
       <button aria-label="Zoom out to desk" className={styles.uplianceClose} onClick={closeUpliance}>×</button>

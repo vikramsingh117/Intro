@@ -8,6 +8,12 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 const noRaycast=()=>{};
 const LEDS=Array.from({length:56},(_,i)=>i*Math.PI*2/56);
 const WORK_IMAGE_URLS=['/images/upliance-airfryer.jpg','/images/upliance-airfryer-mobile.jpg','/images/upliance-appui.jpg'];
+const MOBILE_WORK_LINES=[
+  ['I shape product behavior,','then build the experience.','','upliance touchscreen','upliance mobile app','internal AI tools'],
+  ['ADK cooking assistant','Diet + allergen preferences','Dynamic recipe categories','Reliable scroll restoration','React · TypeScript · WebView'],
+  ['Device-aware discovery','Recipe generation in chat','Archived session behavior','Preferences + navigation','React · Redux · GraphQL'],
+  ['Session inspection','Recipe timing views','Resource sync workflow','Frontend + API integration'],
+];
 export default function Upliance({ keyboardFocused=false, registerRoomAction, placement=DEFAULT_PROP_PLACEMENT.upliance, reduced=false, interactive=true, onHover=()=>{}, focused=false, workPage=0, onSelect=()=>{}, controlsRef }) {
   const {scene}=useLoader(GLTFLoader,'/models/upliance/interactive.glb');
   const display=useLoader(TextureLoader,'/images/upliance-display.svg');
@@ -21,12 +27,14 @@ export default function Upliance({ keyboardFocused=false, registerRoomAction, pl
   const workTexture=useMemo(()=>{
     const canvas=document.createElement('canvas');canvas.width=1200;canvas.height=740;
     const ctx=canvas.getContext('2d'),page=UPLIANCE_WORK[workPage];
+    const mobile=size.width<=760;
+    const lines=mobile?MOBILE_WORK_LINES[workPage]:page.lines;
     const overviewImages=workPage===0&&workImages.every(texture=>texture.image?.width);
     const pageImage=workPage===1&&workImages[2]?.image?.width;
     ctx.fillStyle='#eaf0e8';ctx.fillRect(0,0,1200,740);
-    ctx.fillStyle='#214c69';ctx.font='24px monospace';ctx.fillText(page.subtitle,80,66);
-    ctx.fillStyle='#102e43';ctx.font='bold 44px sans-serif';ctx.fillText(page.title,80,145);
-    ctx.font=`${overviewImages||pageImage?27:32}px sans-serif`;page.lines.forEach((line,i)=>ctx.fillText(line,80,225+i*57));
+    ctx.fillStyle='#214c69';ctx.font=`${mobile?30:24}px monospace`;ctx.fillText(page.subtitle,80,66);
+    ctx.fillStyle='#102e43';ctx.font=`bold ${mobile?56:44}px sans-serif`;ctx.fillText(page.title,80,145);
+    ctx.font=`${mobile?40:overviewImages||pageImage?27:32}px sans-serif`;lines.forEach((line,i)=>ctx.fillText(line,80,225+i*(mobile?70:57)));
     if(overviewImages){
       ctx.drawImage(workImages[0].image,760,160,410,266);
       ctx.drawImage(workImages[1].image,760,438,410,235);
@@ -34,7 +42,7 @@ export default function Upliance({ keyboardFocused=false, registerRoomAction, pl
     if(pageImage)ctx.drawImage(workImages[2].image,680,220,490,281);
     ctx.fillStyle='#397eff';ctx.fillRect(60,686,1080*(workPage+1)/UPLIANCE_WORK.length,5);
     const texture=new CanvasTexture(canvas);texture.colorSpace=SRGBColorSpace;return texture;
-  },[workPage,workImages]);
+  },[workPage,workImages,size.width]);
   useEffect(()=>()=>workTexture.dispose(),[workTexture]);
   const progress=useRef(0),screenMaterial=useRef(null),leds=useRef(null),spill=useRef(null),hitArea=useRef(null);
   const ledMaterial=useMemo(()=>new MeshStandardMaterial({color:'#b0d4ff',emissive:'#3878ff',emissiveIntensity:0,transparent:true,opacity:0,depthWrite:false}),[]);
