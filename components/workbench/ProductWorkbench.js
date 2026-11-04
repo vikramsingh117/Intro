@@ -196,7 +196,7 @@ export default function ProductWorkbench() {
     <section ref={desktopRef} className={`${styles.desktop} ${styles.monitorDesktop}`}
       style={{pointerEvents:desktop ? 'auto' : 'none', opacity:outside || notebook || upliance ? 0 : 1}}
       inert={desktop ? undefined : ''} aria-hidden={!desktop} aria-label="Vikram’s monitor desktop">
-      <DesktopWorkspace room={{lampOn,notebookOpen,notebookPage,wearingGlasses,cityReady,notesReady:stickyNotes.ready,noteCount:stickyNotes.notes.length}} desktopRef={desktopRef} interactive={desktop} exitRef={exitButton} onLeave={leave} onOpenUpliance={openUplianceFromMonitor}/>
+      <DesktopWorkspace room={{lampOn,notebookOpen,notebookPage,wearingGlasses,cityReady,notesReady:stickyNotes.ready,noteCount:stickyNotes.notes.length}} desktopRef={desktopRef} interactive={desktop} visible={!outside&&!notebook&&!upliance} reduced={reduced} exitRef={exitButton} onLeave={leave} onOpenUpliance={openUplianceFromMonitor}/>
     </section>
   </div>;
 }

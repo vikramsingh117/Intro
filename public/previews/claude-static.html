@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Claude — static character study</title>
+    <style>
+      * { box-sizing: border-box; }
+      body { margin: 0; min-height: 100svh; background: #f5f2eb; color: #332f2b; font-family: system-ui, sans-serif; display: grid; place-items: center; padding: 32px 20px; }
+      main { width: min(100%, 720px); text-align: center; }
+      h1 { font-size: 22px; font-weight: 500; margin: 0 0 12px; }
+      p { font-size: 13px; color: #736b64; line-height: 1.7; }
+      .stage { min-height: 480px; display: grid; place-items: center; }
+      .character { width: min(428px, 90%); height: auto; image-rendering: pixelated; }
+      .small { width: 107px; height: 86px; image-rendering: pixelated; margin: 12px 0; }
+      a { color: inherit; text-underline-offset: 3px; }
+      @media (max-width: 500px) { .stage { min-height: 360px; } }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Static character study</h1>
+      <p>Neutral pose · SVG rectangles · No animation</p>
+      <div class="stage"><img class="character" src="claude-static.svg" width="428" height="344" alt="Claude mascot, enlarged neutral pose"></div>
+      <img class="small" src="claude-static.svg" width="107" height="86" alt="Same character at its original 107 by 86 size">
+      <p>Original size above · Terracotta #DD775B</p>
+      <p>Reference: <a href="https://ayotomcs.me/claude-mascot">Ayotomiwa Wale-Durojaye’s recreation</a> · Original character by Anthropic.</p>
+    </main>
+  </body>
+</html>

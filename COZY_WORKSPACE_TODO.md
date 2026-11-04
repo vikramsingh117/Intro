@@ -48,6 +48,18 @@ Plant: `[-6.65, -4.8, 0.2]`, left of desk. Ceiling light suspension anchor: Y=7.
 
 ## Remaining / optional
 
+### Mascot next steps (2026-11-05)
+
+- [ ] Add a wake-up sequence that brings the mascot out of the taskbar and back to its original standing state.
+- [ ] Add pixel-style confetti and a celebration animation.
+- [ ] Improve the terminal commands and add more interesting things to discover.
+- [ ] Expand the mascot's contextual tips.
+- [ ] Integrate the mascot into the AI Assistant app.
+
+Current mascot baseline: monitor greeting waves/jumps, stepped eye poses, click-to-cycle pixel-font hints with outside-click dismissal, and a taskbar tuck/sleep sequence with pixel Zs. Apps open immediately; no running or pulling animation.
+
+### Other workspace ideas
+
 - [ ] Owner visual review of final object spacing, stool/appliance contact, raised-light reach, mobile framing and weak-device performance.
 - [ ] Broader keyboard-only access to all physical object interactions.
 - [ ] Optional rain on glass and subtle room reflection, within rendering budget.

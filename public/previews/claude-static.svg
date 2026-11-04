@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="428" height="344" viewBox="0 0 107 86" role="img" aria-labelledby="title description" shape-rendering="crispEdges">
+  <title id="title">Claude mascot — static neutral pose</title>
+  <desc id="description">A terracotta rectangular character with two black square eyes, short side arms, and four legs.</desc>
+  <!-- Reference: Ayotomiwa Wale-Durojaye's neutral walking pose at
+       https://ayotomcs.me/claude-mascot
+       https://tympanus.net/codrops/2026/05/05/reverse-engineering-claude-ais-mascot-animations-with-svg-and-gsap/
+       Original character: Anthropic. Static study, no animation. -->
+  <g id="character" fill="#DD775B">
+    <g id="legs">
+      <rect id="leg-left-outer" x="11" y="60" width="11" height="26"/>
+      <rect id="leg-left-inner" x="32" y="60" width="11" height="26"/>
+      <rect id="leg-right-inner" x="64" y="60" width="11" height="26"/>
+      <rect id="leg-right-outer" x="85" y="60" width="11" height="26"/>
+    </g>
+    <g id="body">
+      <rect id="torso" x="11" y="0" width="85" height="65"/>
+      <rect id="arm-left" x="0" y="21" width="22" height="23"/>
+      <rect id="arm-right" x="85" y="21" width="22" height="23"/>
+      <g id="eyes" fill="#000000">
+        <rect id="eye-left" x="21" y="11" width="11" height="11"/>
+        <rect id="eye-right" x="75" y="11" width="11" height="11"/>
+      </g>
+    </g>
+  </g>
+</svg>
