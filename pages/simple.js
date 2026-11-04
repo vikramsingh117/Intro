@@ -10,20 +10,24 @@ import styles from "../styles/Home.module.css";
 
 const roles = [
   { company: "Upliance.ai", role: "AI Product Engineer", date: "JAN 2026 — PRESENT", current: true,
-    summary: "Real-time AI & voice onboarding",
-    description: "Shaping product decisions and owning the real-time layer between people and upliance.",
-    points: ["Integrated Server-Sent Events for real-time LLM updates in the Airfryer app.", "Built voice-enabled onboarding with WebSockets.", "Maintain the backend of an AI platform serving 4,000+ daily active customers.", "Deployed 10+ GCP triggers, each containing over 100 lines of SQL code.", "Built a centralized VPS for SSH access and device-specific policies."],
-    stack: "SSE / WebSockets / AI infrastructure" },
+    summary: "Connected cooking experiences & AI operations",
+    description: "Connected cooking experiences across the upliance touchscreen, upliance mobile app, and internal tool orchestrator. I helped shape product behavior and implemented features in an existing production ecosystem.",
+    sections: [
+      { title: "upliance app · upliance touchscreen", points: ["Integrated an ADK chatbot backend, including compatibility handling.", "Built diet and allergen settings with GraphQL, including pruning incompatible allergens when diets change and distinguishing unset preferences from saved selections.", "Improved dynamic category ordering and restored recipe-list scroll positions after navigation."], stack: "React · TypeScript · Redux · GraphQL · Android WebView integration" },
+      { title: "upliance mobile app · recipe discovery & chat", points: ["Device-aware recipe discovery, including filtering My Creations for the selected upliance.", "Air-fryer recipe sorting and social tags, plus allergen and dislike preferences.", "Backend-driven recipe generation in chat, view-only archived sessions, and streamed AI responses.", "Scroll restoration, a What’s New drawer, and mobile UI improvements."], stack: "React · Vite · Apollo Client · Redux Toolkit · SSE · PWA / WebViews" },
+      { title: "Internal tool orchestrator · AI operations", points: ["Built a chatbot-session viewer with pagination, user enrichment, and recipe results embedded in messages.", "Added recipe-generation timing interfaces and a resource-document synchronization workflow.", "Integrated separate backend services while handling inconsistent message formats and shared asynchronous state."], stack: "React · TypeScript · Material UI · Apollo Client · Hasura GraphQL" },
+      { title: "Real-time systems & infrastructure", description: "Voice onboarding with WebSockets, backend maintenance for a platform serving 4,000+ daily active customers, GCP SQL triggers, and centralized SSH access with device-specific policies." },
+    ] },
   { company: "Office Solutions", role: "Backend Trainee", date: "MAR — JUN 2025",
     summary: "Power BI benchmarking & backend performance",
     description: "Delivered a Java/Spring Boot tool that measured Power BI report loading time, integrating a Node.js embedding workflow.",
     points: ["Refactored and delivered the report benchmarking tool to the client in three weeks.", "Worked extensively with embedded Power BI reports in browser iframes, using supported JavaScript APIs to interact with reports and measure loading time.", "Integrated the Microsoft embedding workflow through a small Node.js server and automated the browser around embedded reports with Selenium.", "Used multithreading in Spring Boot, Cucumber for BDD, and JUnit for 50+ tests.", "Simplified database relationships and removed redundant queries for a 50% performance boost; implemented Redis rate limiting."],
-    stack: "Java / Spring Boot / Node.js / Power BI / Selenium / Cucumber / JUnit" },
+    stack: "Java / Spring Boot / Node.js / Power BI / Selenium / Redis / Azure / Cucumber / JUnit" },
   { company: "Cribble Org", role: "SWE Intern", date: "JAN — MAR 2025",
     summary: "Community apps & observability",
     description: "Worked on a Telegram MiniApp for a community of 3,000+ members.",
     points: ["Implemented Winston logging with 50+ global and component-level logs.", "Maintained and optimized Firestore deployments on Google Cloud."],
-    stack: "React / Firebase / GCP" },
+    stack: "React / Firebase / Firestore / GCP / Winston" },
 ];
 
 function SystemDrawing({ selected, onSelect }) {
@@ -164,7 +168,8 @@ export default function SimplePortfolio() {
           <div className={styles.experienceGrid}>
             <div className={styles.experienceDrawing}><SystemDrawing selected={activeRole} onSelect={setActiveRole} /></div>
             <div key={activeRole} id="experience-panel" role="tabpanel" aria-labelledby={"role-" + activeRole} tabIndex={0} className={styles.rolePanel}>
-              <p className={styles.kicker}>{role.current ? "CURRENT CHAPTER" : "PREVIOUS CHAPTER"} / {role.role}</p><h3>{role.summary}</h3><p>{role.description}</p><ul>{role.points.map(point => <li key={point}>{point}</li>)}</ul><p className={styles.roleStack}>{role.stack}</p>
+              <p className={styles.kicker}>{role.current ? "CURRENT CHAPTER" : "PREVIOUS CHAPTER"} / {role.role}</p><h3>{role.summary}</h3><p>{role.description}</p>
+              {role.sections ? role.sections.map(section => <div key={section.title}><h4>{section.title}</h4>{section.description && <p>{section.description}</p>}{section.points && <ul>{section.points.map(point => <li key={point}>{point}</li>)}</ul>}{section.stack && <p className={styles.roleStack}>{section.stack}</p>}</div>) : <><ul>{role.points.map(point => <li key={point}>{point}</li>)}</ul><p className={styles.roleStack}>{role.stack}</p></>}
             </div>
           </div>
         </section>
@@ -187,8 +192,14 @@ export default function SimplePortfolio() {
           </div>
         </section>
         <section className={styles.about} id="about" data-reveal>
-          <div><p className={styles.kicker}>03 / BACKGROUND</p><h2>Education &<br/><em>open source.</em></h2><p>B.Tech in Computer Science, VIT Chennai.<br/>2021–2025 · CGPA 8.42/10.</p><p>First on campus at Google Hash Code, among more than 50 teams.</p><Contributions/></div>
-          <div className={styles.toolbox}><p className={styles.kicker}>THE TOOLBOX</p><div><small>LANGUAGES</small><p>Java · TypeScript · JavaScript<br/>Python · SQL · Bash</p></div><div><small>DATA & INFRASTRUCTURE</small><p>Redis · MongoDB · MySQL · Docker<br/>Linux · GCP · Azure · Firebase · Git</p></div></div>
+          <div><p className={styles.kicker}>03 / ABOUT ME</p><h2>Hi, I’m <em>Vikram Singh.</em></h2>
+            <p>I work where product decisions and engineering meet: shaping what an AI experience should do, then owning the interfaces, integrations, and systems needed to make it reliable.</p>
+            <p>At upliance, I work across the touchscreen, mobile experience, and internal AI tools—from cooking assistants and recipe discovery to dietary preferences, real-time updates, and session inspection.</p>
+            <p>Before that, I built and improved backend systems at Office Solutions, working extensively with embedded Power BI reports in browser iframes, and contributed to community software at Cribble Org.</p>
+            <h3>Product thinking, with implementation ownership.</h3>
+            <ul><li>Start with what the person should be able to do next.</li><li>Make state and edge cases explicit—from saved preferences to archived chats.</li><li>Build the supporting tools that make AI systems easier to understand, operate, and improve.</li></ul>
+            <h3>Education & open source</h3><p>B.Tech in Computer Science, VIT Chennai.<br/>2021–2025 · CGPA 8.42/10.</p><p>First on campus at Google Hash Code, among more than 50 teams.</p><Contributions/></div>
+          <div className={styles.toolbox}><p className={styles.kicker}>THE TOOLBOX</p><div><small>LANGUAGES</small><p>Java · TypeScript · JavaScript<br/>Python · SQL · Bash · Go</p></div><div><small>FRAMEWORKS & APIs</small><p>React · GraphQL · Spring Boot</p></div><div><small>DATA & INFRASTRUCTURE</small><p>Redis · MongoDB · MySQL · Docker<br/>Linux · GCP · Azure · Firebase · Git</p></div></div>
         </section>
         <footer className={styles.footer}>
           <p className={styles.kicker}>GET IN TOUCH</p><a className={styles.footerTitle} href="mailto:vikramandanshu@gmail.com">Say <em>hello.</em><span>↗</span></a>
