@@ -35,7 +35,7 @@ function Work({ onOpenUpliance }) {
       </div>
     </article>
     <article><small>MAR — JUN 2025 · BACKEND TRAINEE</small><h3>Office Solutions</h3>
-      <ul><li>Delivered a Java/Spring Boot Power BI report benchmarking tool in three weeks, measuring report loading time.</li><li>Integrated a small Node.js server for Microsoft Power BI embedding APIs and used Selenium to automate the browser workflow.</li><li>Used multithreading in Spring Boot, Cucumber for BDD, and JUnit for testing.</li><li>Simplified database relationships and removed unnecessary queries for a 50% performance improvement.</li><li>Wrote 50+ Cucumber and JUnit tests and implemented Redis rate limiting.</li></ul>
+      <ul><li>Delivered a Java/Spring Boot Power BI report benchmarking tool in three weeks, measuring report loading time.</li><li>Worked extensively with embedded Power BI reports in browser iframes, using supported JavaScript APIs to interact with reports and measure their loading time.</li><li>Integrated a small Node.js server for the Microsoft embedding workflow and used Selenium to automate the browser around those embedded reports.</li><li>Used multithreading in Spring Boot, Cucumber for BDD, and JUnit for testing.</li><li>Simplified database relationships and removed unnecessary queries for a 50% performance improvement.</li><li>Wrote 50+ Cucumber and JUnit tests and implemented Redis rate limiting.</li></ul>
       <p className={styles.appStack}>Java · Spring Boot · Node.js · Power BI · Selenium · Redis · Azure · Cucumber · JUnit</p>
     </article>
     <article><small>JAN — MAR 2025 · SWE INTERN</small><h3>Cribble Org</h3>
@@ -67,10 +67,11 @@ function Projects() {
 function About() {
   return <div className={styles.portfolioApp}>
     <p className={styles.eyebrow}>MUMBAI, INDIA / AI PRODUCT ENGINEER</p><h2>Hi, I’m Vikram Singh.</h2>
-    <p>I help decide what an AI product should do, then build the experience and integrations that make it work. My work spans product behavior, user interfaces, real-time AI, and backend systems.</p>
-    <p>At Upliance.ai, that includes cooking assistants, recipe discovery, dietary preferences, and tools that help teams understand AI sessions and operations.</p>
+    <p>I work where product decisions and engineering meet: shaping what an AI experience should do, then owning the interfaces, integrations, and systems needed to make it reliable.</p>
+    <p>At upliance, I work across the touchscreen, mobile experience, and internal AI tools—from cooking assistants and recipe discovery to dietary preferences, real-time updates, and session inspection.</p>
+    <p>Before that, I built and improved backend systems at Office Solutions, working extensively with embedded Power BI reports in browser iframes, and contributed to community software at Cribble Org.</p>
     <article><small>HOW I WORK</small><h3>Product thinking, with implementation ownership.</h3>
-      <ul><li>Ask what the user should be able to do next.</li><li>Make state and edge cases explicit—from saved preferences to archived chats.</li><li>Build the tools that make systems easier to understand and support.</li></ul>
+      <ul><li>Start with what the person should be able to do next.</li><li>Make state and edge cases explicit—from saved preferences to archived chats.</li><li>Build the supporting tools that make AI systems easier to understand, operate, and improve.</li></ul>
     </article>
     <article><small>TOOLBOX</small><h3>Across the stack</h3>
       <p>Java · TypeScript · JavaScript · Python · SQL · Bash · Go</p>

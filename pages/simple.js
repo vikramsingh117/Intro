@@ -17,7 +17,7 @@ const roles = [
   { company: "Office Solutions", role: "Backend Trainee", date: "MAR — JUN 2025",
     summary: "Power BI benchmarking & backend performance",
     description: "Delivered a Java/Spring Boot tool that measured Power BI report loading time, integrating a Node.js embedding workflow.",
-    points: ["Refactored and delivered the report benchmarking tool to the client in three weeks.", "Integrated Microsoft Power BI embedding APIs through a small Node.js server and automated browser workflows with Selenium.", "Used multithreading in Spring Boot, Cucumber for BDD, and JUnit for 50+ tests.", "Simplified database relationships and removed redundant queries for a 50% performance boost; implemented Redis rate limiting."],
+    points: ["Refactored and delivered the report benchmarking tool to the client in three weeks.", "Worked extensively with embedded Power BI reports in browser iframes, using supported JavaScript APIs to interact with reports and measure loading time.", "Integrated the Microsoft embedding workflow through a small Node.js server and automated the browser around embedded reports with Selenium.", "Used multithreading in Spring Boot, Cucumber for BDD, and JUnit for 50+ tests.", "Simplified database relationships and removed redundant queries for a 50% performance boost; implemented Redis rate limiting."],
     stack: "Java / Spring Boot / Node.js / Power BI / Selenium / Cucumber / JUnit" },
   { company: "Cribble Org", role: "SWE Intern", date: "JAN — MAR 2025",
     summary: "Community apps & observability",
