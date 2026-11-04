@@ -250,7 +250,7 @@ export default function MonitorScene({ keyboardTarget, registerRoomAction, uplia
     <InteractiveObject focused={keyboardTarget==='notebook'} label="Notebook · ideas & sketches" onHover={onHover}><Notebook focused={notebook} open={notebookOpen} onPageChange={onNotebookPageChange} page={notebookPage} reduced={reduced} onOpen={onNotebookOpen} /></InteractiveObject>
     <Suspense fallback={null}><Keyboard /></Suspense>
     <Suspense fallback={null}><Radio keyboardFocused={keyboardTarget==='radio'} registerRoomAction={registerRoomAction} onHover={onHover}/></Suspense>
-    <Suspense fallback={null}><InteractiveObject focused={keyboardTarget==='desk-lamp'} label={lampOn ? "Lamp · turn off" : "Lamp · turn on"} onHover={onHover}><DeskLamp on={lampOn} onToggle={notebook ? onNotebookExit : onLampToggle} /></InteractiveObject></Suspense>
+    <Suspense fallback={null}><InteractiveObject focused={keyboardTarget==='desk-lamp'} label={lampOn ? "Lamp · turn off" : "Lamp · turn on"} onHover={onHover}><DeskLamp on={lampOn} registerRoomAction={registerRoomAction} onToggle={notebook ? onNotebookExit : onLampToggle} /></InteractiveObject></Suspense>
     <pointLight position={[1.5,.15,.1]} color="#9cc8df" intensity={3} distance={5} />
     </group>
   </Canvas>;

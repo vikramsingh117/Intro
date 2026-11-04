@@ -4,12 +4,14 @@ import { useLoader, useThree } from '@react-three/fiber';
 import { Box3, Object3D, Vector3 } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import InteractiveObject from './InteractiveObject';
+import useSwitchSound from './useSwitchSound';
 
 const CEILING_HEIGHT = 24;
 // Keep the shade in the room framing while retaining the ceiling connection.
 const HANG_HEIGHT = 7.2;
 export default function CeilingLight({ keyboardFocused, registerRoomAction, onHover }) {
   const [on,setOn]=useState(true);
+  const playSwitch=useSwitchSound();
   const {scene}=useLoader(GLTFLoader,'/models/ceiling-light/optimized.gltf');
   const {invalidate}=useThree();
   const {model,bulb,lightPosition,materials,bulbMaterials}=useMemo(()=>{
@@ -51,7 +53,7 @@ export default function CeilingLight({ keyboardFocused, registerRoomAction, onHo
     bulbMaterials.forEach(material=>{material.emissiveIntensity=on?3.5:0;});invalidate();
   },[on,bulbMaterials,invalidate]);
   useEffect(()=>()=>materials.forEach(material=>material.dispose()),[materials]);
-  const toggle=useCallback(()=>{setOn(value=>!value);onHover(on?'Ceiling light · turn on':'Ceiling light · turn off');},[on,onHover]);
+  const toggle=useCallback(()=>{playSwitch(!on);setOn(value=>!value);onHover(on?'Ceiling light · turn on':'Ceiling light · turn off');},[on,onHover,playSwitch]);
   useEffect(()=>registerRoomAction?.('ceiling-light',toggle),[registerRoomAction,toggle]);
   useTrackedState({ceilingLight:on});
   return <group position={[6.8,HANG_HEIGHT,-.45]}>

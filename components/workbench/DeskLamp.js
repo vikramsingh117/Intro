@@ -1,9 +1,13 @@
-import { useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
+import useSwitchSound from './useSwitchSound';
 import { useLoader, useThree } from '@react-three/fiber';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { Box3, Vector3 } from 'three';
 
-export default function DeskLamp({ on, onToggle }) {
+export default function DeskLamp({ on, onToggle, registerRoomAction }) {
+  const playSwitch=useSwitchSound();
+  const toggle=useCallback(()=>{playSwitch(!on);onToggle();},[on,onToggle,playSwitch]);
+  useEffect(()=>registerRoomAction?.('desk-lamp',toggle),[registerRoomAction,toggle]);
   const { scene } = useLoader(GLTFLoader, '/models/desk-lamp.glb');
   const { invalidate, gl } = useThree();
   const { model, scale, offset, bulb, materials } = useMemo(() => {
@@ -30,7 +34,7 @@ export default function DeskLamp({ on, onToggle }) {
   }, [on, materials, invalidate]);
   useEffect(() => () => { materials.forEach(material => material.dispose()); gl.domElement.style.cursor = ''; }, [materials, gl]);
   return <group position={[-3.35, -1.49, -.45]}>
-    <group onClick={event => { event.stopPropagation(); if (event.delta <= 5) onToggle(); }}>
+    <group onClick={event => { event.stopPropagation(); if (event.delta <= 5) toggle(); }}>
       <group scale={scale}><primitive object={model} position={offset} /></group>
     </group>
     <pointLight position={bulb} color="#ffc276" intensity={on ? 32 : 0} distance={8} decay={2} castShadow shadow-mapSize={[512,512]} shadow-normalBias={.03} />

@@ -123,7 +123,6 @@ export default function ProductWorkbench() {
     if(id==='monitor')openMonitor();
     else if(id==='window')openWindow();
     else if(id==='notebook')openNotebook();
-    else if(id==='desk-lamp')setLampOn(value=>!value);
     else roomActions.current.get(id)?.();
   };
   const openUplianceFromMonitor=()=>{
