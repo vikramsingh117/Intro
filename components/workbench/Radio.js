@@ -8,6 +8,8 @@ import InteractiveObject from './InteractiveObject';
 
 export default function Radio({ keyboardFocused, registerRoomAction, onHover }) {
   const audio = useRef(null);
+  const hoverCallback = useRef(onHover);
+  useEffect(()=>{hoverCallback.current=onHover;},[onHover]);
   const entranceSession=useRef(null);
   const staticContext=useRef(null);
   const {invalidate}=useThree();
@@ -28,7 +30,7 @@ export default function Radio({ keyboardFocused, registerRoomAction, onHover }) 
         const source=context.createBufferSource(),filter=context.createBiquadFilter(),gain=context.createGain();
         source.buffer=buffer;filter.type='bandpass';filter.frequency.value=1400;filter.Q.value=.65;
         const now=context.currentTime;
-        gain.gain.setValueAtTime(0,now);gain.gain.linearRampToValueAtTime(.07,now+.012);gain.gain.exponentialRampToValueAtTime(.001,now+duration);
+        gain.gain.setValueAtTime(0,now);gain.gain.linearRampToValueAtTime(.042,now+.012);gain.gain.exponentialRampToValueAtTime(.0006,now+duration);
         source.connect(filter);filter.connect(gain);gain.connect(context.destination);
         source.onended=()=>{source.disconnect();filter.disconnect();gain.disconnect();};
         source.start(now);source.stop(now+duration);
@@ -47,7 +49,7 @@ export default function Radio({ keyboardFocused, registerRoomAction, onHover }) 
     audio.current = player;
     const error = () => {
       requested.current = false; setOn(false); setFailed(true);
-      onHover('Radio · unable to play, tap to retry');
+      hoverCallback.current('Radio · unable to play, tap to retry');
     };
     const playing=()=>{if(requested.current)setOn(true);};
     player.addEventListener('playing',playing);
@@ -66,7 +68,8 @@ export default function Radio({ keyboardFocused, registerRoomAction, onHover }) 
       entrance?.dispose();entranceSession.current=null;
       audio.current = null;
     };
-  }, [onHover]);
+  // Own the player for the mounted radio's lifetime, not the hover callback's lifetime.
+  }, []);
   const toggle = useCallback(event => {
     event?.stopPropagation();
     if ((event?.delta ?? 0) > 5 || !audio.current) return;

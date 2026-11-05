@@ -1,4 +1,4 @@
-export const RADIO_VOLUME = .4 * .7;
+export const RADIO_VOLUME = .4 * .7 * .6;
 let pending = null;
 
 // Called directly by the Home click, before loading or navigation can lose the audio gesture.
