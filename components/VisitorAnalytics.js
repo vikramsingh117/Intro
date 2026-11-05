@@ -11,6 +11,8 @@ export default function VisitorAnalytics(){
     const click=event=>{
       const element=event.target.closest?.('button,a,[role="tab"]');
       if(!element||element.closest('[inert]'))return;
+      // These controls emit their own major-step events; avoid duplicate click rows.
+      if(element.dataset.analytics==='semantic')return;
       // Explicit labels describe controls; do not scrape text that could contain visitor content.
       let destination='';
       if(element.tagName==='A'){try{const url=new URL(element.href);destination=url.protocol==='mailto:'?'email':`${url.hostname}${url.pathname}${url.hash}`;}catch{}}

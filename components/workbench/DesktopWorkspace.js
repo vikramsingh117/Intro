@@ -57,6 +57,6 @@ export default function DesktopWorkspace({ desktopRef, interactive, visible=true
     {menu && interactive && <DesktopContextMenu point={menu} width={menu.width} iconsVisible={iconsVisible} onClose={closeMenu}
       onToggleIcons={()=>setIconsVisible(value=>!value)} onRefresh={()=>setRefreshTick(value=>value+1)} onOpen={open}
       hasWindows={windows.some(window=>!window.minimized)} onShowDesktop={()=>setWindows(current=>current.map(window=>({...window,minimized:true})))}/>}
-    <footer className={`${styles.taskbar} ${top?styles.taskbarWithMascot:''}`}><button onClick={()=>open('My Work')} aria-label="Open My Work">▦</button><span>Vikram’s workspace</span>{windows.map(window=><button key={window.title} aria-pressed={!window.minimized && top===window.title} onClick={()=>{mascot.current?.cancel();focus(window.title);}}>{window.title}</button>)}<span className={styles.taskbarRight}>PRODUCT · AI · ENGINEERING</span></footer>
+    <footer className={styles.taskbar}><button onClick={()=>open('My Work')} aria-label="Open My Work">▦</button><span>Vikram’s workspace</span>{windows.map(window=><button key={window.title} aria-pressed={!window.minimized && top===window.title} onClick={()=>{mascot.current?.cancel();focus(window.title);}}>{window.title}</button>)}<span className={styles.taskbarRight}>PRODUCT · AI · ENGINEERING</span></footer>
   </div>;
 }

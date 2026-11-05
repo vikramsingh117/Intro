@@ -145,7 +145,7 @@ export default function SimplePortfolio() {
           <div className={styles.heroText}>
             <p className={styles.kicker}><span className={styles.dot} /> AI PRODUCT ENGINEER · MUMBAI, INDIA</p>
             <h1>Vikram Singh.<br/><em>AI product engineer.</em></h1>
-            <p className={styles.intro}>I shape product decisions, build real-time AI experiences, and own the systems behind them. Currently at Upliance.ai.</p>
+            <p className={styles.intro}>I work where product decisions and engineering meet: shaping AI experiences, then owning the interfaces, integrations, and systems that make them reliable. Currently at upliance.</p>
             <p className={styles.openSource}>Merged contributions to <a href="https://github.com/kestra-io/kestra/pull/13219" target="_blank" rel="noreferrer">Kestra ↗</a> and <a href="https://github.com/MCPJam/inspector/pull/737" target="_blank" rel="noreferrer">MCPJam Inspector ↗</a>. Open PR for the <a href="https://github.com/anthropics/claude-agent-sdk-python/pull/259" target="_blank" rel="noreferrer">Claude Agent SDK ↗</a>.</p>
             <div className={styles.heroActions}><a className={styles.primaryLink} href="#ask">Ask my assistant <span>↗</span></a><a className={styles.textLink} href="#work">Explore my work ↓</a><a className={styles.textLink} href="https://github.com/vikramsingh117" target="_blank" rel="noreferrer">GitHub ↗</a></div>
           </div>
@@ -169,7 +169,7 @@ export default function SimplePortfolio() {
             <div className={styles.experienceDrawing}><SystemDrawing selected={activeRole} onSelect={setActiveRole} /></div>
             <div key={activeRole} id="experience-panel" role="tabpanel" aria-labelledby={"role-" + activeRole} tabIndex={0} className={styles.rolePanel}>
               <p className={styles.kicker}>{role.current ? "CURRENT CHAPTER" : "PREVIOUS CHAPTER"} / {role.role}</p><h3>{role.summary}</h3><p>{role.description}</p>
-              {role.sections ? role.sections.map(section => <div key={section.title}><h4>{section.title}</h4>{section.description && <p>{section.description}</p>}{section.points && <ul>{section.points.map(point => <li key={point}>{point}</li>)}</ul>}{section.stack && <p className={styles.roleStack}>{section.stack}</p>}</div>) : <><ul>{role.points.map(point => <li key={point}>{point}</li>)}</ul><p className={styles.roleStack}>{role.stack}</p></>}
+              {role.sections ? role.sections.map(section => <details className={styles.roleDetails} key={section.title}><summary>{section.title}</summary>{section.description && <p>{section.description}</p>}{section.points && <ul>{section.points.map(point => <li key={point}>{point}</li>)}</ul>}{section.stack && <p className={styles.roleStack}>{section.stack}</p>}</details>) : <><ul>{role.points.map(point => <li key={point}>{point}</li>)}</ul><p className={styles.roleStack}>{role.stack}</p></>}
             </div>
           </div>
         </section>
@@ -192,13 +192,8 @@ export default function SimplePortfolio() {
           </div>
         </section>
         <section className={styles.about} id="about" data-reveal>
-          <div><p className={styles.kicker}>03 / ABOUT ME</p><h2>Hi, I’m <em>Vikram Singh.</em></h2>
-            <p>I work where product decisions and engineering meet: shaping what an AI experience should do, then owning the interfaces, integrations, and systems needed to make it reliable.</p>
-            <p>At upliance, I work across the touchscreen, mobile experience, and internal AI tools—from cooking assistants and recipe discovery to dietary preferences, real-time updates, and session inspection.</p>
-            <p>Before that, I built and improved backend systems at Office Solutions, working extensively with embedded Power BI reports in browser iframes, and contributed to community software at Cribble Org.</p>
-            <h3>Product thinking, with implementation ownership.</h3>
-            <ul><li>Start with what the person should be able to do next.</li><li>Make state and edge cases explicit—from saved preferences to archived chats.</li><li>Build the supporting tools that make AI systems easier to understand, operate, and improve.</li></ul>
-            <h3>Education & open source</h3><p>B.Tech in Computer Science, VIT Chennai.<br/>2021–2025 · CGPA 8.42/10.</p><p>First on campus at Google Hash Code, among more than 50 teams.</p><Contributions/></div>
+          <div><p className={styles.kicker}>03 / BACKGROUND</p><h2>Education &<br/><em>open source.</em></h2>
+            <p>B.Tech in Computer Science, VIT Chennai.<br/>2021–2025 · CGPA 8.42/10.</p><p>First on campus at Google Hash Code, among more than 50 teams.</p><Contributions/></div>
           <div className={styles.toolbox}><p className={styles.kicker}>THE TOOLBOX</p><div><small>LANGUAGES</small><p>Java · TypeScript · JavaScript<br/>Python · SQL · Bash · Go</p></div><div><small>FRAMEWORKS & APIs</small><p>React · GraphQL · Spring Boot</p></div><div><small>DATA & INFRASTRUCTURE</small><p>Redis · MongoDB · MySQL · Docker<br/>Linux · GCP · Azure · Firebase · Git</p></div></div>
         </section>
         <footer className={styles.footer}>

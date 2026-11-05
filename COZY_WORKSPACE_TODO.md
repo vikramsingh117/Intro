@@ -50,23 +50,25 @@ Plant: `[-6.65, -4.8, 0.2]`, left of desk. Ceiling light suspension anchor: Y=7.
 
 ### Mascot next steps (2026-11-05)
 
-- [ ] Add a wake-up sequence that brings the mascot out of the taskbar and back to its original standing state.
-- [ ] Add pixel-style confetti and a celebration animation.
-- [ ] Improve the terminal commands and add more interesting things to discover.
+- [x] Important: keep mobile mascot messages in a fixed-height band beside the mascot, reserve shortcut space, and paginate long hints.
+- [x] Important: preload the pixel font from the initial page head and wait for it before revealing hint text.
+- [x] Important: wake the mascot from the taskbar to its original standing state when the last app closes/minimizes or the visitor asks for a hint; skip motion for reduced-motion users.
 - [ ] Expand the mascot's contextual tips.
+- [ ] Add pixel-style confetti and a celebration animation whenever user opens a monitor shortcut app.
+- [ ] Improve the terminal commands and add more interesting things to discover.
 - [ ] Integrate the mascot into the AI Assistant app.
 
 Current mascot baseline: monitor greeting waves/jumps, stepped eye poses, click-to-cycle pixel-font hints with outside-click dismissal, and a taskbar tuck/sleep sequence with pixel Zs. Apps open immediately; no running or pulling animation.
 
 ### Other workspace ideas
+- [x] Important: show an accessible loading message after a queued After Hours click, then enter automatically when ready.
+- [x] Important: remove Simple's repeated About Me introduction; use the hero, work experience, background, and toolbox sections instead.
+- [x] Important: record major chooser and mascot steps through the existing database analytics pipeline (wait, enter, hint, dismiss, sleep, wake); no text content or animation-frame events.
+- [x] Add draggable ceiling-light suspension above upliance: flexible segmented rope bends with slack when lifted; gravity drops the light on release, then damped motion settles it upright. Starts raised and drops on load; heavier shade and lower damping retain more wobble. Startup drop is disabled for reduced motion. Owner visual review pending.
+- [ ] Notebook pages can be torn, once torn, it will become a rough paperball, and user can drag to look, and click to throw. user cannot interact with anything else until he throws the paperball. the paperball should be present in the scene state once thrown with physics.
+- [ ] Task manager should also show how many componetns user has interacted with, out of all.
 
-- [ ] Owner visual review of final object spacing, stool/appliance contact, raised-light reach, mobile framing and weak-device performance.
-- [ ] Broader keyboard-only access to all physical object interactions.
-- [ ] Optional rain on glass and subtle room reflection, within rendering budget.
-- [ ] More detailed decision case studies, if supporting personal evidence is supplied.
-- [ ] Cross-app search and optional wallpaper selection.
-- [ ] Owner visual review of appliance lid travel, blue light intensity and screen alignment in the room.
-- [ ] Distributed abuse protection/moderation for the public wall if traffic warrants it; current write limits are process-local.
+Validation: new automated tests removed at the owner's request. Mobile positioning and animation appearance still need owner visual review; no browser inspector used. Local/preview analytics remain intentionally disabled, so no production database writes were made during testing.
 
 The earlier subway exterior and click-to-sit chair were replaced: the skyline is current, and the chair is decorative. No new work on those earlier interactions is planned.
 

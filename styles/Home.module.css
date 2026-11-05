@@ -110,7 +110,12 @@
 .rolePanel .kicker { color: var(--orange); margin-bottom: 15px; }
 .rolePanel h3 { font-size: 28px; font-weight: 400; letter-spacing: -1px; margin: 0 0 14px; }
 .rolePanel h4 { font-size: 16px; line-height: 1.5; margin: 28px 0 12px; }
-.rolePanel > div > p:not(.roleStack) { font-size: 14px; line-height: 1.7; color: var(--muted); }
+.roleDetails { border-top: 1px solid var(--line); }
+.roleDetails:last-child { border-bottom: 1px solid var(--line); }
+.roleDetails summary { padding: 16px 0; cursor: pointer; font-size: 16px; line-height: 1.5; }
+.roleDetails summary::marker { color: var(--orange); }
+.roleDetails summary:focus-visible { outline: 2px solid var(--orange); outline-offset: 3px; }
+.roleDetails > p:not(.roleStack) { font-size: 14px; line-height: 1.7; color: var(--muted); }
 .rolePanel > p:not(.kicker) { font-size: 14px; line-height: 1.7; color: var(--muted); }
 .rolePanel ul { padding-left: 16px; font-size: 14px; line-height: 1.7; margin: 20px 0; }
 .rolePanel li { margin: 8px 0; padding-left: 5px; }

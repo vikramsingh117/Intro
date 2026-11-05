@@ -83,3 +83,5 @@
 }
 
 .privacyLink{position:absolute;bottom:14px;left:24px;z-index:2;font:10px monospace;color:#65695e;text-decoration:underline;text-underline-offset:3px}
+.afterHoursChoice{position:relative;width:100%;max-width:440px}
+.loadingNotice{position:absolute;top:100%;left:0;width:100%;margin:28px 0 0;color:#c6d4ce;font:12px/1.8 monospace;z-index:1}

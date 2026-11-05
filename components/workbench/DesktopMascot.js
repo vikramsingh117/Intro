@@ -1,5 +1,7 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import styles from '../../styles/Workbench.module.css';
+import { trackInteraction } from '../../lib/visitor-analytics';
+import { mascotTransition, paginateHint } from './mascotBehavior.mjs';
 
 const HINTS = [
   { id:'Terminal', text:'The terminal has a few things worth trying. Start with help.' },
@@ -46,17 +48,33 @@ function Character() {
 
 const DesktopMascot=forwardRef(function DesktopMascot({interactive, visible, reduced, hasWindow},ref){
   const button=useRef(null);
+  const hintBox=useRef(null),wasSleeping=useRef(false);
   const seen=useRef(new Set()),cursor=useRef(-1);
-  const [hint,setHint]=useState(null),[paused,setPaused]=useState(false),[wordCount,setWordCount]=useState(0),[tucking,setTucking]=useState(false);
+  const [hint,setHint]=useState(null),[paused,setPaused]=useState(false),[wordCount,setWordCount]=useState(0),[motion,setMotion]=useState(null);
+  const [fontReady,setFontReady]=useState(false),[pages,setPages]=useState([]),[page,setPage]=useState(0),[motionStyle,setMotionStyle]=useState({});
+  const sleeping=hasWindow&&interactive&&!hint;
   useEffect(()=>{
-    if(!hasWindow||!interactive||!visible||reduced||paused){setTucking(false);return;}
-    setHint(null);setTucking(true);
-    const timer=setTimeout(()=>setTucking(false),640);
+    let active=true;
+    const ready=()=>{if(active)setFontReady(true);};
+    if(document.fonts)document.fonts.load('16px MascotPixel').then(ready,ready);else ready();
+    return ()=>{active=false;};
+  },[]);
+  useEffect(()=>{
+    const previous=wasSleeping.current;wasSleeping.current=sleeping;
+    const transition=mascotTransition(previous,sleeping,interactive&&visible&&!reduced&&!paused);
+    if(previous!==sleeping&&interactive&&visible)trackInteraction(sleeping?'mascot_sleep':'mascot_wake',hint?'hint':'apps');
+    const mobile=window.matchMedia('(max-width:760px)').matches;
+    const small=mobile?(parseFloat(getComputedStyle(button.current).getPropertyValue('--mobile-touch'))||60):60;
+    const full=mobile?Math.max(107,small):107;
+    setMotionStyle({'--sleep-scale':full/small,'--wake-scale':small/full,'--tuck-x':mobile?'-8px':'-10px','--tuck-y':mobile?'-72px':'-50px','--wake-x':mobile?'8px':'10px','--wake-y':mobile?'72px':'50px'});
+    setMotion(transition);
+    if(!transition)return;
+    const timer=setTimeout(()=>setMotion(null),640);
     return ()=>clearTimeout(timer);
-  },[hasWindow,interactive,visible,reduced,paused]);
+  },[sleeping,interactive,visible,reduced,paused,hint]);
   useEffect(()=>{
     if(!hint)return;
-    const dismissOutside=event=>{if(!button.current?.contains(event.target))setHint(null);};
+    const dismissOutside=event=>{if(!button.current?.contains(event.target)){trackInteraction('mascot_hint_dismiss','outside');setHint(null);}};
     document.addEventListener('pointerdown',dismissOutside,true);
     return ()=>document.removeEventListener('pointerdown',dismissOutside,true);
   },[hint]);
@@ -67,37 +85,58 @@ const DesktopMascot=forwardRef(function DesktopMascot({interactive, visible, red
   },[]);
   useEffect(()=>{setHint(null);},[interactive,visible]);
   useEffect(()=>{
-    if(!hint)return;
-    const total=hint.text.split(' ').length;
+    if(!hint||!fontReady||!hintBox.current)return;
+    const element=hintBox.current;
+    const context=document.createElement('canvas').getContext('2d');
+    const layout=()=>{
+      const mobile=window.matchMedia('(max-width:760px)').matches;
+      const style=getComputedStyle(element);
+      if(context)context.font=`${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+      const measure=text=>context?context.measureText(text).width:text.length*parseFloat(style.fontSize);
+      const lines=Math.max(1,Math.floor(element.clientHeight/parseFloat(style.lineHeight)));
+      // Reserve room for the continuation dots, including during word-by-word reveal.
+      setPages(mobile?paginateHint(hint.text,measure,Math.max(1,element.clientWidth-2-measure('...')),lines):[hint.text]);
+      setPage(0);setWordCount(0);
+    };
+    layout();
+    const observer=new ResizeObserver(layout);observer.observe(element);
+    return ()=>observer.disconnect();
+  },[hint,fontReady]);
+  useEffect(()=>{
+    if(!hint||!fontReady||!pages[page])return;
+    const total=pages[page].split(' ').length;
     if(reduced){setWordCount(total);return;}
     if(paused||!visible)return;
-    const timer=setInterval(()=>setWordCount(count=>{
-      const next=Math.min(count+3,total);
-      if(next===total)clearInterval(timer);
-      return next;
-    }),180);
-    return ()=>clearInterval(timer);
-  },[hint,reduced,paused,visible]);
+    if(wordCount<total){const timer=setTimeout(()=>setWordCount(count=>Math.min(count+3,total)),180);return ()=>clearTimeout(timer);}
+    if(page<pages.length-1){const timer=setTimeout(()=>{setPage(value=>value+1);setWordCount(0);},2000);return ()=>clearTimeout(timer);}
+  },[hint,fontReady,pages,page,wordCount,reduced,paused,visible]);
   useImperativeHandle(ref,()=>({
     cancel:()=>setHint(null),
     markSeen:id=>seen.current.add(id),
   }),[]);
   const nextHint=()=>{
-    setTucking(false);
+    setMotion(null);
+    // With reduced motion, a click advances any remaining page before the next hint.
+    if(reduced&&hint&&page<pages.length-1){setPage(value=>value+1);setWordCount(0);return;}
     let index=(cursor.current+1)%HINTS.length;
     for(let step=0;step<HINTS.length;step++){
       const candidate=(cursor.current+1+step)%HINTS.length;
       if(!seen.current.has(HINTS[candidate].id)){index=candidate;break;}
     }
-    cursor.current=index;seen.current.add(HINTS[index].id);setWordCount(0);setHint(HINTS[index]);
+    cursor.current=index;seen.current.add(HINTS[index].id);setPages([]);setPage(0);setWordCount(0);setHint(HINTS[index]);
+    trackInteraction('mascot_hint',HINTS[index].id);
   };
-  return <div className={styles.mascotLayer} data-paused={paused||!visible||reduced} data-compact={hasWindow&&interactive}>
-    {hint&&interactive&&<div className={styles.mascotHint} id="mascot-hint">
-      <p className={styles.mascotSpeech} aria-hidden="true"><span className={styles.mascotSpeechSpace}>{hint.text}</span><span className={styles.mascotSpeechReveal}>{hint.text.split(' ').slice(0,wordCount).join(' ')}</span></p>
+  const pageText=pages[page]||'';
+  const visibleText=fontReady?pageText.split(' ').slice(0,wordCount).join(' '):'';
+  const hasMore=wordCount<pageText.split(' ').length||page<pages.length-1;
+  const continuation=visibleText&&hasMore&&!/[.!?]$/.test(visibleText)?'...':'';
+  return <div className={styles.mascotLayer} data-paused={paused||!visible||reduced} data-compact={sleeping}>
+    {hint&&interactive&&<div ref={hintBox} className={styles.mascotHint} id="mascot-hint">
+      <p className={styles.mascotSpeech} aria-hidden="true"><span className={styles.mascotSpeechSpace}>{pageText||hint.text}...</span><span className={styles.mascotSpeechReveal}>{visibleText}{continuation}</span></p>
       <span className={styles.screenReaderOnly} aria-live="polite">{hint.text}</span>
     </div>}
-    <div className={styles.mascotActor} data-tucking={tucking&&!hint} data-pose={hint?'hint':!interactive?'wave':hasWindow?'sleep':'idle'}>
-      <button ref={button} className={styles.mascotButton} onClick={nextHint} onKeyDown={event=>{if(event.key==='Escape'&&hint){event.preventDefault();event.stopPropagation();setHint(null);}}} disabled={!interactive} aria-label={hint?'Show the next workspace hint':'Ask the mascot for a workspace hint'} aria-expanded={!!hint} aria-controls={hint?'mascot-hint':undefined}><Character/></button>
+    <div className={styles.mascotActor} style={motionStyle} data-tucking={motion==='tucking'} data-waking={motion==='waking'} data-pose={hint?'hint':!interactive?'wave':sleeping?'sleep':'idle'}>
+      <button ref={button} className={styles.mascotButton} data-track="mascot" data-analytics="semantic" onClick={nextHint} onKeyDown={event=>{if(event.key==='Escape'&&hint){event.preventDefault();event.stopPropagation();trackInteraction('mascot_hint_dismiss','escape');setHint(null);}}} disabled={!interactive} aria-label={hint?'Show the next workspace hint':'Ask the mascot for a workspace hint'} aria-expanded={!!hint} aria-controls={hint?'mascot-hint':undefined}><Character/></button>
     </div>
   </div>;
 });

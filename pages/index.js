@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { useAfterHoursPreload } from "../components/AfterHoursPreload";
 import { useAfterHoursTransition } from "../components/AfterHoursTransition";
 import styles from "../styles/ThemeChooser.module.css";
+import { trackInteraction } from '../lib/visitor-analytics';
 
 export default function ThemeChooser() {
   const { enter } = useAfterHoursTransition();
@@ -13,9 +14,12 @@ export default function ThemeChooser() {
   useEffect(()=>()=>{ if(window.location.pathname!=='/after-hours')cancelRadioEntrance(); },[]);
   const { stage, progress, ready } = useAfterHoursPreload();
   const [selected, setSelected] = useState(false);
+  const queued=useRef(false);
   useEffect(() => {
     if (selected && (ready || stage === 'error')) {
+      queued.current=false;
       setSelected(false);
+      trackInteraction('after_hours_enter',stage==='error'?'loading_fallback':'loaded');
       enter(preview.current);
     }
   }, [selected, ready, stage, enter]);
@@ -36,19 +40,24 @@ export default function ThemeChooser() {
         </a></Link>
         </div>
         <div className={`${styles.pane} ${styles.darkPane}`} data-cursor-theme="glossy">
+        <div className={styles.afterHoursChoice}>
         {/* Explicit navigation prevents Next Link's hover prefetch from bypassing Simple-first loading. */}
         {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
-        <a href="/after-hours" className={styles.card} aria-label="Explore the After Hours portfolio" aria-busy={!ready && stage !== 'error'} onClick={event => {
+        <a href="/after-hours" data-analytics="semantic" className={styles.card} aria-label="Explore the After Hours portfolio" aria-busy={!ready && stage !== 'error'} onClick={event => {
           if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return;
           event.preventDefault();
           prepareRadioEntrance();
-          if (!ready && stage !== 'error') setSelected(true);
-          else enter(preview.current);
+          if (!ready && stage !== 'error') {
+            if(!queued.current){queued.current=true;trackInteraction('after_hours_wait','queued');}
+            setSelected(true);
+          } else {trackInteraction('after_hours_enter','ready');enter(preview.current);}
         }}>
           <div ref={preview} className={`${styles.glossyPreview} ${styles.loadingPreview}`} style={{ "--download-progress": `${progress}%` }} aria-hidden="true"><div className={styles.unloadedCover}/><div className={styles.previewBar}>V / S <span>02 — AFTER HOURS</span></div><span className={styles.concept}>EXPLORE THE ROOM</span></div>
           <div className={styles.description}><h2>After Hours <span className={styles.recommended}>recommended</span></h2><span className={styles.soon}>↗</span></div>
           <span className={styles.srOnly} role="progressbar" aria-label="After Hours download" aria-valuenow={Math.round(progress)} aria-valuemin={0} aria-valuemax={100}/>
         </a>
+        <p className={styles.loadingNotice} role="status" aria-live="polite">{selected?'After Hours is loading. It will open automatically when ready.':''}</p>
+        </div>
         </div>
       </div>
       <Link href="/privacy"><a className={styles.privacyLink}>Privacy</a></Link>

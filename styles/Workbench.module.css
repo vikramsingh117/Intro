@@ -97,7 +97,6 @@
   -webkit-mask-composite:source-in;
   mask-composite:intersect;
 }
-@font-face{font-family:MascotPixel;src:url('/fonts/press-start-2p/PressStart2P-Regular.ttf') format('truetype');font-style:normal;font-weight:400;font-display:swap}
 .mascotLayer{position:absolute;inset:0;pointer-events:none;z-index:40}
 .mascotActor{position:absolute;right:24px;bottom:52px;width:107px;height:86px;user-select:none}
 .mascotButton{display:block;width:100%;height:100%;padding:0;border:0;background:transparent;cursor:pointer;pointer-events:auto;touch-action:manipulation}
@@ -118,22 +117,30 @@
 .mascotCrouchSprite,.mascotSleepSprite{opacity:0}
 .mascotActor[data-pose=sleep] .mascotAwakeSprite{opacity:0}
 .mascotActor[data-pose=sleep] .mascotSleepSprite{opacity:1}
-.mascotActor[data-tucking=true]{transform-origin:bottom right;animation:mascotTuck .64s steps(1,end) both}
+.mascotActor[data-tucking=true]{transform-origin:bottom right;animation:mascotTuck .64s steps(5,end) both}
 .mascotActor[data-tucking=true] .mascotAwakeSprite{animation:mascotTuckAwake .64s steps(1,end) both}
 .mascotActor[data-tucking=true] .mascotCrouchSprite{animation:mascotTuckCrouch .64s steps(1,end) both}
 .mascotActor[data-tucking=true] .mascotSleepSprite{animation:mascotTuckAsleep .64s steps(1,end) both}
+.mascotActor[data-waking=true]{transform-origin:bottom right;animation:mascotWake .64s steps(5,end) both}
+.mascotActor[data-waking=true] .mascotAwakeSprite{animation:mascotWakeAwake .64s steps(1,end) both}
+.mascotActor[data-waking=true] .mascotCrouchSprite{animation:mascotWakeCrouch .64s steps(1,end) both}
+.mascotActor[data-waking=true] .mascotSleepSprite{animation:mascotWakeAsleep .64s steps(1,end) both}
+.mascotActor[data-waking=true] .mascotSleepZs{visibility:hidden}
 .mascotSleepZ{animation:mascotSnore 2.4s steps(1,end) infinite;animation-delay:var(--z-delay)}
 .mascotActor[data-pose=hint] .mascotBody{animation:none;transform:translateY(-2px)}
 .mascotActor[data-pose=hint] .mascotRightArm{transform:rotate(-55deg)}
 .mascotLayer[data-compact=true] .mascotActor{right:14px;bottom:2px;width:60px;height:48px}
-.desktopWorkspace .taskbarWithMascot{padding-right:90px}
 .mascotHint{position:absolute;right:24px;bottom:155px;width:400px;max-width:calc(100% - 48px);color:#DD775B;pointer-events:none;font:400 16px/1.9 MascotPixel,monospace;font-synthesis:none;text-shadow:2px 2px 0 #101b26;overflow-wrap:break-word}
 .mascotLayer[data-compact=true] .mascotHint{bottom:70px}
 .mascotHint p{margin:0}
 .mascotSpeech{position:relative}
 .mascotSpeechSpace{visibility:hidden}
 .mascotSpeechReveal{position:absolute;inset:0}
-@keyframes mascotTuck{0%{transform:translate(-10px,-50px) scale(1.78)}25%{transform:translate(-8px,-38px) scale(1.6)}45%{transform:translate(-4px,-24px) scale(1.4)}65%{transform:translate(-2px,-10px) scale(1.2)}85%,100%{transform:none}}
+@keyframes mascotTuck{from{transform:translate(var(--tuck-x,-10px),var(--tuck-y,-50px)) scale(var(--sleep-scale,1.78))}to{transform:none}}
+@keyframes mascotWake{from{transform:translate(var(--wake-x,10px),var(--wake-y,50px)) scale(var(--wake-scale,.56))}to{transform:none}}
+@keyframes mascotWakeAwake{0%{opacity:0}65%,100%{opacity:1}}
+@keyframes mascotWakeCrouch{0%{opacity:0}25%{opacity:1}65%,100%{opacity:0}}
+@keyframes mascotWakeAsleep{0%{opacity:1}25%,100%{opacity:0}}
 @keyframes mascotTuckAwake{0%{opacity:1}25%,100%{opacity:0}}
 @keyframes mascotTuckCrouch{0%{opacity:0}25%{opacity:1}65%,100%{opacity:0}}
 @keyframes mascotTuckAsleep{0%{opacity:0}65%,100%{opacity:1}}
@@ -148,10 +155,10 @@
 @keyframes mascotJump{0%,65%,77%,100%{transform:translateY(0)}66%{transform:translateY(-12px)}67%{transform:translateY(-26px)}68%{transform:translateY(-36px)}69%,71%{transform:translateY(-42px)}72%{transform:translateY(-36px)}73%{transform:translateY(-26px)}74%{transform:translateY(-12px)}75%{transform:translateY(-4px)}}
 .mascotLayer[data-paused=true] *{animation-play-state:paused!important}
 @media(max-width:760px){
-  .mascotActor{right:16px;bottom:80px}
+  .mascotLayer{--mascot-width:max(107px,var(--mobile-touch,60px));--mascot-height:calc(var(--mascot-width) * .804)}
+  .mascotActor{right:16px;bottom:80px;width:var(--mascot-width);height:var(--mascot-height)}
   .mascotLayer[data-compact=true] .mascotActor{width:var(--mobile-touch,60px);height:calc(var(--mobile-touch,60px) * .804);bottom:8px;right:8px}
-  .desktopWorkspace .taskbarWithMascot{right:calc(var(--mobile-touch,60px) + 20px);padding-right:8px}
-  .mascotHint{width:380px;bottom:180px;font-size:var(--mobile-font,20px)}
-  .mascotLayer[data-compact=true] .mascotHint{bottom:100px}
+  .mascotHint{left:12px;right:calc(var(--mascot-width) + 28px);width:auto;max-width:none;bottom:80px;height:var(--mascot-height);overflow:hidden;font-size:calc(var(--mobile-font,20px) * .8);line-height:1.6}
+  .desktopWorkspace:has(.mascotHint) .shortcuts{bottom:calc(90px + max(107px,var(--mobile-touch,60px)) * .804)}
 }
 @media(prefers-reduced-motion:reduce){.mascotLayer *{animation:none!important}}

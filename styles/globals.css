@@ -24,3 +24,4 @@ button:disabled { cursor: wait; }
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
+@font-face{font-family:MascotPixel;src:url('/fonts/press-start-2p/PressStart2P-Regular.ttf') format('truetype');font-style:normal;font-weight:400;font-display:block}
