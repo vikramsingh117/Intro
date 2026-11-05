@@ -123,6 +123,18 @@
 .mascotMusicLeftFeet{animation:mascotMusicTap 1.2s steps(1,end) infinite}
 .mascotMusicRightFeet{animation:mascotMusicTap 1.2s steps(1,end) -.6s infinite}
 .mascotMusicNote{animation:mascotMusicNotes 1.8s steps(1,end) infinite;animation-delay:var(--note-delay)}
+.mascotHeadphones{transform-origin:53px 10px}
+.mascotHeadphoneRightHand{opacity:0}
+.mascotMusicSprite:not([data-phase=on]) .mascotHeadphoneRightHand{opacity:1}
+.mascotMusicSprite:not([data-phase=on]) :is(.mascotMusicBounce,.mascotMusicHead,.mascotMusicLeftFeet,.mascotMusicRightFeet){animation:none}
+.mascotMusicSprite:not([data-phase=on]) .mascotMusicNote{animation:none;opacity:0}
+.mascotMusicSprite[data-phase=putting] .mascotHeadphones{animation:mascotHeadphonesOn .9s steps(1,end) both}
+.mascotMusicSprite[data-phase=removing] .mascotHeadphones{animation:mascotHeadphonesOff .9s steps(1,end) both}
+.mascotMusicSprite[data-phase=putting] .mascotHeadphoneHands{animation:mascotHeadphoneReach .9s steps(1,end) both}
+.mascotMusicSprite[data-phase=removing] .mascotHeadphoneHands{animation:mascotHeadphoneReach .9s steps(1,end) reverse both}
+@keyframes mascotHeadphonesOn{0%{opacity:0;transform:translate(-32px,24px) scale(.55)}15%{opacity:1;transform:translate(-26px,4px) scale(.7)}30%{transform:translate(-12px,-24px) scale(.85)}45%,60%{transform:translateY(-36px)}75%{transform:translateY(-14px)}90%,100%{opacity:1;transform:none}}
+@keyframes mascotHeadphonesOff{0%,10%{opacity:1;transform:none}25%{transform:translateY(-14px)}40%,55%{transform:translateY(-36px)}70%{transform:translate(-12px,-24px) scale(.85)}85%{opacity:1;transform:translate(-26px,4px) scale(.7)}100%{opacity:0;transform:translate(-32px,24px) scale(.55)}}
+@keyframes mascotHeadphoneReach{0%,100%{transform:none}15%{transform:translate(-8px,4px)}30%{transform:translateY(-18px)}45%,60%{transform:translateY(-32px)}75%{transform:translateY(-12px)}90%{transform:none}}
 @keyframes mascotMusicBounce{0%,50%,100%{transform:translate(0,0)}16.66%{transform:translate(-2px,-3px)}33.33%{transform:translate(-2px,-1px)}66.66%{transform:translate(2px,-3px)}83.33%{transform:translate(2px,-1px)}}
 @keyframes mascotMusicNod{0%,50%,100%{transform:translateY(0)}16.66%,66.66%{transform:translateY(2px)}33.33%,83.33%{transform:translateY(-1px)}}
 @keyframes mascotMusicTap{0%,50%,100%{transform:translateY(0)}16.66%,33.33%{transform:translateY(-4px)}}

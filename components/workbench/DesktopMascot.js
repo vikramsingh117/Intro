@@ -7,7 +7,6 @@ import GymMascot, { GYM_DURATION_MS } from './GymMascot';
 
 const HINTS = [
   { id:'radio', text:'You can pause music by clicking on the radio.' },
-  { id:'monitor', text:'Click the monitor to step into my desktop.' },
   { id:'Terminal', text:'Try help in the terminal. There’s more to explore.' },
   { id:'notes', text:'Leave a little hello on the sticky-note wall.' },
   { id:'window', text:'Click the window. The city is still awake.' },
@@ -68,7 +67,7 @@ function Character() {
   </svg>;
 }
 
-const DesktopMascot=forwardRef(function DesktopMascot({interactive, visible, reduced, hasWindow, musicPlaying=false, musicWarming=false},ref){
+const DesktopMascot=forwardRef(function DesktopMascot({interactive, visible, reduced, hasWindow, musicPlaying=false},ref){
   const button=useRef(null);
   const walkLane=useRef(null);
   const hintBox=useRef(null),wasSleeping=useRef(false);
@@ -77,9 +76,14 @@ const DesktopMascot=forwardRef(function DesktopMascot({interactive, visible, red
   const [fontReady,setFontReady]=useState(false),[pages,setPages]=useState([]),[page,setPage]=useState(0),[motionStyle,setMotionStyle]=useState({});
   const [walking,setWalking]=useState(false);
   const [gym,setGym]=useState(false);
+  const [musicPhase,setMusicPhase]=useState('off');
+  useEffect(()=>{
+    setMusicPhase(previous=>musicPlaying?(reduced?'on':'putting'):previous==='off'||reduced?'off':'removing');
+  },[musicPlaying,reduced]);
+  const musicVisible=musicPlaying||musicPhase!=='off';
   const stroll=useRef({x:0,target:0,walking:false,wait:4800,stops:0,gym:false});
   const sleeping=hasWindow&&interactive&&!hint;
-  const canWalk=visible&&!paused&&!reduced&&!musicPlaying&&!musicWarming&&!sleeping&&!motion;
+  const canWalk=visible&&!paused&&!reduced&&!musicVisible&&!sleeping&&!motion;
   useEffect(()=>{
     if(!canWalk)return;
     const timer=setInterval(()=>{
@@ -115,7 +119,7 @@ const DesktopMascot=forwardRef(function DesktopMascot({interactive, visible, red
     return ()=>clearInterval(timer);
   },[canWalk,hint]);
   const roaming=canWalk&&walking;
-  const workingOut=gym&&!musicPlaying&&!musicWarming&&!sleeping&&!motion&&!reduced;
+  const workingOut=gym&&!musicVisible&&!sleeping&&!motion&&!reduced;
   useEffect(()=>{
     if(!hint||!interactive)return;
     let frame;
@@ -216,8 +220,8 @@ const DesktopMascot=forwardRef(function DesktopMascot({interactive, visible, red
       <span className={styles.screenReaderOnly} aria-live="polite">{hint.text}</span>
     </div>}
     <div ref={walkLane} className={styles.mascotWalkLane} data-walking={walking} data-running={roaming} data-hint={!!hint}>
-    <div className={styles.mascotActor} style={motionStyle} data-tucking={motion==='tucking'} data-waking={motion==='waking'} data-pose={musicPlaying?'music':musicWarming?'wave':workingOut?'gym':roaming?'walk':canWalk?'wave':hint?'hint':!interactive?'wave':sleeping?'sleep':'idle'}>
-      <button ref={button} className={styles.mascotButton} data-track="mascot" data-analytics="semantic" onClick={nextHint} onKeyDown={event=>{if(event.key==='Escape'&&hint){event.preventDefault();event.stopPropagation();trackInteraction('mascot_hint_dismiss','escape');setHint(null);}}} disabled={!interactive} aria-label={hint?'Show the next workspace hint':'Ask the mascot for a workspace hint'} aria-expanded={!!hint} aria-controls={hint?'mascot-hint':undefined}>{musicPlaying?<MusicMascot/>:workingOut?<GymMascot paused={paused||!visible}/>:<Character/>}</button>
+    <div className={styles.mascotActor} style={motionStyle} data-tucking={motion==='tucking'} data-waking={motion==='waking'} data-pose={musicVisible?'music':workingOut?'gym':roaming?'walk':canWalk?'wave':hint?'hint':!interactive?'wave':sleeping?'sleep':'idle'}>
+      <button ref={button} className={styles.mascotButton} data-track="mascot" data-analytics="semantic" onClick={nextHint} onKeyDown={event=>{if(event.key==='Escape'&&hint){event.preventDefault();event.stopPropagation();trackInteraction('mascot_hint_dismiss','escape');setHint(null);}}} disabled={!interactive} aria-label={hint?'Show the next workspace hint':'Ask the mascot for a workspace hint'} aria-expanded={!!hint} aria-controls={hint?'mascot-hint':undefined}>{musicVisible?<MusicMascot phase={musicPhase==='off'?'putting':musicPhase} onTransitionEnd={()=>setMusicPhase(musicPlaying?'on':'off')}/>:workingOut?<GymMascot paused={paused||!visible}/>:<Character/>}</button>
     </div>
     </div>
   </div>;

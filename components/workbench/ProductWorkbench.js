@@ -88,9 +88,8 @@ export default function ProductWorkbench() {
   const [outside,setOutside] = useState(false);
   const [lampOn,setLampOn] = useState(true);
   const [musicPlaying,setMusicPlaying] = useState(false);
-  const [musicWarming,setMusicWarming] = useState(false);
-  const handlePlaybackChange=useCallback((playing,warming=false)=>{
-    setMusicPlaying(playing&&!warming);setMusicWarming(warming);
+  const handlePlaybackChange=useCallback((playing,allowMascot=false)=>{
+    setMusicPlaying(playing&&allowMascot);
   },[]);
   const [entered,setEntered] = useState(false);
   const [desktop,setDesktop] = useState(false);
@@ -230,7 +229,7 @@ export default function ProductWorkbench() {
     <section ref={desktopRef} className={`${styles.desktop} ${styles.monitorDesktop}`}
       style={{pointerEvents:desktop ? 'auto' : 'none', opacity:outside || notebook || upliance || (!desktop && (aimingPaper || paperInFlight)) ? 0 : 1}}
       inert={desktop ? undefined : ''} aria-hidden={!desktop} aria-label="Vikram’s monitor desktop">
-      <DesktopWorkspace musicPlaying={musicPlaying} musicWarming={musicWarming} room={{lampOn,notebookOpen,notebookPage,wearingGlasses,cityReady,notesReady:stickyNotes.ready,noteCount:stickyNotes.notes.length}} desktopRef={desktopRef} interactive={desktop} visible={!outside&&!notebook&&!upliance} reduced={reduced} exitRef={exitButton} onLeave={leave} onOpenUpliance={openUplianceFromMonitor}/>
+      <DesktopWorkspace musicPlaying={musicPlaying} room={{lampOn,notebookOpen,notebookPage,wearingGlasses,cityReady,notesReady:stickyNotes.ready,noteCount:stickyNotes.notes.length}} desktopRef={desktopRef} interactive={desktop} visible={!outside&&!notebook&&!upliance} reduced={reduced} exitRef={exitButton} onLeave={leave} onOpenUpliance={openUplianceFromMonitor}/>
     </section>
     {heldPaper && !focused && <PaperInventory onThrow={() => setAimingPaper(true)}/>}
     </div>

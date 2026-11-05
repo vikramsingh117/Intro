@@ -15,11 +15,10 @@ export default function Radio({ keyboardFocused, registerRoomAction, onHover, on
   const {invalidate}=useThree();
   const requested = useRef(false);
   const [on, setOn] = useState(false);
-  const [warming,setWarming]=useState(false);
-  const warmupTimer=useRef(null);
+  const [musicAnimationAllowed,setMusicAnimationAllowed]=useState(false);
   const [failed, setFailed] = useState(false);
   useEffect(()=>{invalidate();},[on,invalidate]);
-  useEffect(()=>{onPlaybackChange?.(on,warming);},[on,warming,onPlaybackChange]);
+  useEffect(()=>{onPlaybackChange?.(on,musicAnimationAllowed);},[on,musicAnimationAllowed,onPlaybackChange]);
   const playStatic=useCallback(()=>{
     try {
       const AudioContext=window.AudioContext||window.webkitAudioContext;
@@ -51,7 +50,6 @@ export default function Radio({ keyboardFocused, registerRoomAction, onHover, on
     if(!entrance)player.volume = RADIO_VOLUME;
     audio.current = player;
     const error = () => {
-      clearTimeout(warmupTimer.current);setWarming(false);
       requested.current = false; setOn(false); setFailed(true);
       hoverCallback.current('Radio · unable to play, tap to retry');
     };
@@ -64,18 +62,14 @@ export default function Radio({ keyboardFocused, registerRoomAction, onHover, on
     player.addEventListener('error', error);
     let mounted=true;
     if(entrance){
-      setWarming(true);
       requested.current=true;
       entrance.fadeIn().then(started=>{
         if(!mounted||!requested.current)return;
         requested.current=started;setOn(started&&!player.paused);
-        if(started)warmupTimer.current=setTimeout(()=>setWarming(false),6000);
-        else setWarming(false);
       });
     }
     return () => {
       mounted=false;
-      clearTimeout(warmupTimer.current);
       requested.current = false;
       player.removeEventListener('playing',playing);
       player.removeEventListener('pause',stopped);
@@ -92,7 +86,6 @@ export default function Radio({ keyboardFocused, registerRoomAction, onHover, on
     event?.stopPropagation();
     if ((event?.delta ?? 0) > 5 || !audio.current) return;
     const player = audio.current;
-    clearTimeout(warmupTimer.current);setWarming(false);
     playStatic();
     if (requested.current) {
       requested.current = false; player.pause(); setOn(false);
@@ -100,6 +93,8 @@ export default function Radio({ keyboardFocused, registerRoomAction, onHover, on
       return;
     }
     entranceSession.current?.normalVolume();
+    // Automatic entrance playback never selects the headphone mascot.
+    setMusicAnimationAllowed(true);
     if (failed) player.load();
     requested.current = true; setFailed(false);
     onHover('Radio · turn music off');
