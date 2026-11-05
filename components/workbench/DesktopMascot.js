@@ -3,6 +3,7 @@ import styles from '../../styles/Workbench.module.css';
 import { trackInteraction } from '../../lib/visitor-analytics';
 import { mascotTransition, paginateHint } from './mascotBehavior.mjs';
 import MusicMascot from './MusicMascot';
+import GymMascot, { GYM_DURATION_MS } from './GymMascot';
 
 const HINTS = [
   { id:'radio', text:'You can pause music by clicking on the radio.' },
@@ -67,7 +68,7 @@ function Character() {
   </svg>;
 }
 
-const DesktopMascot=forwardRef(function DesktopMascot({interactive, visible, reduced, hasWindow, musicPlaying=false},ref){
+const DesktopMascot=forwardRef(function DesktopMascot({interactive, visible, reduced, hasWindow, musicPlaying=false, musicWarming=false},ref){
   const button=useRef(null);
   const walkLane=useRef(null);
   const hintBox=useRef(null),wasSleeping=useRef(false);
@@ -75,21 +76,23 @@ const DesktopMascot=forwardRef(function DesktopMascot({interactive, visible, red
   const [hint,setHint]=useState(null),[paused,setPaused]=useState(false),[wordCount,setWordCount]=useState(0),[motion,setMotion]=useState(null);
   const [fontReady,setFontReady]=useState(false),[pages,setPages]=useState([]),[page,setPage]=useState(0),[motionStyle,setMotionStyle]=useState({});
   const [walking,setWalking]=useState(false);
-  const stroll=useRef({x:0,target:0,walking:false,wait:4800});
+  const [gym,setGym]=useState(false);
+  const stroll=useRef({x:0,target:0,walking:false,wait:4800,stops:0,gym:false});
   const sleeping=hasWindow&&interactive&&!hint;
-  const canWalk=visible&&!paused&&!reduced&&!musicPlaying&&!sleeping&&!motion;
+  const canWalk=visible&&!paused&&!reduced&&!musicPlaying&&!musicWarming&&!sleeping&&!motion;
   useEffect(()=>{
     if(!canWalk)return;
     const timer=setInterval(()=>{
       const lane=walkLane.current,actor=button.current?.parentElement;
       if(!lane||!actor)return;
-      if(!hint&&(button.current.matches(':hover')||document.activeElement===button.current))return;
       const state=stroll.current;
+      if(!hint&&!state.gym&&(button.current.matches(':hover')||document.activeElement===button.current))return;
       const min=Math.min(0,12-actor.offsetLeft);
       state.x=Math.max(min,Math.min(0,state.x));
       if(!state.walking){
         state.wait-=100;
         if(state.wait<=0){
+          state.gym=false;setGym(false);
           const distance=Math.min(40+Math.random()*100,(0-min)*.3);
           let direction=Math.random()<.5?-1:1;
           if(state.x+direction*distance<min||state.x+direction*distance>0)direction*=-1;
@@ -101,7 +104,10 @@ const DesktopMascot=forwardRef(function DesktopMascot({interactive, visible, red
         const delta=Math.max(min,Math.min(0,state.target))-state.x;
         state.x+=Math.sign(delta)*Math.min(4,Math.abs(delta));
         if(Math.abs(delta)<=4){
-          state.walking=false;state.wait=4800+Math.random()*1200;setWalking(false);
+          state.walking=false;state.stops+=1;
+          state.gym=state.stops%2===0;
+          state.wait=state.gym?GYM_DURATION_MS:4800+Math.random()*1200;
+          setGym(state.gym);setWalking(false);
         }
       }
       lane.style.transform=`translateX(${state.x}px)`;
@@ -109,6 +115,7 @@ const DesktopMascot=forwardRef(function DesktopMascot({interactive, visible, red
     return ()=>clearInterval(timer);
   },[canWalk,hint]);
   const roaming=canWalk&&walking;
+  const workingOut=gym&&!musicPlaying&&!musicWarming&&!sleeping&&!motion&&!reduced;
   useEffect(()=>{
     if(!hint||!interactive)return;
     let frame;
@@ -181,7 +188,7 @@ const DesktopMascot=forwardRef(function DesktopMascot({interactive, visible, red
     if(reduced){setWordCount(total);return;}
     if(paused||!visible)return;
     if(wordCount<total){const timer=setTimeout(()=>setWordCount(count=>Math.min(count+3,total)),180);return ()=>clearTimeout(timer);}
-    if(page<pages.length-1){const timer=setTimeout(()=>{setPage(value=>value+1);setWordCount(0);},2000);return ()=>clearTimeout(timer);}
+    if(page<pages.length-1){const timer=setTimeout(()=>{setPage(value=>value+1);setWordCount(0);},700);return ()=>clearTimeout(timer);}
   },[hint,fontReady,pages,page,wordCount,reduced,paused,visible]);
   useImperativeHandle(ref,()=>({
     cancel:()=>setHint(null),
@@ -209,8 +216,8 @@ const DesktopMascot=forwardRef(function DesktopMascot({interactive, visible, red
       <span className={styles.screenReaderOnly} aria-live="polite">{hint.text}</span>
     </div>}
     <div ref={walkLane} className={styles.mascotWalkLane} data-walking={walking} data-running={roaming} data-hint={!!hint}>
-    <div className={styles.mascotActor} style={motionStyle} data-tucking={motion==='tucking'} data-waking={motion==='waking'} data-pose={musicPlaying?'music':roaming?'walk':canWalk?'wave':hint?'hint':!interactive?'wave':sleeping?'sleep':'idle'}>
-      <button ref={button} className={styles.mascotButton} data-track="mascot" data-analytics="semantic" onClick={nextHint} onKeyDown={event=>{if(event.key==='Escape'&&hint){event.preventDefault();event.stopPropagation();trackInteraction('mascot_hint_dismiss','escape');setHint(null);}}} disabled={!interactive} aria-label={hint?'Show the next workspace hint':'Ask the mascot for a workspace hint'} aria-expanded={!!hint} aria-controls={hint?'mascot-hint':undefined}>{musicPlaying?<MusicMascot/>:<Character/>}</button>
+    <div className={styles.mascotActor} style={motionStyle} data-tucking={motion==='tucking'} data-waking={motion==='waking'} data-pose={musicPlaying?'music':musicWarming?'wave':workingOut?'gym':roaming?'walk':canWalk?'wave':hint?'hint':!interactive?'wave':sleeping?'sleep':'idle'}>
+      <button ref={button} className={styles.mascotButton} data-track="mascot" data-analytics="semantic" onClick={nextHint} onKeyDown={event=>{if(event.key==='Escape'&&hint){event.preventDefault();event.stopPropagation();trackInteraction('mascot_hint_dismiss','escape');setHint(null);}}} disabled={!interactive} aria-label={hint?'Show the next workspace hint':'Ask the mascot for a workspace hint'} aria-expanded={!!hint} aria-controls={hint?'mascot-hint':undefined}>{musicPlaying?<MusicMascot/>:workingOut?<GymMascot paused={paused||!visible}/>:<Character/>}</button>
     </div>
     </div>
   </div>;

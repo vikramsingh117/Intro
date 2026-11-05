@@ -40,10 +40,11 @@
   .roomPage .sceneLabel{top:max(18px,env(safe-area-inset-top));font-size:9px}
   .roomPage .enterRow{bottom:max(20px,env(safe-area-inset-bottom));font-size:11px}
   .roomPage .desktopWorkspace{left:50%;right:auto;width:var(--mobile-desktop-width,440px);transform:translateX(-50%)}
-  .desktopWorkspace .desktopTop{height:80px;padding:8px;gap:10px;font-size:14px}
-  .desktopWorkspace .desktopTop button{min-height:var(--mobile-touch);font-size:var(--mobile-font);padding:8px 12px}
+  .desktopWorkspace{--mobile-back-width:calc(var(--mobile-font,20px) * 8.5 + 40px)}
+  .desktopWorkspace .desktopTop{position:absolute;left:0;bottom:0;z-index:21;box-sizing:border-box;width:var(--mobile-back-width);height:80px;padding:8px;gap:10px;font-size:14px;background:#0c1926}
+  .desktopWorkspace .desktopTop button{width:100%;min-height:var(--mobile-touch);font-size:var(--mobile-font);padding:8px 12px;white-space:nowrap}
   .desktopWorkspace .desktopTop>span{display:none}
-  .desktopWorkspace .shortcuts{left:0;right:0;top:100px;bottom:90px;overflow:auto;align-content:start;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 6px;touch-action:pan-y}
+  .desktopWorkspace .shortcuts{left:0;right:0;top:12px;bottom:90px;overflow:auto;align-content:start;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 6px;touch-action:pan-y}
   .desktopWorkspace .shortcuts :is(button,a){width:100%;min-height:calc(var(--mobile-touch) + 50px);font-size:var(--mobile-font)}
   .desktopWorkspace .shortcuts .appIcon{width:var(--mobile-touch);height:var(--mobile-touch);font-size:30px}
   .desktopWorkspace .desktopWindow{left:0!important;top:90px!important;width:100%!important;height:590px!important}
@@ -57,7 +58,7 @@
   .desktopWorkspace .windowContent h2{font-size:calc(var(--mobile-font) * 1.5)}
   .desktopWorkspace .windowContent :is(h3,h4){font-size:calc(var(--mobile-font) * 1.15)}
   .desktopWorkspace .windowContent ul{padding-left:22px}
-  .desktopWorkspace .taskbar{height:80px;padding:8px;overflow-x:auto;gap:8px;touch-action:pan-x}
+  .desktopWorkspace .taskbar{left:var(--mobile-back-width);height:80px;padding:8px;overflow-x:auto;gap:8px;touch-action:pan-x}
   .desktopWorkspace .taskbar>span{display:none}
   .desktopWorkspace .taskbar button{min-height:var(--mobile-touch);flex-shrink:0;font-size:var(--mobile-font)}
   .desktopWorkspace .terminalBody{padding:14px}
@@ -181,6 +182,6 @@
   .mascotActor{right:16px;bottom:80px;width:var(--mascot-width);height:var(--mascot-height)}
   .mascotLayer[data-compact=true] .mascotActor{width:var(--mobile-touch,60px);height:calc(var(--mobile-touch,60px) * .804);bottom:8px;right:8px}
   .mascotHint{left:12px;right:auto;width:400px;max-width:calc(100% - 24px);bottom:calc(96px + var(--mascot-height));height:var(--mascot-height);overflow:hidden;font-size:calc(var(--mobile-font,20px) * .8);line-height:1.6}
-  .desktopWorkspace:has(.mascotHint) .shortcuts{bottom:calc(90px + max(107px,var(--mobile-touch,60px)) * .804)}
+  .desktopWorkspace:has(.mascotHint) .shortcuts{bottom:calc(112px + max(107px,var(--mobile-touch,60px)) * 1.608)}
 }
 @media(prefers-reduced-motion:reduce){.mascotLayer *{animation:none!important}}
