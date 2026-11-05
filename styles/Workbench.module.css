@@ -197,3 +197,5 @@
   .desktopWorkspace:has(.mascotHint) .shortcuts{bottom:calc(112px + max(107px,var(--mobile-touch,60px)) * 1.608)}
 }
 @media(prefers-reduced-motion:reduce){.mascotLayer *{animation:none!important}}
+
+.photoDismiss{position:absolute;inset:0;z-index:20;width:100%;height:100%;padding:0;border:0;background:transparent;cursor:zoom-out}.photoDismiss:focus-visible{outline:2px solid #eac595;outline-offset:-4px}

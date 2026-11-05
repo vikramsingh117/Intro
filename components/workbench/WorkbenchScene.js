@@ -4,6 +4,7 @@ import { Canvas, useFrame, useLoader, useThree } from '@react-three/fiber';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import CityExterior, { NightEffects } from './CityExterior';
+import PhotoFrame, { PHOTO_TARGET } from './PhotoFrame';
 import Notebook, { NOTEBOOK_TARGET } from './Notebook';
 import PaperBalls from './PaperBalls';
 import StationaryShadows from './StationaryShadows';
@@ -93,7 +94,7 @@ function Monitor({ onEnter, desktopRef, desktop, musicPlaying }) {
     </group>
   </group>;
 }
-function Camera({ pauseCamera, upliance, onUplianceArrive, entered, outside, notebook, citySettings, reduced, onArrive, interactionBlocked, noteMode, noteX, noteY }) {
+function Camera({ photo, pauseCamera, upliance, onUplianceArrive, entered, outside, notebook, citySettings, reduced, onArrive, interactionBlocked, noteMode, noteX, noteY }) {
   const { camera, gl, size, invalidate } = useThree();
   const { cameraX, cameraY, cameraZ, targetX, targetY, targetZ, fov } = citySettings;
   const roomCameraZ=size.width<=760?Math.max(18.5,11.2/(size.width/size.height)):14.8;
@@ -132,8 +133,8 @@ function Camera({ pauseCamera, upliance, onUplianceArrive, entered, outside, not
     return () => { controls.removeEventListener('change', invalidate); controls.dispose(); orbit.current = null; };
   }, [camera, gl, invalidate]);
   useEffect(() => {
-    if(orbit.current) orbit.current.enabled = !interactionBlocked && !entered && !outside && !notebook && !upliance && !!transition.current?.done;
-  }, [interactionBlocked, entered, outside, notebook, upliance]);
+    if(orbit.current) orbit.current.enabled = !interactionBlocked && !photo && !entered && !outside && !notebook && !upliance && !!transition.current?.done;
+  }, [interactionBlocked, entered, outside, notebook, upliance, photo]);
   const lookTarget = useRef(new Vector3(0, .2128, -.51));
   useEffect(() => {
     const element=gl.domElement, look=windowLook.current;
@@ -173,7 +174,7 @@ function Camera({ pauseCamera, upliance, onUplianceArrive, entered, outside, not
   const applianceCallback=useRef(onUplianceArrive);
   applianceCallback.current=onUplianceArrive;
   useEffect(() => {
-    const focused = entered || outside || notebook || !!upliance || !!noteMode;
+    const focused = photo || entered || outside || notebook || !!upliance || !!noteMode;
     if (focused && !wasFocused.current) roomPosition.current = camera.position.clone();
     wasFocused.current = focused;
     if (orbit.current) {
@@ -195,9 +196,12 @@ function Camera({ pauseCamera, upliance, onUplianceArrive, entered, outside, not
     const applianceTarget=upliance ? new Vector3(...upliance.target) : null;
     const applianceDistance=upliance ? Math.max(upliance.height/2,upliance.width/2/(size.width/size.height))/Math.tan(21*Math.PI/180)*1.35 : 0;
     const applianceCamera=upliance ? applianceTarget.clone().add(new Vector3(...upliance.normal).multiplyScalar(applianceDistance)) : null;
-    transition.current = { from:camera.position.clone(), fovFrom:camera.fov, fovTo:outside ? fov : 42, lookFrom:lookTarget.current.clone(), lookTo:upliance ? applianceTarget : noteMode ? noteTarget : notebook ? new Vector3(...NOTEBOOK_TARGET) : outside ? new Vector3(targetX,targetY,targetZ) : new Vector3(entered ? 1.5 : 0, .2128, -.51), to:upliance ? applianceCamera : noteMode ? noteCamera : notebook ? notebookCamera : outside ? new Vector3(cameraX,cameraY,cameraZ) : entered ? new Vector3(1.5, .2128 + .139173 * distance, -.51 + .990268 * distance)  : (roomPosition.current?.clone() || new Vector3(6,3.5,roomCameraZ)), elapsed:noteMode==='wall' && !reduced ? -.65 : 0, done:false };
+    const photoTarget = new Vector3(...PHOTO_TARGET);
+    const photoDistance = Math.max(.68, .68 / (size.width / size.height)) / Math.tan(21 * Math.PI / 180) * 1.3;
+    const photoCamera = photoTarget.clone().add(new Vector3(0, 0, photoDistance));
+    transition.current = { from:camera.position.clone(), fovFrom:camera.fov, fovTo:outside ? fov : 42, lookFrom:lookTarget.current.clone(), lookTo:photo ? photoTarget : upliance ? applianceTarget : noteMode ? noteTarget : notebook ? new Vector3(...NOTEBOOK_TARGET) : outside ? new Vector3(targetX,targetY,targetZ) : new Vector3(entered ? 1.5 : 0, .2128, -.51), to:photo ? photoCamera : upliance ? applianceCamera : noteMode ? noteCamera : notebook ? notebookCamera : outside ? new Vector3(cameraX,cameraY,cameraZ) : entered ? new Vector3(1.5, .2128 + .139173 * distance, -.51 + .990268 * distance)  : (roomPosition.current?.clone() || new Vector3(6,3.5,roomCameraZ)), elapsed:noteMode==='wall' && !reduced ? -.65 : 0, done:false };
     invalidate();
-  }, [upliance, noteMode, noteX, noteY, entered, outside, notebook, cameraX, cameraY, cameraZ, targetX, targetY, targetZ, fov, reduced, camera, size.width, size.height, roomCameraZ, invalidate]);
+  }, [photo, upliance, noteMode, noteX, noteY, entered, outside, notebook, cameraX, cameraY, cameraZ, targetX, targetY, targetZ, fov, reduced, camera, size.width, size.height, roomCameraZ, invalidate]);
   useFrame((state, dt) => {
     const t = transition.current;
     if (pauseCamera) return;
@@ -218,7 +222,7 @@ function Camera({ pauseCamera, upliance, onUplianceArrive, entered, outside, not
         windowLook.current.center=camera.quaternion.clone();
         windowLook.current.yaw=0;windowLook.current.pitch=0;
       }
-      if (!entered && !outside && !notebook && !upliance && !noteMode && orbit.current) {
+      if (!photo && !entered && !outside && !notebook && !upliance && !noteMode && orbit.current) {
         orbit.current.target.copy(lookTarget.current);
         orbit.current.enabled = !interactionBlocked;
         orbit.current.update();
@@ -228,7 +232,7 @@ function Camera({ pauseCamera, upliance, onUplianceArrive, entered, outside, not
   }, -1);
   return null;
 }
-export default function MonitorScene({ musicPlaying, onPlaybackChange, onNotebookTear, onPaperMotionChange, aimingPaper, heldPaper, paperControls, onPaperThrown, tornPages, keyboardTarget, registerRoomAction, upliance, upliancePage, uplianceControlsRef, onUplianceArrive, onUplianceSelect, propPlacement, entered, reduced, onEnter, onArrive, lampOn, onLampToggle, onWindowSelect, outside, onCityReady, desktopRef, desktop, notebook, notebookPage, onNotebookOpen, onHover, notebookOpen, onNotebookPageChange, onNotebookExit, citySettings, wearingGlasses, onWearGlasses, stickyNotes, noteEditorRef }) {
+export default function MonitorScene({ photo, onPhotoOpen, musicPlaying, onPlaybackChange, onNotebookTear, onPaperMotionChange, aimingPaper, heldPaper, paperControls, onPaperThrown, tornPages, keyboardTarget, registerRoomAction, upliance, upliancePage, uplianceControlsRef, onUplianceArrive, onUplianceSelect, propPlacement, entered, reduced, onEnter, onArrive, lampOn, onLampToggle, onWindowSelect, outside, onCityReady, desktopRef, desktop, notebook, notebookPage, onNotebookOpen, onHover, notebookOpen, onNotebookPageChange, onNotebookExit, citySettings, wearingGlasses, onWearGlasses, stickyNotes, noteEditorRef }) {
   const { sceneReady } = useAfterHoursTransition();
   const [lightDragging,setLightDragging]=useState(false);
   return <Canvas onPointerMissed={()=>{if(notebook)onNotebookExit();}} shadows camera={{ position:[6, 3.5, 14.8], fov:42 }} dpr={[1,1.5]} frameloop="demand" gl={{alpha:true, antialias:true, toneMapping:ACESFilmicToneMapping, toneMappingExposure:.85}}>
@@ -243,16 +247,17 @@ export default function MonitorScene({ musicPlaying, onPlaybackChange, onNoteboo
     <directionalLight userData={{cacheStationaryShadow:true}} position={[3, 5, 4]} intensity={.8} color="#c7d5df" castShadow shadow-mapSize={[1024, 1024]} shadow-camera-left={-9} shadow-camera-right={9} shadow-camera-top={8} shadow-camera-bottom={-8} shadow-normalBias={.04} />
     <pointLight position={[-4.6, 2, -2.5]} intensity={18} distance={12} decay={2} color="#8abbd9" />
     <Suspense fallback={null}><InteractiveObject focused={keyboardTarget==='monitor'} label="Monitor · explore my work" onHover={onHover}><Monitor musicPlaying={musicPlaying} onEnter={notebook ? onNotebookExit : onEnter} desktopRef={desktopRef} desktop={desktop} /></InteractiveObject></Suspense>
-    <Camera pauseCamera={aimingPaper} {...{upliance,onUplianceArrive,entered,outside,notebook,citySettings,reduced,onArrive}} noteMode={stickyNotes.editor ? (stickyNotes.editor.id?'read':'write') : stickyNotes.placing?'wall':null} noteX={stickyNotes.editor?.x} noteY={stickyNotes.editor?.y} interactionBlocked={aimingPaper || lightDragging || stickyNotes.dragging || !!stickyNotes.editor || !!stickyNotes.placing}/>
-    <Suspense fallback={null}><PaperBalls onMotionChange={onPaperMotionChange} aiming={aimingPaper} heldPaper={heldPaper} controls={paperControls} onThrown={onPaperThrown} canThrow={!entered && !outside && !notebook && !upliance && !stickyNotes.editor && !stickyNotes.placing}/></Suspense>
+    <PhotoFrame focused={photo} keyboardFocused={keyboardTarget==='photo'} onSelect={onPhotoOpen} onHover={onHover}/>
+    <Camera photo={photo} pauseCamera={aimingPaper} {...{upliance,onUplianceArrive,entered,outside,notebook,citySettings,reduced,onArrive}} noteMode={stickyNotes.editor ? (stickyNotes.editor.id?'read':'write') : stickyNotes.placing?'wall':null} noteX={stickyNotes.editor?.x} noteY={stickyNotes.editor?.y} interactionBlocked={aimingPaper || lightDragging || stickyNotes.dragging || !!stickyNotes.editor || !!stickyNotes.placing}/>
+    <Suspense fallback={null}><PaperBalls onMotionChange={onPaperMotionChange} aiming={aimingPaper} heldPaper={heldPaper} controls={paperControls} onThrown={onPaperThrown} canThrow={!photo && !entered && !outside && !notebook && !upliance && !stickyNotes.editor && !stickyNotes.placing}/></Suspense>
     <StickyNotes api={stickyNotes} onHover={onHover} reduced={reduced}/>
     {stickyNotes.editor && <NoteProjection editor={stickyNotes.editor} elementRef={noteEditorRef}/>}
     <Suspense fallback={null}><Chair/></Suspense>
     <Suspense fallback={null}><Plant/></Suspense>
     <Suspense fallback={null}><Stool placement={propPlacement?.stool}/></Suspense>
     <Suspense fallback={null}><Pascal placement={propPlacement?.pascal}/></Suspense>
-    <Suspense fallback={null}><Upliance keyboardFocused={keyboardTarget==='upliance'} registerRoomAction={registerRoomAction} controlsRef={uplianceControlsRef} focused={!!upliance} workPage={upliancePage} onSelect={onUplianceSelect} placement={propPlacement?.upliance} reduced={reduced} interactive={!entered && !outside && !notebook && !upliance && !stickyNotes.editor && !stickyNotes.placing} onHover={onHover}/></Suspense>
-    <Suspense fallback={null}><CeilingLight reduced={reduced} onDragging={setLightDragging} interactive={!entered&&!outside&&!notebook&&!upliance&&!stickyNotes.editor&&!stickyNotes.placing} keyboardFocused={keyboardTarget==='ceiling-light'} registerRoomAction={registerRoomAction} onHover={onHover}/></Suspense>
+    <Suspense fallback={null}><Upliance keyboardFocused={keyboardTarget==='upliance'} registerRoomAction={registerRoomAction} controlsRef={uplianceControlsRef} focused={!!upliance} workPage={upliancePage} onSelect={onUplianceSelect} placement={propPlacement?.upliance} reduced={reduced} interactive={!photo && !entered && !outside && !notebook && !upliance && !stickyNotes.editor && !stickyNotes.placing} onHover={onHover}/></Suspense>
+    <Suspense fallback={null}><CeilingLight reduced={reduced} onDragging={setLightDragging} interactive={!photo&&!entered&&!outside&&!notebook&&!upliance&&!stickyNotes.editor&&!stickyNotes.placing} keyboardFocused={keyboardTarget==='ceiling-light'} registerRoomAction={registerRoomAction} onHover={onHover}/></Suspense>
     <CozyRoom keyboardTarget={keyboardTarget} registerRoomAction={registerRoomAction} reduced={reduced} wearingGlasses={wearingGlasses} onWearGlasses={onWearGlasses} onWindowSelect={notebook ? onNotebookExit : onWindowSelect} onHover={onHover} />
     <InteractiveObject moving focused={keyboardTarget==='notebook'} label="Notebook · ideas & sketches" onHover={onHover}><Notebook onTear={onNotebookTear} canTear={!heldPaper} tornPages={tornPages} focused={notebook} open={notebookOpen} onPageChange={onNotebookPageChange} page={notebookPage} reduced={reduced} onOpen={onNotebookOpen} /></InteractiveObject>
     <Suspense fallback={null}><Keyboard /></Suspense>

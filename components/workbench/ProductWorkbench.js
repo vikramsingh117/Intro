@@ -23,6 +23,7 @@ class Boundary extends Component {
 }
 const ROOM_OBJECTS = [
   {id:'monitor',label:'Monitor · explore my work'},
+  {id:'photo',label:'Photo frame · take a closer look'},
   {id:'window',label:'Window · city after dark'},
   {id:'notebook',label:'Notebook · ideas & sketches'},
   {id:'upliance',label:'Upliance · explore my work'},
@@ -85,6 +86,9 @@ export default function ProductWorkbench() {
   const uplianceBack=useRef(null);
   const uplianceReturnToMonitor=useRef(false);
   useEffect(()=>{if(uplianceArrived&&upliance)uplianceBack.current?.focus();},[uplianceArrived,upliance]);
+  const [photo,setPhoto] = useState(false);
+  const photoDismiss = useRef(null);
+  useEffect(() => { if(photo) photoDismiss.current?.focus(); }, [photo]);
   const [outside,setOutside] = useState(false);
   const [lampOn,setLampOn] = useState(true);
   const [musicPlaying,setMusicPlaying] = useState(false);
@@ -122,14 +126,16 @@ export default function ProductWorkbench() {
     const target = returnFocus.current;
     if (target?.isConnected && target !== document.body) target.focus(); else enterButton.current?.focus();
   });
-  const openNotebook = () => { if(entered || outside || notebook || upliance) return; rememberFocus(); setNotebookOpen(true); setNotebook(true); };
-  const openMonitor = () => { if(entered || outside || notebook || upliance) return; rememberFocus(); setEntered(true); };
-  const openWindow = () => { if(entered || outside || notebook || upliance) return; rememberFocus(); setOutside(true); };
+  const openNotebook = () => { if(photo || entered || outside || notebook || upliance) return; rememberFocus(); setNotebookOpen(true); setNotebook(true); };
+  const openMonitor = () => { if(photo || entered || outside || notebook || upliance) return; rememberFocus(); setEntered(true); };
+  const openWindow = () => { if(photo || entered || outside || notebook || upliance) return; rememberFocus(); setOutside(true); };
+  const openPhoto = () => { if(photo || entered || outside || notebook || upliance || stickyNotes.editor || stickyNotes.placing) return; rememberFocus(); setPhoto(true); };
+  const closePhoto = () => { setPhoto(false); restoreFocus(); };
   const leaveNotebook = () => { setNotebook(false); restoreFocus(); };
   useEffect(() => { if(notebook) notebookText.current?.focus(); }, [notebook]);
   const leave = () => { setDesktop(false); setEntered(false); restoreFocus(); };
   useTrackedState({monitor:entered,window:outside,notebook,notebookPage:notebook?notebookPage:'closed',upliance:!!upliance,upliancePage:upliance?upliancePage:'closed',lamp:lampOn,glasses:wearingGlasses,noteEditor:!!stickyNotes.editor,notePlacement:!!stickyNotes.placing});
-  const focused=!!(entered||outside||notebook||upliance||stickyNotes.editor||stickyNotes.placing);
+  const focused=!!(photo||entered||outside||notebook||upliance||stickyNotes.editor||stickyNotes.placing);
   const closeUpliance=()=>{
     const returnToMonitor=uplianceReturnToMonitor.current;
     uplianceReturnToMonitor.current=false;
@@ -150,6 +156,7 @@ export default function ProductWorkbench() {
     const id=keyboardTarget?.id;
     if(!id){openMonitor();return;}
     if(id==='monitor')openMonitor();
+    else if(id==='photo')openPhoto();
     else if(id==='window')openWindow();
     else if(id==='notebook')openNotebook();
     else roomActions.current.get(id)?.();
@@ -164,6 +171,7 @@ export default function ProductWorkbench() {
   };
   const handleWorkbenchKeyDown=event=>{
     if(aimingPaper){event.preventDefault();return;}
+    if(photo && event.key==='Escape'){event.preventDefault();closePhoto();return;}
     if(upliance && event.key==='Escape'){event.preventDefault();closeUpliance();return;}
     if(stickyNotes.editor || stickyNotes.placing){if(event.key==='Escape'){event.preventDefault();stickyNotes.cancel();}return;}
     if(notebook && (event.key==='ArrowLeft'||event.key==='ArrowRight')){event.preventDefault();setNotebookPage(value=>Math.max(0,Math.min(NOTEBOOK_PAGES.length-1,value+(event.key==='ArrowRight'?1:-1))));return;}
@@ -186,15 +194,15 @@ export default function ProductWorkbench() {
   };
   useFocusHistory(focused,()=>{
     uplianceReturnToMonitor.current=false;
-    setDesktop(false);setEntered(false);setOutside(false);setNotebook(false);
+    setPhoto(false);setDesktop(false);setEntered(false);setOutside(false);setNotebook(false);
     setUpliance(null);setUplianceArrived(false);stickyNotes.cancel(true);restoreFocus();
   });
   return <div ref={workbenchRef} className={styles.workbench} onKeyDown={handleWorkbenchKeyDown}>
     <div style={{display:'contents'}} inert={aimingPaper ? '' : undefined} aria-hidden={aimingPaper ? true : undefined}>
-    <div className={styles.scene} onPointerMoveCapture={releaseKeyboardSelection} onPointerDownCapture={releaseKeyboardSelection} style={{pointerEvents:entered || upliance ? 'none' : undefined}} aria-hidden={desktop} ref={enterButton} role="group" aria-label="Interactive room. Use arrow keys to select objects, Enter to activate, and Escape to return." tabIndex={desktop || outside || notebook || !!upliance ? -1 : 0}>
-      <div hidden={desktop || outside || notebook || !!upliance} className={styles.sceneLabel}>VIKRAM’S WORKSPACE <span>01 / ENTER TO EXPLORE</span></div>
-      <Boundary onEnter={()=>{setEntered(true);setDesktop(true);}}><Scene musicPlaying={musicPlaying} onPlaybackChange={handlePlaybackChange} onNotebookTear={tearPage} onPaperMotionChange={setPaperInFlight} aimingPaper={aimingPaper} heldPaper={heldPaper} paperControls={paperControls} onPaperThrown={onPaperThrown} tornPages={tornPages} keyboardTarget={keyboardTarget?.id} registerRoomAction={registerRoomAction} upliance={upliance} upliancePage={upliancePage} uplianceControlsRef={uplianceBack} onUplianceArrive={()=>setUplianceArrived(true)} onUplianceSelect={view=>{if(entered||outside||notebook||stickyNotes.editor||stickyNotes.placing)return;rememberFocus();setUplianceArrived(false);setUpliance(view);}} propPlacement={propPlacement} noteEditorRef={noteEditorRef} stickyNotes={stickyNotes} wearingGlasses={wearingGlasses} onWearGlasses={()=>setWearingGlasses(true)} citySettings={citySettings} notebookOpen={notebookOpen} onNotebookPageChange={setNotebookPage} onNotebookExit={leaveNotebook} notebook={notebook} notebookPage={notebookPage} onNotebookOpen={openNotebook} onHover={handleHover} desktopRef={desktopRef} desktop={desktop} outside={outside} onCityReady={setCityReady} onWindowSelect={openWindow} lampOn={lampOn} onLampToggle={()=>setLampOn(value=>!value)} entered={entered} reduced={reduced} onEnter={openMonitor} onArrive={()=>setDesktop(true)} /></Boundary>
-      <div hidden={desktop || notebook || !!upliance} className={styles.enterRow}><RoomHoverLabel store={hoverStore} outside={outside} cityReady={cityReady} entered={entered}/></div>
+    <div className={styles.scene} onPointerMoveCapture={releaseKeyboardSelection} onPointerDownCapture={releaseKeyboardSelection} style={{pointerEvents:photo || entered || upliance ? 'none' : undefined}} aria-hidden={desktop} ref={enterButton} role="group" aria-label="Interactive room. Use arrow keys to select objects, Enter to activate, and Escape to return." tabIndex={photo || desktop || outside || notebook || !!upliance ? -1 : 0}>
+      <div hidden={photo || desktop || outside || notebook || !!upliance} className={styles.sceneLabel}>VIKRAM’S WORKSPACE <span>01 / ENTER TO EXPLORE</span></div>
+      <Boundary onEnter={()=>{setEntered(true);setDesktop(true);}}><Scene photo={photo} onPhotoOpen={openPhoto} musicPlaying={musicPlaying} onPlaybackChange={handlePlaybackChange} onNotebookTear={tearPage} onPaperMotionChange={setPaperInFlight} aimingPaper={aimingPaper} heldPaper={heldPaper} paperControls={paperControls} onPaperThrown={onPaperThrown} tornPages={tornPages} keyboardTarget={keyboardTarget?.id} registerRoomAction={registerRoomAction} upliance={upliance} upliancePage={upliancePage} uplianceControlsRef={uplianceBack} onUplianceArrive={()=>setUplianceArrived(true)} onUplianceSelect={view=>{if(photo||entered||outside||notebook||stickyNotes.editor||stickyNotes.placing)return;rememberFocus();setUplianceArrived(false);setUpliance(view);}} propPlacement={propPlacement} noteEditorRef={noteEditorRef} stickyNotes={stickyNotes} wearingGlasses={wearingGlasses} onWearGlasses={()=>setWearingGlasses(true)} citySettings={citySettings} notebookOpen={notebookOpen} onNotebookPageChange={setNotebookPage} onNotebookExit={leaveNotebook} notebook={notebook} notebookPage={notebookPage} onNotebookOpen={openNotebook} onHover={handleHover} desktopRef={desktopRef} desktop={desktop} outside={outside} onCityReady={setCityReady} onWindowSelect={openWindow} lampOn={lampOn} onLampToggle={()=>setLampOn(value=>!value)} entered={entered} reduced={reduced} onEnter={openMonitor} onArrive={()=>setDesktop(true)} /></Boundary>
+      <div hidden={photo || desktop || notebook || !!upliance} className={styles.enterRow}><RoomHoverLabel store={hoverStore} outside={outside} cityReady={cityReady} entered={entered}/></div>
     </div>
     {upliance && <div ref={uplianceBack} tabIndex={-1} className={styles.uplianceControls} onClick={event=>{if(event.target===event.currentTarget)closeUpliance();}} style={{opacity:uplianceArrived?1:0}} inert={uplianceArrived?undefined:''} aria-hidden={!uplianceArrived} aria-label="Upliance work. Press Escape to return to the desk." onKeyDown={event=>{
       if(event.key==='ArrowLeft'||event.key==='ArrowRight'){event.preventDefault();setUpliancePage(value=>Math.max(0,Math.min(UPLIANCE_WORK.length-1,value+(event.key==='ArrowRight'?1:-1))));}
@@ -212,6 +220,7 @@ export default function ProductWorkbench() {
       <button aria-label="Zoom out to desk" className={styles.uplianceClose} onClick={closeUpliance}>×</button>
       <article aria-live="polite" className={styles.screenReaderOnly}><h2>{UPLIANCE_WORK[upliancePage].title}</h2><p>{UPLIANCE_WORK[upliancePage].lines.join(' ')}</p></article>
     </div>}
+    {photo && <button ref={photoDismiss} type="button" className={styles.photoDismiss} onClick={closePhoto} aria-label="Close photo and return to desk" />}
     {outside && <div className={styles.subwayToolbar}><span>OUTSIDE / NIGHT CITY</span><button ref={windowBack} onClick={()=>{setOutside(false);restoreFocus();}}>← Back to desk</button></div>}
     {notebook && <>
       <button className={styles.mobileNotebookBack} onClick={leaveNotebook}>← Back to desk</button>
@@ -227,9 +236,9 @@ export default function ProductWorkbench() {
     <StickyNotesUI api={stickyNotes} elementRef={noteEditorRef}/>
     {wearingGlasses && <GlassesOverlay reduced={reduced} onRemove={removeGlasses}/>}
     <section ref={desktopRef} className={`${styles.desktop} ${styles.monitorDesktop}`}
-      style={{pointerEvents:desktop ? 'auto' : 'none', opacity:outside || notebook || upliance || (!desktop && (aimingPaper || paperInFlight)) ? 0 : 1}}
+      style={{pointerEvents:desktop ? 'auto' : 'none', opacity:photo || outside || notebook || upliance || (!desktop && (aimingPaper || paperInFlight)) ? 0 : 1}}
       inert={desktop ? undefined : ''} aria-hidden={!desktop} aria-label="Vikram’s monitor desktop">
-      <DesktopWorkspace musicPlaying={musicPlaying} room={{lampOn,notebookOpen,notebookPage,wearingGlasses,cityReady,notesReady:stickyNotes.ready,noteCount:stickyNotes.notes.length}} desktopRef={desktopRef} interactive={desktop} visible={!outside&&!notebook&&!upliance} reduced={reduced} exitRef={exitButton} onLeave={leave} onOpenUpliance={openUplianceFromMonitor}/>
+      <DesktopWorkspace musicPlaying={musicPlaying} room={{lampOn,notebookOpen,notebookPage,wearingGlasses,cityReady,notesReady:stickyNotes.ready,noteCount:stickyNotes.notes.length}} desktopRef={desktopRef} interactive={desktop} visible={!photo&&!outside&&!notebook&&!upliance} reduced={reduced} exitRef={exitButton} onLeave={leave} onOpenUpliance={openUplianceFromMonitor}/>
     </section>
     {heldPaper && !focused && <PaperInventory onThrow={() => setAimingPaper(true)}/>}
     </div>
