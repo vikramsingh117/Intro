@@ -2,13 +2,34 @@ import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 're
 import styles from '../../styles/Workbench.module.css';
 import { trackInteraction } from '../../lib/visitor-analytics';
 import { mascotTransition, paginateHint } from './mascotBehavior.mjs';
+import MusicMascot from './MusicMascot';
 
 const HINTS = [
-  { id:'Terminal', text:'The terminal has a few things worth trying. Start with help.' },
-  { id:'notes', text:'You can leave a note on the wall outside. Look for the sticky notes by the desk.' },
-  { id:'window', text:'Have you looked outside the window? There’s a whole night city out there.' },
-  { id:'upliance', text:'There’s more of Vikram’s work on the upliance screen beside the monitor.' },
-  { id:'Photos', text:'The Photos app lets you leave a photo in this shared workspace.' },
+  { id:'radio', text:'You can pause music by clicking on the radio.' },
+  { id:'monitor', text:'Click the monitor to step into my desktop.' },
+  { id:'Terminal', text:'Try help in the terminal. There’s more to explore.' },
+  { id:'notes', text:'Leave a little hello on the sticky-note wall.' },
+  { id:'window', text:'Click the window. The city is still awake.' },
+  { id:'upliance', text:'Explore more work on the upliance screen.' },
+  { id:'ceiling-light', text:'Lift the hanging light, then let it drop.' },
+  { id:'desk-lamp', text:'Click the desk lamp to change the mood.' },
+  { id:'notebook', text:'Click notebook pages to flip. Drag the right page to tear it.' },
+  { id:'paper-ball', text:'Click the paper-ball icon, then flick to throw. Esc puts it away.' },
+  { id:'drawer', text:'Click the top drawer to peek inside.' },
+  { id:'glasses', text:'Try the glasses in the drawer for a different view.' },
+  { id:'My Work', text:'Open My Work for the story behind the builds.' },
+  { id:'About Me', text:'Meet the person behind this desk in About Me.' },
+  { id:'Projects', text:'Take a closer look at the Projects app.' },
+  { id:'AI Assistant', text:'Ask the AI Assistant about Vikram’s work.' },
+  { id:'Photos', text:'Leave a photo in this shared workspace.' },
+  { id:'Task Manager', text:'Curious what’s running? Open Task Manager.' },
+  { id:'Credits', text:'Meet the scene’s makers in Credits.' },
+  { id:'GitHub', text:'The GitHub shortcut leads to my code.' },
+  { id:'LinkedIn', text:'Find my professional story through the LinkedIn shortcut.' },
+  { id:'LeetCode', text:'The LeetCode shortcut opens my problem-solving profile.' },
+  { id:'Email', text:'Use the email shortcut to say hello.' },
+  { id:'taskbar', text:'Use the taskbar to bring an open app back into view.' },
+  { id:'desktop-menu', text:'Right-click the desktop for a few more options.' },
 ];
 
 // The approved neutral SVG, separated into parts for lightweight transform animation.
@@ -16,7 +37,7 @@ const HINTS = [
 function Character() {
   return <svg viewBox="0 0 107 86" aria-hidden="true" shapeRendering="crispEdges">
     <g className={styles.mascotAwakeSprite} fill="#DD775B">
-      <g>{[11,32,64,85].map(x=><rect key={x} x={x} y="60" width="11" height="26"/>)}</g>
+      <g>{[11,32,64,85].map((x,index)=><rect key={x} className={index%2?styles.mascotWalkFootBack:styles.mascotWalkFootFront} x={x} y="60" width="11" height="26"/>)}</g>
       <g className={styles.mascotBody}><rect x="11" width="85" height="65"/>
         <rect className={styles.mascotLeftArm} y="21" width="22" height="23"/>
         <rect className={styles.mascotRightArm} x="85" y="21" width="22" height="23"/>
@@ -46,13 +67,23 @@ function Character() {
   </svg>;
 }
 
-const DesktopMascot=forwardRef(function DesktopMascot({interactive, visible, reduced, hasWindow},ref){
+const DesktopMascot=forwardRef(function DesktopMascot({interactive, visible, reduced, hasWindow, musicPlaying=false},ref){
   const button=useRef(null);
   const hintBox=useRef(null),wasSleeping=useRef(false);
   const seen=useRef(new Set()),cursor=useRef(-1);
   const [hint,setHint]=useState(null),[paused,setPaused]=useState(false),[wordCount,setWordCount]=useState(0),[motion,setMotion]=useState(null);
   const [fontReady,setFontReady]=useState(false),[pages,setPages]=useState([]),[page,setPage]=useState(0),[motionStyle,setMotionStyle]=useState({});
+  const [walking,setWalking]=useState(false);
   const sleeping=hasWindow&&interactive&&!hint;
+  const canWalk=visible&&!paused&&!reduced&&!musicPlaying&&!hint&&!sleeping&&!motion;
+  useEffect(()=>{
+    setWalking(false);
+    if(!canWalk)return;
+    // Give the greeting time to finish before starting a stroll in either view.
+    const timer=setTimeout(()=>setWalking(true),4800);
+    return ()=>clearTimeout(timer);
+  },[canWalk,interactive]);
+  const roaming=canWalk&&walking;
   useEffect(()=>{
     let active=true;
     const ready=()=>{if(active)setFontReady(true);};
@@ -135,8 +166,10 @@ const DesktopMascot=forwardRef(function DesktopMascot({interactive, visible, red
       <p className={styles.mascotSpeech} aria-hidden="true"><span className={styles.mascotSpeechSpace}>{pageText||hint.text}...</span><span className={styles.mascotSpeechReveal}>{visibleText}{continuation}</span></p>
       <span className={styles.screenReaderOnly} aria-live="polite">{hint.text}</span>
     </div>}
-    <div className={styles.mascotActor} style={motionStyle} data-tucking={motion==='tucking'} data-waking={motion==='waking'} data-pose={hint?'hint':!interactive?'wave':sleeping?'sleep':'idle'}>
-      <button ref={button} className={styles.mascotButton} data-track="mascot" data-analytics="semantic" onClick={nextHint} onKeyDown={event=>{if(event.key==='Escape'&&hint){event.preventDefault();event.stopPropagation();trackInteraction('mascot_hint_dismiss','escape');setHint(null);}}} disabled={!interactive} aria-label={hint?'Show the next workspace hint':'Ask the mascot for a workspace hint'} aria-expanded={!!hint} aria-controls={hint?'mascot-hint':undefined}><Character/></button>
+    <div className={styles.mascotWalkLane} data-walking={roaming}>
+    <div className={styles.mascotActor} style={motionStyle} data-tucking={motion==='tucking'} data-waking={motion==='waking'} data-pose={musicPlaying?'music':hint?'hint':roaming?'walk':!interactive?'wave':sleeping?'sleep':'idle'}>
+      <button ref={button} className={styles.mascotButton} data-track="mascot" data-analytics="semantic" onClick={nextHint} onKeyDown={event=>{if(event.key==='Escape'&&hint){event.preventDefault();event.stopPropagation();trackInteraction('mascot_hint_dismiss','escape');setHint(null);}}} disabled={!interactive} aria-label={hint?'Show the next workspace hint':'Ask the mascot for a workspace hint'} aria-expanded={!!hint} aria-controls={hint?'mascot-hint':undefined}>{musicPlaying?<MusicMascot/>:<Character/>}</button>
+    </div>
     </div>
   </div>;
 });

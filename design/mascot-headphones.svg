@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="500" viewBox="0 0 180 150" role="img" aria-labelledby="title desc">
+  <title id="title">Headphones mascot — static concept</title>
+  <desc id="desc">The terracotta pixel mascot wearing mint and charcoal headphones, eyes happily closed, one hand on an earcup and one foot lifted, with two small music notes.</desc>
+  <!-- Static approval concept. No animation or live mascot changes. -->
+  <rect width="180" height="150" rx="10" fill="#172536"/>
+  <ellipse cx="90" cy="131" rx="48" ry="4" fill="#0c1926"/>
+  <g id="mascot" transform="translate(36 39)" shape-rendering="crispEdges">
+    <g id="feet" fill="#DD775B">
+      <path d="M11 60h11v26H11zM32 60h11v26H32zM64 60h11v26H64z"/>
+      <path d="M85 60h11v16h9v10H85z"/>
+    </g>
+    <g id="body" fill="#DD775B">
+      <path d="M11 0h85v65H11z"/>
+      <path id="right-arm" d="M85 26h22v23H85z"/>
+    </g>
+    <g id="headphone-band">
+      <path d="M1 31V-6h9v-10h15v-6h57v6h15v10h9v37H95V-2H85v-9H22v9H12v33z" fill="#0b1820"/>
+      <path d="M7 22V-3h9v-9h14v-5h47v5h14v9h9v25h-6V0H84v-8H23v8H13v22z" fill="#99c8ba"/>
+      <path d="M28-16h49v4H28z" fill="#c6e4d6"/>
+    </g>
+    <g id="earcups">
+      <path d="M-3 12h17v32H-3zM94 12h17v32H94z" fill="#0b1820"/>
+      <path d="M-7 17H5v22H-7zM103 17h12v22h-12z" fill="#99c8ba"/>
+      <path d="M-5 19h4v17h-4zM105 19h4v17h-4z" fill="#c6e4d6"/>
+      <path d="M8 16h5v23H8zM95 16h5v23h-5z" fill="#334b4d"/>
+    </g>
+    <g id="happy-eyes" fill="#131b20">
+      <path d="M24 23v-4h4v-4h7v4h4v4h-4v-4h-7v4z"/>
+      <path d="M67 23v-4h4v-4h7v4h4v4h-4v-4h-7v4z"/>
+    </g>
+    <g id="cheeks" fill="#f3aa88" opacity=".7"><path d="M23 29h13v4H23zM70 29h13v4H70z"/></g>
+    <path id="left-hand" d="M-1 34h12v-8h9v20H0v-4h-6v-8z" fill="#DD775B"/>
+    <path d="M0 34h11v5H0z" fill="#f3aa88"/>
+  </g>
+  <g id="music-notes" fill="#99c8ba" shape-rendering="crispEdges">
+    <rect x="19" y="36" width="4" height="22"/><rect x="11" y="53" width="12" height="5"/><rect x="23" y="36" width="8" height="5"/>
+    <g opacity=".8"><rect x="156" y="14" width="4" height="24"/><rect x="148" y="33" width="12" height="5"/><rect x="160" y="14" width="9" height="4"/></g>
+  </g>
+</svg>

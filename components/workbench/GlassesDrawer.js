@@ -32,13 +32,13 @@ export default function GlassesDrawer({ keyboardFocused, registerRoomAction, woo
       <Wood position={[0,-.32,.1]} size={[1.78,.1,3]} map={wood} color="#5a4435"/>
       {[-.86,.86].map(x => <Wood key={x} position={[x,-.12,.1]} size={[.09,.42,3]} map={wood}/>)}
       <Wood position={[0,-.12,-1.35]} size={[1.78,.42,.09]} map={wood}/>
-      <InteractiveObject focused={keyboardFocused} label={open ? 'Top drawer · close' : 'Top drawer · open'} onHover={onHover}>
+      <InteractiveObject moving focused={keyboardFocused} label={open ? 'Top drawer · close' : 'Top drawer · open'} onHover={onHover}>
         <group onClick={event => { event.stopPropagation(); if(event.delta<=5){setOpen(value=>!value);onHover('');} }}>
           <Wood position={[0,0,1.66]} size={[1.9,.73,.12]} map={wood} color="#ba9168"/>
           <mesh position={[0,.05,1.78]}><boxGeometry args={[.65,.065,.09]}/><meshStandardMaterial color="#33413a" roughness={.4}/></mesh>
         </group>
       </InteractiveObject>
-      {!wearing && <InteractiveObject label="Glasses · try them on" onHover={onHover}>
+      {!wearing && <InteractiveObject moving label="Glasses · try them on" onHover={onHover}>
         <group position={[0,-.23,1]} onClick={event=>{event.stopPropagation();if(open && !slide.current && event.delta<=5){onHover('');onWear();}}}>
           {[-.28,.28].map(x=><group key={x} position={[x,0,0]}>
             <mesh rotation={[-Math.PI/2,0,0]} castShadow><torusGeometry args={[.22,.025,8,32]}/><meshStandardMaterial color="#c9aa71" metalness={.65} roughness={.3}/></mesh>

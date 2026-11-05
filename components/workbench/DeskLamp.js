@@ -37,6 +37,6 @@ export default function DeskLamp({ on, onToggle, registerRoomAction }) {
     <group onClick={event => { event.stopPropagation(); if (event.delta <= 5) toggle(); }}>
       <group scale={scale}><primitive object={model} position={offset} /></group>
     </group>
-    <pointLight position={bulb} color="#ffc276" intensity={on ? 32 : 0} distance={8} decay={2} castShadow shadow-mapSize={[512,512]} shadow-normalBias={.03} />
+    <pointLight userData={{cacheStationaryShadow:true}} position={bulb} color="#ffc276" intensity={on ? 32 : 0} distance={8} decay={2} castShadow shadow-mapSize={[512,512]} shadow-normalBias={.03} />
   </group>;
 }

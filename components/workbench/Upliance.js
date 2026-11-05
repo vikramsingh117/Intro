@@ -24,6 +24,7 @@ export default function Upliance({ keyboardFocused=false, registerRoomAction, pl
   const projectedEdge=useMemo(()=>new Vector3(),[]);
   const [hovered,setHovered]=useState(false),[latched,setLatched]=useState(false);
   const panel=useRef(null);
+  const hoverOutline=useRef(null);
   const workTexture=useMemo(()=>{
     const canvas=document.createElement('canvas');canvas.width=1200;canvas.height=740;
     const ctx=canvas.getContext('2d'),page=UPLIANCE_WORK[workPage];
@@ -74,17 +75,24 @@ export default function Upliance({ keyboardFocused=false, registerRoomAction, pl
     window.addEventListener('blur',reset);
     return ()=>window.removeEventListener('blur',reset);
   },[]);
-  useEffect(()=>{
-    if((!hovered&&!keyboardFocused)||!interactive)return;
+  useLayoutEffect(()=>{
+    hitArea.current.updateWorldMatrix(true,false);
     const outline=new BoxHelper(hitArea.current,'#e8c595');
-    outline.material.transparent=true;outline.material.opacity=.35;outline.raycast=noRaycast;renderScene.add(outline);invalidate();
+    outline.material.transparent=true;outline.material.opacity=.35;outline.raycast=noRaycast;
+    outline.visible=false;hoverOutline.current=outline;renderScene.add(outline);
+    return ()=>{hoverOutline.current=null;renderScene.remove(outline);outline.geometry.dispose();outline.material.dispose();};
+  },[renderScene,placement]);
+  useEffect(()=>{
+    if(hoverOutline.current)hoverOutline.current.visible=interactive&&(hovered||keyboardFocused);
+    invalidate();
+  },[hovered,keyboardFocused,interactive,placement,invalidate]);
+  useEffect(()=>{
     const id=hitArea.current.uuid;
-    if(hovered){gl.domElement.dataset.cursorObject=id;gl.domElement.dispatchEvent(new CustomEvent('cursor-object-change',{bubbles:true}));}
+    if(hovered&&interactive){gl.domElement.dataset.cursorObject=id;gl.domElement.dispatchEvent(new CustomEvent('cursor-object-change',{bubbles:true}));}
     return ()=>{
-      renderScene.remove(outline);outline.geometry.dispose();outline.material.dispose();invalidate();
       if(gl.domElement.dataset.cursorObject===id){delete gl.domElement.dataset.cursorObject;gl.domElement.dispatchEvent(new CustomEvent('cursor-object-change',{bubbles:true}));}
     };
-  },[hovered,keyboardFocused,interactive,gl,renderScene,invalidate,placement]);
+  },[hovered,interactive,gl]);
   const select=useCallback(()=>{
     if(!interactive||!panel.current)return;
     panel.current.updateWorldMatrix(true,false);
@@ -101,7 +109,10 @@ export default function Upliance({ keyboardFocused=false, registerRoomAction, pl
         projectedEdge.set(x,y,.03).applyMatrix4(panel.current.matrixWorld).project(camera);
         return `${(projectedEdge.x+1)*size.width/2}px ${(1-projectedEdge.y)*size.height/2}px`;
       });
-      controlsRef.current.querySelector('[data-display-surface]').style.clipPath=`polygon(${corners.join(',')})`;
+      const surface=controlsRef.current.querySelector('[data-display-surface]');
+      surface.style.clipPath=`polygon(${corners.join(',')})`;
+      projectedEdge.set(0,0,.03).applyMatrix4(panel.current.matrixWorld).project(camera);
+      surface.dataset.centerX=String((projectedEdge.x+1)*size.width/2);
       Array.from(controlsRef.current.querySelectorAll('button')).forEach((button,index)=>{
         projectedEdge.set(index===0?-8.15:7.5,index===2?4.35:0,.03).applyMatrix4(panel.current.matrixWorld).project(camera);
         const x=(projectedEdge.x+1)*size.width/2;

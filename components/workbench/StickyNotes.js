@@ -43,7 +43,7 @@ function WallNote({ note, api, onHover }) {
   const texture = useNoteTexture(note.text,note.createdAt,note.id);
   const wall = useMemo(()=>new Plane(new Vector3(0,0,1),3.075),[]);
   const point = useMemo(()=>new Vector3(),[]);
-  return <InteractiveObject label={note.canEdit ? "Your note · drag to move, tap to edit" : "Visitor note · tap to read"} onHover={onHover}>
+  return <InteractiveObject moving label={note.canEdit ? "Your note · drag to move, tap to edit" : "Visitor note · tap to read"} onHover={onHover}>
     <mesh ref={mesh} position={[note.x,note.y,-3.075]}
       onPointerDown={event=>{
         if(api.placing || api.busy || event.button!==0)return;

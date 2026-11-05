@@ -8,7 +8,6 @@ export default function ThemeCursor() {
   useEffect(() => {
     const media = window.matchMedia("(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)");
     const node = cursor.current;
-    let frame = 0;
     let visible = false;
     let hoveredTarget = null;
     let spin = null;
@@ -26,7 +25,6 @@ export default function ThemeCursor() {
       hoveredTarget = next;
     };
     const objectHover = event => updateHover(event.target);
-    let x = 0, y = 0, targetX = 0, targetY = 0;
 
     const hide = () => {
       visible = false;
@@ -35,18 +33,6 @@ export default function ThemeCursor() {
       node.dataset.visible = "false";
       icon.current.dataset.visible = "false";
       delete document.documentElement.dataset.chooserCursor;
-      cancelAnimationFrame(frame);
-      frame = 0;
-    };
-    const animate = () => {
-      x += (targetX - x) * 0.24;
-      y += (targetY - y) * 0.24;
-      node.style.transform = `translate3d(${x}px, ${y}px, 0)`;
-      if (Math.abs(targetX - x) + Math.abs(targetY - y) > 0.15) {
-        frame = requestAnimationFrame(animate);
-      } else {
-        frame = 0;
-      }
     };
     const move = event => {
       const target = event.target instanceof Element ? event.target : null;
@@ -55,24 +41,20 @@ export default function ThemeCursor() {
         hide();
         return;
       }
-      targetX = event.clientX;
-      targetY = event.clientY;
+      const transform = `translate3d(${event.clientX}px, ${event.clientY}px, 0)`;
+      node.style.transform = transform;
       const pane = target?.closest("[data-cursor-theme]");
       node.dataset.theme = pane?.dataset.cursorTheme || "simple";
       icon.current.dataset.theme = node.dataset.theme;
       icon.current.dataset.visible = String(!!pane);
-      icon.current.style.transform = `translate3d(${targetX}px, ${targetY}px, 0)`;
+      icon.current.style.transform = transform;
       if (pane) document.documentElement.dataset.chooserCursor = "true";
       else delete document.documentElement.dataset.chooserCursor;
       updateHover(target);
       if (!visible) {
-        x = targetX;
-        y = targetY;
-        node.style.transform = `translate3d(${x}px, ${y}px, 0)`;
         visible = true;
         node.dataset.visible = "true";
       }
-      if (!frame) frame = requestAnimationFrame(animate);
     };
 
     window.addEventListener("pointermove", move, { passive: true });

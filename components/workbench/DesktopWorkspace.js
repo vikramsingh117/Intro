@@ -13,7 +13,7 @@ import DesktopMascot from './DesktopMascot';
 import styles from '../../styles/Workbench.module.css';
 
 const apps=[['My Work','▰'],['About Me','◉'],['Projects','⌘'],['AI Assistant','✳'],['Terminal','>_'],['Credits','ⓘ'],['Task Manager','▥'],['Photos','▧']];
-export default function DesktopWorkspace({ desktopRef, interactive, visible=true, reduced=false, exitRef, onLeave, onOpenUpliance, room }) {
+export default function DesktopWorkspace({ desktopRef, interactive, visible=true, reduced=false, exitRef, onLeave, onOpenUpliance, room, musicPlaying=false }) {
   const [windows,setWindows]=useState([]);
   const [menu,setMenu]=useState(null);
   const [iconsVisible,setIconsVisible]=useState(true);
@@ -49,7 +49,7 @@ export default function DesktopWorkspace({ desktopRef, interactive, visible=true
       {PROFILE_LINKS.map(link=><a key={link.title} href={link.href} target="_blank" rel="noopener noreferrer" aria-label={`${link.title} profile (opens in a new tab)`}><span className={styles.appIcon} data-app={link.title}>{link.icon}</span>{link.title}<small className={styles.externalAppArrow} aria-hidden="true">↗</small></a>)}
       <a href="mailto:vikramandanshu@gmail.com" aria-label="Email Vikram"><span className={styles.appIcon} data-app="Email">@</span>Email</a>
     </div>
-    <DesktopMascot ref={mascot} interactive={interactive} visible={visible} reduced={reduced} hasWindow={!!top}/>
+    <DesktopMascot ref={mascot} interactive={interactive} visible={visible} reduced={reduced} hasWindow={!!top} musicPlaying={musicPlaying}/>
     {windows.map((window,index)=><DesktopWindow key={window.title} title={window.title} desktopRef={desktopRef} active={interactive && top===window.title} minimized={window.minimized} zIndex={index+2}
       onFocus={()=>focus(window.title)} onClose={()=>close(window.title)} onMinimize={()=>minimize(window.title)}>
       {window.title==='AI Assistant'?<AboutChat theme="dark" embedded active={interactive && !window.minimized && top===window.title}/>:window.title==='Photos'?<Photos active={interactive && !window.minimized && top===window.title}/>:window.title==='Task Manager'?<TaskManager windows={windows} activeTitle={top} onFocus={focus} onClose={close} room={room}/>:window.title==='Terminal'?<Terminal windows={windows} onExit={()=>close('Terminal')}/>:window.title==='Credits'?<AssetCredits/>:<PortfolioApps title={window.title} onOpenUpliance={onOpenUpliance}/>}

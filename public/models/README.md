@@ -99,6 +99,14 @@ Originals and license retained in `stool/`. Runtime `optimized.gltf` uses 1024px
 
 The upliance lid opens and blue LEDs/display fade on together on hover, reversing on pointer exit; click/tap focuses its physical display to show upliance work pages, keeping the appliance awake while focused. The original lid pieces move as one assembly around a presentation pivot. The SVG cooking screen is drawn from the supplied reference, not a live recipe or appliance backend. Runtime screen geometry follows the measured CAD panel plane. Work pages use a generated canvas texture; controls are projected onto the screen edges and appear after camera arrival. LED segments are instanced in one draw call. The former static `upliance/model.glb` is retained but no longer preloaded.
 
+## Paper ball
+
+“Paper Ball (HN Renovated/Hello Neighbor Renovate” by TheodorePeterson, CC BY 4.0.
+Source: https://sketchfab.com/3d-models/paper-ball-hn-renovatedhello-neighbor-renovate-f797c9190a0548c980ce360e6edfebc3
+Author: https://sketchfab.com/FamilyMasters246
+License: https://creativecommons.org/licenses/by/4.0/
+User-provided download retained in `paper-ball/`, including the original license, glTF, binary, base color and normal textures. Original geometry and materials preserved; centered and scaled to a 0.48-unit maximum dimension at runtime. Used for both flick aiming and thrown balls. Visitor-facing attribution appears in Asset credits.
+
 ## Rendering quality
 
 All scene views use SMAA after bloom and output conversion, with composer sizing based on the renderer pixel ratio (capped at 1.5). SMAA lookup image readiness invalidates the demand renderer. The perspective-projected HTML desktop is outside this pipeline; a thin CSS mask smooths only its perimeter. These changes do not alter model geometry or source licensing.

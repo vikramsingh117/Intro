@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="780" viewBox="0 0 1280 780">
+  <defs><linearGradient id="background" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#183b44"/><stop offset=".6" stop-color="#172536"/><stop offset="1" stop-color="#b07b52"/></linearGradient></defs>
+  <path fill="url(#background)" d="M0 0h1280v780H0z"/>
+  <g fill="none" stroke="#dbeee5" stroke-opacity=".1" stroke-width="45" transform="rotate(-29 950 480)">
+    <ellipse cx="950" cy="480" rx="270" ry="500"/><ellipse cx="950" cy="480" rx="340" ry="500"/><ellipse cx="950" cy="480" rx="410" ry="500"/><ellipse cx="950" cy="480" rx="480" ry="500"/><ellipse cx="950" cy="480" rx="550" ry="500"/>
+  </g>
+  <g fill="#f5eee3" font-size="64"><text x="330" y="330" font-family="Arial, sans-serif">Ideas into</text><text x="330" y="405" font-family="Georgia, serif" font-style="italic">working products.</text></g>
+<g font-family="Arial,sans-serif" fill="#f1eee5">
+<text x="22" y="30" font-family="monospace" font-size="10" letter-spacing="1">VIKRAM / BEYOND HOURS</text>
+<g><rect x="34" y="98" width="48" height="48" rx="11" fill="#b08b5c"/><text x="58" y="130" text-anchor="middle" font-family="monospace" font-size="26" font-weight="bold" fill="#fff2d7">▰</text><text x="58" y="166" text-anchor="middle" font-size="12">My Work</text></g>
+<g><rect x="130" y="98" width="48" height="48" rx="11" fill="#507b71"/><text x="154" y="130" text-anchor="middle" font-family="monospace" font-size="26" font-weight="bold" fill="#fff2d7">◉</text><text x="154" y="166" text-anchor="middle" font-size="12">About Me</text></g>
+<g><rect x="34" y="206" width="48" height="48" rx="11" fill="#80739c"/><text x="58" y="238" text-anchor="middle" font-family="monospace" font-size="26" font-weight="bold" fill="#fff2d7">⌘</text><text x="58" y="274" text-anchor="middle" font-size="12">Projects</text></g>
+<g><rect x="130" y="206" width="48" height="48" rx="11" fill="#639c88"/><text x="154" y="238" text-anchor="middle" font-family="monospace" font-size="26" font-weight="bold" fill="#fff2d7">✳</text><text x="154" y="274" text-anchor="middle" font-size="12">AI Assistant</text></g>
+<g><rect x="34" y="314" width="48" height="48" rx="11" fill="#35424b"/><text x="58" y="346" text-anchor="middle" font-family="monospace" font-size="21" font-weight="bold" fill="#fff2d7">&gt;_</text><text x="58" y="382" text-anchor="middle" font-size="12">Terminal</text></g>
+<g><rect x="130" y="314" width="48" height="48" rx="11" fill="#b08b5c"/><text x="154" y="346" text-anchor="middle" font-family="monospace" font-size="26" font-weight="bold" fill="#fff2d7">ⓘ</text><text x="154" y="382" text-anchor="middle" font-size="12">Credits</text></g>
+<g><rect x="34" y="422" width="48" height="48" rx="11" fill="#497b7a"/><text x="58" y="454" text-anchor="middle" font-family="monospace" font-size="26" font-weight="bold" fill="#fff2d7">▥</text><text x="58" y="490" text-anchor="middle" font-size="12">Task Manager</text></g>
+<g><rect x="130" y="422" width="48" height="48" rx="11" fill="#93a080"/><text x="154" y="454" text-anchor="middle" font-family="monospace" font-size="26" font-weight="bold" fill="#fff2d7">▧</text><text x="154" y="490" text-anchor="middle" font-size="12">Photos</text></g>
+<g><rect x="34" y="530" width="48" height="48" rx="11" fill="#35424b"/><text x="58" y="562" text-anchor="middle" font-family="monospace" font-size="26" font-weight="bold" fill="#fff2d7">GH</text><text x="58" y="598" text-anchor="middle" font-size="12">GitHub</text></g>
+<g><rect x="130" y="530" width="48" height="48" rx="11" fill="#0a66c2"/><text x="154" y="562" text-anchor="middle" font-family="monospace" font-size="26" font-weight="bold" fill="#fff2d7">in</text><text x="154" y="598" text-anchor="middle" font-size="12">LinkedIn</text></g>
+<g><rect x="34" y="638" width="48" height="48" rx="11" fill="#242b31"/><text x="58" y="670" text-anchor="middle" font-family="monospace" font-size="21" font-weight="bold" fill="#fff2d7">&lt;/&gt;</text><text x="58" y="706" text-anchor="middle" font-size="12">LeetCode</text></g>
+<g><rect x="130" y="638" width="48" height="48" rx="11" fill="#99665b"/><text x="154" y="670" text-anchor="middle" font-family="monospace" font-size="26" font-weight="bold" fill="#fff2d7">@</text><text x="154" y="706" text-anchor="middle" font-size="12">Email</text></g>
+</g>
+<path fill="#0c1926" fill-opacity=".9" d="M0 728h1280v52H0z"/><path stroke="#ffffff" stroke-opacity=".15" d="M0 728h1280"/><g fill="#b5c7ca" font-family="monospace"><text x="20" y="760" font-size="24">▦</text><text x="60" y="759" font-size="11">Vikram’s workspace</text><text x="1110" y="757" font-size="7">PRODUCT · AI · ENGINEERING</text></g>
+<g transform="translate(1149 642)" fill="#DD775B" shape-rendering="crispEdges"><path d="M11 0h85v65H11zM0 21h22v23H0zM85 21h22v23H85zM11 60h11v26H11zM32 60h11v26H32zM64 60h11v26H64zM85 60h11v26H85z"/><path fill="#000" d="M21 11h11v11H21zM75 11h11v11H75z"/></g>
+</svg>

@@ -31,6 +31,9 @@
   :global(html[data-chooser-cursor="true"]) .roomPage *{cursor:none!important}
 }
 .mobileNotebookBack{display:none}
+.paperFlickZone{position:absolute;left:15%;right:15%;top:33%;height:18%;border:1px dashed #ed999966;border-radius:18px;background:linear-gradient(to top,#e7747424,#e7747408);box-shadow:0 0 24px #e774740a;pointer-events:none}
+.paperFlick{position:absolute;inset:0;z-index:100;touch-action:none;cursor:grab;outline:none}.paperFlick:active{cursor:grabbing}.paperFlick p{position:absolute;bottom:90px;left:16px;right:16px;text-align:center;color:#eee3c8;font-size:15px;pointer-events:none;text-shadow:0 2px 8px #000}.paperFlick span{display:block;font-size:12px;margin-top:8px;opacity:.75}.paperFlick>button{position:absolute;bottom:max(30px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);min-height:44px;padding:10px 16px;border:1px solid #c7b58a66;border-radius:8px;background:#263631;color:#eee3c8;cursor:pointer}
+.paperInventory{position:absolute;z-index:8;left:max(20px,env(safe-area-inset-left));bottom:max(76px,calc(env(safe-area-inset-bottom) + 60px))}.paperInventory button{display:flex;align-items:center;justify-content:center;width:56px;height:56px;padding:6px;border:0;color:#eee3c8;background:transparent;cursor:pointer}.paperInventory button:hover svg{filter:brightness(1.15)}.paperInventory button:focus-visible{outline:2px solid #eee3c8;outline-offset:3px;border-radius:6px}
 @media(max-width:760px){
   .roomPage{height:100dvh}
   .roomPage .desktop{background-image:none}
@@ -88,7 +91,6 @@
 .homeLink{position:absolute;right:max(22px,env(safe-area-inset-right));bottom:max(22px,env(safe-area-inset-bottom));z-index:20;display:inline-flex;align-items:center;min-height:44px;padding:0 4px;border:0;background:transparent;color:#b7beb0;text-decoration:none;font:10px monospace;letter-spacing:.08em;text-shadow:0 1px 4px #0009}.homeLink:hover{color:#e6d5b5}.homeLink:focus-visible{outline:2px solid #e6c994;outline-offset:4px}@media(max-width:760px){.homeLink{right:16px;bottom:calc(65px + env(safe-area-inset-bottom))}}
 
 .uplianceSurface{position:absolute;inset:0;pointer-events:auto}.uplianceControls>button.uplianceClose{font-size:22px}
-@media(max-width:760px){.uplianceControls>button:not(.uplianceClose){display:none}}
 
 /* Smooth the projected HTML perimeter without softening desktop text. */
 .monitorDesktop{
@@ -99,11 +101,34 @@
 }
 .mascotLayer{position:absolute;inset:0;pointer-events:none;z-index:40}
 .mascotActor{position:absolute;right:24px;bottom:52px;width:107px;height:86px;user-select:none}
+.mascotWalkLane{position:absolute;inset:0;--walk-end:min(0px,calc(-100% + 155px))}
+.mascotWalkLane[data-walking=true]{animation:mascotStroll 48s steps(120,end) infinite}
+.mascotWalkLane[data-walking=true]:has(.mascotButton:hover),.mascotWalkLane[data-walking=true]:focus-within,.mascotWalkLane[data-walking=true]:has(.mascotButton:hover) *,.mascotWalkLane[data-walking=true]:focus-within *{animation-play-state:paused!important}
+.mascotActor[data-pose=walk] .mascotBody{animation:mascotWalkBob .6s steps(1,end) infinite}
+.mascotActor[data-pose=walk] .mascotWalkFootFront{animation:mascotWalkStep .6s steps(1,end) infinite}
+.mascotActor[data-pose=walk] .mascotWalkFootBack{animation:mascotWalkStep .6s steps(1,end) -.3s infinite}
+.mascotActor[data-pose=walk] .mascotLeftArm{animation:mascotWalkArm .6s steps(1,end) infinite}
+.mascotActor[data-pose=walk] .mascotRightArm{animation:mascotWalkArm .6s steps(1,end) -.3s infinite}
+.mascotActor[data-pose=walk] .mascotEyes{animation:mascotWalkLook 48s steps(1,end) infinite}
+@keyframes mascotStroll{0%,100%{transform:translateX(0)}50%{transform:translateX(var(--walk-end))}}
+@keyframes mascotWalkBob{0%,50%,100%{transform:translateY(0)}25%,75%{transform:translateY(-3px)}}
+@keyframes mascotWalkStep{0%,100%{transform:translate(0,0)}25%{transform:translate(-3px,-5px)}50%{transform:translate(2px,0)}75%{transform:translate(1px,0)}}
+@keyframes mascotWalkArm{0%,50%,100%{transform:translateY(0)}25%{transform:translateY(-3px)}75%{transform:translateY(2px)}}
+@keyframes mascotWalkLook{0%,100%{transform:translateX(-3px)}50%{transform:translateX(3px)}}
 .mascotButton{display:block;width:100%;height:100%;padding:0;border:0;background:transparent;cursor:pointer;pointer-events:auto;touch-action:manipulation}
 .mascotButton:disabled{cursor:default;pointer-events:none}
 .mascotButton:focus-visible{outline:2px solid #eac595;outline-offset:5px;border-radius:4px}
 .mascotButton svg{display:block;width:100%;height:100%;overflow:visible}
 .mascotBody{transform-origin:53px 65px;animation:mascotSettle 9s steps(1,end) infinite}
+.mascotMusicBounce{animation:mascotMusicBounce 1.2s steps(1,end) infinite}
+.mascotMusicHead{animation:mascotMusicNod 1.2s steps(1,end) infinite}
+.mascotMusicLeftFeet{animation:mascotMusicTap 1.2s steps(1,end) infinite}
+.mascotMusicRightFeet{animation:mascotMusicTap 1.2s steps(1,end) -.6s infinite}
+.mascotMusicNote{animation:mascotMusicNotes 1.8s steps(1,end) infinite;animation-delay:var(--note-delay)}
+@keyframes mascotMusicBounce{0%,50%,100%{transform:translate(0,0)}16.66%{transform:translate(-2px,-3px)}33.33%{transform:translate(-2px,-1px)}66.66%{transform:translate(2px,-3px)}83.33%{transform:translate(2px,-1px)}}
+@keyframes mascotMusicNod{0%,50%,100%{transform:translateY(0)}16.66%,66.66%{transform:translateY(2px)}33.33%,83.33%{transform:translateY(-1px)}}
+@keyframes mascotMusicTap{0%,50%,100%{transform:translateY(0)}16.66%,33.33%{transform:translateY(-4px)}}
+@keyframes mascotMusicNotes{0%{opacity:0;transform:translate(0,4px)}16.66%{opacity:.5;transform:translate(0,0)}33.33%{opacity:1;transform:translate(2px,-4px)}50%{opacity:1;transform:translate(4px,-8px)}66.66%{opacity:.6;transform:translate(6px,-12px)}83.33%,100%{opacity:0;transform:translate(8px,-16px)}}
 .mascotEyes{animation:mascotLook 9s steps(1,end) infinite}
 .mascotEyesOpen{animation:mascotEyeOpen 7s steps(1,end) infinite}
 .mascotEyesHalf{opacity:0;animation:mascotEyeHalf 7s steps(1,end) infinite}
@@ -157,6 +182,9 @@
 @media(max-width:760px){
   .mascotLayer{--mascot-width:max(107px,var(--mobile-touch,60px));--mascot-height:calc(var(--mascot-width) * .804)}
   .mascotActor{right:16px;bottom:80px;width:var(--mascot-width);height:var(--mascot-height)}
+  .mascotWalkLane{--walk-end:min(0px,calc(-100% + var(--mascot-width) + 32px))}
+  .mascotWalkLane[data-walking=true]{animation-duration:24s;animation-timing-function:steps(60,end)}
+  .mascotActor[data-pose=walk] .mascotEyes{animation-duration:24s}
   .mascotLayer[data-compact=true] .mascotActor{width:var(--mobile-touch,60px);height:calc(var(--mobile-touch,60px) * .804);bottom:8px;right:8px}
   .mascotHint{left:12px;right:calc(var(--mascot-width) + 28px);width:auto;max-width:none;bottom:80px;height:var(--mascot-height);overflow:hidden;font-size:calc(var(--mobile-font,20px) * .8);line-height:1.6}
   .desktopWorkspace:has(.mascotHint) .shortcuts{bottom:calc(90px + max(107px,var(--mobile-touch,60px)) * .804)}

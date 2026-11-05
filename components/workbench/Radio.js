@@ -6,7 +6,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { Box3, Vector3 } from 'three';
 import InteractiveObject from './InteractiveObject';
 
-export default function Radio({ keyboardFocused, registerRoomAction, onHover }) {
+export default function Radio({ keyboardFocused, registerRoomAction, onHover, onPlaybackChange }) {
   const audio = useRef(null);
   const hoverCallback = useRef(onHover);
   useEffect(()=>{hoverCallback.current=onHover;},[onHover]);
@@ -17,6 +17,7 @@ export default function Radio({ keyboardFocused, registerRoomAction, onHover }) 
   const [on, setOn] = useState(false);
   const [failed, setFailed] = useState(false);
   useEffect(()=>{invalidate();},[on,invalidate]);
+  useEffect(()=>{onPlaybackChange?.(on);},[on,onPlaybackChange]);
   const playStatic=useCallback(()=>{
     try {
       const AudioContext=window.AudioContext||window.webkitAudioContext;
@@ -52,17 +53,24 @@ export default function Radio({ keyboardFocused, registerRoomAction, onHover }) 
       hoverCallback.current('Radio · unable to play, tap to retry');
     };
     const playing=()=>{if(requested.current)setOn(true);};
+    const stopped=()=>setOn(false);
     player.addEventListener('playing',playing);
+    player.addEventListener('pause',stopped);
+    player.addEventListener('waiting',stopped);
+    player.addEventListener('ended',stopped);
     player.addEventListener('error', error);
     let mounted=true;
     if(entrance){
       requested.current=true;
-      entrance.fadeIn().then(started=>{if(!mounted)return;requested.current=started;setOn(started);});
+      entrance.fadeIn().then(started=>{if(!mounted||!requested.current)return;requested.current=started;setOn(started&&!player.paused);});
     }
     return () => {
       mounted=false;
       requested.current = false;
       player.removeEventListener('playing',playing);
+      player.removeEventListener('pause',stopped);
+      player.removeEventListener('waiting',stopped);
+      player.removeEventListener('ended',stopped);
       player.removeEventListener('error', error);
       player.pause(); player.removeAttribute('src'); player.load();
       entrance?.dispose();entranceSession.current=null;
