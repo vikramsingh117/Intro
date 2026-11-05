@@ -101,20 +101,17 @@
 }
 .mascotLayer{position:absolute;inset:0;pointer-events:none;z-index:40}
 .mascotActor{position:absolute;right:24px;bottom:52px;width:107px;height:86px;user-select:none}
-.mascotWalkLane{position:absolute;inset:0;--walk-end:min(0px,calc(-100% + 155px))}
-.mascotWalkLane[data-walking=true]{animation:mascotStroll 48s steps(120,end) infinite}
-.mascotWalkLane[data-walking=true]:has(.mascotButton:hover),.mascotWalkLane[data-walking=true]:focus-within,.mascotWalkLane[data-walking=true]:has(.mascotButton:hover) *,.mascotWalkLane[data-walking=true]:focus-within *{animation-play-state:paused!important}
+.mascotWalkLane{position:absolute;inset:0}
+.mascotWalkLane[data-walking=true][data-hint=false]:has(.mascotButton:hover),.mascotWalkLane[data-walking=true][data-hint=false]:focus-within,.mascotWalkLane[data-walking=true][data-hint=false]:has(.mascotButton:hover) *,.mascotWalkLane[data-walking=true][data-hint=false]:focus-within *{animation-play-state:paused!important}
 .mascotActor[data-pose=walk] .mascotBody{animation:mascotWalkBob .6s steps(1,end) infinite}
 .mascotActor[data-pose=walk] .mascotWalkFootFront{animation:mascotWalkStep .6s steps(1,end) infinite}
 .mascotActor[data-pose=walk] .mascotWalkFootBack{animation:mascotWalkStep .6s steps(1,end) -.3s infinite}
 .mascotActor[data-pose=walk] .mascotLeftArm{animation:mascotWalkArm .6s steps(1,end) infinite}
 .mascotActor[data-pose=walk] .mascotRightArm{animation:mascotWalkArm .6s steps(1,end) -.3s infinite}
-.mascotActor[data-pose=walk] .mascotEyes{animation:mascotWalkLook 48s steps(1,end) infinite}
-@keyframes mascotStroll{0%,100%{transform:translateX(0)}50%{transform:translateX(var(--walk-end))}}
+.mascotActor[data-pose=walk] .mascotEyes{animation:none;transform:translateX(var(--walk-look,-3px))}
 @keyframes mascotWalkBob{0%,50%,100%{transform:translateY(0)}25%,75%{transform:translateY(-3px)}}
 @keyframes mascotWalkStep{0%,100%{transform:translate(0,0)}25%{transform:translate(-3px,-5px)}50%{transform:translate(2px,0)}75%{transform:translate(1px,0)}}
 @keyframes mascotWalkArm{0%,50%,100%{transform:translateY(0)}25%{transform:translateY(-3px)}75%{transform:translateY(2px)}}
-@keyframes mascotWalkLook{0%,100%{transform:translateX(-3px)}50%{transform:translateX(3px)}}
 .mascotButton{display:block;width:100%;height:100%;padding:0;border:0;background:transparent;cursor:pointer;pointer-events:auto;touch-action:manipulation}
 .mascotButton:disabled{cursor:default;pointer-events:none}
 .mascotButton:focus-visible{outline:2px solid #eac595;outline-offset:5px;border-radius:4px}
@@ -182,11 +179,8 @@
 @media(max-width:760px){
   .mascotLayer{--mascot-width:max(107px,var(--mobile-touch,60px));--mascot-height:calc(var(--mascot-width) * .804)}
   .mascotActor{right:16px;bottom:80px;width:var(--mascot-width);height:var(--mascot-height)}
-  .mascotWalkLane{--walk-end:min(0px,calc(-100% + var(--mascot-width) + 32px))}
-  .mascotWalkLane[data-walking=true]{animation-duration:24s;animation-timing-function:steps(60,end)}
-  .mascotActor[data-pose=walk] .mascotEyes{animation-duration:24s}
   .mascotLayer[data-compact=true] .mascotActor{width:var(--mobile-touch,60px);height:calc(var(--mobile-touch,60px) * .804);bottom:8px;right:8px}
-  .mascotHint{left:12px;right:calc(var(--mascot-width) + 28px);width:auto;max-width:none;bottom:80px;height:var(--mascot-height);overflow:hidden;font-size:calc(var(--mobile-font,20px) * .8);line-height:1.6}
+  .mascotHint{left:12px;right:auto;width:400px;max-width:calc(100% - 24px);bottom:calc(96px + var(--mascot-height));height:var(--mascot-height);overflow:hidden;font-size:calc(var(--mobile-font,20px) * .8);line-height:1.6}
   .desktopWorkspace:has(.mascotHint) .shortcuts{bottom:calc(90px + max(107px,var(--mobile-touch,60px)) * .804)}
 }
 @media(prefers-reduced-motion:reduce){.mascotLayer *{animation:none!important}}

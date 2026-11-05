@@ -69,21 +69,63 @@ function Character() {
 
 const DesktopMascot=forwardRef(function DesktopMascot({interactive, visible, reduced, hasWindow, musicPlaying=false},ref){
   const button=useRef(null);
+  const walkLane=useRef(null);
   const hintBox=useRef(null),wasSleeping=useRef(false);
   const seen=useRef(new Set()),cursor=useRef(-1);
   const [hint,setHint]=useState(null),[paused,setPaused]=useState(false),[wordCount,setWordCount]=useState(0),[motion,setMotion]=useState(null);
   const [fontReady,setFontReady]=useState(false),[pages,setPages]=useState([]),[page,setPage]=useState(0),[motionStyle,setMotionStyle]=useState({});
   const [walking,setWalking]=useState(false);
+  const stroll=useRef({x:0,target:0,walking:false,wait:4800});
   const sleeping=hasWindow&&interactive&&!hint;
-  const canWalk=visible&&!paused&&!reduced&&!musicPlaying&&!hint&&!sleeping&&!motion;
+  const canWalk=visible&&!paused&&!reduced&&!musicPlaying&&!sleeping&&!motion;
   useEffect(()=>{
-    setWalking(false);
     if(!canWalk)return;
-    // Give the greeting time to finish before starting a stroll in either view.
-    const timer=setTimeout(()=>setWalking(true),4800);
-    return ()=>clearTimeout(timer);
-  },[canWalk,interactive]);
+    const timer=setInterval(()=>{
+      const lane=walkLane.current,actor=button.current?.parentElement;
+      if(!lane||!actor)return;
+      if(!hint&&(button.current.matches(':hover')||document.activeElement===button.current))return;
+      const state=stroll.current;
+      const min=Math.min(0,12-actor.offsetLeft);
+      state.x=Math.max(min,Math.min(0,state.x));
+      if(!state.walking){
+        state.wait-=100;
+        if(state.wait<=0){
+          const distance=Math.min(40+Math.random()*100,(0-min)*.3);
+          let direction=Math.random()<.5?-1:1;
+          if(state.x+direction*distance<min||state.x+direction*distance>0)direction*=-1;
+          state.target=Math.max(min,Math.min(0,state.x+direction*distance));
+          lane.style.setProperty('--walk-look',`${direction*3}px`);
+          state.walking=true;setWalking(true);
+        }
+      }else{
+        const delta=Math.max(min,Math.min(0,state.target))-state.x;
+        state.x+=Math.sign(delta)*Math.min(4,Math.abs(delta));
+        if(Math.abs(delta)<=4){
+          state.walking=false;state.wait=4800+Math.random()*1200;setWalking(false);
+        }
+      }
+      lane.style.transform=`translateX(${state.x}px)`;
+    },100);
+    return ()=>clearInterval(timer);
+  },[canWalk,hint]);
   const roaming=canWalk&&walking;
+  useEffect(()=>{
+    if(!hint||!interactive)return;
+    let frame;
+    const follow=()=>{
+      const lane=walkLane.current,box=hintBox.current,actor=button.current?.parentElement;
+      if(lane&&box&&actor){
+        const transform=getComputedStyle(lane).transform;
+        const x=transform==='none'?0:new DOMMatrixReadOnly(transform).m41;
+        const center=actor.offsetLeft+actor.offsetWidth/2+x;
+        // Keep the hint above its walking owner, bounded by the desktop edges.
+        box.style.left=`${Math.max(12,Math.min(lane.clientWidth-box.offsetWidth-12,center-box.offsetWidth/2))}px`;
+      }
+      frame=requestAnimationFrame(follow);
+    };
+    follow();
+    return ()=>cancelAnimationFrame(frame);
+  },[hint,interactive]);
   useEffect(()=>{
     let active=true;
     const ready=()=>{if(active)setFontReady(true);};
@@ -166,8 +208,8 @@ const DesktopMascot=forwardRef(function DesktopMascot({interactive, visible, red
       <p className={styles.mascotSpeech} aria-hidden="true"><span className={styles.mascotSpeechSpace}>{pageText||hint.text}...</span><span className={styles.mascotSpeechReveal}>{visibleText}{continuation}</span></p>
       <span className={styles.screenReaderOnly} aria-live="polite">{hint.text}</span>
     </div>}
-    <div className={styles.mascotWalkLane} data-walking={roaming}>
-    <div className={styles.mascotActor} style={motionStyle} data-tucking={motion==='tucking'} data-waking={motion==='waking'} data-pose={musicPlaying?'music':hint?'hint':roaming?'walk':!interactive?'wave':sleeping?'sleep':'idle'}>
+    <div ref={walkLane} className={styles.mascotWalkLane} data-walking={walking} data-running={roaming} data-hint={!!hint}>
+    <div className={styles.mascotActor} style={motionStyle} data-tucking={motion==='tucking'} data-waking={motion==='waking'} data-pose={musicPlaying?'music':roaming?'walk':canWalk?'wave':hint?'hint':!interactive?'wave':sleeping?'sleep':'idle'}>
       <button ref={button} className={styles.mascotButton} data-track="mascot" data-analytics="semantic" onClick={nextHint} onKeyDown={event=>{if(event.key==='Escape'&&hint){event.preventDefault();event.stopPropagation();trackInteraction('mascot_hint_dismiss','escape');setHint(null);}}} disabled={!interactive} aria-label={hint?'Show the next workspace hint':'Ask the mascot for a workspace hint'} aria-expanded={!!hint} aria-controls={hint?'mascot-hint':undefined}>{musicPlaying?<MusicMascot/>:<Character/>}</button>
     </div>
     </div>
