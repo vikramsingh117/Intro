@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
-import { completeInput, createTerminalState, HOME, runCommand } from './terminalEngine.mjs';
+import { COMMANDS, completeInput, createTerminalState, HOME, runCommand } from './terminalEngine.mjs';
 import styles from '../../styles/Workbench.module.css';
 import AdminView from './AdminView';
+import { getSessionActivity, trackInteraction } from '../../lib/visitor-analytics';
 
 export default function Terminal({ onExit, windows }) {
   const [session,setSession]=useState(()=>createTerminalState());
@@ -36,7 +37,10 @@ export default function Terminal({ onExit, windows }) {
       finally{clearTimeout(timeout);authRequest.current=null;setAuthenticating(false);}
       return;
     }
-    const result=runCommand(input,session,Date.now(),{windows});
+    const command=input.trim().split(/\s+/)[0];
+    // Only allowlisted command names enter analytics, never arguments or arbitrary input.
+    trackInteraction('terminal_command',COMMANDS.includes(command)?command:'unknown');
+    const result=runCommand(input,session,Date.now(),{windows,activity:getSessionActivity()});
     setSession(result.state);setInput('');historyIndex.current=null;draft.current='';
     if(result.action==='clear')setEntries([]);
     else append({prompt,input,output:result.output});
@@ -61,7 +65,7 @@ export default function Terminal({ onExit, windows }) {
   if(admin)return <AdminView onClose={()=>setAdmin(false)}/>;
   return <div ref={container} className={styles.terminalSession}>
     <p className={styles.terminalWelcome}>Vikram’s terminal</p>
-    <p className={styles.terminalNote}>Simulated Linux · session-only files · type help</p>
+    <p className={styles.terminalNote}>Explore with tree · read files with cat · type help for ideas</p>
     <div role="log" aria-label="Terminal output" aria-live="polite" aria-relevant="additions">
       {entries.map((entry,index)=><div className={styles.terminalEntry} key={index}>
         {entry.prompt&&<div className={styles.terminalCommand}><span>{entry.prompt}</span> {entry.input}</div>}

@@ -1,4 +1,10 @@
 export const HOME = '/home/vikram';
+const ACTIVITY_FILE = `${HOME}/adminview`;
+export function formatSessionActivity(events=[]) {
+  const clean=value=>String(value || '').replace(/[\x00-\x1f\x7f]/g,' ').slice(0,100);
+  const rows=events.slice(-100).map(event=>`${clean(event.at)}  ${clean(event.action)}  ${clean(event.target)}  ${clean(event.path)}`);
+  return 'CURRENT VISITOR · activity in this browser tab\nLatest 100 recorded interactions · refresh with cat ~/adminview\nCommand names only; no typed arguments, messages, or credentials.\n\n'+(rows.length?rows.join('\n'):'No activity recorded yet.')+'\n';
+}
 const MANUAL = {
   sudo:'sudo [-u root | -u vikram] COMMAND — simulate a user for one command; no real privileges or password',
   top:'top — one snapshot of open desktop apps; run again to refresh',
@@ -20,11 +26,34 @@ const MANUAL = {
   history:'history — show this session’s commands', clear:'clear — clear the display',
   man:'man COMMAND — show command usage', exit:'exit — close the terminal window',
 };
+const HELP = [
+  'Explore Vikram’s workspace',
+  '',
+  '  tree                 See the full directory',
+  '  ls                   Browse the current folder',
+  '  cd projects          Step into a project folder',
+  '  cat about.txt        Meet Vikram',
+  '  cat adminview        Read the activity log',
+  '',
+  'Try something',
+  '',
+  '  top                  See which desktop apps are open',
+  '  ping moon            Send a simulated ping anywhere',
+  '  mkdir ideas          Make a folder for this session',
+  '  touch ideas/next.txt  Add a file to your folder',
+  '  history              Retrace your terminal commands',
+  '  clear                Start with a clean screen',
+  '',
+  'Start with tree, then use cat to read a file.',
+  'man COMMAND for details · ↑/↓ history · Tab completion',
+  'Virtual filesystem · changes last for this terminal session',
+].join('\n');
 export const COMMANDS = Object.keys(MANUAL).sort();
 export function createTerminalState(now=Date.now()) {
   return {cwd:HOME, previous:HOME, started:now, history:[], fs:{
+    [ACTIVITY_FILE]:formatSessionActivity(),
     '/':null,'/home':null,[HOME]:null,[`${HOME}/projects`]:null,[`${HOME}/notes`]:null,
-    [`${HOME}/readme.txt`]:'Welcome to Vikram’s workspace.\nThis is a simulated Linux terminal, running in your browser.\nTry: ls, cat about.txt, cd projects, or help.\nFiles and changes last for this terminal session only.\n',
+    [`${HOME}/readme.txt`]:'Welcome to Vikram’s workspace.\nThis is a simulated Linux terminal, running in your browser.\nTry: tree, cat about.txt, cat adminview, or help.\nFiles and changes last for this terminal session only.\n',
     [`${HOME}/about.txt`]:'Vikram Singh\nAI Product Engineer\nI work across product decisions, user experience, AI integration, and production systems.\n',
     [`${HOME}/projects/upliance.txt`]:'upliance\nAI cooking experiences: ADK chatbot integration and recipe-generation actions.\nDiscovery: device-aware recipes, diet/allergen preferences, scroll restoration.\nOperations: chatbot-session inspection, recipe-generation timing, document synchronization.\n',
     [`${HOME}/notes/product.txt`]:'What should happen next for the person using this?\nWhat context should the product remember?\nCan the team understand what just happened?\n',
@@ -62,6 +91,7 @@ function children(fs,path) {
 }
 export function runCommand(line,state,now=Date.now(),runtime={}) {
   const next={...state,history:[...state.history,line].slice(-100),fs:{...state.fs}};
+  next.fs[ACTIVITY_FILE]=formatSessionActivity(runtime.activity);
   const result=(output='',action)=>({state:next,output:String(output).slice(0,20000),action});
   const fail=message=>{throw Error(message);};
   let command;
@@ -84,7 +114,7 @@ export function runCommand(line,state,now=Date.now(),runtime={}) {
     const read=value=>{const name=path(value);if(!exists(next.fs,name))fail(`${value}: No such file`);if(next.fs[name]===null)fail(`${value}: Is a directory`);return next.fs[name];};
     const dir=value=>{const name=path(value);if(!exists(next.fs,name)||next.fs[name]!==null)fail(`${value}: Not a directory`);return name;};
     const requireCount=(min,max=min)=>{if(args.length<min||args.length>max)fail(MANUAL[command]);};
-    if(command==='help')return result('Simulated Linux terminal · no server access\n\n'+COMMANDS.map(name=>MANUAL[name]).join('\n')+'\n\n↑/↓ history · Tab completion · Ctrl+L clear · Ctrl+C cancel input');
+    if(command==='help')return result(HELP);
     if(command==='man'){requireCount(1);return result(Object.prototype.hasOwnProperty.call(MANUAL,args[0])?MANUAL[args[0]]:`No manual entry for ${args[0]}`);}
     if(command==='whoami')return result(user);
     if(command==='hostname')return result('workspace');
@@ -151,6 +181,7 @@ export function runCommand(line,state,now=Date.now(),runtime={}) {
     }
     if(['mkdir','touch','rm'].includes(command)){
       requireCount(1);if(args[0].startsWith('-'))fail(MANUAL[command]);const target=path(args[0]);
+      if(target===ACTIVITY_FILE)fail('adminview: Read-only activity log');
       if(command==='rm'){read(args[0]);delete next.fs[target];return result();}
       dir(target.slice(0,target.lastIndexOf('/'))||'/');
       if(exists(next.fs,target)){if(command==='touch'&&next.fs[target]!==null)return result();fail(`${args[0]}: File exists`);}

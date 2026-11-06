@@ -90,3 +90,27 @@ test('process snapshots reflect open windows without invented resource metrics',
   assert.match(runCommand('free -h',state).output,/unavailable/);
   assert.match(runCommand('df -h',state).output,/KiB/);
 });
+
+test('help highlights exploration instead of listing every shell utility',()=>{
+  const help=runCommand('help',createTerminalState()).output;
+  assert.match(help,/tree/);
+  assert.match(help,/cat adminview/);
+  for(const command of ['exit','free','grep','head','id','pwd'])assert.doesNotMatch(help,new RegExp('\\b'+command+'\\b'));
+});
+
+test('adminview is discoverable, read-only and refreshed from the current session',()=>{
+  const state=createTerminalState();
+  assert.match(runCommand('tree',state).output,/adminview/);
+  assert.equal(completeInput('cat adm',state).input,'cat adminview ');
+  assert.match(runCommand('cat adminview',state).output,/No activity recorded yet/);
+  const activity=[{at:'2026-11-06T10:00:00Z',action:'app_open',target:'Terminal',path:'/workbench'}];
+  const first=runCommand('cat adminview',state,0,{activity});
+  assert.match(first.output,/app_open  Terminal/);
+  activity.push({at:'2026-11-06T10:01:00Z',action:'room_state',target:'photo:true',path:'/workbench'});
+  const inProjects=runCommand('cd projects',first.state,0,{activity}).state;
+  assert.match(runCommand('cat ~/adminview',inProjects,0,{activity}).output,/photo:true/);
+  assert.match(runCommand('rm adminview',state).output,/Read-only/);
+  assert.match(runCommand('touch adminview',state).output,/Read-only/);
+  assert.match(runCommand('sudo cat adminview',state).output,/No activity recorded yet/);
+  assert.doesNotMatch(runCommand('cat adminview',createTerminalState()).output,/app_open/);
+});

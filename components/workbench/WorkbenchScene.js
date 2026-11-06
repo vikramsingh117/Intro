@@ -40,6 +40,14 @@ function Monitor({ onEnter, desktopRef, desktop, musicPlaying }) {
   const screen = useRef(null);
   const { camera, size, invalidate } = useThree();
   const projection = useMemo(() => new Matrix4(), []);
+  const lastProjection = useRef({ element: null, matrix: new Matrix4(), width: 0, height: 0 });
+  const pixelsToScreen = useMemo(() => new Matrix4().set(
+    .376 / 1280, 0, 0, -.188,
+    0, -.232 / 780, 0, .116,
+    0, 0, 1, .0001,
+    0, 0, 0, 1
+  ), []);
+  const viewport = useMemo(() => new Matrix4(), []);
   const edgePoints = useMemo(() => [new Vector3(), new Vector3(), new Vector3()], []);
   useEffect(() => { invalidate(); }, [desktop, invalidate]);
   useFrame(() => {
@@ -47,13 +55,7 @@ function Monitor({ onEnter, desktopRef, desktop, musicPlaying }) {
     screen.current.updateWorldMatrix(true, false);
     camera.updateMatrixWorld();
     // Project the HTML desktop onto the exact monitor plane, including perspective.
-    const pixelsToScreen = new Matrix4().set(
-      .376 / 1280, 0, 0, -.188,
-      0, -.232 / 780, 0, .116,
-      0, 0, 1, .0001,
-      0, 0, 0, 1
-    );
-    const viewport = new Matrix4().set(
+    viewport.set(
       size.width / 2, 0, 0, size.width / 2,
       0, -size.height / 2, 0, size.height / 2,
       0, 0, 0, 0,
@@ -62,6 +64,11 @@ function Monitor({ onEnter, desktopRef, desktop, musicPlaying }) {
     projection.copy(viewport).multiply(camera.projectionMatrix).multiply(camera.matrixWorldInverse).multiply(screen.current.matrixWorld).multiply(pixelsToScreen);
     // Keep the CSS matrix invertible so browser hit-testing reaches desktop controls.
     projection.elements[10] = 1;
+    const previous = lastProjection.current;
+    if (previous.element === desktopRef.current && previous.width === size.width && previous.height === size.height && previous.matrix.equals(projection)) return;
+    previous.element = desktopRef.current;
+    previous.width = size.width; previous.height = size.height;
+    previous.matrix.copy(projection);
     desktopRef.current.style.transform = `matrix3d(${projection.elements.join(',')})`;
     desktopRef.current.style.visibility = 'visible';
     // The HTML screen sits above WebGL, so SMAA cannot smooth its outer boundary.
@@ -98,6 +105,12 @@ function Camera({ photo, pauseCamera, upliance, onUplianceArrive, entered, outsi
   const { camera, gl, size, invalidate } = useThree();
   const { cameraX, cameraY, cameraZ, targetX, targetY, targetZ, fov } = citySettings;
   const roomCameraZ=size.width<=760?Math.max(18.5,11.2/(size.width/size.height)):14.8;
+  const roomHome = useMemo(() => {
+    const target = new Vector3(0,.2128,-.51);
+    const offset = new Vector3(6,3.5,roomCameraZ).sub(target);
+    // Keep the responsive starting view inside the chosen zoom-out limit.
+    return target.add(offset.clampLength(0,22));
+  }, [roomCameraZ]);
   const transition = useRef(null);
   const orbit = useRef(null);
   const roomPosition = useRef(null);
@@ -107,11 +120,13 @@ function Camera({ photo, pauseCamera, upliance, onUplianceArrive, entered, outsi
   useLayoutEffect(()=>{
     if(initialRoomCamera.current)return;
     initialRoomCamera.current=true;
-    camera.position.set(6,3.5,roomCameraZ);
+    const target = new Vector3(0,.2128,-.51);
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    camera.position.copy(reducedMotion ? roomHome : roomHome.clone().sub(target).setLength(24).add(target));
     camera.lookAt(0,.2128,-.51);
     camera.updateProjectionMatrix();
     invalidate();
-  },[camera,roomCameraZ,invalidate]);
+  },[camera,roomHome,invalidate]);
   useEffect(() => {
     const controls = new OrbitControls(camera, gl.domElement);
     controls.target.set(0, .2128, -.51);
@@ -120,11 +135,13 @@ function Camera({ photo, pauseCamera, upliance, onUplianceArrive, entered, outsi
     controls.touches.TWO = TOUCH.DOLLY_PAN;
     gl.domElement.style.touchAction = 'none';
     controls.enableDamping = false;
+    controls.dampingFactor = .12;
     controls.minDistance = 6;
-    controls.minAzimuthAngle = -.2;
-    controls.maxAzimuthAngle = .65;
-    controls.minPolarAngle = .9;
-    controls.maxPolarAngle = 1.5;
+    controls.maxDistance = 24;
+    controls.minAzimuthAngle = -30.719 * Math.PI / 180;
+    controls.maxAzimuthAngle = 1.2;
+    controls.minPolarAngle = .75;
+    controls.maxPolarAngle = 1.55;
     controls.rotateSpeed = .55;
     controls.zoomSpeed = .7;
     controls.enabled = false;
@@ -135,6 +152,7 @@ function Camera({ photo, pauseCamera, upliance, onUplianceArrive, entered, outsi
   useEffect(() => {
     if(orbit.current) orbit.current.enabled = !interactionBlocked && !photo && !entered && !outside && !notebook && !upliance && !!transition.current?.done;
   }, [interactionBlocked, entered, outside, notebook, upliance, photo]);
+  useEffect(() => { if (orbit.current) orbit.current.enableDamping = !reduced; }, [reduced]);
   const lookTarget = useRef(new Vector3(0, .2128, -.51));
   useEffect(() => {
     const element=gl.domElement, look=windowLook.current;
@@ -175,13 +193,14 @@ function Camera({ photo, pauseCamera, upliance, onUplianceArrive, entered, outsi
   applianceCallback.current=onUplianceArrive;
   useEffect(() => {
     const focused = photo || entered || outside || notebook || !!upliance || !!noteMode;
+    const entrance = !transition.current && !focused;
     if (focused && !wasFocused.current) roomPosition.current = camera.position.clone();
     wasFocused.current = focused;
     if (orbit.current) {
       orbit.current.enabled = false;
-      orbit.current.maxDistance = Math.max(18, 12 / (size.width / size.height));
-      orbit.current.minAzimuthAngle = size.width <= 760 ? -.3 : -.2;
-      orbit.current.maxAzimuthAngle = size.width <= 760 ? 1.15 : .65;
+      orbit.current.maxDistance = 24;
+      orbit.current.minAzimuthAngle = -30.719 * Math.PI / 180;
+      orbit.current.maxAzimuthAngle = 1.2;
     }
     // Approach perpendicular to the screen until its surface covers the viewport.
     const distance = Math.min(1.16, 1.88 / (size.width / size.height)) / Math.tan(21 * Math.PI / 180) * 1.3;
@@ -199,15 +218,19 @@ function Camera({ photo, pauseCamera, upliance, onUplianceArrive, entered, outsi
     const photoTarget = new Vector3(...PHOTO_TARGET);
     const photoDistance = Math.max(.68, .68 / (size.width / size.height)) / Math.tan(21 * Math.PI / 180) * 1.3;
     const photoCamera = photoTarget.clone().add(new Vector3(0, 0, photoDistance));
-    transition.current = { from:camera.position.clone(), fovFrom:camera.fov, fovTo:outside ? fov : 42, lookFrom:lookTarget.current.clone(), lookTo:photo ? photoTarget : upliance ? applianceTarget : noteMode ? noteTarget : notebook ? new Vector3(...NOTEBOOK_TARGET) : outside ? new Vector3(targetX,targetY,targetZ) : new Vector3(entered ? 1.5 : 0, .2128, -.51), to:photo ? photoCamera : upliance ? applianceCamera : noteMode ? noteCamera : notebook ? notebookCamera : outside ? new Vector3(cameraX,cameraY,cameraZ) : entered ? new Vector3(1.5, .2128 + .139173 * distance, -.51 + .990268 * distance)  : (roomPosition.current?.clone() || new Vector3(6,3.5,roomCameraZ)), elapsed:noteMode==='wall' && !reduced ? -.65 : 0, done:false };
+    transition.current = { from:camera.position.clone(), fovFrom:camera.fov, fovTo:outside ? fov : 42, lookFrom:lookTarget.current.clone(), lookTo:photo ? photoTarget : upliance ? applianceTarget : noteMode ? noteTarget : notebook ? new Vector3(...NOTEBOOK_TARGET) : outside ? new Vector3(targetX,targetY,targetZ) : new Vector3(entered ? 1.5 : 0, .2128, -.51), to:photo ? photoCamera : upliance ? applianceCamera : noteMode ? noteCamera : notebook ? notebookCamera : outside ? new Vector3(cameraX,cameraY,cameraZ) : entered ? new Vector3(1.5, .2128 + .139173 * distance, -.51 + .990268 * distance)  : (roomPosition.current?.clone() || roomHome.clone()), duration:entrance ? 2.4 : 1.45, elapsed:entrance && !reduced ? -.35 : noteMode==='wall' && !reduced ? -.65 : 0, done:false };
     invalidate();
-  }, [photo, upliance, noteMode, noteX, noteY, entered, outside, notebook, cameraX, cameraY, cameraZ, targetX, targetY, targetZ, fov, reduced, camera, size.width, size.height, roomCameraZ, invalidate]);
+  }, [photo, upliance, noteMode, noteX, noteY, entered, outside, notebook, cameraX, cameraY, cameraZ, targetX, targetY, targetZ, fov, reduced, camera, size.width, size.height, roomHome, invalidate]);
   useFrame((state, dt) => {
     const t = transition.current;
     if (pauseCamera) return;
-    if (!t || t.done) return;
+    if (!t || t.done) {
+      // OrbitControls emits change only while damping is still moving the camera.
+      if (orbit.current?.enabled) orbit.current.update();
+      return;
+    }
     t.elapsed += Math.min(dt, .05);
-    const progress = reduced ? 1 : Math.max(0, Math.min(1, t.elapsed / 1.45));
+    const progress = reduced ? 1 : Math.max(0, Math.min(1, t.elapsed / t.duration));
     const ease = progress < .5 ? 4 * progress ** 3 : 1 - (-2 * progress + 2) ** 3 / 2;
     camera.position.lerpVectors(t.from, t.to, ease);
     lookTarget.current.lerpVectors(t.lookFrom, t.lookTo, ease);
