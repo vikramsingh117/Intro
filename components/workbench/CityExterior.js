@@ -10,9 +10,11 @@ import { SMAAPass } from 'three/examples/jsm/postprocessing/SMAAPass';
 
 export function NightEffects({ exposure = .85, glow = .55 }) {
   const { gl, scene, camera, size, invalidate } = useThree();
+  const get = useThree(state => state.get);
   const pipeline = useRef(null);
   const bloomPass = useRef(null);
   useEffect(() => {
+    const size = get().size;
     const composer = new EffectComposer(gl);
     const render = new RenderPass(scene, camera);
     // Only HDR highlights bloom, keeping dark surfaces and lettering readable.
@@ -45,7 +47,12 @@ export function NightEffects({ exposure = .85, glow = .55 }) {
       lookupImages.forEach(image => image.removeEventListener('load', enableSmaa));
       render.dispose(); bloom.dispose(); output.dispose(); smaa.dispose(); composer.dispose();
     };
-  }, [gl, scene, camera, size.width, size.height, invalidate]);
+  }, [gl, scene, camera, get, invalidate]);
+  useEffect(() => {
+    // Resize existing render targets instead of rebuilding shaders and SMAA textures.
+    pipeline.current?.setSize(size.width, size.height);
+    invalidate();
+  }, [size.width, size.height, invalidate]);
   useEffect(() => {
     gl.toneMappingExposure = exposure;
     if (bloomPass.current) bloomPass.current.strength = glow;
