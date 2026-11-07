@@ -7,44 +7,60 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
 const noRaycast=()=>{};
 const LEDS=Array.from({length:56},(_,i)=>i*Math.PI*2/56);
-const WORK_IMAGE_URLS=['/images/upliance-airfryer.jpg','/images/upliance-airfryer-mobile.jpg','/images/upliance-appui.jpg'];
+const APP_FRAME_URLS=[1,2,3].map(frame=>`/images/upliance-app-sequence/0${frame}.svg`);
+const APPLIANCE_FRAME_URLS=[1,3,4].map(frame=>`/images/upliance-sequence/0${frame}.svg`);
+const CHATBOT_FRAME_URLS=['/images/upliance-chatbot/home.svg','/images/upliance-chatbot/chat.svg'];
 const MOBILE_WORK_LINES=[
   ['I shape product behavior,','then build the experience.','','upliance touchscreen','upliance mobile app','internal AI tools'],
-  ['ADK cooking assistant','Diet + allergen preferences','Dynamic recipe categories','Reliable scroll restoration','React · TypeScript · WebView'],
-  ['Device-aware discovery','Recipe generation in chat','Archived session behavior','Preferences + navigation','React · Redux · GraphQL'],
+  ['Dynamic recipe categories','Touchscreen UI + navigation','Diet + allergen preferences','Reliable scroll restoration','React · TypeScript · WebView'],
+  ['ADK cooking assistant','Recipe generation in chat','View-only archived chats','Past conversations accessible','React · Redux · GraphQL'],
   ['Session inspection','Recipe timing views','Resource sync workflow','Frontend + API integration'],
 ];
-export default function Upliance({ keyboardFocused=false, registerRoomAction, placement=DEFAULT_PROP_PLACEMENT.upliance, reduced=false, interactive=true, onHover=()=>{}, focused=false, workPage=0, onSelect=()=>{}, controlsRef }) {
+export default function Upliance({ keyboardFocused=false, registerRoomAction, placement=DEFAULT_PROP_PLACEMENT.upliance, reduced=false, interactive=true, onHover=()=>{}, focused=false, zoomComplete=false, workPage=0, onSelect=()=>{}, controlsRef }) {
   const {scene}=useLoader(GLTFLoader,'/models/upliance/interactive.glb');
   const display=useLoader(TextureLoader,'/images/upliance-display.svg');
-  const workImages=useLoader(TextureLoader,WORK_IMAGE_URLS);
+  const appFrames=useLoader(TextureLoader,APP_FRAME_URLS);
+  const applianceFrames=useLoader(TextureLoader,APPLIANCE_FRAME_URLS);
+  const chatbotFrames=useLoader(TextureLoader,CHATBOT_FRAME_URLS);
   display.colorSpace=SRGBColorSpace;
-  workImages.forEach(texture=>{texture.colorSpace=SRGBColorSpace;});
   const {invalidate,gl,camera,size,scene:renderScene}=useThree();
   const projectedEdge=useMemo(()=>new Vector3(),[]);
   const [hovered,setHovered]=useState(false),[latched,setLatched]=useState(false);
   const panel=useRef(null);
   const hoverOutline=useRef(null);
-  const workTexture=useMemo(()=>{
+  const [sequence,setSequence]=useState({page:workPage,frame:0});
+  const frameCount=workPage===0?APPLIANCE_FRAME_URLS.length:workPage===1?APP_FRAME_URLS.length:workPage===2?CHATBOT_FRAME_URLS.length:1;
+  useEffect(()=>{
+    setSequence({page:workPage,frame:0});
+    if(!focused||!zoomComplete||frameCount===1||reduced)return;
+    const timer=window.setInterval(()=>{
+      if(!document.hidden)setSequence(current=>({page:workPage,frame:(current.frame+1)%frameCount}));
+    },1500);
+    return ()=>window.clearInterval(timer);
+  },[focused,zoomComplete,workPage,frameCount,reduced]);
+  const workTextures=useMemo(()=>(workPage===0?applianceFrames:workPage===1?appFrames:workPage===2?chatbotFrames:[undefined]).map(imageTexture=>{
     const canvas=document.createElement('canvas');canvas.width=1200;canvas.height=740;
     const ctx=canvas.getContext('2d'),page=UPLIANCE_WORK[workPage];
     const mobile=size.width<=760;
     const lines=mobile?MOBILE_WORK_LINES[workPage]:page.lines;
-    const overviewImages=workPage===0&&workImages.every(texture=>texture.image?.width);
-    const pageImage=workPage===1&&workImages[2]?.image?.width;
+    const pageImage=imageTexture?.image;
+    const hasImage=Boolean(pageImage?.width&&pageImage?.height);
     ctx.fillStyle='#eaf0e8';ctx.fillRect(0,0,1200,740);
     ctx.fillStyle='#214c69';ctx.font=`${mobile?30:24}px monospace`;ctx.fillText(page.subtitle,80,66);
-    ctx.fillStyle='#102e43';ctx.font=`bold ${mobile?56:44}px sans-serif`;ctx.fillText(page.title,80,145);
-    ctx.font=`${mobile?40:overviewImages||pageImage?27:32}px sans-serif`;lines.forEach((line,i)=>ctx.fillText(line,80,225+i*(mobile?70:57)));
-    if(overviewImages){
-      ctx.drawImage(workImages[0].image,760,160,410,266);
-      ctx.drawImage(workImages[1].image,760,438,410,235);
+    ctx.fillStyle='#102e43';ctx.font=`bold ${mobile?(workPage===1?48:56):44}px sans-serif`;ctx.fillText(page.title,80,145);
+    ctx.font=`${mobile?40:hasImage?27:32}px sans-serif`;lines.forEach((line,i)=>ctx.fillText(line,80,225+i*(mobile?70:57)));
+    if(hasImage){
+      const imageBox=workPage===0?{x:675,y:170,width:495,height:500}:workPage===2?{x:720,y:40,width:430,height:630}:{x:665,y:75,width:510,height:590};
+      const imageScale=Math.min(imageBox.width/pageImage.width,imageBox.height/pageImage.height);
+      const imageWidth=pageImage.width*imageScale,imageHeight=pageImage.height*imageScale;
+      ctx.drawImage(pageImage,imageBox.x+(imageBox.width-imageWidth)/2,imageBox.y+(imageBox.height-imageHeight)/2,imageWidth,imageHeight);
     }
-    if(pageImage)ctx.drawImage(workImages[2].image,680,220,490,281);
     ctx.fillStyle='#397eff';ctx.fillRect(60,686,1080*(workPage+1)/UPLIANCE_WORK.length,5);
     const texture=new CanvasTexture(canvas);texture.colorSpace=SRGBColorSpace;return texture;
-  },[workPage,workImages,size.width]);
-  useEffect(()=>()=>workTexture.dispose(),[workTexture]);
+  }),[workPage,appFrames,applianceFrames,chatbotFrames,size.width]);
+  const workTexture=workTextures[sequence.page===workPage&&zoomComplete&&!reduced?sequence.frame:0]||workTextures[0];
+  useEffect(()=>()=>workTextures.forEach(texture=>texture.dispose()),[workTextures]);
+  useEffect(()=>{invalidate();},[workTexture,invalidate]);
   const progress=useRef(0),screenMaterial=useRef(null),leds=useRef(null),spill=useRef(null),hitArea=useRef(null);
   const ledMaterial=useMemo(()=>new MeshStandardMaterial({color:'#b0d4ff',emissive:'#3878ff',emissiveIntensity:0,transparent:true,opacity:0,depthWrite:false}),[]);
   useEffect(()=>()=>ledMaterial.dispose(),[ledMaterial]);
@@ -113,13 +129,7 @@ export default function Upliance({ keyboardFocused=false, registerRoomAction, pl
       surface.style.clipPath=`polygon(${corners.join(',')})`;
       projectedEdge.set(0,0,.03).applyMatrix4(panel.current.matrixWorld).project(camera);
       surface.dataset.centerX=String((projectedEdge.x+1)*size.width/2);
-      Array.from(controlsRef.current.querySelectorAll('button')).forEach((button,index)=>{
-        projectedEdge.set(index===0?-8.15:7.5,index===2?4.35:0,.03).applyMatrix4(panel.current.matrixWorld).project(camera);
-        const x=(projectedEdge.x+1)*size.width/2;
-        const y=(1-projectedEdge.y)*size.height/2;
-        button.style.transform=`translate(${x}px,${y}px) translate(-50%,-50%)`;
-        button.style.visibility=projectedEdge.z<1?'visible':'hidden';
-      });
+
     }
 
     const target=active?1:0;

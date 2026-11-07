@@ -87,11 +87,11 @@
 
 .desktopWorkspace .appIcon[data-app="Photos"]{background:linear-gradient(145deg,#c2b28e,#638e78);color:#f7edcf}
 
-.uplianceControls{position:absolute;inset:0;pointer-events:auto;outline:none;transition:opacity .25s ease}.uplianceControls>button{position:absolute;top:0;left:0;visibility:hidden;pointer-events:auto;width:44px;height:44px;display:grid;place-items:center;border:0;border-radius:0;background:transparent;color:#214c69;font:32px/1 sans-serif;cursor:pointer}.uplianceControls>button:hover{color:#397eff}.uplianceControls>button:focus-visible{outline:2px solid #78baff;outline-offset:3px}.uplianceControls>button:disabled{opacity:.3;cursor:default}
+.uplianceControls{position:absolute;inset:0;pointer-events:auto;outline:none;transition:opacity .25s ease}
 
 .homeLink{position:absolute;right:max(22px,env(safe-area-inset-right));bottom:max(22px,env(safe-area-inset-bottom));z-index:20;display:inline-flex;align-items:center;min-height:44px;padding:0 4px;border:0;background:transparent;color:#b7beb0;text-decoration:none;font:10px monospace;letter-spacing:.08em;text-shadow:0 1px 4px #0009}.homeLink:hover{color:#e6d5b5}.homeLink:focus-visible{outline:2px solid #e6c994;outline-offset:4px}@media(max-width:760px){.homeLink{right:16px;bottom:calc(65px + env(safe-area-inset-bottom))}}
 
-.uplianceSurface{position:absolute;inset:0;pointer-events:auto}.uplianceControls>button.uplianceClose{font-size:22px}
+.uplianceSurface{position:absolute;inset:0;pointer-events:auto}
 
 /* Smooth the projected HTML perimeter without softening desktop text. */
 .monitorDesktop{

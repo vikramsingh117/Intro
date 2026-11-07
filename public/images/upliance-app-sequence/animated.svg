@@ -1,0 +1,991 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1454" height="1510" viewBox="0 0 1454 1510"><title>Upliance discovery carousel</title><style>@keyframes frame{0%,33.333%{opacity:1}33.334%,100%{opacity:0}}.frame{opacity:0;animation:frame 4.5s linear infinite}@media(prefers-reduced-motion:reduce){.frame{animation:none}.frame:first-of-type{opacity:1}}</style><g class="frame" style="animation-delay:-4.5s"><title xmlns="http://www.w3.org/2000/svg" id="title">Upliance app — rotating discovery, frame 1</title><desc xmlns="http://www.w3.org/2000/svg" id="desc">Minimal vector recreation of the cooking app home screen in charcoal, sage, cream and amber. Includes discovery cards, eight meal categories, four recipe cards and bottom navigation.</desc>
+<defs xmlns="http://www.w3.org/2000/svg">
+<symbol id="heart0" viewBox="0 0 100 100"><path d="M50 88C30 70 7 52 7 29C7 7 35 2 50 21C65 2 93 7 93 29C93 52 70 70 50 88Z" /></symbol>
+<symbol id="leaf0" viewBox="0 0 40 40"><path d="M8 32C0 9 18 4 34 5C34 24 26 36 8 32Z" fill="#8fae87" /><path d="M9 31L26 14" fill="none" stroke="#334e40" stroke-width="3" stroke-linecap="round" /></symbol>
+</defs>
+<rect xmlns="http://www.w3.org/2000/svg" width="1454" height="1510" rx="26" fill="#10181c" />
+<g xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, sans-serif" fill="#eee7d6">
+<text x="36" y="52" font-size="39" font-weight="600">Good Afternoon</text>
+<text x="36" y="97" font-size="27" fill="#a9b4aa">What are you cooking today?</text>
+<rect x="1182" y="22" width="236" height="70" rx="20" fill="none" stroke="#a8bfa7" stroke-width="2" />
+<text x="1211" y="67" font-size="29" fill="#c5d5ba">Explore</text><circle cx="1360" cy="49" r="12" fill="none" stroke="#c5d5ba" stroke-width="3" /><path d="M1369 58L1382 71" stroke="#c5d5ba" stroke-width="3" />
+<g transform="translate(28 122)"><rect width="683" height="305" rx="36" fill="#324b50" /><g opacity=".42"><path d="M562 85A84 84 0 1 1 479 168" fill="none" stroke="#b3c7b4" stroke-width="21" /><path d="M571 37L516 88L571 138Z" fill="#b3c7b4" /></g><text x="48" y="149" font-size="36" font-weight="600">High Repeat</text><text x="48" y="194" font-size="25" fill="#d2d9c9">78 recipes</text><path d="M48 211H180" stroke="#e8c595" stroke-width="4" stroke-linecap="round" /></g><g transform="translate(743 122)"><rect width="683" height="305" rx="36" fill="#704b40" /><g opacity=".42"><use href="#heart0" x="427" y="39" width="230" height="230" fill="#e1b4a1" /></g><text x="48" y="149" font-size="36" font-weight="600">Most Favorited</text><text x="48" y="194" font-size="25" fill="#d2d9c9">150 recipes</text><path d="M48 211H180" stroke="#e8c595" stroke-width="4" stroke-linecap="round" /></g><circle cx="631" cy="460" r="7" fill="#e8c595" />
+<circle cx="663" cy="460" r="7" fill="#485451" />
+<circle cx="695" cy="460" r="7" fill="#485451" />
+<circle cx="727" cy="460" r="7" fill="#485451" />
+<circle cx="759" cy="460" r="7" fill="#485451" />
+<circle cx="791" cy="460" r="7" fill="#485451" />
+<circle cx="823" cy="460" r="7" fill="#485451" />
+<rect x="20" y="508" width="1414" height="319" rx="30" fill="#202d29" /><text x="44" y="560" font-size="31" font-weight="600">Wholesome Meals</text>
+<g transform="translate(103 660)"><circle r="69" fill="#121d1d" /><circle r="62.79" fill="#bac3b2" /><circle r="55.89" fill="#e1dcc5" /><circle r="48.989999999999995" fill="#b48b4d" />
+<circle cx="0.0" cy="0.0" r="5.865" fill="#e0b868" />
+<circle cx="-6.1" cy="5.6" r="5.865" fill="#866c41" />
+<circle cx="1.0" cy="-11.7" r="5.865" fill="#d39a54" />
+<circle cx="8.8" cy="11.4" r="5.865" fill="#e0b868" />
+<circle cx="-16.4" cy="-2.9" r="5.865" fill="#866c41" />
+<circle cx="15.7" cy="-10.0" r="5.865" fill="#d39a54" />
+<circle cx="-5.3" cy="19.7" r="5.865" fill="#e0b868" />
+<circle cx="-10.1" cy="-19.5" r="5.865" fill="#866c41" />
+<circle cx="22.1" cy="8.1" r="5.865" fill="#d39a54" />
+<circle cx="-23.0" cy="9.5" r="5.865" fill="#e0b868" />
+<circle cx="11.1" cy="-23.8" r="5.865" fill="#866c41" />
+<circle cx="8.2" cy="26.3" r="5.865" fill="#d39a54" />
+<circle cx="-24.9" cy="-14.4" r="5.865" fill="#e0b868" />
+<circle cx="29.3" cy="-6.4" r="5.865" fill="#866c41" />
+<circle cx="-17.9" cy="25.4" r="5.865" fill="#d39a54" />
+<circle cx="-4.1" cy="-31.9" r="5.865" fill="#e0b868" />
+<circle cx="25.4" cy="21.4" r="5.865" fill="#866c41" />
+<circle cx="-34.2" cy="1.4" r="5.865" fill="#d39a54" />
+<circle cx="25.0" cy="-24.9" r="5.865" fill="#e0b868" />
+<circle cx="-1.7" cy="36.2" r="5.865" fill="#866c41" />
+<circle cx="-23.8" cy="-28.6" r="5.865" fill="#d39a54" />
+<circle cx="37.7" cy="5.1" r="5.865" fill="#e0b868" />
+<circle cx="-32.0" cy="22.2" r="5.865" fill="#866c41" />
+<circle cx="8.8" cy="-38.9" r="5.865" fill="#d39a54" />
+<use href="#leaf0" x="-20.7" y="-20.7" width="19.32" height="19.32" />
+<use href="#leaf0" x="13.8" y="6.9" width="19.32" height="19.32" />
+<use href="#leaf0" x="-6.9" y="27.6" width="19.32" height="19.32" />
+</g>
+<text x="103" y="767" text-anchor="middle" font-size="25" fill="#c9cebf">Everyday</text>
+<text x="103" y="801" text-anchor="middle" font-size="25" fill="#c9cebf">Recipes</text>
+<g transform="translate(281 660)"><circle r="69" fill="#121d1d" /><circle r="62.79" fill="#bac3b2" /><circle r="55.89" fill="#e1dcc5" /><circle r="48.989999999999995" fill="#637954" />
+<circle cx="0.0" cy="31.7" r="15.18" fill="#d2bd83" stroke="#4b5b4d" stroke-width="2" />
+<circle cx="30.2" cy="9.8" r="15.18" fill="#8b9a65" stroke="#4b5b4d" stroke-width="2" />
+<circle cx="18.7" cy="-25.7" r="15.18" fill="#ae7147" stroke="#4b5b4d" stroke-width="2" />
+<circle cx="-18.7" cy="-25.7" r="15.18" fill="#d2bd83" stroke="#4b5b4d" stroke-width="2" />
+<circle cx="-30.2" cy="9.8" r="15.18" fill="#8b9a65" stroke="#4b5b4d" stroke-width="2" />
+<circle r="19.32" fill="#eee5c9" />
+</g>
+<text x="281" y="767" text-anchor="middle" font-size="25" fill="#c9cebf">Daily South</text>
+<text x="281" y="801" text-anchor="middle" font-size="25" fill="#c9cebf">Indian</text>
+<g transform="translate(459 660)"><circle r="69" fill="#121d1d" /><circle r="62.79" fill="#bac3b2" /><circle r="55.89" fill="#e1dcc5" /><circle r="48.989999999999995" fill="#aa7047" />
+<circle cx="0.0" cy="31.7" r="15.18" fill="#d2bd83" stroke="#4b5b4d" stroke-width="2" />
+<circle cx="30.2" cy="9.8" r="15.18" fill="#8b9a65" stroke="#4b5b4d" stroke-width="2" />
+<circle cx="18.7" cy="-25.7" r="15.18" fill="#ae7147" stroke="#4b5b4d" stroke-width="2" />
+<circle cx="-18.7" cy="-25.7" r="15.18" fill="#d2bd83" stroke="#4b5b4d" stroke-width="2" />
+<circle cx="-30.2" cy="9.8" r="15.18" fill="#8b9a65" stroke="#4b5b4d" stroke-width="2" />
+<circle r="19.32" fill="#eee5c9" />
+</g>
+<text x="459" y="767" text-anchor="middle" font-size="25" fill="#c9cebf">Daily North</text>
+<text x="459" y="801" text-anchor="middle" font-size="25" fill="#c9cebf">Indian</text>
+<g transform="translate(637 660)"><circle r="69" fill="#121d1d" /><circle r="62.79" fill="#bac3b2" /><circle r="55.89" fill="#e1dcc5" /><circle r="48.989999999999995" fill="#b66e42" />
+<rect x="-7.0" y="-3.0" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(0 0.0 0.0)" />
+<rect x="-13.1" y="2.6" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(43 -6.1 5.6)" />
+<rect x="-6.0" y="-14.7" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(86 1.0 -11.7)" />
+<rect x="1.8" y="8.4" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(129 8.8 11.4)" />
+<rect x="-23.4" y="-5.9" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(172 -16.4 -2.9)" />
+<rect x="8.7" y="-13.0" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(215 15.7 -10.0)" />
+<rect x="-12.3" y="16.7" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(258 -5.3 19.7)" />
+<rect x="-17.1" y="-22.5" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(301 -10.1 -19.5)" />
+<rect x="15.1" y="5.1" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(344 22.1 8.1)" />
+<rect x="-30.0" y="6.5" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(387 -23.0 9.5)" />
+<rect x="4.1" y="-26.8" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(430 11.1 -23.8)" />
+<rect x="1.2" y="23.3" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(473 8.2 26.3)" />
+<rect x="-31.9" y="-17.4" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(516 -24.9 -14.4)" />
+<rect x="22.3" y="-9.4" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(559 29.3 -6.4)" />
+<rect x="-24.9" y="22.4" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(602 -17.9 25.4)" />
+<rect x="-11.1" y="-34.9" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(645 -4.1 -31.9)" />
+<rect x="18.4" y="18.4" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(688 25.4 21.4)" />
+<rect x="-41.2" y="-1.6" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(731 -34.2 1.4)" />
+<rect x="18.0" y="-27.9" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(774 25.0 -24.9)" />
+<rect x="-8.7" y="33.2" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(817 -1.7 36.2)" />
+<rect x="-30.8" y="-31.6" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(860 -23.8 -28.6)" />
+<rect x="30.7" y="2.1" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(903 37.7 5.1)" />
+<rect x="-39.0" y="19.2" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(946 -32.0 22.2)" />
+<rect x="1.8" y="-41.9" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(989 8.8 -38.9)" />
+<use href="#leaf0" x="-20.7" y="-20.7" width="19.32" height="19.32" />
+<use href="#leaf0" x="13.8" y="6.9" width="19.32" height="19.32" />
+<use href="#leaf0" x="-6.9" y="27.6" width="19.32" height="19.32" />
+</g>
+<text x="637" y="767" text-anchor="middle" font-size="25" fill="#c9cebf">Pasta</text>
+<g transform="translate(815 660)"><circle r="69" fill="#121d1d" /><circle r="62.79" fill="#bac3b2" /><circle r="55.89" fill="#e1dcc5" /><circle r="48.989999999999995" fill="#c29959" />
+<rect x="-7.0" y="-3.0" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(0 0.0 0.0)" />
+<rect x="-13.1" y="2.6" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(43 -6.1 5.6)" />
+<rect x="-6.0" y="-14.7" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(86 1.0 -11.7)" />
+<rect x="1.8" y="8.4" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(129 8.8 11.4)" />
+<rect x="-23.4" y="-5.9" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(172 -16.4 -2.9)" />
+<rect x="8.7" y="-13.0" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(215 15.7 -10.0)" />
+<rect x="-12.3" y="16.7" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(258 -5.3 19.7)" />
+<rect x="-17.1" y="-22.5" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(301 -10.1 -19.5)" />
+<rect x="15.1" y="5.1" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(344 22.1 8.1)" />
+<rect x="-30.0" y="6.5" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(387 -23.0 9.5)" />
+<rect x="4.1" y="-26.8" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(430 11.1 -23.8)" />
+<rect x="1.2" y="23.3" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(473 8.2 26.3)" />
+<rect x="-31.9" y="-17.4" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(516 -24.9 -14.4)" />
+<rect x="22.3" y="-9.4" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(559 29.3 -6.4)" />
+<rect x="-24.9" y="22.4" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(602 -17.9 25.4)" />
+<rect x="-11.1" y="-34.9" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(645 -4.1 -31.9)" />
+<rect x="18.4" y="18.4" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(688 25.4 21.4)" />
+<rect x="-41.2" y="-1.6" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(731 -34.2 1.4)" />
+<rect x="18.0" y="-27.9" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(774 25.0 -24.9)" />
+<rect x="-8.7" y="33.2" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(817 -1.7 36.2)" />
+<rect x="-30.8" y="-31.6" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(860 -23.8 -28.6)" />
+<rect x="30.7" y="2.1" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(903 37.7 5.1)" />
+<rect x="-39.0" y="19.2" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(946 -32.0 22.2)" />
+<rect x="1.8" y="-41.9" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(989 8.8 -38.9)" />
+<use href="#leaf0" x="-20.7" y="-20.7" width="19.32" height="19.32" />
+<use href="#leaf0" x="13.8" y="6.9" width="19.32" height="19.32" />
+<use href="#leaf0" x="-6.9" y="27.6" width="19.32" height="19.32" />
+</g>
+<text x="815" y="767" text-anchor="middle" font-size="25" fill="#c9cebf">Noodles</text>
+<g transform="translate(993 660)"><circle r="69" fill="#121d1d" /><circle r="62.79" fill="#bac3b2" /><circle r="55.89" fill="#e1dcc5" /><circle r="48.989999999999995" fill="#d1b581" />
+<rect x="-7.0" y="-3.0" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(0 0.0 0.0)" />
+<rect x="-13.1" y="2.6" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(43 -6.1 5.6)" />
+<rect x="-6.0" y="-14.7" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(86 1.0 -11.7)" />
+<rect x="1.8" y="8.4" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(129 8.8 11.4)" />
+<rect x="-23.4" y="-5.9" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(172 -16.4 -2.9)" />
+<rect x="8.7" y="-13.0" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(215 15.7 -10.0)" />
+<rect x="-12.3" y="16.7" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(258 -5.3 19.7)" />
+<rect x="-17.1" y="-22.5" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(301 -10.1 -19.5)" />
+<rect x="15.1" y="5.1" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(344 22.1 8.1)" />
+<rect x="-30.0" y="6.5" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(387 -23.0 9.5)" />
+<rect x="4.1" y="-26.8" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(430 11.1 -23.8)" />
+<rect x="1.2" y="23.3" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(473 8.2 26.3)" />
+<rect x="-31.9" y="-17.4" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(516 -24.9 -14.4)" />
+<rect x="22.3" y="-9.4" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(559 29.3 -6.4)" />
+<rect x="-24.9" y="22.4" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(602 -17.9 25.4)" />
+<rect x="-11.1" y="-34.9" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(645 -4.1 -31.9)" />
+<rect x="18.4" y="18.4" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(688 25.4 21.4)" />
+<rect x="-41.2" y="-1.6" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(731 -34.2 1.4)" />
+<rect x="18.0" y="-27.9" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(774 25.0 -24.9)" />
+<rect x="-8.7" y="33.2" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(817 -1.7 36.2)" />
+<rect x="-30.8" y="-31.6" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(860 -23.8 -28.6)" />
+<rect x="30.7" y="2.1" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(903 37.7 5.1)" />
+<rect x="-39.0" y="19.2" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(946 -32.0 22.2)" />
+<rect x="1.8" y="-41.9" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(989 8.8 -38.9)" />
+<use href="#leaf0" x="-20.7" y="-20.7" width="19.32" height="19.32" />
+<use href="#leaf0" x="13.8" y="6.9" width="19.32" height="19.32" />
+<use href="#leaf0" x="-6.9" y="27.6" width="19.32" height="19.32" />
+</g>
+<text x="993" y="767" text-anchor="middle" font-size="25" fill="#c9cebf">Rice</text>
+<g transform="translate(1171 660)"><circle r="69" fill="#121d1d" /><circle r="62.79" fill="#bac3b2" /><circle r="55.89" fill="#e1dcc5" /><circle r="48.989999999999995" fill="#a48247" />
+<circle cx="0.0" cy="0.0" r="5.865" fill="#e0b868" />
+<circle cx="-6.1" cy="5.6" r="5.865" fill="#866c41" />
+<circle cx="1.0" cy="-11.7" r="5.865" fill="#d39a54" />
+<circle cx="8.8" cy="11.4" r="5.865" fill="#e0b868" />
+<circle cx="-16.4" cy="-2.9" r="5.865" fill="#866c41" />
+<circle cx="15.7" cy="-10.0" r="5.865" fill="#d39a54" />
+<circle cx="-5.3" cy="19.7" r="5.865" fill="#e0b868" />
+<circle cx="-10.1" cy="-19.5" r="5.865" fill="#866c41" />
+<circle cx="22.1" cy="8.1" r="5.865" fill="#d39a54" />
+<circle cx="-23.0" cy="9.5" r="5.865" fill="#e0b868" />
+<circle cx="11.1" cy="-23.8" r="5.865" fill="#866c41" />
+<circle cx="8.2" cy="26.3" r="5.865" fill="#d39a54" />
+<circle cx="-24.9" cy="-14.4" r="5.865" fill="#e0b868" />
+<circle cx="29.3" cy="-6.4" r="5.865" fill="#866c41" />
+<circle cx="-17.9" cy="25.4" r="5.865" fill="#d39a54" />
+<circle cx="-4.1" cy="-31.9" r="5.865" fill="#e0b868" />
+<circle cx="25.4" cy="21.4" r="5.865" fill="#866c41" />
+<circle cx="-34.2" cy="1.4" r="5.865" fill="#d39a54" />
+<circle cx="25.0" cy="-24.9" r="5.865" fill="#e0b868" />
+<circle cx="-1.7" cy="36.2" r="5.865" fill="#866c41" />
+<circle cx="-23.8" cy="-28.6" r="5.865" fill="#d39a54" />
+<circle cx="37.7" cy="5.1" r="5.865" fill="#e0b868" />
+<circle cx="-32.0" cy="22.2" r="5.865" fill="#866c41" />
+<circle cx="8.8" cy="-38.9" r="5.865" fill="#d39a54" />
+<use href="#leaf0" x="-20.7" y="-20.7" width="19.32" height="19.32" />
+<use href="#leaf0" x="13.8" y="6.9" width="19.32" height="19.32" />
+<use href="#leaf0" x="-6.9" y="27.6" width="19.32" height="19.32" />
+</g>
+<text x="1171" y="767" text-anchor="middle" font-size="25" fill="#c9cebf">Potato</text>
+<text x="1171" y="801" text-anchor="middle" font-size="25" fill="#c9cebf">Perfection</text>
+<g transform="translate(1349 660)"><circle r="69" fill="#121d1d" /><circle r="62.79" fill="#bac3b2" /><circle r="55.89" fill="#e1dcc5" /><circle r="48.989999999999995" fill="#bfa578" />
+<circle cx="0.0" cy="0.0" r="5.865" fill="#e0b868" />
+<circle cx="-6.1" cy="5.6" r="5.865" fill="#866c41" />
+<circle cx="1.0" cy="-11.7" r="5.865" fill="#d39a54" />
+<circle cx="8.8" cy="11.4" r="5.865" fill="#e0b868" />
+<circle cx="-16.4" cy="-2.9" r="5.865" fill="#866c41" />
+<circle cx="15.7" cy="-10.0" r="5.865" fill="#d39a54" />
+<circle cx="-5.3" cy="19.7" r="5.865" fill="#e0b868" />
+<circle cx="-10.1" cy="-19.5" r="5.865" fill="#866c41" />
+<circle cx="22.1" cy="8.1" r="5.865" fill="#d39a54" />
+<circle cx="-23.0" cy="9.5" r="5.865" fill="#e0b868" />
+<circle cx="11.1" cy="-23.8" r="5.865" fill="#866c41" />
+<circle cx="8.2" cy="26.3" r="5.865" fill="#d39a54" />
+<circle cx="-24.9" cy="-14.4" r="5.865" fill="#e0b868" />
+<circle cx="29.3" cy="-6.4" r="5.865" fill="#866c41" />
+<circle cx="-17.9" cy="25.4" r="5.865" fill="#d39a54" />
+<circle cx="-4.1" cy="-31.9" r="5.865" fill="#e0b868" />
+<circle cx="25.4" cy="21.4" r="5.865" fill="#866c41" />
+<circle cx="-34.2" cy="1.4" r="5.865" fill="#d39a54" />
+<circle cx="25.0" cy="-24.9" r="5.865" fill="#e0b868" />
+<circle cx="-1.7" cy="36.2" r="5.865" fill="#866c41" />
+<circle cx="-23.8" cy="-28.6" r="5.865" fill="#d39a54" />
+<circle cx="37.7" cy="5.1" r="5.865" fill="#e0b868" />
+<circle cx="-32.0" cy="22.2" r="5.865" fill="#866c41" />
+<circle cx="8.8" cy="-38.9" r="5.865" fill="#d39a54" />
+<use href="#leaf0" x="-20.7" y="-20.7" width="19.32" height="19.32" />
+<use href="#leaf0" x="13.8" y="6.9" width="19.32" height="19.32" />
+<use href="#leaf0" x="-6.9" y="27.6" width="19.32" height="19.32" />
+</g>
+<text x="1349" y="767" text-anchor="middle" font-size="25" fill="#c9cebf">Healthy</text>
+<text x="1349" y="801" text-anchor="middle" font-size="25" fill="#c9cebf">Grains</text>
+<text x="28" y="917" font-size="31" font-weight="600">Most Cooked on Upliance</text><text x="1301" y="917" font-size="26" fill="#e8c595">See all</text><path d="M1403 899L1414 909L1403 919" fill="none" stroke="#e8c595" stroke-width="3" />
+<g transform="translate(0 0)"><rect x="28" y="950" width="326" height="369" rx="30" fill="#30413b" />
+<g transform="translate(191 1102)"><circle r="125" fill="#121d1d" /><circle r="113.75" fill="#bac3b2" /><circle r="101.25" fill="#e1dcc5" /><circle r="88.75" fill="#b48b4d" />
+<circle cx="0.0" cy="0.0" r="10.625" fill="#e0b868" />
+<circle cx="-11.1" cy="10.2" r="10.625" fill="#866c41" />
+<circle cx="1.9" cy="-21.2" r="10.625" fill="#d39a54" />
+<circle cx="15.9" cy="20.7" r="10.625" fill="#e0b868" />
+<circle cx="-29.6" cy="-5.2" r="10.625" fill="#866c41" />
+<circle cx="28.4" cy="-18.1" r="10.625" fill="#d39a54" />
+<circle cx="-9.6" cy="35.6" r="10.625" fill="#e0b868" />
+<circle cx="-18.3" cy="-35.4" r="10.625" fill="#866c41" />
+<circle cx="40.0" cy="14.6" r="10.625" fill="#d39a54" />
+<circle cx="-41.8" cy="17.2" r="10.625" fill="#e0b868" />
+<circle cx="20.2" cy="-43.1" r="10.625" fill="#866c41" />
+<circle cx="14.9" cy="47.6" r="10.625" fill="#d39a54" />
+<circle cx="-45.1" cy="-26.2" r="10.625" fill="#e0b868" />
+<circle cx="53.0" cy="-11.6" r="10.625" fill="#866c41" />
+<circle cx="-32.4" cy="46.1" r="10.625" fill="#d39a54" />
+<circle cx="-7.5" cy="-57.8" r="10.625" fill="#e0b868" />
+<circle cx="46.0" cy="38.8" r="10.625" fill="#866c41" />
+<circle cx="-62.0" cy="2.5" r="10.625" fill="#d39a54" />
+<circle cx="45.3" cy="-45.0" r="10.625" fill="#e0b868" />
+<circle cx="-3.1" cy="65.5" r="10.625" fill="#866c41" />
+<circle cx="-43.1" cy="-51.7" r="10.625" fill="#d39a54" />
+<circle cx="68.4" cy="9.3" r="10.625" fill="#e0b868" />
+<circle cx="-58.0" cy="40.3" r="10.625" fill="#866c41" />
+<circle cx="15.9" cy="-70.4" r="10.625" fill="#d39a54" />
+<use href="#leaf0" x="-37.5" y="-37.5" width="35.0" height="35.0" />
+<use href="#leaf0" x="25.0" y="12.5" width="35.0" height="35.0" />
+<use href="#leaf0" x="-12.5" y="50.0" width="35.0" height="35.0" />
+</g>
+<use href="#heart0" x="298" y="975" width="34" height="34" fill="#e8c595" stroke="#eee7d6" stroke-width="4" /><text x="48" y="1291" font-size="26" font-weight="600">Chole</text><rect x="30" y="1341" width="20" height="20" rx="5" fill="none" stroke="#9bba96" stroke-width="2" /><circle cx="40" cy="1351" r="5" fill="#9bba96" /><text x="61" y="1360" font-size="22" fill="#b8c2b5">North Indian</text><text x="279" y="1360" font-size="22" fill="#e8c595">★ 4.5</text>
+</g><g transform="translate(0 0)"><rect x="386" y="950" width="326" height="369" rx="30" fill="#3b4138" />
+<g transform="translate(549 1102)"><circle r="125" fill="#121d1d" /><circle r="113.75" fill="#bac3b2" /><circle r="101.25" fill="#e1dcc5" /><circle r="88.75" fill="#b48b4d" />
+<ellipse rx="76.25" ry="70.0" fill="#e0cda4" /><path d="M-50.0 0Q0 -37.5 50.0 0" fill="none" stroke="#c5af86" stroke-width="3" />
+</g>
+<use href="#heart0" x="656" y="975" width="34" height="34" fill="none" stroke="#eee7d6" stroke-width="4" /><text x="406" y="1291" font-size="26" font-weight="600">Fresh dough</text><rect x="388" y="1341" width="20" height="20" rx="5" fill="none" stroke="#9bba96" stroke-width="2" /><circle cx="398" cy="1351" r="5" fill="#9bba96" /><text x="419" y="1360" font-size="22" fill="#b8c2b5">Indian</text><text x="637" y="1360" font-size="22" fill="#e8c595">★ 4.6</text>
+</g><g transform="translate(0 0)"><rect x="744" y="950" width="326" height="369" rx="30" fill="#3c3730" />
+<g transform="translate(907 1102)"><circle r="125" fill="#121d1d" /><circle r="113.75" fill="#bac3b2" /><circle r="101.25" fill="#e1dcc5" /><circle r="88.75" fill="#b66e42" />
+<rect x="-7.0" y="-3.0" width="30.0" height="10.625" rx="3" fill="#e6b46b" transform="rotate(0 0.0 0.0)" />
+<rect x="-18.1" y="7.2" width="30.0" height="10.625" rx="3" fill="#d99353" transform="rotate(43 -11.1 10.2)" />
+<rect x="-5.1" y="-24.2" width="30.0" height="10.625" rx="3" fill="#edcc8a" transform="rotate(86 1.9 -21.2)" />
+<rect x="8.9" y="17.7" width="30.0" height="10.625" rx="3" fill="#e6b46b" transform="rotate(129 15.9 20.7)" />
+<rect x="-36.6" y="-8.2" width="30.0" height="10.625" rx="3" fill="#d99353" transform="rotate(172 -29.6 -5.2)" />
+<rect x="21.4" y="-21.1" width="30.0" height="10.625" rx="3" fill="#edcc8a" transform="rotate(215 28.4 -18.1)" />
+<rect x="-16.6" y="32.6" width="30.0" height="10.625" rx="3" fill="#e6b46b" transform="rotate(258 -9.6 35.6)" />
+<rect x="-25.3" y="-38.4" width="30.0" height="10.625" rx="3" fill="#d99353" transform="rotate(301 -18.3 -35.4)" />
+<rect x="33.0" y="11.6" width="30.0" height="10.625" rx="3" fill="#edcc8a" transform="rotate(344 40.0 14.6)" />
+<rect x="-48.8" y="14.2" width="30.0" height="10.625" rx="3" fill="#e6b46b" transform="rotate(387 -41.8 17.2)" />
+<rect x="13.2" y="-46.1" width="30.0" height="10.625" rx="3" fill="#d99353" transform="rotate(430 20.2 -43.1)" />
+<rect x="7.9" y="44.6" width="30.0" height="10.625" rx="3" fill="#edcc8a" transform="rotate(473 14.9 47.6)" />
+<rect x="-52.1" y="-29.2" width="30.0" height="10.625" rx="3" fill="#e6b46b" transform="rotate(516 -45.1 -26.2)" />
+<rect x="46.0" y="-14.6" width="30.0" height="10.625" rx="3" fill="#d99353" transform="rotate(559 53.0 -11.6)" />
+<rect x="-39.4" y="43.1" width="30.0" height="10.625" rx="3" fill="#edcc8a" transform="rotate(602 -32.4 46.1)" />
+<rect x="-14.5" y="-60.8" width="30.0" height="10.625" rx="3" fill="#e6b46b" transform="rotate(645 -7.5 -57.8)" />
+<rect x="39.0" y="35.8" width="30.0" height="10.625" rx="3" fill="#d99353" transform="rotate(688 46.0 38.8)" />
+<rect x="-69.0" y="-0.5" width="30.0" height="10.625" rx="3" fill="#edcc8a" transform="rotate(731 -62.0 2.5)" />
+<rect x="38.3" y="-48.0" width="30.0" height="10.625" rx="3" fill="#e6b46b" transform="rotate(774 45.3 -45.0)" />
+<rect x="-10.1" y="62.5" width="30.0" height="10.625" rx="3" fill="#d99353" transform="rotate(817 -3.1 65.5)" />
+<rect x="-50.1" y="-54.7" width="30.0" height="10.625" rx="3" fill="#edcc8a" transform="rotate(860 -43.1 -51.7)" />
+<rect x="61.4" y="6.3" width="30.0" height="10.625" rx="3" fill="#e6b46b" transform="rotate(903 68.4 9.3)" />
+<rect x="-65.0" y="37.3" width="30.0" height="10.625" rx="3" fill="#d99353" transform="rotate(946 -58.0 40.3)" />
+<rect x="8.9" y="-73.4" width="30.0" height="10.625" rx="3" fill="#edcc8a" transform="rotate(989 15.9 -70.4)" />
+<use href="#leaf0" x="-37.5" y="-37.5" width="35.0" height="35.0" />
+<use href="#leaf0" x="25.0" y="12.5" width="35.0" height="35.0" />
+<use href="#leaf0" x="-12.5" y="50.0" width="35.0" height="35.0" />
+</g>
+<use href="#heart0" x="1014" y="975" width="34" height="34" fill="none" stroke="#eee7d6" stroke-width="4" /><text x="764" y="1291" font-size="26" font-weight="600">Penne pasta</text><rect x="746" y="1341" width="20" height="20" rx="5" fill="none" stroke="#9bba96" stroke-width="2" /><circle cx="756" cy="1351" r="5" fill="#9bba96" /><text x="777" y="1360" font-size="22" fill="#b8c2b5">Italian</text><text x="995" y="1360" font-size="22" fill="#e8c595">★ 4.5</text>
+</g><g transform="translate(0 0)"><rect x="1102" y="950" width="326" height="369" rx="30" fill="#374749" />
+<g transform="translate(1265 1102)"><circle r="125" fill="#121d1d" /><circle r="113.75" fill="#bac3b2" /><circle r="101.25" fill="#e1dcc5" /><circle r="88.75" fill="#a48247" />
+<circle cx="0.0" cy="0.0" r="10.625" fill="#e0b868" />
+<circle cx="-11.1" cy="10.2" r="10.625" fill="#866c41" />
+<circle cx="1.9" cy="-21.2" r="10.625" fill="#d39a54" />
+<circle cx="15.9" cy="20.7" r="10.625" fill="#e0b868" />
+<circle cx="-29.6" cy="-5.2" r="10.625" fill="#866c41" />
+<circle cx="28.4" cy="-18.1" r="10.625" fill="#d39a54" />
+<circle cx="-9.6" cy="35.6" r="10.625" fill="#e0b868" />
+<circle cx="-18.3" cy="-35.4" r="10.625" fill="#866c41" />
+<circle cx="40.0" cy="14.6" r="10.625" fill="#d39a54" />
+<circle cx="-41.8" cy="17.2" r="10.625" fill="#e0b868" />
+<circle cx="20.2" cy="-43.1" r="10.625" fill="#866c41" />
+<circle cx="14.9" cy="47.6" r="10.625" fill="#d39a54" />
+<circle cx="-45.1" cy="-26.2" r="10.625" fill="#e0b868" />
+<circle cx="53.0" cy="-11.6" r="10.625" fill="#866c41" />
+<circle cx="-32.4" cy="46.1" r="10.625" fill="#d39a54" />
+<circle cx="-7.5" cy="-57.8" r="10.625" fill="#e0b868" />
+<circle cx="46.0" cy="38.8" r="10.625" fill="#866c41" />
+<circle cx="-62.0" cy="2.5" r="10.625" fill="#d39a54" />
+<circle cx="45.3" cy="-45.0" r="10.625" fill="#e0b868" />
+<circle cx="-3.1" cy="65.5" r="10.625" fill="#866c41" />
+<circle cx="-43.1" cy="-51.7" r="10.625" fill="#d39a54" />
+<circle cx="68.4" cy="9.3" r="10.625" fill="#e0b868" />
+<circle cx="-58.0" cy="40.3" r="10.625" fill="#866c41" />
+<circle cx="15.9" cy="-70.4" r="10.625" fill="#d39a54" />
+<use href="#leaf0" x="-37.5" y="-37.5" width="35.0" height="35.0" />
+<use href="#leaf0" x="25.0" y="12.5" width="35.0" height="35.0" />
+<use href="#leaf0" x="-12.5" y="50.0" width="35.0" height="35.0" />
+</g>
+<use href="#heart0" x="1372" y="975" width="34" height="34" fill="#e8c595" stroke="#eee7d6" stroke-width="4" /><text x="1122" y="1291" font-size="26" font-weight="600">Paneer curry</text><rect x="1104" y="1341" width="20" height="20" rx="5" fill="none" stroke="#9bba96" stroke-width="2" /><circle cx="1114" cy="1351" r="5" fill="#9bba96" /><text x="1135" y="1360" font-size="22" fill="#b8c2b5">North Indian</text><text x="1353" y="1360" font-size="22" fill="#e8c595">★ 4.5</text>
+</g><path d="M28 1389H1426" stroke="#35423c" />
+<g fill="none" stroke="#89968e" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+<path d="M161 1435V1414L178 1401L195 1414V1435H184V1422H173V1435Z" fill="#c7d6b8" stroke="#c7d6b8" />
+<circle cx="543" cy="1419" r="20" stroke="#a7bba1" stroke-width="6" />
+<circle cx="907" cy="1409" r="10" /><path d="M888 1437C888 1418 926 1418 926 1437Z" />
+<rect x="1248" y="1404" width="26" height="31" rx="5" /><path d="M1245 1403H1277M1259 1398H1265" /><rect x="1277" y="1411" width="23" height="16" rx="3" /><path d="M1274 1436H1303V1426M1286 1431H1290" />
+</g>
+<g text-anchor="middle" font-size="22"><text x="178" y="1474" fill="#d4dfc2">Home</text><text x="543" y="1474" fill="#89968e">up.ai</text><text x="907" y="1474" fill="#89968e">Account</text><text x="1275" y="1474" fill="#89968e">My Devices</text></g>
+<rect x="103" y="1495" width="150" height="5" rx="2.5" fill="#e8c595" />
+</g></g><g class="frame" style="animation-delay:-3.0s"><title xmlns="http://www.w3.org/2000/svg" id="title">Upliance app — rotating discovery, frame 2</title><desc xmlns="http://www.w3.org/2000/svg" id="desc">Minimal vector recreation of the cooking app home screen in charcoal, sage, cream and amber. Includes discovery cards, eight meal categories, four recipe cards and bottom navigation.</desc>
+<defs xmlns="http://www.w3.org/2000/svg">
+<symbol id="heart1" viewBox="0 0 100 100"><path d="M50 88C30 70 7 52 7 29C7 7 35 2 50 21C65 2 93 7 93 29C93 52 70 70 50 88Z" /></symbol>
+<symbol id="leaf1" viewBox="0 0 40 40"><path d="M8 32C0 9 18 4 34 5C34 24 26 36 8 32Z" fill="#8fae87" /><path d="M9 31L26 14" fill="none" stroke="#334e40" stroke-width="3" stroke-linecap="round" /></symbol>
+</defs>
+<rect xmlns="http://www.w3.org/2000/svg" width="1454" height="1510" rx="26" fill="#10181c" />
+<g xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, sans-serif" fill="#eee7d6">
+<text x="36" y="52" font-size="39" font-weight="600">Good Afternoon</text>
+<text x="36" y="97" font-size="27" fill="#a9b4aa">What are you cooking today?</text>
+<rect x="1182" y="22" width="236" height="70" rx="20" fill="none" stroke="#a8bfa7" stroke-width="2" />
+<text x="1211" y="67" font-size="29" fill="#c5d5ba">Explore</text><circle cx="1360" cy="49" r="12" fill="none" stroke="#c5d5ba" stroke-width="3" /><path d="M1369 58L1382 71" stroke="#c5d5ba" stroke-width="3" />
+<g transform="translate(28 122)"><rect width="683" height="305" rx="36" fill="#704b40" /><g opacity=".42"><use href="#heart1" x="427" y="39" width="230" height="230" fill="#e1b4a1" /></g><text x="48" y="149" font-size="36" font-weight="600">Most Favorited</text><text x="48" y="194" font-size="25" fill="#d2d9c9">150 recipes</text><path d="M48 211H180" stroke="#e8c595" stroke-width="4" stroke-linecap="round" /></g><g transform="translate(743 122)"><rect width="683" height="305" rx="36" fill="#4b5941" /><g opacity=".42"><circle cx="548" cy="151" r="85" fill="none" stroke="#c5d4ac" stroke-width="18" /><path d="M548 96V151L589 174" fill="none" stroke="#c5d4ac" stroke-width="15" stroke-linecap="round" /></g><text x="48" y="149" font-size="36" font-weight="600">Quick Meals</text><text x="48" y="194" font-size="25" fill="#d2d9c9">Under 30 minutes</text><path d="M48 211H180" stroke="#e8c595" stroke-width="4" stroke-linecap="round" /></g><circle cx="631" cy="460" r="7" fill="#485451" />
+<circle cx="663" cy="460" r="7" fill="#e8c595" />
+<circle cx="695" cy="460" r="7" fill="#485451" />
+<circle cx="727" cy="460" r="7" fill="#485451" />
+<circle cx="759" cy="460" r="7" fill="#485451" />
+<circle cx="791" cy="460" r="7" fill="#485451" />
+<circle cx="823" cy="460" r="7" fill="#485451" />
+<rect x="20" y="508" width="1414" height="319" rx="30" fill="#202d29" /><text x="44" y="560" font-size="31" font-weight="600">Wholesome Meals</text>
+<g transform="translate(103 660)"><circle r="69" fill="#121d1d" /><circle r="62.79" fill="#bac3b2" /><circle r="55.89" fill="#e1dcc5" /><circle r="48.989999999999995" fill="#b48b4d" />
+<circle cx="0.0" cy="0.0" r="5.865" fill="#e0b868" />
+<circle cx="-6.1" cy="5.6" r="5.865" fill="#866c41" />
+<circle cx="1.0" cy="-11.7" r="5.865" fill="#d39a54" />
+<circle cx="8.8" cy="11.4" r="5.865" fill="#e0b868" />
+<circle cx="-16.4" cy="-2.9" r="5.865" fill="#866c41" />
+<circle cx="15.7" cy="-10.0" r="5.865" fill="#d39a54" />
+<circle cx="-5.3" cy="19.7" r="5.865" fill="#e0b868" />
+<circle cx="-10.1" cy="-19.5" r="5.865" fill="#866c41" />
+<circle cx="22.1" cy="8.1" r="5.865" fill="#d39a54" />
+<circle cx="-23.0" cy="9.5" r="5.865" fill="#e0b868" />
+<circle cx="11.1" cy="-23.8" r="5.865" fill="#866c41" />
+<circle cx="8.2" cy="26.3" r="5.865" fill="#d39a54" />
+<circle cx="-24.9" cy="-14.4" r="5.865" fill="#e0b868" />
+<circle cx="29.3" cy="-6.4" r="5.865" fill="#866c41" />
+<circle cx="-17.9" cy="25.4" r="5.865" fill="#d39a54" />
+<circle cx="-4.1" cy="-31.9" r="5.865" fill="#e0b868" />
+<circle cx="25.4" cy="21.4" r="5.865" fill="#866c41" />
+<circle cx="-34.2" cy="1.4" r="5.865" fill="#d39a54" />
+<circle cx="25.0" cy="-24.9" r="5.865" fill="#e0b868" />
+<circle cx="-1.7" cy="36.2" r="5.865" fill="#866c41" />
+<circle cx="-23.8" cy="-28.6" r="5.865" fill="#d39a54" />
+<circle cx="37.7" cy="5.1" r="5.865" fill="#e0b868" />
+<circle cx="-32.0" cy="22.2" r="5.865" fill="#866c41" />
+<circle cx="8.8" cy="-38.9" r="5.865" fill="#d39a54" />
+<use href="#leaf1" x="-20.7" y="-20.7" width="19.32" height="19.32" />
+<use href="#leaf1" x="13.8" y="6.9" width="19.32" height="19.32" />
+<use href="#leaf1" x="-6.9" y="27.6" width="19.32" height="19.32" />
+</g>
+<text x="103" y="767" text-anchor="middle" font-size="25" fill="#c9cebf">Everyday</text>
+<text x="103" y="801" text-anchor="middle" font-size="25" fill="#c9cebf">Recipes</text>
+<g transform="translate(281 660)"><circle r="69" fill="#121d1d" /><circle r="62.79" fill="#bac3b2" /><circle r="55.89" fill="#e1dcc5" /><circle r="48.989999999999995" fill="#637954" />
+<circle cx="0.0" cy="31.7" r="15.18" fill="#d2bd83" stroke="#4b5b4d" stroke-width="2" />
+<circle cx="30.2" cy="9.8" r="15.18" fill="#8b9a65" stroke="#4b5b4d" stroke-width="2" />
+<circle cx="18.7" cy="-25.7" r="15.18" fill="#ae7147" stroke="#4b5b4d" stroke-width="2" />
+<circle cx="-18.7" cy="-25.7" r="15.18" fill="#d2bd83" stroke="#4b5b4d" stroke-width="2" />
+<circle cx="-30.2" cy="9.8" r="15.18" fill="#8b9a65" stroke="#4b5b4d" stroke-width="2" />
+<circle r="19.32" fill="#eee5c9" />
+</g>
+<text x="281" y="767" text-anchor="middle" font-size="25" fill="#c9cebf">Daily South</text>
+<text x="281" y="801" text-anchor="middle" font-size="25" fill="#c9cebf">Indian</text>
+<g transform="translate(459 660)"><circle r="69" fill="#121d1d" /><circle r="62.79" fill="#bac3b2" /><circle r="55.89" fill="#e1dcc5" /><circle r="48.989999999999995" fill="#aa7047" />
+<circle cx="0.0" cy="31.7" r="15.18" fill="#d2bd83" stroke="#4b5b4d" stroke-width="2" />
+<circle cx="30.2" cy="9.8" r="15.18" fill="#8b9a65" stroke="#4b5b4d" stroke-width="2" />
+<circle cx="18.7" cy="-25.7" r="15.18" fill="#ae7147" stroke="#4b5b4d" stroke-width="2" />
+<circle cx="-18.7" cy="-25.7" r="15.18" fill="#d2bd83" stroke="#4b5b4d" stroke-width="2" />
+<circle cx="-30.2" cy="9.8" r="15.18" fill="#8b9a65" stroke="#4b5b4d" stroke-width="2" />
+<circle r="19.32" fill="#eee5c9" />
+</g>
+<text x="459" y="767" text-anchor="middle" font-size="25" fill="#c9cebf">Daily North</text>
+<text x="459" y="801" text-anchor="middle" font-size="25" fill="#c9cebf">Indian</text>
+<g transform="translate(637 660)"><circle r="69" fill="#121d1d" /><circle r="62.79" fill="#bac3b2" /><circle r="55.89" fill="#e1dcc5" /><circle r="48.989999999999995" fill="#b66e42" />
+<rect x="-7.0" y="-3.0" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(0 0.0 0.0)" />
+<rect x="-13.1" y="2.6" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(43 -6.1 5.6)" />
+<rect x="-6.0" y="-14.7" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(86 1.0 -11.7)" />
+<rect x="1.8" y="8.4" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(129 8.8 11.4)" />
+<rect x="-23.4" y="-5.9" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(172 -16.4 -2.9)" />
+<rect x="8.7" y="-13.0" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(215 15.7 -10.0)" />
+<rect x="-12.3" y="16.7" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(258 -5.3 19.7)" />
+<rect x="-17.1" y="-22.5" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(301 -10.1 -19.5)" />
+<rect x="15.1" y="5.1" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(344 22.1 8.1)" />
+<rect x="-30.0" y="6.5" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(387 -23.0 9.5)" />
+<rect x="4.1" y="-26.8" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(430 11.1 -23.8)" />
+<rect x="1.2" y="23.3" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(473 8.2 26.3)" />
+<rect x="-31.9" y="-17.4" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(516 -24.9 -14.4)" />
+<rect x="22.3" y="-9.4" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(559 29.3 -6.4)" />
+<rect x="-24.9" y="22.4" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(602 -17.9 25.4)" />
+<rect x="-11.1" y="-34.9" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(645 -4.1 -31.9)" />
+<rect x="18.4" y="18.4" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(688 25.4 21.4)" />
+<rect x="-41.2" y="-1.6" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(731 -34.2 1.4)" />
+<rect x="18.0" y="-27.9" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(774 25.0 -24.9)" />
+<rect x="-8.7" y="33.2" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(817 -1.7 36.2)" />
+<rect x="-30.8" y="-31.6" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(860 -23.8 -28.6)" />
+<rect x="30.7" y="2.1" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(903 37.7 5.1)" />
+<rect x="-39.0" y="19.2" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(946 -32.0 22.2)" />
+<rect x="1.8" y="-41.9" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(989 8.8 -38.9)" />
+<use href="#leaf1" x="-20.7" y="-20.7" width="19.32" height="19.32" />
+<use href="#leaf1" x="13.8" y="6.9" width="19.32" height="19.32" />
+<use href="#leaf1" x="-6.9" y="27.6" width="19.32" height="19.32" />
+</g>
+<text x="637" y="767" text-anchor="middle" font-size="25" fill="#c9cebf">Pasta</text>
+<g transform="translate(815 660)"><circle r="69" fill="#121d1d" /><circle r="62.79" fill="#bac3b2" /><circle r="55.89" fill="#e1dcc5" /><circle r="48.989999999999995" fill="#c29959" />
+<rect x="-7.0" y="-3.0" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(0 0.0 0.0)" />
+<rect x="-13.1" y="2.6" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(43 -6.1 5.6)" />
+<rect x="-6.0" y="-14.7" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(86 1.0 -11.7)" />
+<rect x="1.8" y="8.4" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(129 8.8 11.4)" />
+<rect x="-23.4" y="-5.9" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(172 -16.4 -2.9)" />
+<rect x="8.7" y="-13.0" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(215 15.7 -10.0)" />
+<rect x="-12.3" y="16.7" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(258 -5.3 19.7)" />
+<rect x="-17.1" y="-22.5" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(301 -10.1 -19.5)" />
+<rect x="15.1" y="5.1" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(344 22.1 8.1)" />
+<rect x="-30.0" y="6.5" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(387 -23.0 9.5)" />
+<rect x="4.1" y="-26.8" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(430 11.1 -23.8)" />
+<rect x="1.2" y="23.3" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(473 8.2 26.3)" />
+<rect x="-31.9" y="-17.4" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(516 -24.9 -14.4)" />
+<rect x="22.3" y="-9.4" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(559 29.3 -6.4)" />
+<rect x="-24.9" y="22.4" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(602 -17.9 25.4)" />
+<rect x="-11.1" y="-34.9" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(645 -4.1 -31.9)" />
+<rect x="18.4" y="18.4" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(688 25.4 21.4)" />
+<rect x="-41.2" y="-1.6" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(731 -34.2 1.4)" />
+<rect x="18.0" y="-27.9" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(774 25.0 -24.9)" />
+<rect x="-8.7" y="33.2" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(817 -1.7 36.2)" />
+<rect x="-30.8" y="-31.6" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(860 -23.8 -28.6)" />
+<rect x="30.7" y="2.1" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(903 37.7 5.1)" />
+<rect x="-39.0" y="19.2" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(946 -32.0 22.2)" />
+<rect x="1.8" y="-41.9" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(989 8.8 -38.9)" />
+<use href="#leaf1" x="-20.7" y="-20.7" width="19.32" height="19.32" />
+<use href="#leaf1" x="13.8" y="6.9" width="19.32" height="19.32" />
+<use href="#leaf1" x="-6.9" y="27.6" width="19.32" height="19.32" />
+</g>
+<text x="815" y="767" text-anchor="middle" font-size="25" fill="#c9cebf">Noodles</text>
+<g transform="translate(993 660)"><circle r="69" fill="#121d1d" /><circle r="62.79" fill="#bac3b2" /><circle r="55.89" fill="#e1dcc5" /><circle r="48.989999999999995" fill="#d1b581" />
+<rect x="-7.0" y="-3.0" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(0 0.0 0.0)" />
+<rect x="-13.1" y="2.6" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(43 -6.1 5.6)" />
+<rect x="-6.0" y="-14.7" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(86 1.0 -11.7)" />
+<rect x="1.8" y="8.4" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(129 8.8 11.4)" />
+<rect x="-23.4" y="-5.9" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(172 -16.4 -2.9)" />
+<rect x="8.7" y="-13.0" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(215 15.7 -10.0)" />
+<rect x="-12.3" y="16.7" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(258 -5.3 19.7)" />
+<rect x="-17.1" y="-22.5" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(301 -10.1 -19.5)" />
+<rect x="15.1" y="5.1" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(344 22.1 8.1)" />
+<rect x="-30.0" y="6.5" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(387 -23.0 9.5)" />
+<rect x="4.1" y="-26.8" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(430 11.1 -23.8)" />
+<rect x="1.2" y="23.3" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(473 8.2 26.3)" />
+<rect x="-31.9" y="-17.4" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(516 -24.9 -14.4)" />
+<rect x="22.3" y="-9.4" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(559 29.3 -6.4)" />
+<rect x="-24.9" y="22.4" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(602 -17.9 25.4)" />
+<rect x="-11.1" y="-34.9" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(645 -4.1 -31.9)" />
+<rect x="18.4" y="18.4" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(688 25.4 21.4)" />
+<rect x="-41.2" y="-1.6" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(731 -34.2 1.4)" />
+<rect x="18.0" y="-27.9" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(774 25.0 -24.9)" />
+<rect x="-8.7" y="33.2" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(817 -1.7 36.2)" />
+<rect x="-30.8" y="-31.6" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(860 -23.8 -28.6)" />
+<rect x="30.7" y="2.1" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(903 37.7 5.1)" />
+<rect x="-39.0" y="19.2" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(946 -32.0 22.2)" />
+<rect x="1.8" y="-41.9" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(989 8.8 -38.9)" />
+<use href="#leaf1" x="-20.7" y="-20.7" width="19.32" height="19.32" />
+<use href="#leaf1" x="13.8" y="6.9" width="19.32" height="19.32" />
+<use href="#leaf1" x="-6.9" y="27.6" width="19.32" height="19.32" />
+</g>
+<text x="993" y="767" text-anchor="middle" font-size="25" fill="#c9cebf">Rice</text>
+<g transform="translate(1171 660)"><circle r="69" fill="#121d1d" /><circle r="62.79" fill="#bac3b2" /><circle r="55.89" fill="#e1dcc5" /><circle r="48.989999999999995" fill="#a48247" />
+<circle cx="0.0" cy="0.0" r="5.865" fill="#e0b868" />
+<circle cx="-6.1" cy="5.6" r="5.865" fill="#866c41" />
+<circle cx="1.0" cy="-11.7" r="5.865" fill="#d39a54" />
+<circle cx="8.8" cy="11.4" r="5.865" fill="#e0b868" />
+<circle cx="-16.4" cy="-2.9" r="5.865" fill="#866c41" />
+<circle cx="15.7" cy="-10.0" r="5.865" fill="#d39a54" />
+<circle cx="-5.3" cy="19.7" r="5.865" fill="#e0b868" />
+<circle cx="-10.1" cy="-19.5" r="5.865" fill="#866c41" />
+<circle cx="22.1" cy="8.1" r="5.865" fill="#d39a54" />
+<circle cx="-23.0" cy="9.5" r="5.865" fill="#e0b868" />
+<circle cx="11.1" cy="-23.8" r="5.865" fill="#866c41" />
+<circle cx="8.2" cy="26.3" r="5.865" fill="#d39a54" />
+<circle cx="-24.9" cy="-14.4" r="5.865" fill="#e0b868" />
+<circle cx="29.3" cy="-6.4" r="5.865" fill="#866c41" />
+<circle cx="-17.9" cy="25.4" r="5.865" fill="#d39a54" />
+<circle cx="-4.1" cy="-31.9" r="5.865" fill="#e0b868" />
+<circle cx="25.4" cy="21.4" r="5.865" fill="#866c41" />
+<circle cx="-34.2" cy="1.4" r="5.865" fill="#d39a54" />
+<circle cx="25.0" cy="-24.9" r="5.865" fill="#e0b868" />
+<circle cx="-1.7" cy="36.2" r="5.865" fill="#866c41" />
+<circle cx="-23.8" cy="-28.6" r="5.865" fill="#d39a54" />
+<circle cx="37.7" cy="5.1" r="5.865" fill="#e0b868" />
+<circle cx="-32.0" cy="22.2" r="5.865" fill="#866c41" />
+<circle cx="8.8" cy="-38.9" r="5.865" fill="#d39a54" />
+<use href="#leaf1" x="-20.7" y="-20.7" width="19.32" height="19.32" />
+<use href="#leaf1" x="13.8" y="6.9" width="19.32" height="19.32" />
+<use href="#leaf1" x="-6.9" y="27.6" width="19.32" height="19.32" />
+</g>
+<text x="1171" y="767" text-anchor="middle" font-size="25" fill="#c9cebf">Potato</text>
+<text x="1171" y="801" text-anchor="middle" font-size="25" fill="#c9cebf">Perfection</text>
+<g transform="translate(1349 660)"><circle r="69" fill="#121d1d" /><circle r="62.79" fill="#bac3b2" /><circle r="55.89" fill="#e1dcc5" /><circle r="48.989999999999995" fill="#bfa578" />
+<circle cx="0.0" cy="0.0" r="5.865" fill="#e0b868" />
+<circle cx="-6.1" cy="5.6" r="5.865" fill="#866c41" />
+<circle cx="1.0" cy="-11.7" r="5.865" fill="#d39a54" />
+<circle cx="8.8" cy="11.4" r="5.865" fill="#e0b868" />
+<circle cx="-16.4" cy="-2.9" r="5.865" fill="#866c41" />
+<circle cx="15.7" cy="-10.0" r="5.865" fill="#d39a54" />
+<circle cx="-5.3" cy="19.7" r="5.865" fill="#e0b868" />
+<circle cx="-10.1" cy="-19.5" r="5.865" fill="#866c41" />
+<circle cx="22.1" cy="8.1" r="5.865" fill="#d39a54" />
+<circle cx="-23.0" cy="9.5" r="5.865" fill="#e0b868" />
+<circle cx="11.1" cy="-23.8" r="5.865" fill="#866c41" />
+<circle cx="8.2" cy="26.3" r="5.865" fill="#d39a54" />
+<circle cx="-24.9" cy="-14.4" r="5.865" fill="#e0b868" />
+<circle cx="29.3" cy="-6.4" r="5.865" fill="#866c41" />
+<circle cx="-17.9" cy="25.4" r="5.865" fill="#d39a54" />
+<circle cx="-4.1" cy="-31.9" r="5.865" fill="#e0b868" />
+<circle cx="25.4" cy="21.4" r="5.865" fill="#866c41" />
+<circle cx="-34.2" cy="1.4" r="5.865" fill="#d39a54" />
+<circle cx="25.0" cy="-24.9" r="5.865" fill="#e0b868" />
+<circle cx="-1.7" cy="36.2" r="5.865" fill="#866c41" />
+<circle cx="-23.8" cy="-28.6" r="5.865" fill="#d39a54" />
+<circle cx="37.7" cy="5.1" r="5.865" fill="#e0b868" />
+<circle cx="-32.0" cy="22.2" r="5.865" fill="#866c41" />
+<circle cx="8.8" cy="-38.9" r="5.865" fill="#d39a54" />
+<use href="#leaf1" x="-20.7" y="-20.7" width="19.32" height="19.32" />
+<use href="#leaf1" x="13.8" y="6.9" width="19.32" height="19.32" />
+<use href="#leaf1" x="-6.9" y="27.6" width="19.32" height="19.32" />
+</g>
+<text x="1349" y="767" text-anchor="middle" font-size="25" fill="#c9cebf">Healthy</text>
+<text x="1349" y="801" text-anchor="middle" font-size="25" fill="#c9cebf">Grains</text>
+<text x="28" y="917" font-size="31" font-weight="600">Most Cooked on Upliance</text><text x="1301" y="917" font-size="26" fill="#e8c595">See all</text><path d="M1403 899L1414 909L1403 919" fill="none" stroke="#e8c595" stroke-width="3" />
+<g transform="translate(-358 0)"><rect x="386" y="950" width="326" height="369" rx="30" fill="#3b4138" />
+<g transform="translate(549 1102)"><circle r="125" fill="#121d1d" /><circle r="113.75" fill="#bac3b2" /><circle r="101.25" fill="#e1dcc5" /><circle r="88.75" fill="#b48b4d" />
+<ellipse rx="76.25" ry="70.0" fill="#e0cda4" /><path d="M-50.0 0Q0 -37.5 50.0 0" fill="none" stroke="#c5af86" stroke-width="3" />
+</g>
+<use href="#heart1" x="656" y="975" width="34" height="34" fill="none" stroke="#eee7d6" stroke-width="4" /><text x="406" y="1291" font-size="26" font-weight="600">Fresh dough</text><rect x="388" y="1341" width="20" height="20" rx="5" fill="none" stroke="#9bba96" stroke-width="2" /><circle cx="398" cy="1351" r="5" fill="#9bba96" /><text x="419" y="1360" font-size="22" fill="#b8c2b5">Indian</text><text x="637" y="1360" font-size="22" fill="#e8c595">★ 4.6</text>
+</g><g transform="translate(-358 0)"><rect x="744" y="950" width="326" height="369" rx="30" fill="#3c3730" />
+<g transform="translate(907 1102)"><circle r="125" fill="#121d1d" /><circle r="113.75" fill="#bac3b2" /><circle r="101.25" fill="#e1dcc5" /><circle r="88.75" fill="#b66e42" />
+<rect x="-7.0" y="-3.0" width="30.0" height="10.625" rx="3" fill="#e6b46b" transform="rotate(0 0.0 0.0)" />
+<rect x="-18.1" y="7.2" width="30.0" height="10.625" rx="3" fill="#d99353" transform="rotate(43 -11.1 10.2)" />
+<rect x="-5.1" y="-24.2" width="30.0" height="10.625" rx="3" fill="#edcc8a" transform="rotate(86 1.9 -21.2)" />
+<rect x="8.9" y="17.7" width="30.0" height="10.625" rx="3" fill="#e6b46b" transform="rotate(129 15.9 20.7)" />
+<rect x="-36.6" y="-8.2" width="30.0" height="10.625" rx="3" fill="#d99353" transform="rotate(172 -29.6 -5.2)" />
+<rect x="21.4" y="-21.1" width="30.0" height="10.625" rx="3" fill="#edcc8a" transform="rotate(215 28.4 -18.1)" />
+<rect x="-16.6" y="32.6" width="30.0" height="10.625" rx="3" fill="#e6b46b" transform="rotate(258 -9.6 35.6)" />
+<rect x="-25.3" y="-38.4" width="30.0" height="10.625" rx="3" fill="#d99353" transform="rotate(301 -18.3 -35.4)" />
+<rect x="33.0" y="11.6" width="30.0" height="10.625" rx="3" fill="#edcc8a" transform="rotate(344 40.0 14.6)" />
+<rect x="-48.8" y="14.2" width="30.0" height="10.625" rx="3" fill="#e6b46b" transform="rotate(387 -41.8 17.2)" />
+<rect x="13.2" y="-46.1" width="30.0" height="10.625" rx="3" fill="#d99353" transform="rotate(430 20.2 -43.1)" />
+<rect x="7.9" y="44.6" width="30.0" height="10.625" rx="3" fill="#edcc8a" transform="rotate(473 14.9 47.6)" />
+<rect x="-52.1" y="-29.2" width="30.0" height="10.625" rx="3" fill="#e6b46b" transform="rotate(516 -45.1 -26.2)" />
+<rect x="46.0" y="-14.6" width="30.0" height="10.625" rx="3" fill="#d99353" transform="rotate(559 53.0 -11.6)" />
+<rect x="-39.4" y="43.1" width="30.0" height="10.625" rx="3" fill="#edcc8a" transform="rotate(602 -32.4 46.1)" />
+<rect x="-14.5" y="-60.8" width="30.0" height="10.625" rx="3" fill="#e6b46b" transform="rotate(645 -7.5 -57.8)" />
+<rect x="39.0" y="35.8" width="30.0" height="10.625" rx="3" fill="#d99353" transform="rotate(688 46.0 38.8)" />
+<rect x="-69.0" y="-0.5" width="30.0" height="10.625" rx="3" fill="#edcc8a" transform="rotate(731 -62.0 2.5)" />
+<rect x="38.3" y="-48.0" width="30.0" height="10.625" rx="3" fill="#e6b46b" transform="rotate(774 45.3 -45.0)" />
+<rect x="-10.1" y="62.5" width="30.0" height="10.625" rx="3" fill="#d99353" transform="rotate(817 -3.1 65.5)" />
+<rect x="-50.1" y="-54.7" width="30.0" height="10.625" rx="3" fill="#edcc8a" transform="rotate(860 -43.1 -51.7)" />
+<rect x="61.4" y="6.3" width="30.0" height="10.625" rx="3" fill="#e6b46b" transform="rotate(903 68.4 9.3)" />
+<rect x="-65.0" y="37.3" width="30.0" height="10.625" rx="3" fill="#d99353" transform="rotate(946 -58.0 40.3)" />
+<rect x="8.9" y="-73.4" width="30.0" height="10.625" rx="3" fill="#edcc8a" transform="rotate(989 15.9 -70.4)" />
+<use href="#leaf1" x="-37.5" y="-37.5" width="35.0" height="35.0" />
+<use href="#leaf1" x="25.0" y="12.5" width="35.0" height="35.0" />
+<use href="#leaf1" x="-12.5" y="50.0" width="35.0" height="35.0" />
+</g>
+<use href="#heart1" x="1014" y="975" width="34" height="34" fill="none" stroke="#eee7d6" stroke-width="4" /><text x="764" y="1291" font-size="26" font-weight="600">Penne pasta</text><rect x="746" y="1341" width="20" height="20" rx="5" fill="none" stroke="#9bba96" stroke-width="2" /><circle cx="756" cy="1351" r="5" fill="#9bba96" /><text x="777" y="1360" font-size="22" fill="#b8c2b5">Italian</text><text x="995" y="1360" font-size="22" fill="#e8c595">★ 4.5</text>
+</g><g transform="translate(-358 0)"><rect x="1102" y="950" width="326" height="369" rx="30" fill="#374749" />
+<g transform="translate(1265 1102)"><circle r="125" fill="#121d1d" /><circle r="113.75" fill="#bac3b2" /><circle r="101.25" fill="#e1dcc5" /><circle r="88.75" fill="#a48247" />
+<circle cx="0.0" cy="0.0" r="10.625" fill="#e0b868" />
+<circle cx="-11.1" cy="10.2" r="10.625" fill="#866c41" />
+<circle cx="1.9" cy="-21.2" r="10.625" fill="#d39a54" />
+<circle cx="15.9" cy="20.7" r="10.625" fill="#e0b868" />
+<circle cx="-29.6" cy="-5.2" r="10.625" fill="#866c41" />
+<circle cx="28.4" cy="-18.1" r="10.625" fill="#d39a54" />
+<circle cx="-9.6" cy="35.6" r="10.625" fill="#e0b868" />
+<circle cx="-18.3" cy="-35.4" r="10.625" fill="#866c41" />
+<circle cx="40.0" cy="14.6" r="10.625" fill="#d39a54" />
+<circle cx="-41.8" cy="17.2" r="10.625" fill="#e0b868" />
+<circle cx="20.2" cy="-43.1" r="10.625" fill="#866c41" />
+<circle cx="14.9" cy="47.6" r="10.625" fill="#d39a54" />
+<circle cx="-45.1" cy="-26.2" r="10.625" fill="#e0b868" />
+<circle cx="53.0" cy="-11.6" r="10.625" fill="#866c41" />
+<circle cx="-32.4" cy="46.1" r="10.625" fill="#d39a54" />
+<circle cx="-7.5" cy="-57.8" r="10.625" fill="#e0b868" />
+<circle cx="46.0" cy="38.8" r="10.625" fill="#866c41" />
+<circle cx="-62.0" cy="2.5" r="10.625" fill="#d39a54" />
+<circle cx="45.3" cy="-45.0" r="10.625" fill="#e0b868" />
+<circle cx="-3.1" cy="65.5" r="10.625" fill="#866c41" />
+<circle cx="-43.1" cy="-51.7" r="10.625" fill="#d39a54" />
+<circle cx="68.4" cy="9.3" r="10.625" fill="#e0b868" />
+<circle cx="-58.0" cy="40.3" r="10.625" fill="#866c41" />
+<circle cx="15.9" cy="-70.4" r="10.625" fill="#d39a54" />
+<use href="#leaf1" x="-37.5" y="-37.5" width="35.0" height="35.0" />
+<use href="#leaf1" x="25.0" y="12.5" width="35.0" height="35.0" />
+<use href="#leaf1" x="-12.5" y="50.0" width="35.0" height="35.0" />
+</g>
+<use href="#heart1" x="1372" y="975" width="34" height="34" fill="#e8c595" stroke="#eee7d6" stroke-width="4" /><text x="1122" y="1291" font-size="26" font-weight="600">Paneer curry</text><rect x="1104" y="1341" width="20" height="20" rx="5" fill="none" stroke="#9bba96" stroke-width="2" /><circle cx="1114" cy="1351" r="5" fill="#9bba96" /><text x="1135" y="1360" font-size="22" fill="#b8c2b5">North Indian</text><text x="1353" y="1360" font-size="22" fill="#e8c595">★ 4.5</text>
+</g><g transform="translate(1074 0)"><rect x="28" y="950" width="326" height="369" rx="30" fill="#30413b" />
+<g transform="translate(191 1102)"><circle r="125" fill="#121d1d" /><circle r="113.75" fill="#bac3b2" /><circle r="101.25" fill="#e1dcc5" /><circle r="88.75" fill="#b48b4d" />
+<circle cx="0.0" cy="0.0" r="10.625" fill="#e0b868" />
+<circle cx="-11.1" cy="10.2" r="10.625" fill="#866c41" />
+<circle cx="1.9" cy="-21.2" r="10.625" fill="#d39a54" />
+<circle cx="15.9" cy="20.7" r="10.625" fill="#e0b868" />
+<circle cx="-29.6" cy="-5.2" r="10.625" fill="#866c41" />
+<circle cx="28.4" cy="-18.1" r="10.625" fill="#d39a54" />
+<circle cx="-9.6" cy="35.6" r="10.625" fill="#e0b868" />
+<circle cx="-18.3" cy="-35.4" r="10.625" fill="#866c41" />
+<circle cx="40.0" cy="14.6" r="10.625" fill="#d39a54" />
+<circle cx="-41.8" cy="17.2" r="10.625" fill="#e0b868" />
+<circle cx="20.2" cy="-43.1" r="10.625" fill="#866c41" />
+<circle cx="14.9" cy="47.6" r="10.625" fill="#d39a54" />
+<circle cx="-45.1" cy="-26.2" r="10.625" fill="#e0b868" />
+<circle cx="53.0" cy="-11.6" r="10.625" fill="#866c41" />
+<circle cx="-32.4" cy="46.1" r="10.625" fill="#d39a54" />
+<circle cx="-7.5" cy="-57.8" r="10.625" fill="#e0b868" />
+<circle cx="46.0" cy="38.8" r="10.625" fill="#866c41" />
+<circle cx="-62.0" cy="2.5" r="10.625" fill="#d39a54" />
+<circle cx="45.3" cy="-45.0" r="10.625" fill="#e0b868" />
+<circle cx="-3.1" cy="65.5" r="10.625" fill="#866c41" />
+<circle cx="-43.1" cy="-51.7" r="10.625" fill="#d39a54" />
+<circle cx="68.4" cy="9.3" r="10.625" fill="#e0b868" />
+<circle cx="-58.0" cy="40.3" r="10.625" fill="#866c41" />
+<circle cx="15.9" cy="-70.4" r="10.625" fill="#d39a54" />
+<use href="#leaf1" x="-37.5" y="-37.5" width="35.0" height="35.0" />
+<use href="#leaf1" x="25.0" y="12.5" width="35.0" height="35.0" />
+<use href="#leaf1" x="-12.5" y="50.0" width="35.0" height="35.0" />
+</g>
+<use href="#heart1" x="298" y="975" width="34" height="34" fill="#e8c595" stroke="#eee7d6" stroke-width="4" /><text x="48" y="1291" font-size="26" font-weight="600">Chole</text><rect x="30" y="1341" width="20" height="20" rx="5" fill="none" stroke="#9bba96" stroke-width="2" /><circle cx="40" cy="1351" r="5" fill="#9bba96" /><text x="61" y="1360" font-size="22" fill="#b8c2b5">North Indian</text><text x="279" y="1360" font-size="22" fill="#e8c595">★ 4.5</text>
+</g><path d="M28 1389H1426" stroke="#35423c" />
+<g fill="none" stroke="#89968e" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+<path d="M161 1435V1414L178 1401L195 1414V1435H184V1422H173V1435Z" fill="#c7d6b8" stroke="#c7d6b8" />
+<circle cx="543" cy="1419" r="20" stroke="#a7bba1" stroke-width="6" />
+<circle cx="907" cy="1409" r="10" /><path d="M888 1437C888 1418 926 1418 926 1437Z" />
+<rect x="1248" y="1404" width="26" height="31" rx="5" /><path d="M1245 1403H1277M1259 1398H1265" /><rect x="1277" y="1411" width="23" height="16" rx="3" /><path d="M1274 1436H1303V1426M1286 1431H1290" />
+</g>
+<g text-anchor="middle" font-size="22"><text x="178" y="1474" fill="#d4dfc2">Home</text><text x="543" y="1474" fill="#89968e">up.ai</text><text x="907" y="1474" fill="#89968e">Account</text><text x="1275" y="1474" fill="#89968e">My Devices</text></g>
+<rect x="103" y="1495" width="150" height="5" rx="2.5" fill="#e8c595" />
+</g></g><g class="frame" style="animation-delay:-1.5s"><title xmlns="http://www.w3.org/2000/svg" id="title">Upliance app — rotating discovery, frame 3</title><desc xmlns="http://www.w3.org/2000/svg" id="desc">Minimal vector recreation of the cooking app home screen in charcoal, sage, cream and amber. Includes discovery cards, eight meal categories, four recipe cards and bottom navigation.</desc>
+<defs xmlns="http://www.w3.org/2000/svg">
+<symbol id="heart2" viewBox="0 0 100 100"><path d="M50 88C30 70 7 52 7 29C7 7 35 2 50 21C65 2 93 7 93 29C93 52 70 70 50 88Z" /></symbol>
+<symbol id="leaf2" viewBox="0 0 40 40"><path d="M8 32C0 9 18 4 34 5C34 24 26 36 8 32Z" fill="#8fae87" /><path d="M9 31L26 14" fill="none" stroke="#334e40" stroke-width="3" stroke-linecap="round" /></symbol>
+</defs>
+<rect xmlns="http://www.w3.org/2000/svg" width="1454" height="1510" rx="26" fill="#10181c" />
+<g xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, sans-serif" fill="#eee7d6">
+<text x="36" y="52" font-size="39" font-weight="600">Good Afternoon</text>
+<text x="36" y="97" font-size="27" fill="#a9b4aa">What are you cooking today?</text>
+<rect x="1182" y="22" width="236" height="70" rx="20" fill="none" stroke="#a8bfa7" stroke-width="2" />
+<text x="1211" y="67" font-size="29" fill="#c5d5ba">Explore</text><circle cx="1360" cy="49" r="12" fill="none" stroke="#c5d5ba" stroke-width="3" /><path d="M1369 58L1382 71" stroke="#c5d5ba" stroke-width="3" />
+<g transform="translate(28 122)"><rect width="683" height="305" rx="36" fill="#4b5941" /><g opacity=".42"><circle cx="548" cy="151" r="85" fill="none" stroke="#c5d4ac" stroke-width="18" /><path d="M548 96V151L589 174" fill="none" stroke="#c5d4ac" stroke-width="15" stroke-linecap="round" /></g><text x="48" y="149" font-size="36" font-weight="600">Quick Meals</text><text x="48" y="194" font-size="25" fill="#d2d9c9">Under 30 minutes</text><path d="M48 211H180" stroke="#e8c595" stroke-width="4" stroke-linecap="round" /></g><g transform="translate(743 122)"><rect width="683" height="305" rx="36" fill="#324b50" /><g opacity=".42"><path d="M562 85A84 84 0 1 1 479 168" fill="none" stroke="#b3c7b4" stroke-width="21" /><path d="M571 37L516 88L571 138Z" fill="#b3c7b4" /></g><text x="48" y="149" font-size="36" font-weight="600">High Repeat</text><text x="48" y="194" font-size="25" fill="#d2d9c9">78 recipes</text><path d="M48 211H180" stroke="#e8c595" stroke-width="4" stroke-linecap="round" /></g><circle cx="631" cy="460" r="7" fill="#485451" />
+<circle cx="663" cy="460" r="7" fill="#485451" />
+<circle cx="695" cy="460" r="7" fill="#e8c595" />
+<circle cx="727" cy="460" r="7" fill="#485451" />
+<circle cx="759" cy="460" r="7" fill="#485451" />
+<circle cx="791" cy="460" r="7" fill="#485451" />
+<circle cx="823" cy="460" r="7" fill="#485451" />
+<rect x="20" y="508" width="1414" height="319" rx="30" fill="#202d29" /><text x="44" y="560" font-size="31" font-weight="600">Wholesome Meals</text>
+<g transform="translate(103 660)"><circle r="69" fill="#121d1d" /><circle r="62.79" fill="#bac3b2" /><circle r="55.89" fill="#e1dcc5" /><circle r="48.989999999999995" fill="#b48b4d" />
+<circle cx="0.0" cy="0.0" r="5.865" fill="#e0b868" />
+<circle cx="-6.1" cy="5.6" r="5.865" fill="#866c41" />
+<circle cx="1.0" cy="-11.7" r="5.865" fill="#d39a54" />
+<circle cx="8.8" cy="11.4" r="5.865" fill="#e0b868" />
+<circle cx="-16.4" cy="-2.9" r="5.865" fill="#866c41" />
+<circle cx="15.7" cy="-10.0" r="5.865" fill="#d39a54" />
+<circle cx="-5.3" cy="19.7" r="5.865" fill="#e0b868" />
+<circle cx="-10.1" cy="-19.5" r="5.865" fill="#866c41" />
+<circle cx="22.1" cy="8.1" r="5.865" fill="#d39a54" />
+<circle cx="-23.0" cy="9.5" r="5.865" fill="#e0b868" />
+<circle cx="11.1" cy="-23.8" r="5.865" fill="#866c41" />
+<circle cx="8.2" cy="26.3" r="5.865" fill="#d39a54" />
+<circle cx="-24.9" cy="-14.4" r="5.865" fill="#e0b868" />
+<circle cx="29.3" cy="-6.4" r="5.865" fill="#866c41" />
+<circle cx="-17.9" cy="25.4" r="5.865" fill="#d39a54" />
+<circle cx="-4.1" cy="-31.9" r="5.865" fill="#e0b868" />
+<circle cx="25.4" cy="21.4" r="5.865" fill="#866c41" />
+<circle cx="-34.2" cy="1.4" r="5.865" fill="#d39a54" />
+<circle cx="25.0" cy="-24.9" r="5.865" fill="#e0b868" />
+<circle cx="-1.7" cy="36.2" r="5.865" fill="#866c41" />
+<circle cx="-23.8" cy="-28.6" r="5.865" fill="#d39a54" />
+<circle cx="37.7" cy="5.1" r="5.865" fill="#e0b868" />
+<circle cx="-32.0" cy="22.2" r="5.865" fill="#866c41" />
+<circle cx="8.8" cy="-38.9" r="5.865" fill="#d39a54" />
+<use href="#leaf2" x="-20.7" y="-20.7" width="19.32" height="19.32" />
+<use href="#leaf2" x="13.8" y="6.9" width="19.32" height="19.32" />
+<use href="#leaf2" x="-6.9" y="27.6" width="19.32" height="19.32" />
+</g>
+<text x="103" y="767" text-anchor="middle" font-size="25" fill="#c9cebf">Everyday</text>
+<text x="103" y="801" text-anchor="middle" font-size="25" fill="#c9cebf">Recipes</text>
+<g transform="translate(281 660)"><circle r="69" fill="#121d1d" /><circle r="62.79" fill="#bac3b2" /><circle r="55.89" fill="#e1dcc5" /><circle r="48.989999999999995" fill="#637954" />
+<circle cx="0.0" cy="31.7" r="15.18" fill="#d2bd83" stroke="#4b5b4d" stroke-width="2" />
+<circle cx="30.2" cy="9.8" r="15.18" fill="#8b9a65" stroke="#4b5b4d" stroke-width="2" />
+<circle cx="18.7" cy="-25.7" r="15.18" fill="#ae7147" stroke="#4b5b4d" stroke-width="2" />
+<circle cx="-18.7" cy="-25.7" r="15.18" fill="#d2bd83" stroke="#4b5b4d" stroke-width="2" />
+<circle cx="-30.2" cy="9.8" r="15.18" fill="#8b9a65" stroke="#4b5b4d" stroke-width="2" />
+<circle r="19.32" fill="#eee5c9" />
+</g>
+<text x="281" y="767" text-anchor="middle" font-size="25" fill="#c9cebf">Daily South</text>
+<text x="281" y="801" text-anchor="middle" font-size="25" fill="#c9cebf">Indian</text>
+<g transform="translate(459 660)"><circle r="69" fill="#121d1d" /><circle r="62.79" fill="#bac3b2" /><circle r="55.89" fill="#e1dcc5" /><circle r="48.989999999999995" fill="#aa7047" />
+<circle cx="0.0" cy="31.7" r="15.18" fill="#d2bd83" stroke="#4b5b4d" stroke-width="2" />
+<circle cx="30.2" cy="9.8" r="15.18" fill="#8b9a65" stroke="#4b5b4d" stroke-width="2" />
+<circle cx="18.7" cy="-25.7" r="15.18" fill="#ae7147" stroke="#4b5b4d" stroke-width="2" />
+<circle cx="-18.7" cy="-25.7" r="15.18" fill="#d2bd83" stroke="#4b5b4d" stroke-width="2" />
+<circle cx="-30.2" cy="9.8" r="15.18" fill="#8b9a65" stroke="#4b5b4d" stroke-width="2" />
+<circle r="19.32" fill="#eee5c9" />
+</g>
+<text x="459" y="767" text-anchor="middle" font-size="25" fill="#c9cebf">Daily North</text>
+<text x="459" y="801" text-anchor="middle" font-size="25" fill="#c9cebf">Indian</text>
+<g transform="translate(637 660)"><circle r="69" fill="#121d1d" /><circle r="62.79" fill="#bac3b2" /><circle r="55.89" fill="#e1dcc5" /><circle r="48.989999999999995" fill="#b66e42" />
+<rect x="-7.0" y="-3.0" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(0 0.0 0.0)" />
+<rect x="-13.1" y="2.6" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(43 -6.1 5.6)" />
+<rect x="-6.0" y="-14.7" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(86 1.0 -11.7)" />
+<rect x="1.8" y="8.4" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(129 8.8 11.4)" />
+<rect x="-23.4" y="-5.9" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(172 -16.4 -2.9)" />
+<rect x="8.7" y="-13.0" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(215 15.7 -10.0)" />
+<rect x="-12.3" y="16.7" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(258 -5.3 19.7)" />
+<rect x="-17.1" y="-22.5" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(301 -10.1 -19.5)" />
+<rect x="15.1" y="5.1" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(344 22.1 8.1)" />
+<rect x="-30.0" y="6.5" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(387 -23.0 9.5)" />
+<rect x="4.1" y="-26.8" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(430 11.1 -23.8)" />
+<rect x="1.2" y="23.3" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(473 8.2 26.3)" />
+<rect x="-31.9" y="-17.4" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(516 -24.9 -14.4)" />
+<rect x="22.3" y="-9.4" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(559 29.3 -6.4)" />
+<rect x="-24.9" y="22.4" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(602 -17.9 25.4)" />
+<rect x="-11.1" y="-34.9" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(645 -4.1 -31.9)" />
+<rect x="18.4" y="18.4" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(688 25.4 21.4)" />
+<rect x="-41.2" y="-1.6" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(731 -34.2 1.4)" />
+<rect x="18.0" y="-27.9" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(774 25.0 -24.9)" />
+<rect x="-8.7" y="33.2" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(817 -1.7 36.2)" />
+<rect x="-30.8" y="-31.6" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(860 -23.8 -28.6)" />
+<rect x="30.7" y="2.1" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(903 37.7 5.1)" />
+<rect x="-39.0" y="19.2" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(946 -32.0 22.2)" />
+<rect x="1.8" y="-41.9" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(989 8.8 -38.9)" />
+<use href="#leaf2" x="-20.7" y="-20.7" width="19.32" height="19.32" />
+<use href="#leaf2" x="13.8" y="6.9" width="19.32" height="19.32" />
+<use href="#leaf2" x="-6.9" y="27.6" width="19.32" height="19.32" />
+</g>
+<text x="637" y="767" text-anchor="middle" font-size="25" fill="#c9cebf">Pasta</text>
+<g transform="translate(815 660)"><circle r="69" fill="#121d1d" /><circle r="62.79" fill="#bac3b2" /><circle r="55.89" fill="#e1dcc5" /><circle r="48.989999999999995" fill="#c29959" />
+<rect x="-7.0" y="-3.0" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(0 0.0 0.0)" />
+<rect x="-13.1" y="2.6" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(43 -6.1 5.6)" />
+<rect x="-6.0" y="-14.7" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(86 1.0 -11.7)" />
+<rect x="1.8" y="8.4" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(129 8.8 11.4)" />
+<rect x="-23.4" y="-5.9" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(172 -16.4 -2.9)" />
+<rect x="8.7" y="-13.0" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(215 15.7 -10.0)" />
+<rect x="-12.3" y="16.7" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(258 -5.3 19.7)" />
+<rect x="-17.1" y="-22.5" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(301 -10.1 -19.5)" />
+<rect x="15.1" y="5.1" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(344 22.1 8.1)" />
+<rect x="-30.0" y="6.5" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(387 -23.0 9.5)" />
+<rect x="4.1" y="-26.8" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(430 11.1 -23.8)" />
+<rect x="1.2" y="23.3" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(473 8.2 26.3)" />
+<rect x="-31.9" y="-17.4" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(516 -24.9 -14.4)" />
+<rect x="22.3" y="-9.4" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(559 29.3 -6.4)" />
+<rect x="-24.9" y="22.4" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(602 -17.9 25.4)" />
+<rect x="-11.1" y="-34.9" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(645 -4.1 -31.9)" />
+<rect x="18.4" y="18.4" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(688 25.4 21.4)" />
+<rect x="-41.2" y="-1.6" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(731 -34.2 1.4)" />
+<rect x="18.0" y="-27.9" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(774 25.0 -24.9)" />
+<rect x="-8.7" y="33.2" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(817 -1.7 36.2)" />
+<rect x="-30.8" y="-31.6" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(860 -23.8 -28.6)" />
+<rect x="30.7" y="2.1" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(903 37.7 5.1)" />
+<rect x="-39.0" y="19.2" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(946 -32.0 22.2)" />
+<rect x="1.8" y="-41.9" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(989 8.8 -38.9)" />
+<use href="#leaf2" x="-20.7" y="-20.7" width="19.32" height="19.32" />
+<use href="#leaf2" x="13.8" y="6.9" width="19.32" height="19.32" />
+<use href="#leaf2" x="-6.9" y="27.6" width="19.32" height="19.32" />
+</g>
+<text x="815" y="767" text-anchor="middle" font-size="25" fill="#c9cebf">Noodles</text>
+<g transform="translate(993 660)"><circle r="69" fill="#121d1d" /><circle r="62.79" fill="#bac3b2" /><circle r="55.89" fill="#e1dcc5" /><circle r="48.989999999999995" fill="#d1b581" />
+<rect x="-7.0" y="-3.0" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(0 0.0 0.0)" />
+<rect x="-13.1" y="2.6" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(43 -6.1 5.6)" />
+<rect x="-6.0" y="-14.7" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(86 1.0 -11.7)" />
+<rect x="1.8" y="8.4" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(129 8.8 11.4)" />
+<rect x="-23.4" y="-5.9" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(172 -16.4 -2.9)" />
+<rect x="8.7" y="-13.0" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(215 15.7 -10.0)" />
+<rect x="-12.3" y="16.7" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(258 -5.3 19.7)" />
+<rect x="-17.1" y="-22.5" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(301 -10.1 -19.5)" />
+<rect x="15.1" y="5.1" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(344 22.1 8.1)" />
+<rect x="-30.0" y="6.5" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(387 -23.0 9.5)" />
+<rect x="4.1" y="-26.8" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(430 11.1 -23.8)" />
+<rect x="1.2" y="23.3" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(473 8.2 26.3)" />
+<rect x="-31.9" y="-17.4" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(516 -24.9 -14.4)" />
+<rect x="22.3" y="-9.4" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(559 29.3 -6.4)" />
+<rect x="-24.9" y="22.4" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(602 -17.9 25.4)" />
+<rect x="-11.1" y="-34.9" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(645 -4.1 -31.9)" />
+<rect x="18.4" y="18.4" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(688 25.4 21.4)" />
+<rect x="-41.2" y="-1.6" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(731 -34.2 1.4)" />
+<rect x="18.0" y="-27.9" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(774 25.0 -24.9)" />
+<rect x="-8.7" y="33.2" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(817 -1.7 36.2)" />
+<rect x="-30.8" y="-31.6" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(860 -23.8 -28.6)" />
+<rect x="30.7" y="2.1" width="16.56" height="5.865" rx="3" fill="#e6b46b" transform="rotate(903 37.7 5.1)" />
+<rect x="-39.0" y="19.2" width="16.56" height="5.865" rx="3" fill="#d99353" transform="rotate(946 -32.0 22.2)" />
+<rect x="1.8" y="-41.9" width="16.56" height="5.865" rx="3" fill="#edcc8a" transform="rotate(989 8.8 -38.9)" />
+<use href="#leaf2" x="-20.7" y="-20.7" width="19.32" height="19.32" />
+<use href="#leaf2" x="13.8" y="6.9" width="19.32" height="19.32" />
+<use href="#leaf2" x="-6.9" y="27.6" width="19.32" height="19.32" />
+</g>
+<text x="993" y="767" text-anchor="middle" font-size="25" fill="#c9cebf">Rice</text>
+<g transform="translate(1171 660)"><circle r="69" fill="#121d1d" /><circle r="62.79" fill="#bac3b2" /><circle r="55.89" fill="#e1dcc5" /><circle r="48.989999999999995" fill="#a48247" />
+<circle cx="0.0" cy="0.0" r="5.865" fill="#e0b868" />
+<circle cx="-6.1" cy="5.6" r="5.865" fill="#866c41" />
+<circle cx="1.0" cy="-11.7" r="5.865" fill="#d39a54" />
+<circle cx="8.8" cy="11.4" r="5.865" fill="#e0b868" />
+<circle cx="-16.4" cy="-2.9" r="5.865" fill="#866c41" />
+<circle cx="15.7" cy="-10.0" r="5.865" fill="#d39a54" />
+<circle cx="-5.3" cy="19.7" r="5.865" fill="#e0b868" />
+<circle cx="-10.1" cy="-19.5" r="5.865" fill="#866c41" />
+<circle cx="22.1" cy="8.1" r="5.865" fill="#d39a54" />
+<circle cx="-23.0" cy="9.5" r="5.865" fill="#e0b868" />
+<circle cx="11.1" cy="-23.8" r="5.865" fill="#866c41" />
+<circle cx="8.2" cy="26.3" r="5.865" fill="#d39a54" />
+<circle cx="-24.9" cy="-14.4" r="5.865" fill="#e0b868" />
+<circle cx="29.3" cy="-6.4" r="5.865" fill="#866c41" />
+<circle cx="-17.9" cy="25.4" r="5.865" fill="#d39a54" />
+<circle cx="-4.1" cy="-31.9" r="5.865" fill="#e0b868" />
+<circle cx="25.4" cy="21.4" r="5.865" fill="#866c41" />
+<circle cx="-34.2" cy="1.4" r="5.865" fill="#d39a54" />
+<circle cx="25.0" cy="-24.9" r="5.865" fill="#e0b868" />
+<circle cx="-1.7" cy="36.2" r="5.865" fill="#866c41" />
+<circle cx="-23.8" cy="-28.6" r="5.865" fill="#d39a54" />
+<circle cx="37.7" cy="5.1" r="5.865" fill="#e0b868" />
+<circle cx="-32.0" cy="22.2" r="5.865" fill="#866c41" />
+<circle cx="8.8" cy="-38.9" r="5.865" fill="#d39a54" />
+<use href="#leaf2" x="-20.7" y="-20.7" width="19.32" height="19.32" />
+<use href="#leaf2" x="13.8" y="6.9" width="19.32" height="19.32" />
+<use href="#leaf2" x="-6.9" y="27.6" width="19.32" height="19.32" />
+</g>
+<text x="1171" y="767" text-anchor="middle" font-size="25" fill="#c9cebf">Potato</text>
+<text x="1171" y="801" text-anchor="middle" font-size="25" fill="#c9cebf">Perfection</text>
+<g transform="translate(1349 660)"><circle r="69" fill="#121d1d" /><circle r="62.79" fill="#bac3b2" /><circle r="55.89" fill="#e1dcc5" /><circle r="48.989999999999995" fill="#bfa578" />
+<circle cx="0.0" cy="0.0" r="5.865" fill="#e0b868" />
+<circle cx="-6.1" cy="5.6" r="5.865" fill="#866c41" />
+<circle cx="1.0" cy="-11.7" r="5.865" fill="#d39a54" />
+<circle cx="8.8" cy="11.4" r="5.865" fill="#e0b868" />
+<circle cx="-16.4" cy="-2.9" r="5.865" fill="#866c41" />
+<circle cx="15.7" cy="-10.0" r="5.865" fill="#d39a54" />
+<circle cx="-5.3" cy="19.7" r="5.865" fill="#e0b868" />
+<circle cx="-10.1" cy="-19.5" r="5.865" fill="#866c41" />
+<circle cx="22.1" cy="8.1" r="5.865" fill="#d39a54" />
+<circle cx="-23.0" cy="9.5" r="5.865" fill="#e0b868" />
+<circle cx="11.1" cy="-23.8" r="5.865" fill="#866c41" />
+<circle cx="8.2" cy="26.3" r="5.865" fill="#d39a54" />
+<circle cx="-24.9" cy="-14.4" r="5.865" fill="#e0b868" />
+<circle cx="29.3" cy="-6.4" r="5.865" fill="#866c41" />
+<circle cx="-17.9" cy="25.4" r="5.865" fill="#d39a54" />
+<circle cx="-4.1" cy="-31.9" r="5.865" fill="#e0b868" />
+<circle cx="25.4" cy="21.4" r="5.865" fill="#866c41" />
+<circle cx="-34.2" cy="1.4" r="5.865" fill="#d39a54" />
+<circle cx="25.0" cy="-24.9" r="5.865" fill="#e0b868" />
+<circle cx="-1.7" cy="36.2" r="5.865" fill="#866c41" />
+<circle cx="-23.8" cy="-28.6" r="5.865" fill="#d39a54" />
+<circle cx="37.7" cy="5.1" r="5.865" fill="#e0b868" />
+<circle cx="-32.0" cy="22.2" r="5.865" fill="#866c41" />
+<circle cx="8.8" cy="-38.9" r="5.865" fill="#d39a54" />
+<use href="#leaf2" x="-20.7" y="-20.7" width="19.32" height="19.32" />
+<use href="#leaf2" x="13.8" y="6.9" width="19.32" height="19.32" />
+<use href="#leaf2" x="-6.9" y="27.6" width="19.32" height="19.32" />
+</g>
+<text x="1349" y="767" text-anchor="middle" font-size="25" fill="#c9cebf">Healthy</text>
+<text x="1349" y="801" text-anchor="middle" font-size="25" fill="#c9cebf">Grains</text>
+<text x="28" y="917" font-size="31" font-weight="600">Most Cooked on Upliance</text><text x="1301" y="917" font-size="26" fill="#e8c595">See all</text><path d="M1403 899L1414 909L1403 919" fill="none" stroke="#e8c595" stroke-width="3" />
+<g transform="translate(-716 0)"><rect x="744" y="950" width="326" height="369" rx="30" fill="#3c3730" />
+<g transform="translate(907 1102)"><circle r="125" fill="#121d1d" /><circle r="113.75" fill="#bac3b2" /><circle r="101.25" fill="#e1dcc5" /><circle r="88.75" fill="#b66e42" />
+<rect x="-7.0" y="-3.0" width="30.0" height="10.625" rx="3" fill="#e6b46b" transform="rotate(0 0.0 0.0)" />
+<rect x="-18.1" y="7.2" width="30.0" height="10.625" rx="3" fill="#d99353" transform="rotate(43 -11.1 10.2)" />
+<rect x="-5.1" y="-24.2" width="30.0" height="10.625" rx="3" fill="#edcc8a" transform="rotate(86 1.9 -21.2)" />
+<rect x="8.9" y="17.7" width="30.0" height="10.625" rx="3" fill="#e6b46b" transform="rotate(129 15.9 20.7)" />
+<rect x="-36.6" y="-8.2" width="30.0" height="10.625" rx="3" fill="#d99353" transform="rotate(172 -29.6 -5.2)" />
+<rect x="21.4" y="-21.1" width="30.0" height="10.625" rx="3" fill="#edcc8a" transform="rotate(215 28.4 -18.1)" />
+<rect x="-16.6" y="32.6" width="30.0" height="10.625" rx="3" fill="#e6b46b" transform="rotate(258 -9.6 35.6)" />
+<rect x="-25.3" y="-38.4" width="30.0" height="10.625" rx="3" fill="#d99353" transform="rotate(301 -18.3 -35.4)" />
+<rect x="33.0" y="11.6" width="30.0" height="10.625" rx="3" fill="#edcc8a" transform="rotate(344 40.0 14.6)" />
+<rect x="-48.8" y="14.2" width="30.0" height="10.625" rx="3" fill="#e6b46b" transform="rotate(387 -41.8 17.2)" />
+<rect x="13.2" y="-46.1" width="30.0" height="10.625" rx="3" fill="#d99353" transform="rotate(430 20.2 -43.1)" />
+<rect x="7.9" y="44.6" width="30.0" height="10.625" rx="3" fill="#edcc8a" transform="rotate(473 14.9 47.6)" />
+<rect x="-52.1" y="-29.2" width="30.0" height="10.625" rx="3" fill="#e6b46b" transform="rotate(516 -45.1 -26.2)" />
+<rect x="46.0" y="-14.6" width="30.0" height="10.625" rx="3" fill="#d99353" transform="rotate(559 53.0 -11.6)" />
+<rect x="-39.4" y="43.1" width="30.0" height="10.625" rx="3" fill="#edcc8a" transform="rotate(602 -32.4 46.1)" />
+<rect x="-14.5" y="-60.8" width="30.0" height="10.625" rx="3" fill="#e6b46b" transform="rotate(645 -7.5 -57.8)" />
+<rect x="39.0" y="35.8" width="30.0" height="10.625" rx="3" fill="#d99353" transform="rotate(688 46.0 38.8)" />
+<rect x="-69.0" y="-0.5" width="30.0" height="10.625" rx="3" fill="#edcc8a" transform="rotate(731 -62.0 2.5)" />
+<rect x="38.3" y="-48.0" width="30.0" height="10.625" rx="3" fill="#e6b46b" transform="rotate(774 45.3 -45.0)" />
+<rect x="-10.1" y="62.5" width="30.0" height="10.625" rx="3" fill="#d99353" transform="rotate(817 -3.1 65.5)" />
+<rect x="-50.1" y="-54.7" width="30.0" height="10.625" rx="3" fill="#edcc8a" transform="rotate(860 -43.1 -51.7)" />
+<rect x="61.4" y="6.3" width="30.0" height="10.625" rx="3" fill="#e6b46b" transform="rotate(903 68.4 9.3)" />
+<rect x="-65.0" y="37.3" width="30.0" height="10.625" rx="3" fill="#d99353" transform="rotate(946 -58.0 40.3)" />
+<rect x="8.9" y="-73.4" width="30.0" height="10.625" rx="3" fill="#edcc8a" transform="rotate(989 15.9 -70.4)" />
+<use href="#leaf2" x="-37.5" y="-37.5" width="35.0" height="35.0" />
+<use href="#leaf2" x="25.0" y="12.5" width="35.0" height="35.0" />
+<use href="#leaf2" x="-12.5" y="50.0" width="35.0" height="35.0" />
+</g>
+<use href="#heart2" x="1014" y="975" width="34" height="34" fill="none" stroke="#eee7d6" stroke-width="4" /><text x="764" y="1291" font-size="26" font-weight="600">Penne pasta</text><rect x="746" y="1341" width="20" height="20" rx="5" fill="none" stroke="#9bba96" stroke-width="2" /><circle cx="756" cy="1351" r="5" fill="#9bba96" /><text x="777" y="1360" font-size="22" fill="#b8c2b5">Italian</text><text x="995" y="1360" font-size="22" fill="#e8c595">★ 4.5</text>
+</g><g transform="translate(-716 0)"><rect x="1102" y="950" width="326" height="369" rx="30" fill="#374749" />
+<g transform="translate(1265 1102)"><circle r="125" fill="#121d1d" /><circle r="113.75" fill="#bac3b2" /><circle r="101.25" fill="#e1dcc5" /><circle r="88.75" fill="#a48247" />
+<circle cx="0.0" cy="0.0" r="10.625" fill="#e0b868" />
+<circle cx="-11.1" cy="10.2" r="10.625" fill="#866c41" />
+<circle cx="1.9" cy="-21.2" r="10.625" fill="#d39a54" />
+<circle cx="15.9" cy="20.7" r="10.625" fill="#e0b868" />
+<circle cx="-29.6" cy="-5.2" r="10.625" fill="#866c41" />
+<circle cx="28.4" cy="-18.1" r="10.625" fill="#d39a54" />
+<circle cx="-9.6" cy="35.6" r="10.625" fill="#e0b868" />
+<circle cx="-18.3" cy="-35.4" r="10.625" fill="#866c41" />
+<circle cx="40.0" cy="14.6" r="10.625" fill="#d39a54" />
+<circle cx="-41.8" cy="17.2" r="10.625" fill="#e0b868" />
+<circle cx="20.2" cy="-43.1" r="10.625" fill="#866c41" />
+<circle cx="14.9" cy="47.6" r="10.625" fill="#d39a54" />
+<circle cx="-45.1" cy="-26.2" r="10.625" fill="#e0b868" />
+<circle cx="53.0" cy="-11.6" r="10.625" fill="#866c41" />
+<circle cx="-32.4" cy="46.1" r="10.625" fill="#d39a54" />
+<circle cx="-7.5" cy="-57.8" r="10.625" fill="#e0b868" />
+<circle cx="46.0" cy="38.8" r="10.625" fill="#866c41" />
+<circle cx="-62.0" cy="2.5" r="10.625" fill="#d39a54" />
+<circle cx="45.3" cy="-45.0" r="10.625" fill="#e0b868" />
+<circle cx="-3.1" cy="65.5" r="10.625" fill="#866c41" />
+<circle cx="-43.1" cy="-51.7" r="10.625" fill="#d39a54" />
+<circle cx="68.4" cy="9.3" r="10.625" fill="#e0b868" />
+<circle cx="-58.0" cy="40.3" r="10.625" fill="#866c41" />
+<circle cx="15.9" cy="-70.4" r="10.625" fill="#d39a54" />
+<use href="#leaf2" x="-37.5" y="-37.5" width="35.0" height="35.0" />
+<use href="#leaf2" x="25.0" y="12.5" width="35.0" height="35.0" />
+<use href="#leaf2" x="-12.5" y="50.0" width="35.0" height="35.0" />
+</g>
+<use href="#heart2" x="1372" y="975" width="34" height="34" fill="#e8c595" stroke="#eee7d6" stroke-width="4" /><text x="1122" y="1291" font-size="26" font-weight="600">Paneer curry</text><rect x="1104" y="1341" width="20" height="20" rx="5" fill="none" stroke="#9bba96" stroke-width="2" /><circle cx="1114" cy="1351" r="5" fill="#9bba96" /><text x="1135" y="1360" font-size="22" fill="#b8c2b5">North Indian</text><text x="1353" y="1360" font-size="22" fill="#e8c595">★ 4.5</text>
+</g><g transform="translate(716 0)"><rect x="28" y="950" width="326" height="369" rx="30" fill="#30413b" />
+<g transform="translate(191 1102)"><circle r="125" fill="#121d1d" /><circle r="113.75" fill="#bac3b2" /><circle r="101.25" fill="#e1dcc5" /><circle r="88.75" fill="#b48b4d" />
+<circle cx="0.0" cy="0.0" r="10.625" fill="#e0b868" />
+<circle cx="-11.1" cy="10.2" r="10.625" fill="#866c41" />
+<circle cx="1.9" cy="-21.2" r="10.625" fill="#d39a54" />
+<circle cx="15.9" cy="20.7" r="10.625" fill="#e0b868" />
+<circle cx="-29.6" cy="-5.2" r="10.625" fill="#866c41" />
+<circle cx="28.4" cy="-18.1" r="10.625" fill="#d39a54" />
+<circle cx="-9.6" cy="35.6" r="10.625" fill="#e0b868" />
+<circle cx="-18.3" cy="-35.4" r="10.625" fill="#866c41" />
+<circle cx="40.0" cy="14.6" r="10.625" fill="#d39a54" />
+<circle cx="-41.8" cy="17.2" r="10.625" fill="#e0b868" />
+<circle cx="20.2" cy="-43.1" r="10.625" fill="#866c41" />
+<circle cx="14.9" cy="47.6" r="10.625" fill="#d39a54" />
+<circle cx="-45.1" cy="-26.2" r="10.625" fill="#e0b868" />
+<circle cx="53.0" cy="-11.6" r="10.625" fill="#866c41" />
+<circle cx="-32.4" cy="46.1" r="10.625" fill="#d39a54" />
+<circle cx="-7.5" cy="-57.8" r="10.625" fill="#e0b868" />
+<circle cx="46.0" cy="38.8" r="10.625" fill="#866c41" />
+<circle cx="-62.0" cy="2.5" r="10.625" fill="#d39a54" />
+<circle cx="45.3" cy="-45.0" r="10.625" fill="#e0b868" />
+<circle cx="-3.1" cy="65.5" r="10.625" fill="#866c41" />
+<circle cx="-43.1" cy="-51.7" r="10.625" fill="#d39a54" />
+<circle cx="68.4" cy="9.3" r="10.625" fill="#e0b868" />
+<circle cx="-58.0" cy="40.3" r="10.625" fill="#866c41" />
+<circle cx="15.9" cy="-70.4" r="10.625" fill="#d39a54" />
+<use href="#leaf2" x="-37.5" y="-37.5" width="35.0" height="35.0" />
+<use href="#leaf2" x="25.0" y="12.5" width="35.0" height="35.0" />
+<use href="#leaf2" x="-12.5" y="50.0" width="35.0" height="35.0" />
+</g>
+<use href="#heart2" x="298" y="975" width="34" height="34" fill="#e8c595" stroke="#eee7d6" stroke-width="4" /><text x="48" y="1291" font-size="26" font-weight="600">Chole</text><rect x="30" y="1341" width="20" height="20" rx="5" fill="none" stroke="#9bba96" stroke-width="2" /><circle cx="40" cy="1351" r="5" fill="#9bba96" /><text x="61" y="1360" font-size="22" fill="#b8c2b5">North Indian</text><text x="279" y="1360" font-size="22" fill="#e8c595">★ 4.5</text>
+</g><g transform="translate(716 0)"><rect x="386" y="950" width="326" height="369" rx="30" fill="#3b4138" />
+<g transform="translate(549 1102)"><circle r="125" fill="#121d1d" /><circle r="113.75" fill="#bac3b2" /><circle r="101.25" fill="#e1dcc5" /><circle r="88.75" fill="#b48b4d" />
+<ellipse rx="76.25" ry="70.0" fill="#e0cda4" /><path d="M-50.0 0Q0 -37.5 50.0 0" fill="none" stroke="#c5af86" stroke-width="3" />
+</g>
+<use href="#heart2" x="656" y="975" width="34" height="34" fill="none" stroke="#eee7d6" stroke-width="4" /><text x="406" y="1291" font-size="26" font-weight="600">Fresh dough</text><rect x="388" y="1341" width="20" height="20" rx="5" fill="none" stroke="#9bba96" stroke-width="2" /><circle cx="398" cy="1351" r="5" fill="#9bba96" /><text x="419" y="1360" font-size="22" fill="#b8c2b5">Indian</text><text x="637" y="1360" font-size="22" fill="#e8c595">★ 4.6</text>
+</g><path d="M28 1389H1426" stroke="#35423c" />
+<g fill="none" stroke="#89968e" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+<path d="M161 1435V1414L178 1401L195 1414V1435H184V1422H173V1435Z" fill="#c7d6b8" stroke="#c7d6b8" />
+<circle cx="543" cy="1419" r="20" stroke="#a7bba1" stroke-width="6" />
+<circle cx="907" cy="1409" r="10" /><path d="M888 1437C888 1418 926 1418 926 1437Z" />
+<rect x="1248" y="1404" width="26" height="31" rx="5" /><path d="M1245 1403H1277M1259 1398H1265" /><rect x="1277" y="1411" width="23" height="16" rx="3" /><path d="M1274 1436H1303V1426M1286 1431H1290" />
+</g>
+<g text-anchor="middle" font-size="22"><text x="178" y="1474" fill="#d4dfc2">Home</text><text x="543" y="1474" fill="#89968e">up.ai</text><text x="907" y="1474" fill="#89968e">Account</text><text x="1275" y="1474" fill="#89968e">My Devices</text></g>
+<rect x="103" y="1495" width="150" height="5" rx="2.5" fill="#e8c595" />
+</g></g></svg>
