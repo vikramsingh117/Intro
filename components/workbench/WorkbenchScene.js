@@ -1,5 +1,5 @@
 import { useAfterHoursTransition } from '../AfterHoursTransition';
-import { Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Canvas, useFrame, useLoader, useThree } from '@react-three/fiber';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
@@ -36,7 +36,7 @@ function FirstRoomFrame({ onReady }) {
   return null;
 }
 
-function Monitor({ onEnter, desktopRef, desktop, musicPlaying }) {
+function Monitor({ onEnter, desktopRef, desktop, musicPlaying, onReady }) {
   const screen = useRef(null);
   const { camera, size, invalidate } = useThree();
   const projection = useMemo(() => new Matrix4(), []);
@@ -89,7 +89,10 @@ function Monitor({ onEnter, desktopRef, desktop, musicPlaying }) {
   });
   const { scene } = useLoader(GLTFLoader, '/models/monitor.glb');
   useEffect(() => { scene.traverse(object => { if (object.isMesh) { object.castShadow = true; object.receiveShadow = true; } }); }, [scene]);
-  const wallpapers = useLoader(TextureLoader, ['/images/workbench-desktop-preview.svg', '/images/workbench-desktop-music.svg']);
+  const preview = useLoader(TextureLoader, '/images/workbench-desktop-preview.svg');
+  const music = useLoader(TextureLoader, '/images/workbench-desktop-music.svg');
+  const wallpapers = [preview, music];
+  useEffect(() => { onReady(); }, [onReady]);
   wallpapers.forEach(texture => { texture.colorSpace = SRGBColorSpace; });
   const wallpaper = wallpapers[musicPlaying ? 1 : 0];
   return <group position={[1.5, 0, 0]} rotation={[0, Math.PI, 0]} scale={10} onClick={event => { event.stopPropagation(); if (event.delta <= 5) onEnter(); }}>
@@ -261,34 +264,39 @@ function Camera({ photo, pauseCamera, upliance, onUplianceArrive, entered, outsi
 export default function MonitorScene({ photo, onPhotoOpen, musicPlaying, onPlaybackChange, onNotebookTear, onPaperMotionChange, aimingPaper, heldPaper, paperControls, onPaperThrown, tornPages, keyboardTarget, registerRoomAction, upliance, upliancePage, uplianceArrived, uplianceControlsRef, onUplianceArrive, onUplianceSelect, propPlacement, entered, reduced, onEnter, onArrive, lampOn, onLampToggle, onWindowSelect, outside, onCityReady, desktopRef, desktop, notebook, notebookPage, onNotebookOpen, onHover, notebookOpen, onNotebookPageChange, onNotebookExit, citySettings, wearingGlasses, onWearGlasses, stickyNotes, noteEditorRef }) {
   const { sceneReady } = useAfterHoursTransition();
   const [lightDragging,setLightDragging]=useState(false);
+  const [monitorReady,setMonitorReady]=useState(false);
+  const [uplianceReady,setUplianceReady]=useState(false);
+  const markMonitorReady=useCallback(()=>setMonitorReady(true),[]);
+  const markUplianceReady=useCallback(()=>setUplianceReady(true),[]);
+  const screensReady=monitorReady&&uplianceReady;
   return <Canvas onPointerMissed={()=>{if(notebook)onNotebookExit();}} shadows camera={{ position:[6, 3.5, 14.8], fov:42 }} dpr={[1,1.5]} frameloop="demand" gl={{alpha:true, antialias:true, toneMapping:ACESFilmicToneMapping, toneMappingExposure:.85}}>
-    <FirstRoomFrame onReady={sceneReady}/>
+    {screensReady && <FirstRoomFrame onReady={sceneReady}/>}
     <StationaryShadows/>
     <color attach="background" args={['#091321']} />
     <group onClick={event=>{if(notebook && event.delta<=5){event.stopPropagation();onNotebookExit();}}}>
     <NightEffects exposure={outside ? citySettings.exposure : .85} glow={outside ? citySettings.glow : .55} />
-    <Suspense fallback={null}><CityExterior onReady={onCityReady} settings={citySettings} /></Suspense>
-    <Suspense fallback={null}><FlyingPlane active={outside} reduced={reduced} settings={citySettings}/></Suspense>
+    {screensReady && <Suspense fallback={null}><CityExterior onReady={onCityReady} settings={citySettings} /></Suspense>}
+    {screensReady && <Suspense fallback={null}><FlyingPlane active={outside} reduced={reduced} settings={citySettings}/></Suspense>}
     <hemisphereLight args={['#c8d4d0', '#494237', outside ? citySettings.ambient : .65]} />
     <directionalLight userData={{cacheStationaryShadow:true}} position={[3, 5, 4]} intensity={.8} color="#c7d5df" castShadow shadow-mapSize={[1024, 1024]} shadow-camera-left={-9} shadow-camera-right={9} shadow-camera-top={8} shadow-camera-bottom={-8} shadow-normalBias={.04} />
     <pointLight position={[-4.6, 2, -2.5]} intensity={18} distance={12} decay={2} color="#8abbd9" />
-    <Suspense fallback={null}><InteractiveObject focused={keyboardTarget==='monitor'} label="Monitor · explore my work" onHover={onHover}><Monitor musicPlaying={musicPlaying} onEnter={notebook ? onNotebookExit : onEnter} desktopRef={desktopRef} desktop={desktop} /></InteractiveObject></Suspense>
-    <PhotoFrame reduced={reduced} focused={photo} keyboardFocused={keyboardTarget==='photo'} onSelect={onPhotoOpen} onHover={onHover}/>
+    <Suspense fallback={null}><InteractiveObject focused={keyboardTarget==='monitor'} label="Monitor · explore my work" onHover={onHover}><Monitor onReady={markMonitorReady} musicPlaying={musicPlaying} onEnter={notebook ? onNotebookExit : onEnter} desktopRef={desktopRef} desktop={desktop} /></InteractiveObject></Suspense>
+    {screensReady && <PhotoFrame reduced={reduced} focused={photo} keyboardFocused={keyboardTarget==='photo'} onSelect={onPhotoOpen} onHover={onHover}/>}
     <Camera photo={photo} pauseCamera={aimingPaper} {...{upliance,onUplianceArrive,entered,outside,notebook,citySettings,reduced,onArrive}} noteMode={stickyNotes.editor ? (stickyNotes.editor.id?'read':'write') : stickyNotes.placing?'wall':null} noteX={stickyNotes.editor?.x} noteY={stickyNotes.editor?.y} interactionBlocked={aimingPaper || lightDragging || stickyNotes.dragging || !!stickyNotes.editor || !!stickyNotes.placing}/>
-    <Suspense fallback={null}><PaperBalls onMotionChange={onPaperMotionChange} aiming={aimingPaper} heldPaper={heldPaper} controls={paperControls} onThrown={onPaperThrown} canThrow={!photo && !entered && !outside && !notebook && !upliance && !stickyNotes.editor && !stickyNotes.placing}/></Suspense>
+    {screensReady && <Suspense fallback={null}><PaperBalls onMotionChange={onPaperMotionChange} aiming={aimingPaper} heldPaper={heldPaper} controls={paperControls} onThrown={onPaperThrown} canThrow={!photo && !entered && !outside && !notebook && !upliance && !stickyNotes.editor && !stickyNotes.placing}/></Suspense>}
     <StickyNotes api={stickyNotes} onHover={onHover} reduced={reduced}/>
     {stickyNotes.editor && <NoteProjection editor={stickyNotes.editor} elementRef={noteEditorRef}/>}
-    <Suspense fallback={null}><Chair/></Suspense>
-    <Suspense fallback={null}><Plant/></Suspense>
-    <Suspense fallback={null}><Stool placement={propPlacement?.stool}/></Suspense>
-    <Suspense fallback={null}><Pascal placement={propPlacement?.pascal}/></Suspense>
-    <Suspense fallback={null}><Upliance keyboardFocused={keyboardTarget==='upliance'} registerRoomAction={registerRoomAction} controlsRef={uplianceControlsRef} focused={!!upliance} zoomComplete={uplianceArrived} workPage={upliancePage} onSelect={onUplianceSelect} placement={propPlacement?.upliance} reduced={reduced} interactive={!photo && !entered && !outside && !notebook && !upliance && !stickyNotes.editor && !stickyNotes.placing} onHover={onHover}/></Suspense>
-    <Suspense fallback={null}><CeilingLight reduced={reduced} onDragging={setLightDragging} interactive={!photo&&!entered&&!outside&&!notebook&&!upliance&&!stickyNotes.editor&&!stickyNotes.placing} keyboardFocused={keyboardTarget==='ceiling-light'} registerRoomAction={registerRoomAction} onHover={onHover}/></Suspense>
+    {screensReady && <Suspense fallback={null}><Chair/></Suspense>}
+    {screensReady && <Suspense fallback={null}><Plant/></Suspense>}
+    {screensReady && <Suspense fallback={null}><Stool placement={propPlacement?.stool}/></Suspense>}
+    {screensReady && <Suspense fallback={null}><Pascal placement={propPlacement?.pascal}/></Suspense>}
+    <Suspense fallback={null}><Upliance onReady={markUplianceReady} keyboardFocused={keyboardTarget==='upliance'} registerRoomAction={registerRoomAction} controlsRef={uplianceControlsRef} focused={!!upliance} zoomComplete={uplianceArrived} workPage={upliancePage} onSelect={onUplianceSelect} placement={propPlacement?.upliance} reduced={reduced} interactive={!photo && !entered && !outside && !notebook && !upliance && !stickyNotes.editor && !stickyNotes.placing} onHover={onHover}/></Suspense>
+    {screensReady && <Suspense fallback={null}><CeilingLight reduced={reduced} onDragging={setLightDragging} interactive={!photo&&!entered&&!outside&&!notebook&&!upliance&&!stickyNotes.editor&&!stickyNotes.placing} keyboardFocused={keyboardTarget==='ceiling-light'} registerRoomAction={registerRoomAction} onHover={onHover}/></Suspense>}
     <CozyRoom keyboardTarget={keyboardTarget} registerRoomAction={registerRoomAction} reduced={reduced} wearingGlasses={wearingGlasses} onWearGlasses={onWearGlasses} onWindowSelect={notebook ? onNotebookExit : onWindowSelect} onHover={onHover} />
-    <InteractiveObject moving focused={keyboardTarget==='notebook'} label="Notebook · ideas & sketches" onHover={onHover}><Notebook onTear={onNotebookTear} canTear={true} tornPages={tornPages} focused={notebook} open={notebookOpen} onPageChange={onNotebookPageChange} page={notebookPage} reduced={reduced} onOpen={onNotebookOpen} /></InteractiveObject>
-    <Suspense fallback={null}><Keyboard /></Suspense>
-    <Suspense fallback={null}><Radio onPlaybackChange={onPlaybackChange} keyboardFocused={keyboardTarget==='radio'} registerRoomAction={registerRoomAction} onHover={onHover}/></Suspense>
-    <Suspense fallback={null}><InteractiveObject focused={keyboardTarget==='desk-lamp'} label={lampOn ? "Lamp · turn off" : "Lamp · turn on"} onHover={onHover}><DeskLamp on={lampOn} registerRoomAction={registerRoomAction} onToggle={notebook ? onNotebookExit : onLampToggle} /></InteractiveObject></Suspense>
+    {screensReady && <InteractiveObject moving focused={keyboardTarget==='notebook'} label="Notebook · ideas & sketches" onHover={onHover}><Notebook onTear={onNotebookTear} canTear={true} tornPages={tornPages} focused={notebook} open={notebookOpen} onPageChange={onNotebookPageChange} page={notebookPage} reduced={reduced} onOpen={onNotebookOpen} /></InteractiveObject>}
+    {screensReady && <Suspense fallback={null}><Keyboard /></Suspense>}
+    {screensReady && <Suspense fallback={null}><Radio onPlaybackChange={onPlaybackChange} keyboardFocused={keyboardTarget==='radio'} registerRoomAction={registerRoomAction} onHover={onHover}/></Suspense>}
+    {screensReady && <Suspense fallback={null}><InteractiveObject focused={keyboardTarget==='desk-lamp'} label={lampOn ? "Lamp · turn off" : "Lamp · turn on"} onHover={onHover}><DeskLamp on={lampOn} registerRoomAction={registerRoomAction} onToggle={notebook ? onNotebookExit : onLampToggle} /></InteractiveObject></Suspense>}
     <pointLight position={[1.5,.15,.1]} color="#9cc8df" intensity={3} distance={5} />
     </group>
   </Canvas>;

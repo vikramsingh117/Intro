@@ -16,12 +16,30 @@ const MOBILE_WORK_LINES=[
   ['ADK cooking assistant','Recipe generation in chat','View-only archived chats','Past conversations accessible','React · Redux · GraphQL'],
   ['Session inspection','Recipe timing views','Resource sync workflow','Frontend + API integration'],
 ];
-export default function Upliance({ keyboardFocused=false, registerRoomAction, placement=DEFAULT_PROP_PLACEMENT.upliance, reduced=false, interactive=true, onHover=()=>{}, focused=false, zoomComplete=false, workPage=0, onSelect=()=>{}, controlsRef }) {
+export default function Upliance({ keyboardFocused=false, registerRoomAction, placement=DEFAULT_PROP_PLACEMENT.upliance, reduced=false, interactive=true, onHover=()=>{}, focused=false, zoomComplete=false, onReady, workPage=0, onSelect=()=>{}, controlsRef }) {
   const {scene}=useLoader(GLTFLoader,'/models/upliance/interactive.glb');
   const display=useLoader(TextureLoader,'/images/upliance-display.svg');
-  const appFrames=useLoader(TextureLoader,APP_FRAME_URLS);
-  const applianceFrames=useLoader(TextureLoader,APPLIANCE_FRAME_URLS);
-  const chatbotFrames=useLoader(TextureLoader,CHATBOT_FRAME_URLS);
+  // Showcase artwork must never suspend the appliance itself.
+  const frameCache=useRef({});
+  const [loadedFrames,setLoadedFrames]=useState({});
+  useEffect(()=>{onReady?.();},[onReady]);
+  useEffect(()=>{
+    if(!focused||!zoomComplete||workPage>2)return;
+    if(frameCache.current[workPage])return;
+    let cancelled=false;
+    const urls=workPage===0?APPLIANCE_FRAME_URLS:workPage===1?APP_FRAME_URLS:CHATBOT_FRAME_URLS;
+    const images=urls.map(url=>{
+      const image=new Image();
+      image.src=url;
+      return image;
+    });
+    Promise.all(images.map(image=>image.decode().then(()=>({image})).catch(()=>({image:null})))).then(frames=>{
+      if(cancelled)return;
+      frameCache.current[workPage]=frames;
+      setLoadedFrames(current=>({...current,[workPage]:frames}));
+    });
+    return ()=>{cancelled=true;};
+  },[focused,zoomComplete,workPage]);
   display.colorSpace=SRGBColorSpace;
   const {invalidate,gl,camera,size,scene:renderScene}=useThree();
   const projectedEdge=useMemo(()=>new Vector3(),[]);
@@ -38,7 +56,7 @@ export default function Upliance({ keyboardFocused=false, registerRoomAction, pl
     },1500);
     return ()=>window.clearInterval(timer);
   },[focused,zoomComplete,workPage,frameCount,reduced]);
-  const workTextures=useMemo(()=>(workPage===0?applianceFrames:workPage===1?appFrames:workPage===2?chatbotFrames:[undefined]).map(imageTexture=>{
+  const workTextures=useMemo(()=>(loadedFrames[workPage]||[undefined]).map(imageTexture=>{
     const canvas=document.createElement('canvas');canvas.width=1200;canvas.height=740;
     const ctx=canvas.getContext('2d'),page=UPLIANCE_WORK[workPage];
     const mobile=size.width<=760;
@@ -57,7 +75,7 @@ export default function Upliance({ keyboardFocused=false, registerRoomAction, pl
     }
     ctx.fillStyle='#397eff';ctx.fillRect(60,686,1080*(workPage+1)/UPLIANCE_WORK.length,5);
     const texture=new CanvasTexture(canvas);texture.colorSpace=SRGBColorSpace;return texture;
-  }),[workPage,appFrames,applianceFrames,chatbotFrames,size.width]);
+  }),[workPage,loadedFrames,size.width]);
   const workTexture=workTextures[sequence.page===workPage&&zoomComplete&&!reduced?sequence.frame:0]||workTextures[0];
   useEffect(()=>()=>workTextures.forEach(texture=>texture.dispose()),[workTextures]);
   useEffect(()=>{invalidate();},[workTexture,invalidate]);

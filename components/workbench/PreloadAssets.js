@@ -1,10 +1,13 @@
-import { Component, Suspense, useEffect } from 'react';
+import { Component, Suspense, useCallback, useEffect, useState } from 'react';
 import { useLoader } from '@react-three/fiber';
 import { TextureLoader } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
 const models = ['/models/monitor.glb', '/models/desk-lamp.glb', '/models/keyboard/optimized.gltf', '/models/chair/optimized.gltf', '/models/radio/optimized.gltf', '/models/city/optimized.gltf', '/models/plane/scene.gltf', '/models/plant/optimized.gltf', '/models/stool/optimized.gltf', '/models/pascal/optimized.gltf', '/models/upliance/interactive.glb', '/models/ceiling-light/optimized.gltf'];
-const textures = ['/images/upliance-display.svg', '/images/workbench-wallpaper.svg', '/images/upliance-airfryer.jpg', '/images/upliance-airfryer-mobile.jpg', '/images/upliance-appui.jpg'];
+const textures = ['/images/upliance-display.svg', '/images/workbench-desktop-preview.svg', '/images/workbench-desktop-music.svg', '/images/workbench-wallpaper.svg'];
+const priorityModels = ['/models/monitor.glb', '/models/upliance/interactive.glb'];
+const priorityTextures = textures.slice(0, 3);
+const priorityAssets = [...priorityModels, ...priorityTextures];
 export const ASSET_COUNT = models.length + textures.length;
 
 function Asset({ url, texture, onLoaded }) {
@@ -20,8 +23,14 @@ class LoadBoundary extends Component {
   render() { return this.state.failed ? null : this.props.children; }
 }
 export default function PreloadAssets({ onLoaded, onError }) {
+  const [completed,setCompleted]=useState([]);
+  const reportLoaded=useCallback(url=>{
+    setCompleted(current=>current.includes(url)?current:[...current,url]);
+    onLoaded(url);
+  },[onLoaded]);
+  const screensReady=priorityAssets.every(url=>completed.includes(url));
   return <LoadBoundary onError={onError}>
-    {models.map(url => <Suspense key={url} fallback={null}><Asset url={url} onLoaded={onLoaded}/></Suspense>)}
-    {textures.map(url=><Suspense key={url} fallback={null}><Asset url={url} texture onLoaded={onLoaded}/></Suspense>)}
+    {(screensReady ? models : priorityModels).map(url => <Suspense key={url} fallback={null}><Asset url={url} onLoaded={reportLoaded}/></Suspense>)}
+    {(screensReady ? textures : priorityTextures).map(url=><Suspense key={url} fallback={null}><Asset url={url} texture onLoaded={reportLoaded}/></Suspense>)}
   </LoadBoundary>;
 }
