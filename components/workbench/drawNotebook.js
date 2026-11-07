@@ -1,5 +1,5 @@
 // Deterministic pen marks: the pages do not change whenever React renders.
-export function drawNotebook(canvas, entry, page) {
+export function drawNotebook(canvas, entry, page, pageCount) {
   const c=canvas.getContext('2d');
   let seed=734+page*91;
   const random=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;};
@@ -29,7 +29,18 @@ export function drawNotebook(canvas, entry, page) {
   for(let i=0;i<6500;i++){c.fillStyle=`rgba(98,79,45,${random()*.055})`;c.fillRect(random()*1200,random()*840,random()*2+.3,.6);}
   for(let y=110;y<795;y+=36){line([[35,y],[565,y+1]],'#849caa25',.7);line([[630,y],[1165,y-1]],'#849caa25',.7);}
   line([[58,65],[61,785]],'#b46b5c38',1);line([[642,65],[645,785]],'#b46b5c38',1);
-  if(entry.doodle==='recursion'){
+  if(entry.doodle==='tear'){
+    write('a little room to play',84,160,29,ink,-.025);
+    write('My doodles on the next pages.',84,235,25,pencil);
+    write('Collect a few, then head',84,325,25);
+    write('back to the desk to flick.',84,365,25);
+    write('Tear this page',690,250,38,ink,-.025);
+    write('by dragging it.',710,310,36,ink,.015);
+    arrow(820,370,1040,540);
+    write('Keep going. Make a pile.',700,650,25,pencil);
+  }else if(entry.doodle==='blank' || entry.doodle==='photo'){
+    // Leave the ruled paper empty for tearing.
+  }else if(entry.doodle==='recursion'){
     write('fib / rough',84,82,29,ink,-.035);
     write('n = 4',104,142,25);write('3 ?',235,146,24,pencil,.06);
     line([[234,137],[277,149]],rust,1.5);
@@ -127,9 +138,17 @@ export function drawNotebook(canvas, entry, page) {
     star(1136,676,6);star(1020,682,4);
   }
   // Pencil hatching and a soft spine crease.
-  for(let i=0;i<8;i++)line([[1110+i*5,713],[1126+i*5,698]],'#7b77664d',1);
+  if(entry.doodle!=='blank' && entry.doodle!=='photo')for(let i=0;i<8;i++)line([[1110+i*5,713],[1126+i*5,698]],'#7b77664d',1);
   const crease=c.createLinearGradient(585,0,615,0);crease.addColorStop(0,'#66533800');crease.addColorStop(.5,'#66533840');crease.addColorStop(1,'#66533800');c.fillStyle=crease;c.fillRect(585,0,30,840);
   write(String(page*2+1).padStart(2,'0'),78,806,18,pencil);write(String(page*2+2).padStart(2,'0'),1114,806,18,pencil);
-  if(page>0)arrow(151,801,121,801);if(page<2)arrow(1056,801,1086,801);
+  if(page>0)arrow(151,801,121,801);if(page<pageCount-1)arrow(1056,801,1086,801);
   c.fillStyle='#d6c6a6';c.beginPath();c.moveTo(1167,840);c.lineTo(1200,807);c.lineTo(1200,840);c.fill();
+}
+
+// Use the photographed paper as the entire leaf, including its own ruling and
+// colour. Filling the leaf removes the synthetic notebook border and footer.
+export function drawNotebookDoodle(canvas, image, crop, side) {
+  const c = canvas.getContext('2d');
+  const [sx, sy, sw, sh] = crop;
+  c.drawImage(image, sx, sy, sw, sh, side * 600, 0, 600, 840);
 }

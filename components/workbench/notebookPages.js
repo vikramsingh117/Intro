@@ -20,4 +20,19 @@ export const NOTEBOOK_PAGES = [
     notes: ['Loop sketch: while budget remains, call the model; stop if done; check tool permission; run the tool; append results and save the trace.', 'Cap retries and record errors.', 'Todo: try a tiny evaluation. Timeout, bad arguments, denied permission.'],
     caption: 'Loose arrows, crossed-out assumptions, pseudocode and a tiny ringed-planet doodle. Learning scratch work, not a shipped implementation.',
   },
+  {
+    title: 'Tear this page by dragging it', subtitle: 'MAKE SOMETHING OF IT', doodle: 'tear',
+    text: 'Tear this page by dragging it. Keep tearing to collect paper balls, then go back to the desk to flick them one after another.',
+    question: '', notes: [], caption: 'My doodle pages follow. Take as many as you like.',
+  },
+  ...[
+    { caption: 'Cats, music, little characters and pen sketches.', paperColor: '#c5c5c9', crop: [0, 138, 738, 1240] },
+    { caption: 'Portraits and figure studies in blue ink.', paperColor: '#bcbcb7', crop: [0, 138, 738, 1160] },
+    { caption: 'Pencil sketches of a character, a car, a cat and a hand.', paperColor: '#e2e2e2', crop: [0, 138, 738, 1240] },
+    { caption: 'A bird, figures and expressive faces on ruled paper.', paperColor: '#c9c9c9', crop: [0, 138, 738, 1240] },
+  ].map((drawing, index) => ({
+    title: `My doodles / ${index + 1}`, subtitle: 'SKETCHBOOK', doodle: 'photo',
+    image: `/images/notebook/doodles-${index + 1}.png`, ...drawing,
+    text: drawing.caption, question: '', notes: [],
+  })),
 ];

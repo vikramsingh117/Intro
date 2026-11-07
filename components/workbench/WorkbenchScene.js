@@ -101,6 +101,9 @@ function Monitor({ onEnter, desktopRef, desktop, musicPlaying }) {
     </group>
   </group>;
 }
+// At the 24-unit zoom limit, keep the camera inside the left wall at x=-9.2.
+const ROOM_MIN_AZIMUTH = -22 * Math.PI / 180;
+
 function Camera({ photo, pauseCamera, upliance, onUplianceArrive, entered, outside, notebook, citySettings, reduced, onArrive, interactionBlocked, noteMode, noteX, noteY }) {
   const { camera, gl, size, invalidate } = useThree();
   const { cameraX, cameraY, cameraZ, targetX, targetY, targetZ, fov } = citySettings;
@@ -138,7 +141,7 @@ function Camera({ photo, pauseCamera, upliance, onUplianceArrive, entered, outsi
     controls.dampingFactor = .12;
     controls.minDistance = 6;
     controls.maxDistance = 24;
-    controls.minAzimuthAngle = -30.719 * Math.PI / 180;
+    controls.minAzimuthAngle = ROOM_MIN_AZIMUTH;
     controls.maxAzimuthAngle = 1.2;
     controls.minPolarAngle = .75;
     controls.maxPolarAngle = 1.55;
@@ -199,7 +202,7 @@ function Camera({ photo, pauseCamera, upliance, onUplianceArrive, entered, outsi
     if (orbit.current) {
       orbit.current.enabled = false;
       orbit.current.maxDistance = 24;
-      orbit.current.minAzimuthAngle = -30.719 * Math.PI / 180;
+      orbit.current.minAzimuthAngle = ROOM_MIN_AZIMUTH;
       orbit.current.maxAzimuthAngle = 1.2;
     }
     // Approach perpendicular to the screen until its surface covers the viewport.
@@ -282,7 +285,7 @@ export default function MonitorScene({ photo, onPhotoOpen, musicPlaying, onPlayb
     <Suspense fallback={null}><Upliance keyboardFocused={keyboardTarget==='upliance'} registerRoomAction={registerRoomAction} controlsRef={uplianceControlsRef} focused={!!upliance} workPage={upliancePage} onSelect={onUplianceSelect} placement={propPlacement?.upliance} reduced={reduced} interactive={!photo && !entered && !outside && !notebook && !upliance && !stickyNotes.editor && !stickyNotes.placing} onHover={onHover}/></Suspense>
     <Suspense fallback={null}><CeilingLight reduced={reduced} onDragging={setLightDragging} interactive={!photo&&!entered&&!outside&&!notebook&&!upliance&&!stickyNotes.editor&&!stickyNotes.placing} keyboardFocused={keyboardTarget==='ceiling-light'} registerRoomAction={registerRoomAction} onHover={onHover}/></Suspense>
     <CozyRoom keyboardTarget={keyboardTarget} registerRoomAction={registerRoomAction} reduced={reduced} wearingGlasses={wearingGlasses} onWearGlasses={onWearGlasses} onWindowSelect={notebook ? onNotebookExit : onWindowSelect} onHover={onHover} />
-    <InteractiveObject moving focused={keyboardTarget==='notebook'} label="Notebook · ideas & sketches" onHover={onHover}><Notebook onTear={onNotebookTear} canTear={!heldPaper} tornPages={tornPages} focused={notebook} open={notebookOpen} onPageChange={onNotebookPageChange} page={notebookPage} reduced={reduced} onOpen={onNotebookOpen} /></InteractiveObject>
+    <InteractiveObject moving focused={keyboardTarget==='notebook'} label="Notebook · ideas & sketches" onHover={onHover}><Notebook onTear={onNotebookTear} canTear={true} tornPages={tornPages} focused={notebook} open={notebookOpen} onPageChange={onNotebookPageChange} page={notebookPage} reduced={reduced} onOpen={onNotebookOpen} /></InteractiveObject>
     <Suspense fallback={null}><Keyboard /></Suspense>
     <Suspense fallback={null}><Radio onPlaybackChange={onPlaybackChange} keyboardFocused={keyboardTarget==='radio'} registerRoomAction={registerRoomAction} onHover={onHover}/></Suspense>
     <Suspense fallback={null}><InteractiveObject focused={keyboardTarget==='desk-lamp'} label={lampOn ? "Lamp · turn off" : "Lamp · turn on"} onHover={onHover}><DeskLamp on={lampOn} registerRoomAction={registerRoomAction} onToggle={notebook ? onNotebookExit : onLampToggle} /></InteractiveObject></Suspense>

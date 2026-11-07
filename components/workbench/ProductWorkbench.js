@@ -13,6 +13,7 @@ import PaperInventory from './PaperInventory';
 import PaperFlick from './PaperFlick';
 import RoomHoverLabel, { useRoomHoverStore } from './RoomHoverLabel';
 import { NOTEBOOK_PAGES } from './notebookPages';
+import { nextNotebookPage } from './notebookPaper.mjs';
 import { DEFAULT_CITY_SETTINGS } from './citySettings';
 import styles from '../../styles/Workbench.module.css';
 const Scene = dynamic(() => import('./WorkbenchScene'), { ssr:false });
@@ -56,22 +57,23 @@ export default function ProductWorkbench() {
   const [notebook,setNotebook] = useState(false);
   const [notebookPage,setNotebookPage] = useState(0);
   const [tornPages,setTornPages] = useState([]);
-  const [heldPaper,setHeldPaper] = useState(null);
+  const [paperInventory,setPaperInventory] = useState([]);
+  const heldPaper = paperInventory[0] || null;
   const [aimingPaper,setAimingPaper] = useState(false);
   const [paperInFlight,setPaperInFlight] = useState(false);
   const paperControls = useRef(null);
   const paperSequence = useRef(0);
   const tearPage = (page = notebookPage) => {
-    if (!notebook || heldPaper || page !== notebookPage || tornPages.includes(page)) return;
+    if (!notebook || page !== notebookPage || tornPages.includes(page)) return;
     setTornPages(pages => [...pages, page]);
-    setHeldPaper({ id: ++paperSequence.current, page });
-    setNotebook(false);
-    requestAnimationFrame(() => enterButton.current?.focus({ preventScroll: true }));
+    const ball = { id: ++paperSequence.current, page };
+    setPaperInventory(balls => [...balls, ball]);
+    setNotebookPage(nextNotebookPage(page, 1, [...tornPages, page], NOTEBOOK_PAGES.length));
   };
   const onPaperThrown = useCallback(() => {
     setPaperInFlight(true);
     setAimingPaper(false);
-    setHeldPaper(null);
+    setPaperInventory(balls => balls.slice(1));
     requestAnimationFrame(() => enterButton.current?.focus({ preventScroll: true }));
   }, []);
   const hoverStore = useRoomHoverStore();
@@ -174,7 +176,7 @@ export default function ProductWorkbench() {
     if(photo && event.key==='Escape'){event.preventDefault();closePhoto();return;}
     if(upliance && event.key==='Escape'){event.preventDefault();closeUpliance();return;}
     if(stickyNotes.editor || stickyNotes.placing){if(event.key==='Escape'){event.preventDefault();stickyNotes.cancel();}return;}
-    if(notebook && (event.key==='ArrowLeft'||event.key==='ArrowRight')){event.preventDefault();setNotebookPage(value=>Math.max(0,Math.min(NOTEBOOK_PAGES.length-1,value+(event.key==='ArrowRight'?1:-1))));return;}
+    if(notebook && (event.key==='ArrowLeft'||event.key==='ArrowRight')){event.preventDefault();setNotebookPage(value=>nextNotebookPage(value, event.key==='ArrowRight'?1:-1, tornPages, NOTEBOOK_PAGES.length));return;}
     if(event.key==='Escape'&&notebook){event.preventDefault();leaveNotebook();return;}
     if(event.key==='Escape'&&outside){event.preventDefault();setOutside(false);restoreFocus();return;}
     if(event.key==='Escape'&&entered){event.preventDefault();leave();return;}
@@ -240,7 +242,7 @@ export default function ProductWorkbench() {
       inert={desktop ? undefined : ''} aria-hidden={!desktop} aria-label="Vikram’s monitor desktop">
       <DesktopWorkspace musicPlaying={musicPlaying} room={{lampOn,notebookOpen,notebookPage,wearingGlasses,cityReady,notesReady:stickyNotes.ready,noteCount:stickyNotes.notes.length}} desktopRef={desktopRef} interactive={desktop} visible={!photo&&!outside&&!notebook&&!upliance} reduced={reduced} exitRef={exitButton} onLeave={leave} onOpenUpliance={openUplianceFromMonitor}/>
     </section>
-    {heldPaper && !focused && <PaperInventory onThrow={() => setAimingPaper(true)}/>}
+    {heldPaper && !focused && <PaperInventory count={paperInventory.length} onThrow={() => setAimingPaper(true)}/>}
     </div>
     {aimingPaper && <PaperFlick controls={paperControls} onCancel={() => { setAimingPaper(false); requestAnimationFrame(() => enterButton.current?.focus({preventScroll:true})); }}/>}
   </div>;

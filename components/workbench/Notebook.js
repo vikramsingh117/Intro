@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { CanvasTexture, DoubleSide, PlaneGeometry, SRGBColorSpace } from 'three';
-import { drawNotebook } from './drawNotebook';
+import { drawNotebook, drawNotebookDoodle } from './drawNotebook';
 import { NOTEBOOK_PAGES } from './notebookPages';
-import { deformTearingPage, visibleLeftPage } from './notebookPaper.mjs';
+import { deformTearingPage, visibleLeftPage, nextNotebookPage, notebookTurnLeaves, tornEdgeWidth } from './notebookPaper.mjs';
 
 export const NOTEBOOK_TARGET = [-1.7, -1.4, .65];
 export default function Notebook({ open, focused, page, reduced, onOpen, onPageChange, tornPages = [], canTear, onTear }) {
@@ -29,29 +29,51 @@ export default function Notebook({ open, focused, page, reduced, onOpen, onPageC
     window.addEventListener('blur', cancel);
     return () => { window.removeEventListener('blur', cancel); cancel(); };
   }, [page, focused, invalidate, peelingGeometry]);
-  const tornEdge = useMemo(() => {
+  const tornEdges = useMemo(() => NOTEBOOK_PAGES.map((_, page) => {
     const geometry = new PlaneGeometry(.07, 1.55, 1, 24);
     const positions = geometry.attributes.position;
-    for (let i = 1; i < positions.count; i += 2) positions.setX(i, .035 + Math.sin(i * 7.3) * .018);
+    for (let i = 1; i < positions.count; i += 2) positions.setX(i, tornEdgeWidth(page, geometry.attributes.uv.getY(i)) - .035);
     geometry.computeVertexNormals();
     return geometry;
-  }, []);
-  useEffect(() => () => tornEdge.dispose(), [tornEdge]);
+  }), []);
+  useEffect(() => () => tornEdges.forEach(geometry => geometry.dispose()), [tornEdges]);
   const textures = useMemo(() => NOTEBOOK_PAGES.map((entry, page) => {
     const canvas = document.createElement('canvas'); canvas.width = 1200; canvas.height = 840;
-    drawNotebook(canvas, entry, page);
+    drawNotebook(canvas, entry, page, NOTEBOOK_PAGES.length);
     const map = new CanvasTexture(canvas); map.colorSpace = SRGBColorSpace; map.anisotropy = 8;
     const left = map.clone(), right = map.clone();
     left.repeat.x = right.repeat.x = .5; right.offset.x = .5;
     return { map, left, right };
   }), []);
+  useEffect(() => {
+    let cancelled = false;
+    const images = NOTEBOOK_PAGES.filter(entry => entry.image).map(entry => {
+      const image = new Image();
+      image.onload = () => {
+        if (cancelled) return;
+        const index = NOTEBOOK_PAGES.indexOf(entry);
+        const paint = (pageIndex, side) => {
+          const texture = textures[pageIndex];
+          drawNotebookDoodle(texture.map.image, image, entry.crop, side);
+          texture.map.needsUpdate = texture.left.needsUpdate = texture.right.needsUpdate = true;
+        };
+        paint(index, 1);
+        // The reverse of this leaf appears on the following spread's left side.
+        if (index + 1 < textures.length) paint(index + 1, 0);
+        invalidate();
+      };
+      image.src = entry.image;
+      return image;
+    });
+    return () => { cancelled = true; images.forEach(image => { image.onload = null; }); };
+  }, [textures, invalidate]);
   useEffect(() => () => textures.forEach(({map,left,right}) => {map.dispose();left.dispose();right.dispose();}), [textures]);
   useEffect(() => {
     if(page === shownPage) return;
-    if(reduced || !open) { setShownPage(page); setFlip(null); turn.current=null; return; }
+    if(reduced || !open || (page > shownPage && tornPages.includes(shownPage))) { setShownPage(page); setFlip(null); turn.current=null; return; }
     const next = { from:shownPage, to:page, forward:page>shownPage, elapsed:0 };
     turn.current=next; setFlip(next); invalidate();
-  }, [page, shownPage, reduced, open, invalidate]);
+  }, [page, shownPage, reduced, open, invalidate, tornPages]);
   useEffect(() => { invalidate(); }, [open, reduced, flip, invalidate]);
   useEffect(() => {
     const from = cover.current?.rotation.z || 0;
@@ -87,7 +109,7 @@ export default function Notebook({ open, focused, page, reduced, onOpen, onPageC
   });
   const leftIndex = visibleLeftPage(flip && !flip.forward ? flip.to : shownPage, tornPages);
   const rightIndex = flip && flip.forward ? flip.to : shownPage;
-  const tornFlip = flip && tornPages.includes(flip.forward ? flip.from : flip.to);
+  const turningLeaves = flip ? notebookTurnLeaves(flip.from, flip.to) : [];
   const resetTear = event => {
     const gesture = tearGesture.current;
     if (!gesture || (event && event.pointerId !== gesture.id)) return;
@@ -110,7 +132,7 @@ export default function Notebook({ open, focused, page, reduced, onOpen, onPageC
     if (tearGesture.current?.id !== event.pointerId) return;
     event.stopPropagation();
     const progress = Math.min(1, tearDistance(event) / tearThreshold);
-    deformTearingPage(peelingGeometry, progress);
+    deformTearingPage(peelingGeometry, progress, shownPage);
     if (tearRemnant.current) tearRemnant.current.visible = progress > .02;
     invalidate();
   };
@@ -127,22 +149,26 @@ export default function Notebook({ open, focused, page, reduced, onOpen, onPageC
     event.stopPropagation();
     if(event.delta>5 || performance.now() < suppressClickUntil.current) return;
     if(!focused) { onOpen(); return; }
-    if(!turn.current && !coverMotion.current) onPageChange(Math.max(0, Math.min(NOTEBOOK_PAGES.length-1, shownPage+direction)));
+    if(!turn.current && !coverMotion.current) onPageChange(nextNotebookPage(shownPage, direction, tornPages, NOTEBOOK_PAGES.length));
   };
   return <group position={NOTEBOOK_TARGET} onClick={event=>{event.stopPropagation();if(event.delta<=5 && performance.now() >= suppressClickUntil.current)onOpen();}}>
     <mesh position={[.55,-.055,0]} castShadow receiveShadow><boxGeometry args={[1.16,.08,1.65]}/><meshStandardMaterial color="#354d43" roughness={.9}/></mesh>
-    <mesh position={[.55,0,0]} receiveShadow><boxGeometry args={[1.08,.07,1.55]}/><meshStandardMaterial color="#ded1ae"/></mesh>
+    <mesh position={[.55,0,0]} receiveShadow><boxGeometry args={[1.08,.07,1.55]}/><meshStandardMaterial color={NOTEBOOK_PAGES[shownPage].paperColor || '#ded1ae'}/></mesh>
     {open && <>
       <group ref={tearSheet} position={[0,.045,0]} onPointerDown={startTear} onPointerMove={moveTear} onPointerUp={endTear} onPointerCancel={resetTear} onLostPointerCapture={resetTear}>
-        <mesh geometry={peelingGeometry} userData={{precisePicking:true}} rotation={[-Math.PI/2,0,0]} position={[.55,0,0]} castShadow receiveShadow onClick={event=>selectPage(event,1)}><meshStandardMaterial map={tornPages.includes(rightIndex) ? null : textures[rightIndex].right} color={tornPages.includes(rightIndex) ? '#b9aa88' : '#ffffff'} roughness={.95} side={DoubleSide}/></mesh>
+        <mesh geometry={peelingGeometry} userData={{precisePicking:true}} rotation={[-Math.PI/2,0,0]} position={[.55,0,0]} castShadow receiveShadow onClick={event=>selectPage(event,1)}>{tornPages.includes(rightIndex) ? <meshBasicMaterial key="backing" color="#000000" toneMapped={false} side={DoubleSide}/> : <meshStandardMaterial key="page" map={textures[rightIndex].right} color="#ffffff" roughness={.95} side={DoubleSide}/>}</mesh>
       </group>
-      <mesh ref={tearRemnant} visible={false} geometry={tornEdge} rotation={[-Math.PI/2,0,0]} position={[.035,.048,0]}><meshStandardMaterial color="#eee3c8" roughness={1} side={DoubleSide}/></mesh>
-      {tornPages.includes(rightIndex) && <mesh geometry={tornEdge} rotation={[-Math.PI/2,0,0]} position={[.035,.048,0]}><meshStandardMaterial color="#eee3c8" roughness={1}/></mesh>}
-      {flip && <group ref={sheet} position={[0,.055,0]} rotation={[0,0,flip.forward ? 0 : Math.PI]}>
-        {tornFlip ? <mesh geometry={tornEdge} position={[.035,0,0]} rotation={[-Math.PI/2,0,0]} castShadow receiveShadow><meshStandardMaterial color="#eee3c8" roughness={1} side={DoubleSide}/></mesh> : <>
-        <mesh position={[.55,.002,0]} rotation={[-Math.PI/2,0,0]} castShadow receiveShadow><planeGeometry args={[1.1,1.55]}/><meshStandardMaterial map={textures[flip.forward ? flip.from : flip.to].right} roughness={.95}/></mesh>
-        <mesh position={[.55,-.002,0]} rotation={[Math.PI/2,0,Math.PI]} castShadow receiveShadow><planeGeometry args={[1.1,1.55]}/><meshStandardMaterial map={textures[visibleLeftPage(flip.forward ? flip.to : flip.from, tornPages)].left} roughness={.95}/></mesh>
-        </>}
+      <mesh ref={tearRemnant} visible={false} geometry={tornEdges[shownPage]} rotation={[-Math.PI/2,0,0]} position={[.035,.048,0]}><meshStandardMaterial color={NOTEBOOK_PAGES[shownPage].paperColor || '#eee3c8'} roughness={1} side={DoubleSide}/></mesh>
+      {tornPages.filter(index => !turningLeaves.includes(index)).map(index => <group key={index} position={[0,.049 + index * .0005,0]} rotation={[0,0,index < shownPage ? Math.PI : 0]}>
+        <mesh geometry={tornEdges[index]} rotation={[-Math.PI/2,0,0]} position={[.035,0,0]}><meshStandardMaterial color={NOTEBOOK_PAGES[index].paperColor || '#eee3c8'} roughness={1} side={DoubleSide}/></mesh>
+      </group>)}
+      {flip && <group ref={sheet} position={[0,.065,0]} rotation={[0,0,flip.forward ? 0 : Math.PI]}>
+        {turningLeaves.map((index, layer) => <group key={index} position={[0,layer * .003,0]} rotation={[0,0,(layer - (turningLeaves.length - 1) / 2) * .025]}>
+          {tornPages.includes(index) ? <mesh geometry={tornEdges[index]} position={[.035,0,0]} rotation={[-Math.PI/2,0,0]} castShadow receiveShadow><meshStandardMaterial color={NOTEBOOK_PAGES[index].paperColor || '#eee3c8'} roughness={1} side={DoubleSide}/></mesh> : <>
+            <mesh position={[.55,.002,0]} rotation={[-Math.PI/2,0,0]} castShadow receiveShadow><planeGeometry args={[1.1,1.55]}/><meshStandardMaterial map={textures[index].right} roughness={.95}/></mesh>
+            <mesh position={[.55,-.002,0]} rotation={[Math.PI/2,0,Math.PI]} castShadow receiveShadow><planeGeometry args={[1.1,1.55]}/><meshStandardMaterial map={textures[Math.min(index + 1, textures.length - 1)].left} roughness={.95}/></mesh>
+          </>}
+        </group>)}
       </group>}
     </>}
     <group ref={cover}>
