@@ -16,7 +16,7 @@ const MOBILE_WORK_LINES=[
   ['ADK cooking assistant','Recipe generation in chat','View-only archived chats','Past conversations accessible','React · Redux · GraphQL'],
   ['Session inspection','Recipe timing views','Resource sync workflow','Frontend + API integration'],
 ];
-export default function Upliance({ keyboardFocused=false, registerRoomAction, placement=DEFAULT_PROP_PLACEMENT.upliance, reduced=false, interactive=true, onHover=()=>{}, focused=false, zoomComplete=false, preloadArtwork=false, onReady, workPage=0, onSelect=()=>{}, controlsRef }) {
+export default function Upliance({ celebrating=false, keyboardFocused=false, registerRoomAction, placement=DEFAULT_PROP_PLACEMENT.upliance, reduced=false, interactive=true, onHover=()=>{}, focused=false, zoomComplete=false, preloadArtwork=false, onReady, workPage=0, onSelect=()=>{}, controlsRef }) {
   const {scene}=useLoader(GLTFLoader,'/models/upliance/interactive.glb');
   const display=useLoader(TextureLoader,'/images/upliance-display.svg');
   // Showcase artwork must never suspend the appliance itself.
@@ -94,7 +94,7 @@ export default function Upliance({ keyboardFocused=false, registerRoomAction, pl
   const ledMaterial=useMemo(()=>new MeshStandardMaterial({color:'#b0d4ff',emissive:'#3878ff',emissiveIntensity:0,transparent:true,opacity:0,depthWrite:false}),[]);
   useEffect(()=>()=>ledMaterial.dispose(),[ledMaterial]);
   useLayoutEffect(()=>{const transform=new Object3D();LEDS.forEach((angle,i)=>{transform.position.set(Math.cos(angle)*9.95,0,Math.sin(angle)*9.95);transform.rotation.y=-angle;transform.updateMatrix();leds.current.setMatrixAt(i,transform.matrix);});leds.current.instanceMatrix.needsUpdate=true;invalidate();},[invalidate]);
-  const active=focused||(interactive&&(hovered||latched||keyboardFocused));
+  const active=celebrating||focused||(interactive&&(hovered||latched||keyboardFocused));
   const {model,lidPivot,scale,offset,hitSize,hitCenter,glowMaterials}=useMemo(()=>{
     const model=scene.clone(true);
     const bounds=new Box3().setFromObject(model),size=bounds.getSize(new Vector3()),center=bounds.getCenter(new Vector3());

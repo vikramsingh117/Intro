@@ -1,3 +1,4 @@
+import useBasketPulse from './useBasketPulse';
 import useTrackedState from './useTrackedState';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useFrame, useLoader, useThree } from '@react-three/fiber';
@@ -5,20 +6,21 @@ import { Box3, Object3D, Plane, Vector3 } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import InteractiveObject from './InteractiveObject';
 import useSwitchSound from './useSwitchSound';
-import { createLightRope, stepLightRope } from './lightRope.mjs';
+import { createLightRope, stepLightRope, kickLightRope } from './lightRope.mjs';
 
 const CEILING_HEIGHT = 24;
 // Keep the shade in the room framing while retaining the ceiling connection.
 const HANG_HEIGHT = 7.2;
 const NECK_OFFSET=2.96;
 const ROPE_LENGTH=CEILING_HEIGHT-HANG_HEIGHT+NECK_OFFSET;
-export default function CeilingLight({ keyboardFocused, registerRoomAction, onHover, reduced, interactive=true, onDragging }) {
+export default function CeilingLight({ basketScore, keyboardFocused, registerRoomAction, onHover, reduced, interactive=true, onDragging }) {
   const [on,setOn]=useState(true);
   const playSwitch=useSwitchSound();
   const {scene}=useLoader(GLTFLoader,'/models/ceiling-light/optimized.gltf');
   const {invalidate,camera}=useThree();
   const fixture=useRef(null),wire=useRef(null),gesture=useRef(null),suppressClick=useRef(false);
   const rope=useRef(null);
+  const spot=useRef(null), fill=useRef(null);
   const segment=useMemo(()=>new Object3D(),[]);
   const direction=useMemo(()=>new Vector3(),[]);
   const up=useMemo(()=>new Vector3(0,1,0),[]);
@@ -28,6 +30,10 @@ export default function CeilingLight({ keyboardFocused, registerRoomAction, onHo
     if(reduced){rope.current.points.forEach((p,i)=>p.set(0,-ROPE_LENGTH*i/32,0));rope.current.previous.forEach((p,i)=>p.copy(rope.current.points[i]));rope.current.asleep=true;}
     invalidate();
   },[reduced,invalidate]);
+  useEffect(()=>{
+    if (!basketScore || reduced || gesture.current) return;
+    kickLightRope(rope.current); invalidate();
+  },[basketScore,reduced,invalidate]);
   const release=useCallback(()=>{
     const drag=gesture.current;if(!drag)return;
     gesture.current=null;suppressClick.current=drag.moved;
@@ -136,6 +142,12 @@ export default function CeilingLight({ keyboardFocused, registerRoomAction, onHo
   },[on,bulbMaterials,invalidate]);
   useEffect(()=>()=>materials.forEach(material=>material.dispose()),[materials]);
   useEffect(()=>()=>geometries.forEach(geometry=>geometry.dispose()),[geometries]);
+  useBasketPulse(basketScore, reduced, gain => {
+    const intensity = gain === null ? (on ? 1 : 0) : gain;
+    if (spot.current) spot.current.intensity = 65 * intensity;
+    if (fill.current) fill.current.intensity = 3 * intensity;
+    bulbMaterials.forEach(material=>{material.emissiveIntensity=3.5*intensity;});
+  });
   const toggle=useCallback(()=>{playSwitch(!on);setOn(value=>!value);onHover(on?'Ceiling light · turn on':'Ceiling light · turn off');},[on,onHover,playSwitch]);
   useEffect(()=>registerRoomAction?.('ceiling-light',toggle),[registerRoomAction,toggle]);
   useTrackedState({ceilingLight:on});
@@ -156,10 +168,10 @@ export default function CeilingLight({ keyboardFocused, registerRoomAction, onHo
       </group>
     </InteractiveObject>
     <primitive object={lightTarget}/>
-    <spotLight position={lightPosition} target={lightTarget} color="#ffd09a" intensity={on?65:0} distance={14} decay={2}
-      angle={Math.PI/3} penumbra={1} castShadow shadow-mapSize={[1024,1024]}
+    <spotLight userData={{cacheStationaryShadow:true}} ref={spot} position={lightPosition} target={lightTarget} color="#ffd09a" intensity={on?65:0} distance={14} decay={2}
+      angle={Math.PI/3} penumbra={1} castShadow shadow-mapSize={[512,512]}
       shadow-camera-near={.1} shadow-camera-far={14} shadow-normalBias={.025} shadow-bias={-.0001}/>
-    <pointLight position={bulb} color="#ffd09a" intensity={on?3:0} distance={5} decay={2}/>
+    <pointLight ref={fill} position={bulb} color="#ffd09a" intensity={on?3:0} distance={5} decay={2}/>
     </group></group>
   </group>;
 }

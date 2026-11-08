@@ -101,7 +101,7 @@ export default function CityExterior({ onReady, settings }) {
   }, [model, settings.emissive, invalidate]);
   return <group position={[settings.x, settings.y, settings.z]}>
     <group scale={settings.scale} rotation={[0,settings.rotation*Math.PI/180,0]}><primitive object={model} /></group>
-    <pointLight position={[-5, 10, 8]} color="#ffd39a" intensity={settings.warm} castShadow shadow-intensity={settings.shadows} shadow-mapSize={[512, 512]} shadow-bias={-.001} shadow-normalBias={.015} distance={40} decay={2} />
+    <pointLight userData={{cacheStationaryShadow:true}} position={[-5, 10, 8]} color="#ffd39a" intensity={settings.warm} castShadow shadow-intensity={settings.shadows} shadow-mapSize={[512, 512]} shadow-bias={-.001} shadow-normalBias={.015} distance={40} decay={2} />
     <pointLight position={[6, 8, -3]} color="#93c9dd" intensity={settings.cool} distance={40} decay={2} />
   </group>;
 }

@@ -10,19 +10,20 @@ function matrixChanged(matrix, saved) {
 // Compare caster transforms rather than invalidating on every scene render.
 // Non-casting animation (notably the hanging shade and rope) leaves the cached
 // stationary-light maps alone. Geometry versions cover the notebook's tear.
-export function createStationaryShadowCache() {
+export function createStationaryShadowCache({ motionInterval = 0 } = {}) {
   const casters = new Map(), lights = new Map();
-  let frame = 0;
+  let frame = 0, time = 0;
   return {
-    update(scene) {
-      frame++;
+    update(scene, delta = 1 / 60) {
+      frame++; time += Math.max(0, delta);
+      let pending = false;
       let dirty = false;
       scene.updateMatrixWorld();
       scene.traverseVisible(object => {
         if (object.isLight && object.userData.cacheStationaryShadow && object.shadow) {
           let saved = lights.get(object);
           if (!saved) {
-            saved = { matrix: new Float64Array(16), target: new Float64Array(16) };
+            saved = { matrix: new Float64Array(16), target: new Float64Array(16), pending: false, lastRefresh: -Infinity };
             lights.set(object, saved);
           }
           saved.frame = frame;
@@ -56,11 +57,20 @@ export function createStationaryShadowCache() {
           light.target.updateWorldMatrix(true, false);
           if (matrixChanged(light.target.matrixWorld, saved.target)) lightChanged = true;
         }
-        if (saved.intensity !== light.intensity || saved.castShadow !== light.castShadow) lightChanged = true;
-        saved.intensity = light.intensity; saved.castShadow = light.castShadow;
+        if (saved.castShadow !== light.castShadow) lightChanged = true;
+        saved.castShadow = light.castShadow;
         light.shadow.autoUpdate = false;
-        if (dirty || lightChanged || !light.shadow.map) light.shadow.needsUpdate = true;
+        const moving = dirty || lightChanged;
+        saved.pending ||= moving;
+        // Reuse maps between motion samples; always render the final settled pose.
+        // Brightness pulses do not change shadow geometry and need no new map.
+        if (!light.shadow.map || (saved.pending && (!moving || time - saved.lastRefresh >= motionInterval))) {
+          light.shadow.needsUpdate = true;
+          saved.lastRefresh = time; saved.pending = false;
+        }
+        pending ||= saved.pending;
       }
+      return pending;
     },
     dispose() {
       for (const light of lights.keys()) { light.shadow.autoUpdate = true; light.shadow.needsUpdate = true; }

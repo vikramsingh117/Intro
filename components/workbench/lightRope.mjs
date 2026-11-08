@@ -50,3 +50,15 @@ export function stepLightRope(rope,elapsed,target){
     points.forEach((p,i)=>{p.set(0,-length*i/last,0);previous[i].copy(p);});rope.asleep=true;
   }
 }
+
+// A velocity impulse keeps a scored basket on the same simulation as hand dragging.
+export function kickLightRope(rope) {
+  if (!rope) return;
+  const last = rope.points.length - 1;
+  for (let i = 1; i <= last; i++) {
+    const weight = (i / last) ** 3;
+    rope.previous[i].x -= .035 * weight;
+    rope.previous[i].z += .018 * weight;
+  }
+  rope.asleep = false; rope.quiet = 0; rope.delay = 0;
+}

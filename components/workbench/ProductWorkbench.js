@@ -9,7 +9,8 @@ import StickyNotesUI from './StickyNotesUI';
 import GlassesOverlay from './GlassesOverlay';
 import { DEFAULT_PROP_PLACEMENT } from './propPlacement';
 import DesktopWorkspace from './DesktopWorkspace';
-import PaperInventory from './PaperInventory';
+import { CELEBRATION_MS } from './basketball.mjs';
+import { initialPaperInventory, consumePaper, refillPage, STARTING_PAPER_COUNT } from './paperInventoryState.mjs';
 import PaperFlick from './PaperFlick';
 import RoomHoverLabel, { useRoomHoverStore } from './RoomHoverLabel';
 import { NOTEBOOK_PAGES } from './notebookPages';
@@ -27,6 +28,7 @@ const ROOM_OBJECTS = [
   {id:'photo',label:'Photo frame · take a closer look'},
   {id:'window',label:'Window · city after dark'},
   {id:'notebook',label:'Notebook · ideas & sketches'},
+  {id:'paper-pile',label:'Paper balls · pick up to throw'},
   {id:'upliance',label:'Upliance · explore my work'},
   {id:'desk-lamp',label:'Desk lamp · toggle light'},
   {id:'radio',label:'Radio · toggle music'},
@@ -57,12 +59,20 @@ export default function ProductWorkbench() {
   const [notebook,setNotebook] = useState(false);
   const [notebookPage,setNotebookPage] = useState(0);
   const [tornPages,setTornPages] = useState([]);
-  const [paperInventory,setPaperInventory] = useState([]);
+  const [paperInventory,setPaperInventory] = useState(initialPaperInventory);
   const heldPaper = paperInventory[0] || null;
   const [aimingPaper,setAimingPaper] = useState(false);
   const [paperInFlight,setPaperInFlight] = useState(false);
+  const [basketScore,setBasketScore] = useState(0);
+  const [celebrating,setCelebrating] = useState(false);
+  const onBasket = useCallback(() => { setBasketScore(value=>value+1); setCelebrating(true); }, []);
+  useEffect(() => {
+    if (!basketScore) return;
+    const timer = setTimeout(()=>setCelebrating(false), CELEBRATION_MS);
+    return () => clearTimeout(timer);
+  }, [basketScore]);
   const paperControls = useRef(null);
-  const paperSequence = useRef(0);
+  const paperSequence = useRef(STARTING_PAPER_COUNT);
   const tearPage = (page = notebookPage) => {
     if (!notebook || page !== notebookPage || tornPages.includes(page)) return;
     setTornPages(pages => [...pages, page]);
@@ -70,12 +80,22 @@ export default function ProductWorkbench() {
     setPaperInventory(balls => [...balls, ball]);
     setNotebookPage(nextNotebookPage(page, 1, [...tornPages, page], NOTEBOOK_PAGES.length));
   };
-  const onPaperThrown = useCallback(() => {
+  const pickUpPaper = useCallback(() => setAimingPaper(true), []);
+  const onPaperThrown = useCallback(id => {
     setPaperInFlight(true);
-    setAimingPaper(false);
-    setPaperInventory(balls => balls.slice(1));
-    requestAnimationFrame(() => enterButton.current?.focus({ preventScroll: true }));
+    setPaperInventory(balls => consumePaper(balls, id));
   }, []);
+  useEffect(() => {
+    if (aimingPaper && !paperInventory.length) {
+      setAimingPaper(false);
+      const instructionPage = NOTEBOOK_PAGES.findIndex(page => page.doodle === 'tear');
+      const page = refillPage(NOTEBOOK_PAGES.length, instructionPage, tornPages);
+      if (page !== null) {
+        returnFocus.current = enterButton.current;
+        setNotebookPage(page); setNotebookOpen(true); setNotebook(true);
+      } else requestAnimationFrame(() => enterButton.current?.focus({ preventScroll: true }));
+    }
+  }, [aimingPaper, paperInventory.length, tornPages]);
   const hoverStore = useRoomHoverStore();
   const setHoverLabel = hoverStore.setLabel;
   const notebookText = useRef(null), returnFocus = useRef(null);
@@ -203,7 +223,7 @@ export default function ProductWorkbench() {
     <div style={{display:'contents'}} inert={aimingPaper ? '' : undefined} aria-hidden={aimingPaper ? true : undefined}>
     <div className={styles.scene} onPointerMoveCapture={releaseKeyboardSelection} onPointerDownCapture={releaseKeyboardSelection} style={{pointerEvents:photo || entered || upliance ? 'none' : undefined}} aria-hidden={desktop} ref={enterButton} role="group" aria-label="Interactive room. Use arrow keys to select objects, Enter to activate, and Escape to return." tabIndex={photo || desktop || outside || notebook || !!upliance ? -1 : 0}>
       <div hidden={photo || desktop || outside || notebook || !!upliance} className={styles.sceneLabel}>VIKRAM’S WORKSPACE <span>01 / ENTER TO EXPLORE</span></div>
-      <Boundary onEnter={()=>{setEntered(true);setDesktop(true);}}><Scene photo={photo} onPhotoOpen={openPhoto} musicPlaying={musicPlaying} onPlaybackChange={handlePlaybackChange} onNotebookTear={tearPage} onPaperMotionChange={setPaperInFlight} aimingPaper={aimingPaper} heldPaper={heldPaper} paperControls={paperControls} onPaperThrown={onPaperThrown} tornPages={tornPages} keyboardTarget={keyboardTarget?.id} registerRoomAction={registerRoomAction} upliance={upliance} upliancePage={upliancePage} uplianceArrived={uplianceArrived} uplianceControlsRef={uplianceBack} onUplianceArrive={()=>setUplianceArrived(true)} onUplianceSelect={view=>{if(photo||entered||outside||notebook||stickyNotes.editor||stickyNotes.placing)return;rememberFocus();setUplianceArrived(false);setUpliance(view);}} propPlacement={propPlacement} noteEditorRef={noteEditorRef} stickyNotes={stickyNotes} wearingGlasses={wearingGlasses} onWearGlasses={()=>setWearingGlasses(true)} citySettings={citySettings} notebookOpen={notebookOpen} onNotebookPageChange={setNotebookPage} onNotebookExit={leaveNotebook} notebook={notebook} notebookPage={notebookPage} onNotebookOpen={openNotebook} onHover={handleHover} desktopRef={desktopRef} desktop={desktop} outside={outside} onCityReady={setCityReady} onWindowSelect={openWindow} lampOn={lampOn} onLampToggle={()=>setLampOn(value=>!value)} entered={entered} reduced={reduced} onEnter={openMonitor} onArrive={()=>setDesktop(true)} /></Boundary>
+      <Boundary onEnter={()=>{setEntered(true);setDesktop(true);}}><Scene paperInventory={paperInventory} onPickUpPaper={pickUpPaper} basketScore={basketScore} celebrating={celebrating} onBasket={onBasket} photo={photo} onPhotoOpen={openPhoto} musicPlaying={musicPlaying} onPlaybackChange={handlePlaybackChange} onNotebookTear={tearPage} onPaperMotionChange={setPaperInFlight} aimingPaper={aimingPaper} heldPaper={heldPaper} paperControls={paperControls} onPaperThrown={onPaperThrown} tornPages={tornPages} keyboardTarget={keyboardTarget?.id} registerRoomAction={registerRoomAction} upliance={upliance} upliancePage={upliancePage} uplianceArrived={uplianceArrived} uplianceControlsRef={uplianceBack} onUplianceArrive={()=>setUplianceArrived(true)} onUplianceSelect={view=>{if(photo||entered||outside||notebook||stickyNotes.editor||stickyNotes.placing)return;rememberFocus();setUplianceArrived(false);setUpliance(view);}} propPlacement={propPlacement} noteEditorRef={noteEditorRef} stickyNotes={stickyNotes} wearingGlasses={wearingGlasses} onWearGlasses={()=>setWearingGlasses(true)} citySettings={citySettings} notebookOpen={notebookOpen} onNotebookPageChange={setNotebookPage} onNotebookExit={leaveNotebook} notebook={notebook} notebookPage={notebookPage} onNotebookOpen={openNotebook} onHover={handleHover} desktopRef={desktopRef} desktop={desktop} outside={outside} onCityReady={setCityReady} onWindowSelect={openWindow} lampOn={lampOn} onLampToggle={()=>setLampOn(value=>!value)} entered={entered} reduced={reduced} onEnter={openMonitor} onArrive={()=>setDesktop(true)} /></Boundary>
       <div hidden={photo || desktop || notebook || !!upliance} className={styles.enterRow}><RoomHoverLabel store={hoverStore} outside={outside} cityReady={cityReady} entered={entered}/></div>
     </div>
     {upliance && <div ref={uplianceBack} tabIndex={-1} className={styles.uplianceControls} onClick={event=>{if(event.target===event.currentTarget)closeUpliance();}} style={{opacity:uplianceArrived?1:0}} inert={uplianceArrived?undefined:''} aria-hidden={!uplianceArrived} aria-label="Upliance work. Click either side of the screen or use arrow keys to change pages. Click outside or press Escape to return to the desk." onKeyDown={event=>{
@@ -235,12 +255,11 @@ export default function ProductWorkbench() {
     <StickyNotesUI api={stickyNotes} elementRef={noteEditorRef}/>
     {wearingGlasses && <GlassesOverlay reduced={reduced} onRemove={removeGlasses}/>}
     <section ref={desktopRef} className={`${styles.desktop} ${styles.monitorDesktop}`}
-      style={{pointerEvents:desktop ? 'auto' : 'none', opacity:photo || outside || notebook || upliance || (!desktop && (aimingPaper || paperInFlight)) ? 0 : 1}}
+      style={{pointerEvents:desktop ? 'auto' : 'none', opacity:celebrating || photo || outside || notebook || upliance || (!desktop && (aimingPaper || paperInFlight)) ? 0 : 1}}
       inert={desktop ? undefined : ''} aria-hidden={!desktop} aria-label="Vikram’s monitor desktop">
       <DesktopWorkspace musicPlaying={musicPlaying} room={{lampOn,notebookOpen,notebookPage,wearingGlasses,cityReady,notesReady:stickyNotes.ready,noteCount:stickyNotes.notes.length}} desktopRef={desktopRef} interactive={desktop} visible={!photo&&!outside&&!notebook&&!upliance} reduced={reduced} exitRef={exitButton} onLeave={leave} onOpenUpliance={openUplianceFromMonitor}/>
     </section>
-    {heldPaper && !focused && <PaperInventory count={paperInventory.length} onThrow={() => setAimingPaper(true)}/>}
     </div>
-    {aimingPaper && <PaperFlick controls={paperControls} onCancel={() => { setAimingPaper(false); requestAnimationFrame(() => enterButton.current?.focus({preventScroll:true})); }}/>}
+    {aimingPaper && <PaperFlick remaining={paperInventory.length} controls={paperControls} onCancel={() => { setAimingPaper(false); requestAnimationFrame(() => enterButton.current?.focus({preventScroll:true})); }}/>}
   </div>;
 }

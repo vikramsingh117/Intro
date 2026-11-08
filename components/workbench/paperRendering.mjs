@@ -1,3 +1,6 @@
+import { Box3, Vector3 } from 'three';
+import { PAPER_RADIUS } from './paperInventoryState.mjs';
+
 const noRaycast = () => null;
 
 export function preparePaperMeshes(model, aiming) {
@@ -9,4 +12,15 @@ export function preparePaperMeshes(model, aiming) {
     node.receiveShadow = !aiming;
     node.raycast = noRaycast;
   });
+}
+
+export function createPaperModel(asset, aiming) {
+  const clone = asset.clone(true);
+  const bounds = new Box3().setFromObject(clone);
+  const center = bounds.getCenter(new Vector3()), size = bounds.getSize(new Vector3());
+  const scale = PAPER_RADIUS * 2 / Math.max(size.x, size.y, size.z);
+  clone.scale.multiplyScalar(scale);
+  clone.position.copy(center).multiplyScalar(-scale);
+  preparePaperMeshes(clone, aiming);
+  return clone;
 }

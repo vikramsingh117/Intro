@@ -1,10 +1,12 @@
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
+import useBasketPulse from './useBasketPulse';
 import useSwitchSound from './useSwitchSound';
 import { useLoader, useThree } from '@react-three/fiber';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { Box3, Vector3 } from 'three';
 
-export default function DeskLamp({ on, onToggle, registerRoomAction }) {
+export default function DeskLamp({ basketScore, reduced, on, onToggle, registerRoomAction }) {
+  const light = useRef(null);
   const playSwitch=useSwitchSound();
   const toggle=useCallback(()=>{playSwitch(!on);onToggle();},[on,onToggle,playSwitch]);
   useEffect(()=>registerRoomAction?.('desk-lamp',toggle),[registerRoomAction,toggle]);
@@ -33,10 +35,15 @@ export default function DeskLamp({ on, onToggle, registerRoomAction }) {
     invalidate();
   }, [on, materials, invalidate]);
   useEffect(() => () => { materials.forEach(material => material.dispose()); gl.domElement.style.cursor = ''; }, [materials, gl]);
+  useBasketPulse(basketScore, reduced, gain => {
+    const intensity = gain === null ? (on ? 1 : 0) : gain;
+    if (light.current) light.current.intensity = 32 * intensity;
+    materials.forEach(material => { if (material.name.includes('bulb_glow')) material.emissiveIntensity = 2.3 * intensity; });
+  });
   return <group position={[-3.35, -1.49, -.45]}>
     <group onClick={event => { event.stopPropagation(); if (event.delta <= 5) toggle(); }}>
       <group scale={scale}><primitive object={model} position={offset} /></group>
     </group>
-    <pointLight userData={{cacheStationaryShadow:true}} position={bulb} color="#ffc276" intensity={on ? 32 : 0} distance={8} decay={2} castShadow shadow-mapSize={[512,512]} shadow-normalBias={.03} />
+    <pointLight ref={light} userData={{cacheStationaryShadow:true}} position={bulb} color="#ffc276" intensity={on ? 32 : 0} distance={8} decay={2} castShadow shadow-mapSize={[512,512]} shadow-normalBias={.03} />
   </group>;
 }

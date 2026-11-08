@@ -1,0 +1,11 @@
+Model Information:
+* title:	Basketball Hoop
+* source:	https://sketchfab.com/3d-models/basketball-hoop-d5e0f44a6ddd4bb792ec085110f99f28
+* author:	President1990 (https://sketchfab.com/President1990)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Basketball Hoop" (https://sketchfab.com/3d-models/basketball-hoop-d5e0f44a6ddd4bb792ec085110f99f28) by President1990 (https://sketchfab.com/President1990) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
