@@ -20,7 +20,7 @@ export default function PaperFlick({ controls, onCancel }) {
     controls.current?.move(event.clientX - g.x, event.clientY - g.y);
     return g;
   };
-  return <div ref={surface} className={styles.paperFlick} role="dialog" aria-modal="true" aria-label="Flick the paper ball to throw it" tabIndex={-1}
+  return <div ref={surface} data-native-cursor className={styles.paperFlick} role="dialog" aria-modal="true" aria-label="Flick the paper ball to throw it" tabIndex={-1}
     onKeyDown={event => {
       event.stopPropagation();
       if (event.key === 'Escape') { event.preventDefault(); onCancel(); }

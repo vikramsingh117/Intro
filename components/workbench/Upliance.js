@@ -16,30 +16,40 @@ const MOBILE_WORK_LINES=[
   ['ADK cooking assistant','Recipe generation in chat','View-only archived chats','Past conversations accessible','React · Redux · GraphQL'],
   ['Session inspection','Recipe timing views','Resource sync workflow','Frontend + API integration'],
 ];
-export default function Upliance({ keyboardFocused=false, registerRoomAction, placement=DEFAULT_PROP_PLACEMENT.upliance, reduced=false, interactive=true, onHover=()=>{}, focused=false, zoomComplete=false, onReady, workPage=0, onSelect=()=>{}, controlsRef }) {
+export default function Upliance({ keyboardFocused=false, registerRoomAction, placement=DEFAULT_PROP_PLACEMENT.upliance, reduced=false, interactive=true, onHover=()=>{}, focused=false, zoomComplete=false, preloadArtwork=false, onReady, workPage=0, onSelect=()=>{}, controlsRef }) {
   const {scene}=useLoader(GLTFLoader,'/models/upliance/interactive.glb');
   const display=useLoader(TextureLoader,'/images/upliance-display.svg');
   // Showcase artwork must never suspend the appliance itself.
-  const frameCache=useRef({});
   const [loadedFrames,setLoadedFrames]=useState({});
   useEffect(()=>{onReady?.();},[onReady]);
   useEffect(()=>{
-    if(!focused||!zoomComplete||workPage>2)return;
-    if(frameCache.current[workPage])return;
+    if(!preloadArtwork)return;
     let cancelled=false;
-    const urls=workPage===0?APPLIANCE_FRAME_URLS:workPage===1?APP_FRAME_URLS:CHATBOT_FRAME_URLS;
-    const images=urls.map(url=>{
-      const image=new Image();
-      image.src=url;
-      return image;
+    const idle=()=>new Promise(resolve=>{
+      if(window.requestIdleCallback)window.requestIdleCallback(resolve,{timeout:1500});
+      else window.setTimeout(resolve,50);
     });
-    Promise.all(images.map(image=>image.decode().then(()=>({image})).catch(()=>({image:null})))).then(frames=>{
-      if(cancelled)return;
-      frameCache.current[workPage]=frames;
-      setLoadedFrames(current=>({...current,[workPage]:frames}));
-    });
+    // Last priority: decode one SVG at a time, yielding between frames.
+    // This runs independently of whether the appliance is ever opened.
+    async function preload(){
+      for(const [page,urls] of [APPLIANCE_FRAME_URLS,APP_FRAME_URLS,CHATBOT_FRAME_URLS].entries()){
+        const frames=[];
+        for(const url of urls){
+          await idle();
+          if(cancelled)return;
+          const image=new Image();
+          image.fetchPriority='low';
+          image.src=url;
+          try{await image.decode();frames.push({image});}
+          catch{frames.push({image:null});}
+          if(cancelled)return;
+        }
+        setLoadedFrames(current=>({...current,[page]:frames}));
+      }
+    }
+    preload();
     return ()=>{cancelled=true;};
-  },[focused,zoomComplete,workPage]);
+  },[preloadArtwork]);
   display.colorSpace=SRGBColorSpace;
   const {invalidate,gl,camera,size,scene:renderScene}=useThree();
   const projectedEdge=useMemo(()=>new Vector3(),[]);
@@ -56,7 +66,8 @@ export default function Upliance({ keyboardFocused=false, registerRoomAction, pl
     },1500);
     return ()=>window.clearInterval(timer);
   },[focused,zoomComplete,workPage,frameCount,reduced]);
-  const workTextures=useMemo(()=>(loadedFrames[workPage]||[undefined]).map(imageTexture=>{
+  const activeFrames=loadedFrames[workPage];
+  const workTextures=useMemo(()=>(activeFrames||[undefined]).map(imageTexture=>{
     const canvas=document.createElement('canvas');canvas.width=1200;canvas.height=740;
     const ctx=canvas.getContext('2d'),page=UPLIANCE_WORK[workPage];
     const mobile=size.width<=760;
@@ -75,7 +86,7 @@ export default function Upliance({ keyboardFocused=false, registerRoomAction, pl
     }
     ctx.fillStyle='#397eff';ctx.fillRect(60,686,1080*(workPage+1)/UPLIANCE_WORK.length,5);
     const texture=new CanvasTexture(canvas);texture.colorSpace=SRGBColorSpace;return texture;
-  }),[workPage,loadedFrames,size.width]);
+  }),[workPage,activeFrames,size.width]);
   const workTexture=workTextures[sequence.page===workPage&&zoomComplete&&!reduced?sequence.frame:0]||workTextures[0];
   useEffect(()=>()=>workTextures.forEach(texture=>texture.dispose()),[workTextures]);
   useEffect(()=>{invalidate();},[workTexture,invalidate]);

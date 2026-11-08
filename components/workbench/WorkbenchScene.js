@@ -1,12 +1,14 @@
 import { useAfterHoursTransition } from '../AfterHoursTransition';
 import { Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { Canvas, useFrame, useLoader, useThree } from '@react-three/fiber';
+import { Canvas, events as createPointerEvents, useFrame, useLoader, useThree } from '@react-three/fiber';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import CityExterior, { NightEffects } from './CityExterior';
 import PhotoFrame, { PHOTO_TARGET } from './PhotoFrame';
 import Notebook, { NOTEBOOK_TARGET } from './Notebook';
 import PaperBalls from './PaperBalls';
+import PreloadAssets from './PreloadAssets';
+import { isRoomHover } from './roomHover.mjs';
 import StationaryShadows from './StationaryShadows';
 import InteractiveObject from './InteractiveObject';
 import NoteProjection from './NoteProjection';
@@ -23,6 +25,14 @@ import Upliance from './Upliance';
 import Chair from './Chair';
 import Keyboard from './Keyboard';
 import { ACESFilmicToneMapping, Euler, Quaternion, Matrix4, SRGBColorSpace, TextureLoader, TOUCH, Vector3 } from 'three';
+
+function roomEvents(store) {
+  const events = createPointerEvents(store);
+  return { ...events, compute(event, state, previous) {
+    state.raycaster.roomHoverOnly = isRoomHover(event, state.internal.capturedMap.size > 0);
+    events.compute(event, state, previous);
+  } };
+}
 
 function FirstRoomFrame({ onReady }) {
   const frames = useRef(0);
@@ -104,15 +114,18 @@ function Monitor({ onEnter, desktopRef, desktop, musicPlaying, onReady }) {
     </group>
   </group>;
 }
-// At the 24-unit zoom limit, keep the camera inside the left wall at x=-9.2.
+// Original desk-centred viewing target.
+const ROOM_TARGET = [0, .2128, -.51];
+// Keep both orbit extremes inside the room at the 24-unit zoom-out limit.
 const ROOM_MIN_AZIMUTH = -22 * Math.PI / 180;
+const ROOM_MAX_AZIMUTH = 1.2;
 
 function Camera({ photo, pauseCamera, upliance, onUplianceArrive, entered, outside, notebook, citySettings, reduced, onArrive, interactionBlocked, noteMode, noteX, noteY }) {
   const { camera, gl, size, invalidate } = useThree();
   const { cameraX, cameraY, cameraZ, targetX, targetY, targetZ, fov } = citySettings;
   const roomCameraZ=size.width<=760?Math.max(18.5,11.2/(size.width/size.height)):14.8;
   const roomHome = useMemo(() => {
-    const target = new Vector3(0,.2128,-.51);
+    const target = new Vector3(...ROOM_TARGET);
     const offset = new Vector3(6,3.5,roomCameraZ).sub(target);
     // Keep the responsive starting view inside the chosen zoom-out limit.
     return target.add(offset.clampLength(0,22));
@@ -126,16 +139,16 @@ function Camera({ photo, pauseCamera, upliance, onUplianceArrive, entered, outsi
   useLayoutEffect(()=>{
     if(initialRoomCamera.current)return;
     initialRoomCamera.current=true;
-    const target = new Vector3(0,.2128,-.51);
+    const target = new Vector3(...ROOM_TARGET);
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     camera.position.copy(reducedMotion ? roomHome : roomHome.clone().sub(target).setLength(24).add(target));
-    camera.lookAt(0,.2128,-.51);
+    camera.lookAt(...ROOM_TARGET);
     camera.updateProjectionMatrix();
     invalidate();
   },[camera,roomHome,invalidate]);
   useEffect(() => {
     const controls = new OrbitControls(camera, gl.domElement);
-    controls.target.set(0, .2128, -.51);
+    controls.target.set(...ROOM_TARGET);
     controls.enablePan = false;
     controls.touches.ONE = TOUCH.ROTATE;
     controls.touches.TWO = TOUCH.DOLLY_PAN;
@@ -145,7 +158,7 @@ function Camera({ photo, pauseCamera, upliance, onUplianceArrive, entered, outsi
     controls.minDistance = 6;
     controls.maxDistance = 24;
     controls.minAzimuthAngle = ROOM_MIN_AZIMUTH;
-    controls.maxAzimuthAngle = 1.2;
+    controls.maxAzimuthAngle = ROOM_MAX_AZIMUTH;
     controls.minPolarAngle = .75;
     controls.maxPolarAngle = 1.55;
     controls.rotateSpeed = .55;
@@ -159,7 +172,7 @@ function Camera({ photo, pauseCamera, upliance, onUplianceArrive, entered, outsi
     if(orbit.current) orbit.current.enabled = !interactionBlocked && !photo && !entered && !outside && !notebook && !upliance && !!transition.current?.done;
   }, [interactionBlocked, entered, outside, notebook, upliance, photo]);
   useEffect(() => { if (orbit.current) orbit.current.enableDamping = !reduced; }, [reduced]);
-  const lookTarget = useRef(new Vector3(0, .2128, -.51));
+  const lookTarget = useRef(new Vector3(...ROOM_TARGET));
   useEffect(() => {
     const element=gl.domElement, look=windowLook.current;
     look.center=null;look.drag=null;look.yaw=0;look.pitch=0;
@@ -206,7 +219,7 @@ function Camera({ photo, pauseCamera, upliance, onUplianceArrive, entered, outsi
       orbit.current.enabled = false;
       orbit.current.maxDistance = 24;
       orbit.current.minAzimuthAngle = ROOM_MIN_AZIMUTH;
-      orbit.current.maxAzimuthAngle = 1.2;
+      orbit.current.maxAzimuthAngle = ROOM_MAX_AZIMUTH;
     }
     // Approach perpendicular to the screen until its surface covers the viewport.
     const distance = Math.min(1.16, 1.88 / (size.width / size.height)) / Math.tan(21 * Math.PI / 180) * 1.3;
@@ -224,7 +237,7 @@ function Camera({ photo, pauseCamera, upliance, onUplianceArrive, entered, outsi
     const photoTarget = new Vector3(...PHOTO_TARGET);
     const photoDistance = Math.max(.68, .68 / (size.width / size.height)) / Math.tan(21 * Math.PI / 180) * 1.3;
     const photoCamera = photoTarget.clone().add(new Vector3(0, 0, photoDistance));
-    transition.current = { from:camera.position.clone(), fovFrom:camera.fov, fovTo:outside ? fov : 42, lookFrom:lookTarget.current.clone(), lookTo:photo ? photoTarget : upliance ? applianceTarget : noteMode ? noteTarget : notebook ? new Vector3(...NOTEBOOK_TARGET) : outside ? new Vector3(targetX,targetY,targetZ) : new Vector3(entered ? 1.5 : 0, .2128, -.51), to:photo ? photoCamera : upliance ? applianceCamera : noteMode ? noteCamera : notebook ? notebookCamera : outside ? new Vector3(cameraX,cameraY,cameraZ) : entered ? new Vector3(1.5, .2128 + .139173 * distance, -.51 + .990268 * distance)  : (roomPosition.current?.clone() || roomHome.clone()), duration:entrance ? 2.4 : 1.45, elapsed:entrance && !reduced ? -.35 : noteMode==='wall' && !reduced ? -.65 : 0, done:false };
+    transition.current = { from:camera.position.clone(), fovFrom:camera.fov, fovTo:outside ? fov : 42, lookFrom:lookTarget.current.clone(), lookTo:photo ? photoTarget : upliance ? applianceTarget : noteMode ? noteTarget : notebook ? new Vector3(...NOTEBOOK_TARGET) : outside ? new Vector3(targetX,targetY,targetZ) : (entered ? new Vector3(1.5, .2128, -.51) : new Vector3(...ROOM_TARGET)), to:photo ? photoCamera : upliance ? applianceCamera : noteMode ? noteCamera : notebook ? notebookCamera : outside ? new Vector3(cameraX,cameraY,cameraZ) : entered ? new Vector3(1.5, .2128 + .139173 * distance, -.51 + .990268 * distance)  : (roomPosition.current?.clone() || roomHome.clone()), duration:entrance ? 2.4 : 1.45, elapsed:entrance && !reduced ? -.35 : noteMode==='wall' && !reduced ? -.65 : 0, done:false };
     invalidate();
   }, [photo, upliance, noteMode, noteX, noteY, entered, outside, notebook, cameraX, cameraY, cameraZ, targetX, targetY, targetZ, fov, reduced, camera, size.width, size.height, roomHome, invalidate]);
   useFrame((state, dt) => {
@@ -269,8 +282,13 @@ export default function MonitorScene({ photo, onPhotoOpen, musicPlaying, onPlayb
   const markMonitorReady=useCallback(()=>setMonitorReady(true),[]);
   const markUplianceReady=useCallback(()=>setUplianceReady(true),[]);
   const screensReady=monitorReady&&uplianceReady;
-  return <Canvas onPointerMissed={()=>{if(notebook)onNotebookExit();}} shadows camera={{ position:[6, 3.5, 14.8], fov:42 }} dpr={[1,1.5]} frameloop="demand" gl={{alpha:true, antialias:true, toneMapping:ACESFilmicToneMapping, toneMappingExposure:.85}}>
+  const [roomAssetsReady,setRoomAssetsReady]=useState(false);
+  const [notebookImagesReady,setNotebookImagesReady]=useState(false);
+  const markRoomAssetsReady=useCallback(()=>setRoomAssetsReady(true),[]);
+  const markNotebookImagesReady=useCallback(()=>setNotebookImagesReady(true),[]);
+  return <Canvas events={roomEvents} onPointerMissed={()=>{if(notebook)onNotebookExit();}} shadows camera={{ position:[6, 3.5, 14.8], fov:42 }} dpr={[1,1.5]} frameloop="demand" gl={{alpha:true, antialias:true, toneMapping:ACESFilmicToneMapping, toneMappingExposure:.85}}>
     {screensReady && <FirstRoomFrame onReady={sceneReady}/>}
+    {screensReady && <PreloadAssets onReady={markRoomAssetsReady} onError={markRoomAssetsReady}/>}
     <StationaryShadows/>
     <color attach="background" args={['#091321']} />
     <group onClick={event=>{if(notebook && event.delta<=5){event.stopPropagation();onNotebookExit();}}}>
@@ -290,10 +308,10 @@ export default function MonitorScene({ photo, onPhotoOpen, musicPlaying, onPlayb
     {screensReady && <Suspense fallback={null}><Plant/></Suspense>}
     {screensReady && <Suspense fallback={null}><Stool placement={propPlacement?.stool}/></Suspense>}
     {screensReady && <Suspense fallback={null}><Pascal placement={propPlacement?.pascal}/></Suspense>}
-    <Suspense fallback={null}><Upliance onReady={markUplianceReady} keyboardFocused={keyboardTarget==='upliance'} registerRoomAction={registerRoomAction} controlsRef={uplianceControlsRef} focused={!!upliance} zoomComplete={uplianceArrived} workPage={upliancePage} onSelect={onUplianceSelect} placement={propPlacement?.upliance} reduced={reduced} interactive={!photo && !entered && !outside && !notebook && !upliance && !stickyNotes.editor && !stickyNotes.placing} onHover={onHover}/></Suspense>
+    <Suspense fallback={null}><Upliance preloadArtwork={roomAssetsReady&&notebookImagesReady} onReady={markUplianceReady} keyboardFocused={keyboardTarget==='upliance'} registerRoomAction={registerRoomAction} controlsRef={uplianceControlsRef} focused={!!upliance} zoomComplete={uplianceArrived} workPage={upliancePage} onSelect={onUplianceSelect} placement={propPlacement?.upliance} reduced={reduced} interactive={!photo && !entered && !outside && !notebook && !upliance && !stickyNotes.editor && !stickyNotes.placing} onHover={onHover}/></Suspense>
     {screensReady && <Suspense fallback={null}><CeilingLight reduced={reduced} onDragging={setLightDragging} interactive={!photo&&!entered&&!outside&&!notebook&&!upliance&&!stickyNotes.editor&&!stickyNotes.placing} keyboardFocused={keyboardTarget==='ceiling-light'} registerRoomAction={registerRoomAction} onHover={onHover}/></Suspense>}
     <CozyRoom keyboardTarget={keyboardTarget} registerRoomAction={registerRoomAction} reduced={reduced} wearingGlasses={wearingGlasses} onWearGlasses={onWearGlasses} onWindowSelect={notebook ? onNotebookExit : onWindowSelect} onHover={onHover} />
-    {screensReady && <InteractiveObject moving focused={keyboardTarget==='notebook'} label="Notebook · ideas & sketches" onHover={onHover}><Notebook onTear={onNotebookTear} canTear={true} tornPages={tornPages} focused={notebook} open={notebookOpen} onPageChange={onNotebookPageChange} page={notebookPage} reduced={reduced} onOpen={onNotebookOpen} /></InteractiveObject>}
+    {screensReady && <InteractiveObject moving focused={keyboardTarget==='notebook'} label="Notebook · ideas & sketches" onHover={onHover}><Notebook onImagesReady={markNotebookImagesReady} onTear={onNotebookTear} canTear={true} tornPages={tornPages} focused={notebook} open={notebookOpen} onPageChange={onNotebookPageChange} page={notebookPage} reduced={reduced} onOpen={onNotebookOpen} /></InteractiveObject>}
     {screensReady && <Suspense fallback={null}><Keyboard /></Suspense>}
     {screensReady && <Suspense fallback={null}><Radio onPlaybackChange={onPlaybackChange} keyboardFocused={keyboardTarget==='radio'} registerRoomAction={registerRoomAction} onHover={onHover}/></Suspense>}
     {screensReady && <Suspense fallback={null}><InteractiveObject focused={keyboardTarget==='desk-lamp'} label={lampOn ? "Lamp · turn off" : "Lamp · turn on"} onHover={onHover}><DeskLamp on={lampOn} registerRoomAction={registerRoomAction} onToggle={notebook ? onNotebookExit : onLampToggle} /></InteractiveObject></Suspense>}

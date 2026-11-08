@@ -26,6 +26,9 @@
 
 /* After Hours fills the viewport; the room is the entire page. */
 .page.roomPage{position:fixed;inset:0;padding:0;min-height:0;overflow:hidden}.roomPage .workbench{width:100%;height:100%;max-width:none;margin:0;border:0;border-radius:0}
+@media (hover:hover) and (pointer:fine){
+  .roomPage .workbench,.roomPage .scene canvas{cursor:url("/cursor-glossy.svg") 12 12,crosshair}
+}
 @media (hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference){
   :global(html[data-chooser-cursor="true"]) .roomPage,
   :global(html[data-chooser-cursor="true"]) .roomPage *{cursor:none!important}

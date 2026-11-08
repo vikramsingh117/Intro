@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useFrame, useLoader, useThree } from '@react-three/fiber';
 import { Box3, Vector3 } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import { preparePaperMeshes } from './paperRendering.mjs';
 import { PAPER_AIM_DISTANCE, paperAimOffsetY } from './paperAim.mjs';
 
 const RADIUS = .24;
@@ -39,11 +40,9 @@ function Paper({ body, asset, aiming = false }) {
     const scale = RADIUS * 2 / Math.max(size.x, size.y, size.z);
     clone.scale.multiplyScalar(scale);
     clone.position.copy(center).multiplyScalar(-scale);
-    clone.traverse(node => {
-      if (node.isMesh) { node.castShadow = true; node.receiveShadow = true; node.raycast = () => null; }
-    });
+    preparePaperMeshes(clone, aiming);
     return clone;
-  }, [asset]);
+  }, [asset, aiming]);
   useFrame((state, delta) => {
     if (!mesh.current) return;
     if (aiming) {

@@ -24,9 +24,10 @@ export default function ThemeCursor() {
       }
       hoveredTarget = next;
     };
-    const objectHover = event => updateHover(event.target);
+    const objectHover = event => { if (!event.target?.closest('[data-native-cursor]')) updateHover(event.target); };
 
     const hide = () => {
+      if (!visible && !document.documentElement.dataset.chooserCursor) return;
       visible = false;
       hoveredTarget = null;
       spin?.cancel();
@@ -47,7 +48,6 @@ export default function ThemeCursor() {
       node.dataset.theme = pane?.dataset.cursorTheme || "simple";
       icon.current.dataset.theme = node.dataset.theme;
       icon.current.dataset.visible = String(!!pane);
-      icon.current.style.transform = transform;
       if (pane) document.documentElement.dataset.chooserCursor = "true";
       else delete document.documentElement.dataset.chooserCursor;
       updateHover(target);
@@ -76,8 +76,9 @@ export default function ThemeCursor() {
     };
   }, []);
 
-  return <>
-    <div ref={cursor} className={styles.cursor} aria-hidden="true"><span /></div>
-    <div ref={icon} className={styles.icon} aria-hidden="true" />
-  </>;
+  // One translated layer keeps the icon and rotating glow exactly together.
+  return <div ref={cursor} className={styles.cursor} aria-hidden="true">
+    <span />
+    <div ref={icon} className={styles.icon} />
+  </div>;
 }

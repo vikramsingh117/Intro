@@ -31,7 +31,7 @@
   box-shadow: 0 0 16px #80b9ab66;
   opacity: .65;
 }
-.icon { position: fixed; top: 0; left: 0; z-index: 101; pointer-events: none; opacity: 0; }
+.icon { position: absolute; top: 0; left: 0; z-index: 101; pointer-events: none; opacity: 0; }
 .icon[data-visible="true"] { opacity: 1; }
 .icon::before, .icon::after { content: ""; position: absolute; width: 28px; height: 28px; background: url("/cursor.svg") no-repeat; left: -4px; top: -3px; transition: opacity 1s ease, transform 1s ease; }
 .icon::after { background-image: url("/cursor-glossy.svg"); left: -12px; top: -12px; opacity: 0; transform: rotate(-90deg) scale(.5); }

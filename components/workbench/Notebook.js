@@ -6,7 +6,7 @@ import { NOTEBOOK_PAGES } from './notebookPages';
 import { deformTearingPage, visibleLeftPage, nextNotebookPage, notebookTurnLeaves, tornEdgeWidth } from './notebookPaper.mjs';
 
 export const NOTEBOOK_TARGET = [-1.7, -1.4, .65];
-export default function Notebook({ open, focused, page, reduced, onOpen, onPageChange, tornPages = [], canTear, onTear }) {
+export default function Notebook({ open, focused, page, reduced, onOpen, onPageChange, tornPages = [], canTear, onTear, onImagesReady }) {
   const cover = useRef(null), sheet = useRef(null), turn = useRef(null);
   const coverMotion = useRef(null), wasFocused = useRef(false);
   const tearSheet = useRef(null), tearGesture = useRef(null), suppressClickUntil = useRef(0);
@@ -47,7 +47,11 @@ export default function Notebook({ open, focused, page, reduced, onOpen, onPageC
   }), []);
   useEffect(() => {
     let cancelled = false;
-    const images = NOTEBOOK_PAGES.filter(entry => entry.image).map(entry => {
+    const entries = NOTEBOOK_PAGES.filter(entry => entry.image);
+    let remaining = entries.length;
+    const settled = () => { if (!cancelled && --remaining === 0) onImagesReady?.(); };
+    if (!remaining) onImagesReady?.();
+    const images = entries.map(entry => {
       const image = new Image();
       image.onload = () => {
         if (cancelled) return;
@@ -61,12 +65,14 @@ export default function Notebook({ open, focused, page, reduced, onOpen, onPageC
         // The reverse of this leaf appears on the following spread's left side.
         if (index + 1 < textures.length) paint(index + 1, 0);
         invalidate();
+        settled();
       };
+      image.onerror = settled;
       image.src = entry.image;
       return image;
     });
-    return () => { cancelled = true; images.forEach(image => { image.onload = null; }); };
-  }, [textures, invalidate]);
+    return () => { cancelled = true; images.forEach(image => { image.onload = image.onerror = null; }); };
+  }, [textures, invalidate, onImagesReady]);
   useEffect(() => () => textures.forEach(({map,left,right}) => {map.dispose();left.dispose();right.dispose();}), [textures]);
   useEffect(() => {
     if(page === shownPage) return;
