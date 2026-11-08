@@ -1,0 +1,7 @@
+.studio{position:fixed;inset:0;background:#091321;color:#e2e8df;font:13px/1.5 sans-serif}
+.toolbar{position:absolute;top:18px;left:18px;right:18px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;pointer-events:none}
+.toolbar>*{pointer-events:auto}
+.toolbar a{color:#d5c5a9;text-decoration:none}
+.toolbar button{border:1px solid #a7b6c455;border-radius:6px;background:#13212bea;color:#e2e8df;padding:8px 12px;cursor:pointer}
+.hint{position:absolute;left:18px;bottom:18px;max-width:calc(100% - 36px);pointer-events:none;color:#adbecb}
+@media(max-width:600px){.toolbar{gap:10px;font-size:11px}.toolbar button{padding:6px}.hint{font-size:11px}}

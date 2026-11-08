@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef } from 'react';
+import CityFog from './CityFog';
 import { useFrame, useLoader, useThree } from '@react-three/fiber';
 import { Box3, Vector2, Vector3 } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
@@ -90,7 +91,7 @@ export default function CityExterior({ onReady, settings }) {
   }, [scene]);
   useEffect(() => {
     invalidate();
-    onReady(true);
+    onReady?.(true);
   }, [invalidate, onReady]);
   useEffect(() => () => model.traverse(node => {
     if (node.isMesh) (Array.isArray(node.material) ? node.material : [node.material]).forEach(material => material.dispose());
@@ -99,8 +100,9 @@ export default function CityExterior({ onReady, settings }) {
     model.traverse(node => { if(node.isMesh) (Array.isArray(node.material)?node.material:[node.material]).forEach(material=>{material.emissiveIntensity=settings.emissive;}); });
     invalidate();
   }, [model, settings.emissive, invalidate]);
+  const base = useMemo(() => new Box3().setFromObject(model).min.y, [model]);
   return <group position={[settings.x, settings.y, settings.z]}>
-    <group scale={settings.scale} rotation={[0,settings.rotation*Math.PI/180,0]}><primitive object={model} /></group>
+    <group scale={settings.scale} rotation={[0,settings.rotation*Math.PI/180,0]}><primitive object={model} /><CityFog base={base} settings={settings} /></group>
     <pointLight userData={{cacheStationaryShadow:true}} position={[-5, 10, 8]} color="#ffd39a" intensity={settings.warm} castShadow shadow-intensity={settings.shadows} shadow-mapSize={[512, 512]} shadow-bias={-.001} shadow-normalBias={.015} distance={40} decay={2} />
     <pointLight position={[6, 8, -3]} color="#93c9dd" intensity={settings.cool} distance={40} decay={2} />
   </group>;
