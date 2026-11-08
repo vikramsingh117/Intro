@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { loadArtworkImage } from './loadArtwork.mjs';
+import { UPLIANCE_ARTWORK, selectArtwork, drawUplianceWork } from './uplianceArtwork.mjs';
 import { UPLIANCE_WORK } from './uplianceWork';
 import { DEFAULT_PROP_PLACEMENT } from './propPlacement';
 import { useFrame, useLoader, useThree } from '@react-three/fiber';
@@ -7,20 +9,11 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
 const noRaycast=()=>{};
 const LEDS=Array.from({length:56},(_,i)=>i*Math.PI*2/56);
-const APP_FRAME_URLS=[1,2,3].map(frame=>`/images/upliance-app-sequence/0${frame}.svg`);
-const APPLIANCE_FRAME_URLS=[1,3,4].map(frame=>`/images/upliance-sequence/0${frame}.svg`);
-const CHATBOT_FRAME_URLS=['/images/upliance-chatbot/home.svg','/images/upliance-chatbot/chat.svg'];
-const MOBILE_WORK_LINES=[
-  ['I shape product behavior,','then build the experience.','','upliance touchscreen','upliance mobile app','internal AI tools'],
-  ['Dynamic recipe categories','Touchscreen UI + navigation','Diet + allergen preferences','Reliable scroll restoration','React · TypeScript · WebView'],
-  ['ADK cooking assistant','Recipe generation in chat','View-only archived chats','Past conversations accessible','React · Redux · GraphQL'],
-  ['Session inspection','Recipe timing views','Resource sync workflow','Frontend + API integration'],
-];
 export default function Upliance({ celebrating=false, keyboardFocused=false, registerRoomAction, placement=DEFAULT_PROP_PLACEMENT.upliance, reduced=false, interactive=true, onHover=()=>{}, focused=false, zoomComplete=false, preloadArtwork=false, onReady, workPage=0, onSelect=()=>{}, controlsRef }) {
   const {scene}=useLoader(GLTFLoader,'/models/upliance/interactive.glb');
   const display=useLoader(TextureLoader,'/images/upliance-display.svg');
   // Showcase artwork must never suspend the appliance itself.
-  const [loadedFrames,setLoadedFrames]=useState({});
+  const [artworkImages,setArtworkImages]=useState({});
   useEffect(()=>{onReady?.();},[onReady]);
   useEffect(()=>{
     if(!preloadArtwork)return;
@@ -32,19 +25,22 @@ export default function Upliance({ celebrating=false, keyboardFocused=false, reg
     // Last priority: decode one SVG at a time, yielding between frames.
     // This runs independently of whether the appliance is ever opened.
     async function preload(){
-      for(const [page,urls] of [APPLIANCE_FRAME_URLS,APP_FRAME_URLS,CHATBOT_FRAME_URLS].entries()){
-        const frames=[];
-        for(const url of urls){
-          await idle();
+      const pages=UPLIANCE_ARTWORK.map(page=>page.urls), failed=[];
+      const publish=(url,image)=>setArtworkImages(current=>({...current,[url]:image}));
+      for(let frame=0;frame<Math.max(...pages.map(urls=>urls.length));frame++){
+        for(const urls of pages){
+          const url=urls[frame];if(!url)continue;
+          await idle();if(cancelled)return;
+          const image=await loadArtworkImage(url);
           if(cancelled)return;
-          const image=new Image();
-          image.fetchPriority='low';
-          image.src=url;
-          try{await image.decode();frames.push({image});}
-          catch{frames.push({image:null});}
-          if(cancelled)return;
+          if(image)publish(url,image);else failed.push(url);
         }
-        setLoadedFrames(current=>({...current,[page]:frames}));
+      }
+      for(const url of failed){
+        await idle();if(cancelled)return;
+        const image=await loadArtworkImage(url);
+        if(cancelled)return;
+        if(image)publish(url,image);else console.warn(`Unable to load Upliance artwork: ${url}`);
       }
     }
     preload();
@@ -57,7 +53,7 @@ export default function Upliance({ celebrating=false, keyboardFocused=false, reg
   const panel=useRef(null);
   const hoverOutline=useRef(null);
   const [sequence,setSequence]=useState({page:workPage,frame:0});
-  const frameCount=workPage===0?APPLIANCE_FRAME_URLS.length:workPage===1?APP_FRAME_URLS.length:workPage===2?CHATBOT_FRAME_URLS.length:1;
+  const frameCount=Math.max(1,UPLIANCE_ARTWORK[workPage].urls.length);
   useEffect(()=>{
     setSequence({page:workPage,frame:0});
     if(!focused||!zoomComplete||frameCount===1||reduced)return;
@@ -66,29 +62,15 @@ export default function Upliance({ celebrating=false, keyboardFocused=false, reg
     },1500);
     return ()=>window.clearInterval(timer);
   },[focused,zoomComplete,workPage,frameCount,reduced]);
-  const activeFrames=loadedFrames[workPage];
-  const workTextures=useMemo(()=>(activeFrames||[undefined]).map(imageTexture=>{
+  const frame=sequence.page===workPage&&zoomComplete&&!reduced?sequence.frame:0;
+  const pageImage=selectArtwork(artworkImages,workPage,frame);
+  const mobile=size.width<=760;
+  const workTexture=useMemo(()=>{
     const canvas=document.createElement('canvas');canvas.width=1200;canvas.height=740;
-    const ctx=canvas.getContext('2d'),page=UPLIANCE_WORK[workPage];
-    const mobile=size.width<=760;
-    const lines=mobile?MOBILE_WORK_LINES[workPage]:page.lines;
-    const pageImage=imageTexture?.image;
-    const hasImage=Boolean(pageImage?.width&&pageImage?.height);
-    ctx.fillStyle='#eaf0e8';ctx.fillRect(0,0,1200,740);
-    ctx.fillStyle='#214c69';ctx.font=`${mobile?30:24}px monospace`;ctx.fillText(page.subtitle,80,66);
-    ctx.fillStyle='#102e43';ctx.font=`bold ${mobile?(workPage===1?48:56):44}px sans-serif`;ctx.fillText(page.title,80,145);
-    ctx.font=`${mobile?40:hasImage?27:32}px sans-serif`;lines.forEach((line,i)=>ctx.fillText(line,80,225+i*(mobile?70:57)));
-    if(hasImage){
-      const imageBox=workPage===0?{x:675,y:170,width:495,height:500}:workPage===2?{x:720,y:40,width:430,height:630}:{x:665,y:75,width:510,height:590};
-      const imageScale=Math.min(imageBox.width/pageImage.width,imageBox.height/pageImage.height);
-      const imageWidth=pageImage.width*imageScale,imageHeight=pageImage.height*imageScale;
-      ctx.drawImage(pageImage,imageBox.x+(imageBox.width-imageWidth)/2,imageBox.y+(imageBox.height-imageHeight)/2,imageWidth,imageHeight);
-    }
-    ctx.fillStyle='#397eff';ctx.fillRect(60,686,1080*(workPage+1)/UPLIANCE_WORK.length,5);
+    drawUplianceWork(canvas.getContext('2d'),UPLIANCE_WORK[workPage],workPage,pageImage,mobile);
     const texture=new CanvasTexture(canvas);texture.colorSpace=SRGBColorSpace;return texture;
-  }),[workPage,activeFrames,size.width]);
-  const workTexture=workTextures[sequence.page===workPage&&zoomComplete&&!reduced?sequence.frame:0]||workTextures[0];
-  useEffect(()=>()=>workTextures.forEach(texture=>texture.dispose()),[workTextures]);
+  },[workPage,pageImage,mobile]);
+  useEffect(()=>()=>workTexture.dispose(),[workTexture]);
   useEffect(()=>{invalidate();},[workTexture,invalidate]);
   const progress=useRef(0),screenMaterial=useRef(null),leds=useRef(null),spill=useRef(null),hitArea=useRef(null);
   const ledMaterial=useMemo(()=>new MeshStandardMaterial({color:'#b0d4ff',emissive:'#3878ff',emissiveIntensity:0,transparent:true,opacity:0,depthWrite:false}),[]);

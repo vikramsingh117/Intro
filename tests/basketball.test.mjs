@@ -47,7 +47,11 @@ test('lamp pulse restores original state and respects reduced motion',()=>{
 
 test('mobile hoop sits right of the window and uses the same transformed scoring and backboard positions',()=>{
   assert.equal(hoopForWidth(760),MOBILE_HOOP);
-  assert.equal(hoopForWidth(761),HOOP);
+  assert.equal(hoopForWidth(761).x,-7.85);
+  assert.equal(hoopForWidth(761).y,2.5);
+  assert.equal(hoopForWidth(761).z,-2.02);
+  assert.equal(hoopForWidth(761).rotation,-92);
+  assert.equal(hoopForWidth(761).size,.69);
   const h=MOBILE_HOOP;
   assert.ok(h.x-h.boardWidth/2>-2.9);
   const board=new Vector3(HOOP.boardX-HOOP.x,HOOP.boardY-HOOP.y,0)
@@ -59,4 +63,28 @@ test('mobile hoop sits right of the window and uses the same transformed scoring
   collideHoop(bank,new Vector3(h.x,h.boardY,-2),.24,h);
   assert.ok(bank.position.z>h.boardZ);
   assert.ok(bank.velocity.z>0);
+});
+
+test('position transforms move scoring and backboard together for each viewport',()=>{
+  for (const width of [390,1440]) {
+    const base=hoopForWidth(width);
+    const profile=width===390?'mobile':'desktop';
+    const moved=hoopForWidth(width,{[profile]:{x:base.x+1,y:base.y+.5,z:base.z+2,rotation:base.rotation,size:base.size}});
+    assert.ok(Math.abs(moved.boardX-base.boardX-1)<1e-8);
+    assert.equal(moved.boardY-base.boardY,.5);
+    assert.ok(Math.abs(moved.boardZ-(base.boardZ??base.z)-2)<1e-8);
+    assert.equal(crossedHoop(new Vector3(moved.x,moved.y+1,moved.z),new Vector3(moved.x,moved.y-1,moved.z),.24,moved),true);
+  }
+});
+
+test('rotation and scale keep backboard collision aligned with the rendered hoop',()=>{
+  const h=hoopForWidth(1440,{desktop:{x:-5,y:3,z:1,rotation:45,size:1.5}});
+  assert.equal(h.radius,HOOP.radius*1.5);
+  assert.equal(h.boardWidth,HOOP.boardWidth*1.5);
+  const normal=new Vector3(Math.SQRT1_2,0,-Math.SQRT1_2),center=new Vector3(h.boardX,h.boardY,h.boardZ);
+  const previous=center.clone().addScaledVector(normal,1);
+  const body={position:center.clone().addScaledVector(normal,-1),velocity:normal.clone().multiplyScalar(-10)};
+  collideHoop(body,previous,.24,h);
+  assert.ok(body.velocity.dot(normal)>0);
+  assert.ok(body.position.clone().sub(center).dot(normal)>=h.boardDepth/2+.24-1e-8);
 });
