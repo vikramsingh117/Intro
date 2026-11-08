@@ -71,6 +71,11 @@ export default function ProductWorkbench() {
     const timer = setTimeout(()=>setCelebrating(false), CELEBRATION_MS);
     return () => clearTimeout(timer);
   }, [basketScore]);
+  const [lastFlickAt,setLastFlickAt] = useState(null);
+  const tearHintShown = useRef(false);
+  useEffect(() => {
+    try { tearHintShown.current = localStorage.getItem('notebook-tear-hint-shown') === 'true'; } catch {}
+  }, []);
   const paperControls = useRef(null);
   const paperSequence = useRef(STARTING_PAPER_COUNT);
   const tearPage = (page = notebookPage) => {
@@ -83,19 +88,12 @@ export default function ProductWorkbench() {
   const pickUpPaper = useCallback(() => setAimingPaper(true), []);
   const onPaperThrown = useCallback(id => {
     setPaperInFlight(true);
+    setLastFlickAt(performance.now());
     setPaperInventory(balls => consumePaper(balls, id));
   }, []);
   useEffect(() => {
-    if (aimingPaper && !paperInventory.length) {
-      setAimingPaper(false);
-      const instructionPage = NOTEBOOK_PAGES.findIndex(page => page.doodle === 'tear');
-      const page = refillPage(NOTEBOOK_PAGES.length, instructionPage, tornPages);
-      if (page !== null) {
-        returnFocus.current = enterButton.current;
-        setNotebookPage(page); setNotebookOpen(true); setNotebook(true);
-      } else requestAnimationFrame(() => enterButton.current?.focus({ preventScroll: true }));
-    }
-  }, [aimingPaper, paperInventory.length, tornPages]);
+    if (aimingPaper && !paperInventory.length) setAimingPaper(false);
+  }, [aimingPaper, paperInventory.length]);
   const hoverStore = useRoomHoverStore();
   const setHoverLabel = hoverStore.setLabel;
   const notebookText = useRef(null), returnFocus = useRef(null);
@@ -158,6 +156,23 @@ export default function ProductWorkbench() {
   const leave = () => { setDesktop(false); setEntered(false); restoreFocus(); };
   useTrackedState({photo,monitor:entered,window:outside,notebook,notebookPage:notebook?notebookPage:'closed',upliance:!!upliance,upliancePage:upliance?upliancePage:'closed',lamp:lampOn,glasses:wearingGlasses,noteEditor:!!stickyNotes.editor,notePlacement:!!stickyNotes.placing});
   const focused=!!(photo||entered||outside||notebook||upliance||stickyNotes.editor||stickyNotes.placing);
+  useEffect(() => {
+    if (paperInventory.length || lastFlickAt === null || tearHintShown.current) return;
+    // Respect a visitor opening another object while the final ball is in flight.
+    if (focused) { setLastFlickAt(null); return; }
+    const timer = setTimeout(() => {
+      setLastFlickAt(null);
+      const instructionPage = NOTEBOOK_PAGES.findIndex(page => page.doodle === 'tear');
+      const page = refillPage(NOTEBOOK_PAGES.length, instructionPage, tornPages);
+      if (page !== null) {
+        tearHintShown.current = true;
+        try { localStorage.setItem('notebook-tear-hint-shown', 'true'); } catch {}
+        returnFocus.current = enterButton.current;
+        setNotebookPage(page); setNotebookOpen(true); setNotebook(true);
+      } else enterButton.current?.focus({ preventScroll: true });
+    }, Math.max(0, 3000 - (performance.now() - lastFlickAt)));
+    return () => clearTimeout(timer);
+  }, [paperInventory.length, lastFlickAt, focused, tornPages]);
   const closeUpliance=()=>{
     const returnToMonitor=uplianceReturnToMonitor.current;
     uplianceReturnToMonitor.current=false;

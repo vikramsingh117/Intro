@@ -4,8 +4,8 @@ import { CanvasTexture, DoubleSide, Plane, SRGBColorSpace, Vector3 } from 'three
 import notePaper from './notePaper';
 import noteDate from './noteDate';
 import InteractiveObject from './InteractiveObject';
+import { noteBoundsForWidth, clampNotePosition, notePlacementRect } from './notePlacement.mjs';
 
-const clamp = (value,min,max) => Math.max(min,Math.min(max,value));
 function useNoteTexture(text,createdAt,id) {
   const texture = useMemo(() => {
     const canvas=document.createElement('canvas');canvas.width=512;canvas.height=512;
@@ -38,6 +38,7 @@ function useNoteTexture(text,createdAt,id) {
 }
 function WallNote({ note, api, onHover }) {
   const { invalidate } = useThree();
+  const bounds = useThree(state=>noteBoundsForWidth(state.size.width));
   const drag = useRef(null);
   const mesh = useRef(null);
   const texture = useNoteTexture(note.text,note.createdAt,note.id);
@@ -57,7 +58,8 @@ function WallNote({ note, api, onHover }) {
         event.stopPropagation();
         if(Math.hypot(event.clientX-gesture.x,event.clientY-gesture.y)>5)gesture.moved=true;
         if(note.canEdit && gesture.moved && event.ray.intersectPlane(wall,point)){
-          mesh.current.position.set(clamp(point.x+gesture.dx,-2.25,6),clamp(point.y+gesture.dy,.9,4.7),-3.075);
+          const position = clampNotePosition(point.x+gesture.dx, point.y+gesture.dy, bounds);
+          mesh.current.position.set(position.x,position.y,-3.075);
           invalidate();
         }
       }}
@@ -79,6 +81,8 @@ function WallNote({ note, api, onHover }) {
 function FlyingNote({ api, reduced }) {
   const mesh=useRef(null), motion=useRef({elapsed:0,target:new Vector3(1.8,2.8,-2.6),paste:null});
   const {invalidate}=useThree();
+  const bounds=useThree(state=>noteBoundsForWidth(state.size.width));
+  const area=notePlacementRect(bounds);
   const texture=useNoteTexture(api.placing.text,undefined,api.placing.id);
   const placeRef=useRef(api.place);placeRef.current=api.place;
   useEffect(()=>{invalidate();},[invalidate]);
@@ -107,18 +111,18 @@ function FlyingNote({ api, reduced }) {
     positions.needsUpdate=true;
     if(t<1 || (m.paste&&!m.paste.sent) || mesh.current.position.distanceTo(m.target)>.002 && !m.paste)state.invalidate();
   });
-  const target=event=>new Vector3(clamp(event.point.x,-2.25,6),clamp(event.point.y,.9,4.7),-2.6);
+  const target=event=>{const position=clampNotePosition(event.point.x,event.point.y,bounds);return new Vector3(position.x,position.y,-2.6);};
   return <>
     <mesh ref={mesh} position={[3.7,-1.397,.8]} rotation={[-Math.PI/2,0,0]} raycast={()=>null}>
       <planeGeometry args={[.72,.72,12,12]}/><meshStandardMaterial map={texture} side={DoubleSide} roughness={.95}/>
     </mesh>
-    <mesh position={[1.875,2.8,-3.06]} onPointerMove={event=>{event.stopPropagation();if(!motion.current.paste){motion.current.target.copy(target(event));invalidate();}}}
+    <mesh position={[area.x,area.y,-3.06]} onPointerMove={event=>{event.stopPropagation();if(!motion.current.paste){motion.current.target.copy(target(event));invalidate();}}}
       onClick={event=>{
         event.stopPropagation();const m=motion.current;
         if(event.delta>5 || api.busy || m.paste || (!reduced&&m.elapsed<1.5))return;
         const to=target(event);to.z=-3.07;m.paste={elapsed:0,from:mesh.current.position.clone(),to,sent:false};invalidate();
       }}>
-      <planeGeometry args={[8.97,4.52]}/><meshBasicMaterial color="#e8cc78" transparent opacity={.1} depthWrite={false}/>
+      <planeGeometry args={[area.width,area.height]}/><meshBasicMaterial color="#e8cc78" transparent opacity={.1} depthWrite={false}/>
     </mesh>
   </>;
 }

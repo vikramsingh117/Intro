@@ -224,11 +224,11 @@ The mascot adds stateful feedback: waking, sleeping, walking, exercise, music po
 
 The hanging light has a simulated rope with connected segments and a moving fixture. Dragging changes its motion, and the simulation can settle to sleep. Instanced cord segments visualize the changing rope without creating a new object for each segment on every frame.
 
-The radio coordinates audio with browser interaction rules. Home entry primes playback directly from the user's click before asynchronous navigation can lose that gesture. The volume then fades in over 11 seconds. A Web Audio gain node is preferred, with a media-element volume fallback. Leaving the room disposes playback resources. Radio clicks also produce a short static effect.
+The radio starts off, including when entering from Home. Playback begins directly inside the radio's click, tap, or keyboard activation so it follows browser interaction rules. Leaving the room disposes playback resources. Radio toggles also produce a short static effect using Web Audio.
 
 Other interactions include a drawer that reveals wearable glasses, localized lens blur, a city view with a flying aircraft, and generated paper surfaces for notes. These details demonstrate lifecycle management: animations, audio, streams, and event listeners need cleanup as well as startup.
 
-**Sources:** [CeilingLight](../components/workbench/CeilingLight.js), [Radio](../components/workbench/Radio.js), [Radio entrance](../components/workbench/radioEntrance.js), [GlassesDrawer](../components/workbench/GlassesDrawer.js), [GlassesOverlay](../components/workbench/GlassesOverlay.js), [FlyingPlane](../components/workbench/FlyingPlane.js).
+**Sources:** [CeilingLight](../components/workbench/CeilingLight.js), [Radio](../components/workbench/Radio.js), [GlassesDrawer](../components/workbench/GlassesDrawer.js), [GlassesOverlay](../components/workbench/GlassesOverlay.js), [FlyingPlane](../components/workbench/FlyingPlane.js).
 
 ## 13. A streamed portfolio assistant
 

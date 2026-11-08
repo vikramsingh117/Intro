@@ -14,11 +14,11 @@ export default function BasketballHoop() {
   return <group position={[hoop.x, hoop.y, hoop.z]} rotation={[0, hoop.boardAxis === 'z' ? -Math.PI / 2 : 0, 0]}>
     <group position={[-HOOP.x, -HOOP.y, -HOOP.z]}>
     <mesh position={[HOOP.boardX, HOOP.boardY, HOOP.z]} castShadow receiveShadow>
-      <boxGeometry args={[HOOP.boardDepth, HOOP.boardHeight, HOOP.boardWidth]} />
+      <boxGeometry args={[hoop.boardDepth, hoop.boardHeight, hoop.boardWidth]} />
       <meshStandardMaterial color="#d6d2bb" roughness={.8} />
     </mesh>
     {/* Inset red target rectangle faces into the room (+X). */}
-    <group position={[HOOP.boardX + .065, HOOP.boardY, HOOP.z]} scale={[1, .5, .5]}>
+    <group position={[HOOP.boardX + .065, HOOP.boardY, HOOP.z]} scale={[1, hoop.boardHeight / 2.65, hoop.boardWidth / 3.25]}>
       {[-.53, .53].map(z => <mesh key={`v${z}`} position={[0, 0, z]}><boxGeometry args={[.012, .87, .055]}/><meshStandardMaterial color="#a5392b"/></mesh>)}
       {[-.435, .435].map(y => <mesh key={`h${y}`} position={[0, y, 0]}><boxGeometry args={[.012, .055, 1.11]}/><meshStandardMaterial color="#a5392b"/></mesh>)}
     </group>

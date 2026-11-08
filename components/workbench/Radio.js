@@ -1,16 +1,16 @@
 import useTrackedState from './useTrackedState';
-import { RADIO_VOLUME, takeRadioEntrance } from './radioEntrance';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useLoader, useThree } from '@react-three/fiber';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { Box3, Vector3 } from 'three';
 import InteractiveObject from './InteractiveObject';
 
+const RADIO_VOLUME = .4 * .7 * .6;
+
 export default function Radio({ keyboardFocused, registerRoomAction, onHover, onPlaybackChange }) {
   const audio = useRef(null);
   const hoverCallback = useRef(onHover);
   useEffect(()=>{hoverCallback.current=onHover;},[onHover]);
-  const entranceSession=useRef(null);
   const staticContext=useRef(null);
   const {invalidate}=useThree();
   const requested = useRef(false);
@@ -42,12 +42,10 @@ export default function Radio({ keyboardFocused, registerRoomAction, onHover, on
   },[]);
   useEffect(()=>()=>{const context=staticContext.current;staticContext.current=null;if(context&&context.state!=='closed')context.close().catch(()=>{});},[]);
   useEffect(() => {
-    const entrance=takeRadioEntrance();
-    entranceSession.current=entrance;
-    const player = entrance?.player || new Audio('/audio/cozy-nordic-quiet-spot.m4a');
+    const player = new Audio('/audio/cozy-nordic-quiet-spot.m4a');
     player.preload = 'none';
     player.loop = true;
-    if(!entrance)player.volume = RADIO_VOLUME;
+    player.volume = RADIO_VOLUME;
     audio.current = player;
     const error = () => {
       requested.current = false; setOn(false); setFailed(true);
@@ -60,16 +58,7 @@ export default function Radio({ keyboardFocused, registerRoomAction, onHover, on
     player.addEventListener('waiting',stopped);
     player.addEventListener('ended',stopped);
     player.addEventListener('error', error);
-    let mounted=true;
-    if(entrance){
-      requested.current=true;
-      entrance.fadeIn().then(started=>{
-        if(!mounted||!requested.current)return;
-        requested.current=started;setOn(started&&!player.paused);
-      });
-    }
     return () => {
-      mounted=false;
       requested.current = false;
       player.removeEventListener('playing',playing);
       player.removeEventListener('pause',stopped);
@@ -77,7 +66,6 @@ export default function Radio({ keyboardFocused, registerRoomAction, onHover, on
       player.removeEventListener('ended',stopped);
       player.removeEventListener('error', error);
       player.pause(); player.removeAttribute('src'); player.load();
-      entrance?.dispose();entranceSession.current=null;
       audio.current = null;
     };
   // Own the player for the mounted radio's lifetime, not the hover callback's lifetime.
@@ -92,8 +80,7 @@ export default function Radio({ keyboardFocused, registerRoomAction, onHover, on
       onHover('Radio · play music');
       return;
     }
-    entranceSession.current?.normalVolume();
-    // Automatic entrance playback never selects the headphone mascot.
+    // Music and the headphone mascot start only after an explicit radio toggle.
     setMusicAnimationAllowed(true);
     if (failed) player.load();
     requested.current = true; setFailed(false);

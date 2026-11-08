@@ -1,9 +1,9 @@
 // Shared by the visible mount and paper physics; Y is the horizontal rim plane.
 export const HOOP = Object.freeze({ x: -7.493, y: 1.8, z: .3, radius: 1.053, tube: .0715, scale: 2.6, assetRimY: .3,
-  boardAxis: 'x', boardX: -9.04, boardY: 2.55, boardWidth: 1.625, boardHeight: 1.325, boardDepth: .12 });
+  boardAxis: 'x', boardX: -9.04, boardY: 2.55, boardWidth: 3.25, boardHeight: 2.65, boardDepth: .12 });
 // Mobile mount faces forward from the back wall, immediately right of the window.
 export const MOBILE_HOOP = Object.freeze({ ...HOOP, x: -.9, y: 3, z: -1.473,
-  boardAxis: 'z', boardX: -.9, boardZ: -3.02, boardY: 3.75 });
+  boardWidth: HOOP.boardWidth / 2, boardHeight: HOOP.boardHeight / 2, boardAxis: 'z', boardX: -.9, boardZ: -3.02, boardY: 3.75 });
 export const hoopForWidth = width => width <= 760 ? MOBILE_HOOP : HOOP;
 export const CELEBRATION_MS = 3000;
 

@@ -1,4 +1,3 @@
-import { prepareRadioEntrance, cancelRadioEntrance } from '../components/workbench/radioEntrance';
 import SocialPreview from "../components/SocialPreview";
 import Head from "next/head";
 import Link from "next/link";
@@ -11,7 +10,6 @@ import { trackInteraction } from '../lib/visitor-analytics';
 export default function ThemeChooser() {
   const { enter } = useAfterHoursTransition();
   const preview = useRef(null);
-  useEffect(()=>()=>{ if(window.location.pathname!=='/after-hours')cancelRadioEntrance(); },[]);
   const { stage, progress, ready } = useAfterHoursPreload();
   const [selected, setSelected] = useState(false);
   const queued=useRef(false);
@@ -46,7 +44,6 @@ export default function ThemeChooser() {
         <a href="/after-hours" data-analytics="semantic" className={styles.card} aria-label="Explore the After Hours portfolio" aria-busy={!ready && stage !== 'error'} onClick={event => {
           if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return;
           event.preventDefault();
-          prepareRadioEntrance();
           if (!ready && stage !== 'error') {
             if(!queued.current){queued.current=true;trackInteraction('after_hours_wait','queued');}
             setSelected(true);

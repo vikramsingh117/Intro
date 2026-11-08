@@ -16,6 +16,7 @@ import StationaryShadows from './StationaryShadows';
 import InteractiveObject from './InteractiveObject';
 import NoteProjection from './NoteProjection';
 import StickyNotes from './StickyNotes';
+import { noteBoundsForWidth, notePlacementRect } from './notePlacement.mjs';
 import CozyRoom from './CozyRoom';
 import DeskLamp from './DeskLamp';
 import FlyingPlane from './FlyingPlane';
@@ -231,9 +232,10 @@ function Camera({ paperOrbit, photo, pauseCamera, upliance, onUplianceArrive, en
     const notebookDistance = Math.max(.82, 1.15 / (size.width / size.height)) / Math.tan(21 * Math.PI / 180) * 1.2;
     const notebookCamera = new Vector3(...NOTEBOOK_TARGET).add(new Vector3(0, .96, .28).multiplyScalar(notebookDistance));
     const noteDistance = Math.max(.43, .43/(size.width/size.height))/Math.tan(21*Math.PI/180)*1.2;
-    const noteTarget = noteMode==='wall' ? new Vector3(1.875,2.8,-3.075) : noteMode==='read' ? new Vector3(noteX,noteY,-3.075) : new Vector3(3.7,-1.397,.8);
+    const noteArea = notePlacementRect(noteBoundsForWidth(size.width));
+    const noteTarget = noteMode==='wall' ? new Vector3(noteArea.x,noteArea.y,-3.075) : noteMode==='read' ? new Vector3(noteX,noteY,-3.075) : new Vector3(3.7,-1.397,.8);
     const noteCamera = noteMode==='wall'
-      ? noteTarget.clone().add(new Vector3(0,0,Math.max(2.5,4.9/(size.width/size.height))/Math.tan(21*Math.PI/180)))
+      ? noteTarget.clone().add(new Vector3(0,0,Math.max(2.5,(noteArea.width/2+.415)/(size.width/size.height))/Math.tan(21*Math.PI/180)))
       : noteTarget.clone().add(noteMode==='read'?new Vector3(0,0,noteDistance):new Vector3(0,.995,.1).multiplyScalar(noteDistance));
     const applianceTarget=upliance ? new Vector3(...upliance.target) : null;
     const applianceDistance=upliance ? Math.max(upliance.height/2,upliance.width/2/(size.width/size.height))/Math.tan(21*Math.PI/180)*1.35 : 0;
