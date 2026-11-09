@@ -5,9 +5,10 @@ export const HOOP = Object.freeze({ x: -7.493, y: 1.8, z: .3, radius: 1.053, tub
 export const MOBILE_HOOP = Object.freeze({ ...HOOP, x: -.9, y: 3, z: -1.473,
   rotation: -90, boardWidth: HOOP.boardWidth / 2, boardHeight: HOOP.boardHeight / 2, boardAxis: 'z', boardX: -.9, boardZ: -3.02, boardY: 3.75 });
 export const DESKTOP_HOOP_POSITION = Object.freeze({x:-7.85,y:2.5,z:-2.02,rotation:-92,size:.69});
+export const MOBILE_HOOP_POSITION = Object.freeze({x:-1.85,y:2.85,z:-1.473,rotation:-90,size:.75});
 export function hoopForWidth(width, placements) {
   const mobile = width <= 760, base = mobile ? MOBILE_HOOP : HOOP;
-  const position = placements?.[mobile ? 'mobile' : 'desktop'] || (mobile ? null : DESKTOP_HOOP_POSITION);
+  const position = placements?.[mobile ? 'mobile' : 'desktop'] || (mobile ? MOBILE_HOOP_POSITION : DESKTOP_HOOP_POSITION);
   if (!position) return base;
   const x=position.x??base.x, y=position.y??base.y, z=position.z??base.z;
   const rotation=position.rotation??base.rotation, size=position.size??1;

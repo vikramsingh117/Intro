@@ -168,11 +168,12 @@ export default function Notebook({ open, focused, page, reduced, onOpen, onPageC
       {tornPages.filter(index => !turningLeaves.includes(index)).map(index => <group key={index} position={[0,.049 + index * .0005,0]} rotation={[0,0,index < shownPage ? Math.PI : 0]}>
         <mesh geometry={tornEdges[index]} rotation={[-Math.PI/2,0,0]} position={[.035,0,0]}><meshStandardMaterial color={NOTEBOOK_PAGES[index].paperColor || '#eee3c8'} roughness={1} side={DoubleSide}/></mesh>
       </group>)}
+      {/* Thin turning faces must not shadow each other or stamp unstable shadows onto the spread. */}
       {flip && <group ref={sheet} position={[0,.065,0]} rotation={[0,0,flip.forward ? 0 : Math.PI]}>
         {turningLeaves.map((index, layer) => <group key={index} position={[0,layer * .003,0]} rotation={[0,0,(layer - (turningLeaves.length - 1) / 2) * .025]}>
-          {tornPages.includes(index) ? <mesh geometry={tornEdges[index]} position={[.035,0,0]} rotation={[-Math.PI/2,0,0]} castShadow receiveShadow><meshStandardMaterial color={NOTEBOOK_PAGES[index].paperColor || '#eee3c8'} roughness={1} side={DoubleSide}/></mesh> : <>
-            <mesh position={[.55,.002,0]} rotation={[-Math.PI/2,0,0]} castShadow receiveShadow><planeGeometry args={[1.1,1.55]}/><meshStandardMaterial map={textures[index].right} roughness={.95}/></mesh>
-            <mesh position={[.55,-.002,0]} rotation={[Math.PI/2,0,Math.PI]} castShadow receiveShadow><planeGeometry args={[1.1,1.55]}/><meshStandardMaterial map={textures[Math.min(index + 1, textures.length - 1)].left} roughness={.95}/></mesh>
+          {tornPages.includes(index) ? <mesh geometry={tornEdges[index]} position={[.035,0,0]} rotation={[-Math.PI/2,0,0]}><meshStandardMaterial color={NOTEBOOK_PAGES[index].paperColor || '#eee3c8'} roughness={1} side={DoubleSide}/></mesh> : <>
+            <mesh position={[.55,.002,0]} rotation={[-Math.PI/2,0,0]}><planeGeometry args={[1.1,1.55]}/><meshStandardMaterial map={textures[index].right} roughness={.95}/></mesh>
+            <mesh position={[.55,-.002,0]} rotation={[Math.PI/2,0,Math.PI]}><planeGeometry args={[1.1,1.55]}/><meshStandardMaterial map={textures[Math.min(index + 1, textures.length - 1)].left} roughness={.95}/></mesh>
           </>}
         </group>)}
       </group>}

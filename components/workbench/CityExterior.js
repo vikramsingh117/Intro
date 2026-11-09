@@ -12,6 +12,7 @@ import { SMAAPass } from 'three/examples/jsm/postprocessing/SMAAPass';
 export function NightEffects({ exposure = .85, glow = .55 }) {
   const { gl, scene, camera, size, invalidate } = useThree();
   const get = useThree(state => state.get);
+  const dpr = useThree(state => state.viewport.dpr);
   const pipeline = useRef(null);
   const bloomPass = useRef(null);
   useEffect(() => {
@@ -51,9 +52,11 @@ export function NightEffects({ exposure = .85, glow = .55 }) {
   }, [gl, scene, camera, get, invalidate]);
   useEffect(() => {
     // Resize existing render targets instead of rebuilding shaders and SMAA textures.
+    // Keep the postprocessing targets at the renderer resolution when a close-up changes DPR.
+    pipeline.current?.setPixelRatio(dpr);
     pipeline.current?.setSize(size.width, size.height);
     invalidate();
-  }, [size.width, size.height, invalidate]);
+  }, [size.width, size.height, dpr, invalidate]);
   useEffect(() => {
     gl.toneMappingExposure = exposure;
     if (bloomPass.current) bloomPass.current.strength = glow;

@@ -68,8 +68,10 @@ export default function Upliance({ celebrating=false, keyboardFocused=false, reg
   const workTexture=useMemo(()=>{
     const canvas=document.createElement('canvas');canvas.width=1200;canvas.height=740;
     drawUplianceWork(canvas.getContext('2d'),UPLIANCE_WORK[workPage],workPage,pageImage,mobile);
-    const texture=new CanvasTexture(canvas);texture.colorSpace=SRGBColorSpace;return texture;
-  },[workPage,pageImage,mobile]);
+    const texture=new CanvasTexture(canvas);texture.colorSpace=SRGBColorSpace;
+    texture.anisotropy=Math.min(8,gl.capabilities.getMaxAnisotropy());
+    return texture;
+  },[workPage,pageImage,mobile,gl]);
   useEffect(()=>()=>workTexture.dispose(),[workTexture]);
   useEffect(()=>{invalidate();},[workTexture,invalidate]);
   const progress=useRef(0),screenMaterial=useRef(null),leds=useRef(null),spill=useRef(null),hitArea=useRef(null);

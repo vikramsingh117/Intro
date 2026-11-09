@@ -196,8 +196,8 @@
   .mascotActor{right:16px;bottom:80px;width:var(--mascot-width);height:var(--mascot-height)}
   .mascotLayer[data-compact=true] .mascotActor{width:var(--mobile-touch,60px);height:calc(var(--mobile-touch,60px) * .804);bottom:8px;right:8px}
   .mascotHint{left:12px;right:auto;width:400px;max-width:calc(100% - 24px);bottom:calc(96px + var(--mascot-height));height:var(--mascot-height);overflow:hidden;font-size:calc(var(--mobile-font,20px) * .8);line-height:1.6}
-  /* Hints overlay the desktop without resizing or scrolling the shortcut grid. */
-  .mascotHint{background:#172536f2;border-radius:8px;box-shadow:0 4px 16px #0003}
+  /* Keep mobile dialogue floating directly over the desktop, without a box or shadow. */
+  .mascotHint{background:transparent;box-shadow:none;border-radius:0}
 }
 @media(prefers-reduced-motion:reduce){.mascotLayer *{animation:none!important}}
 

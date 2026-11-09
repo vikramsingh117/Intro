@@ -293,7 +293,7 @@ export default function MonitorScene({ paperInventory, onPickUpPaper, basketScor
   const [notebookImagesReady,setNotebookImagesReady]=useState(false);
   const markRoomAssetsReady=useCallback(()=>setRoomAssetsReady(true),[]);
   const markNotebookImagesReady=useCallback(()=>setNotebookImagesReady(true),[]);
-  return <Canvas events={roomEvents} onPointerMissed={()=>{if(notebook)onNotebookExit();}} shadows camera={{ position:[6, 3.5, 14.8], fov:42 }} dpr={1} frameloop="demand" gl={{alpha:true, antialias:true, toneMapping:ACESFilmicToneMapping, toneMappingExposure:.85}}>
+  return <Canvas events={roomEvents} onPointerMissed={()=>{if(notebook)onNotebookExit();}} shadows camera={{ position:[6, 3.5, 14.8], fov:42 }} dpr={notebook || upliance ? [1, 2] : 1} frameloop="demand" gl={{alpha:true, antialias:true, toneMapping:ACESFilmicToneMapping, toneMappingExposure:.85}}>
     {screensReady && <FirstRoomFrame onReady={sceneReady}/>}
     {screensReady && <PreloadAssets onReady={markRoomAssetsReady} onError={markRoomAssetsReady}/>}
     <StationaryShadows/>

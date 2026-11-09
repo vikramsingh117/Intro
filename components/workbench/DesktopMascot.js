@@ -2,6 +2,7 @@ import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 're
 import styles from '../../styles/Workbench.module.css';
 import { trackInteraction } from '../../lib/visitor-analytics';
 import { mascotTransition, paginateHint } from './mascotBehavior.mjs';
+import useMascotVoice from './useMascotVoice';
 import MusicMascot from './MusicMascot';
 import GymMascot, { GYM_DURATION_MS } from './GymMascot';
 
@@ -69,10 +70,11 @@ function Character() {
 
 const DesktopMascot=forwardRef(function DesktopMascot({interactive, visible, reduced, hasWindow, musicPlaying=false},ref){
   const button=useRef(null);
+  const { unlock, playLetter, stop } = useMascotVoice();
   const walkLane=useRef(null);
   const hintBox=useRef(null),wasSleeping=useRef(false);
   const seen=useRef(new Set()),cursor=useRef(-1);
-  const [hint,setHint]=useState(null),[paused,setPaused]=useState(false),[wordCount,setWordCount]=useState(0),[motion,setMotion]=useState(null);
+  const [hint,setHint]=useState(null),[paused,setPaused]=useState(false),[characterCount,setCharacterCount]=useState(0),[motion,setMotion]=useState(null);
   const [fontReady,setFontReady]=useState(false),[pages,setPages]=useState([]),[page,setPage]=useState(0),[motionStyle,setMotionStyle]=useState({});
   const [walking,setWalking]=useState(false);
   const [gym,setGym]=useState(false);
@@ -178,9 +180,9 @@ const DesktopMascot=forwardRef(function DesktopMascot({interactive, visible, red
       if(context)context.font=`${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
       const measure=text=>context?context.measureText(text).width:text.length*parseFloat(style.fontSize);
       const lines=Math.max(1,Math.floor(element.clientHeight/parseFloat(style.lineHeight)));
-      // Reserve room for the continuation dots, including during word-by-word reveal.
+      // Reserve room for the continuation dots, including during character-by-character reveal.
       setPages(mobile?paginateHint(hint.text,measure,Math.max(1,element.clientWidth-2-measure('...')),lines):[hint.text]);
-      setPage(0);setWordCount(0);
+      setPage(0);setCharacterCount(0);
     };
     layout();
     const observer=new ResizeObserver(layout);observer.observe(element);
@@ -188,31 +190,42 @@ const DesktopMascot=forwardRef(function DesktopMascot({interactive, visible, red
   },[hint,fontReady]);
   useEffect(()=>{
     if(!hint||!fontReady||!pages[page])return;
-    const total=pages[page].split(' ').length;
-    if(reduced){setWordCount(total);return;}
+    const total=pages[page].length;
+    if(reduced){setCharacterCount(total);return;}
     if(paused||!visible)return;
-    if(wordCount<total){const timer=setTimeout(()=>setWordCount(count=>Math.min(count+3,total)),180);return ()=>clearTimeout(timer);}
-    if(page<pages.length-1){const timer=setTimeout(()=>{setPage(value=>value+1);setWordCount(0);},700);return ()=>clearTimeout(timer);}
-  },[hint,fontReady,pages,page,wordCount,reduced,paused,visible]);
+    if(characterCount<total){
+      const character=pages[page][characterCount];
+      const previous=pages[page][characterCount-1] || '';
+      const delay=/[.!?,;:]/.test(previous)?130:42;
+      const timer=setTimeout(()=>{playLetter(character);setCharacterCount(count=>Math.min(count+1,total));},delay);
+      return ()=>clearTimeout(timer);
+    }
+    if(page<pages.length-1){const timer=setTimeout(()=>{setPage(value=>value+1);setCharacterCount(0);},700);return ()=>clearTimeout(timer);}
+  },[hint,fontReady,pages,page,characterCount,reduced,paused,visible,playLetter]);
+  useEffect(() => {
+    if(paused || !visible || !interactive || !hint) stop();
+    return stop;
+  }, [hint,page,paused,visible,interactive,stop]);
   useImperativeHandle(ref,()=>({
     cancel:()=>setHint(null),
     markSeen:id=>seen.current.add(id),
   }),[]);
   const nextHint=()=>{
+    stop();unlock();
     setMotion(null);
     // With reduced motion, a click advances any remaining page before the next hint.
-    if(reduced&&hint&&page<pages.length-1){setPage(value=>value+1);setWordCount(0);return;}
+    if(reduced&&hint&&page<pages.length-1){setPage(value=>value+1);setCharacterCount(0);return;}
     let index=(cursor.current+1)%HINTS.length;
     for(let step=0;step<HINTS.length;step++){
       const candidate=(cursor.current+1+step)%HINTS.length;
       if(!seen.current.has(HINTS[candidate].id)){index=candidate;break;}
     }
-    cursor.current=index;seen.current.add(HINTS[index].id);setPages([]);setPage(0);setWordCount(0);setHint(HINTS[index]);
+    cursor.current=index;seen.current.add(HINTS[index].id);setPages([]);setPage(0);setCharacterCount(0);setHint(HINTS[index]);
     trackInteraction('mascot_hint',HINTS[index].id);
   };
   const pageText=pages[page]||'';
-  const visibleText=fontReady?pageText.split(' ').slice(0,wordCount).join(' '):'';
-  const hasMore=wordCount<pageText.split(' ').length||page<pages.length-1;
+  const visibleText=fontReady?pageText.slice(0,characterCount):'';
+  const hasMore=characterCount<pageText.length||page<pages.length-1;
   const continuation=visibleText&&hasMore&&!/[.!?]$/.test(visibleText)?'...':'';
   return <div className={styles.mascotLayer} data-paused={paused||!visible||reduced} data-compact={sleeping}>
     {hint&&interactive&&<div ref={hintBox} className={styles.mascotHint} id="mascot-hint">

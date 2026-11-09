@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { Vector3 } from 'three';
-import { HOOP, MOBILE_HOOP, hoopForWidth, crossedHoop, collideHoop, celebrationLight } from '../components/workbench/basketball.mjs';
+import { HOOP, hoopForWidth, crossedHoop, collideHoop, celebrationLight } from '../components/workbench/basketball.mjs';
 import { createLightRope, kickLightRope, stepLightRope } from '../components/workbench/lightRope.mjs';
 
 const at = (x=0,y=0,z=0) => new Vector3(HOOP.x+x, HOOP.y+y, HOOP.z+z);
@@ -46,16 +46,18 @@ test('lamp pulse restores original state and respects reduced motion',()=>{
 });
 
 test('mobile hoop sits right of the window and uses the same transformed scoring and backboard positions',()=>{
-  assert.equal(hoopForWidth(760),MOBILE_HOOP);
+  const mobile=hoopForWidth(760);
+  assert.deepEqual({x:mobile.x,y:mobile.y,z:mobile.z,rotation:mobile.rotation,size:mobile.size},
+    {x:-1.85,y:2.85,z:-1.473,rotation:-90,size:.75});
   assert.equal(hoopForWidth(761).x,-7.85);
   assert.equal(hoopForWidth(761).y,2.5);
   assert.equal(hoopForWidth(761).z,-2.02);
   assert.equal(hoopForWidth(761).rotation,-92);
   assert.equal(hoopForWidth(761).size,.69);
-  const h=MOBILE_HOOP;
+  const h=mobile;
   assert.ok(h.x-h.boardWidth/2>-2.9);
   const board=new Vector3(HOOP.boardX-HOOP.x,HOOP.boardY-HOOP.y,0)
-    .applyAxisAngle(new Vector3(0,1,0),-Math.PI/2).add(new Vector3(h.x,h.y,h.z));
+    .multiplyScalar(h.size).applyAxisAngle(new Vector3(0,1,0),-Math.PI/2).add(new Vector3(h.x,h.y,h.z));
   assert.ok(board.distanceTo(new Vector3(h.boardX,h.boardY,h.boardZ))<1e-8);
   assert.equal(crossedHoop(new Vector3(h.x,h.y+1,h.z),new Vector3(h.x,h.y-1,h.z),.24,h),true);
   assert.equal(crossedHoop(at(0,1),at(0,-1),.24,h),false);

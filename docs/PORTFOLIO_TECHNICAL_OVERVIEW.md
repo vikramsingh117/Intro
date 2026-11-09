@@ -337,3 +337,13 @@ For a portfolio walkthrough or interview, the strongest explanations connect a c
 8. **Lifecycle discipline:** textures, geometries, pointer capture, event listeners, timers, audio, camera streams, and provider requests have explicit cleanup paths.
 
 The value of the project is the coordination across these systems. A convincing explanation should show how a visitor action travels through input handling, application state, rendering, and persistence, then explain the tradeoffs made to keep that interaction understandable and responsive.
+
+## 19. City, mobile rendering, and mascot updates — November 9, 2026
+
+- `/city` provides a dedicated workspace for the shared city model, window-camera view, orbit inspection, and placement, lighting, and cloud controls. The room uses the same city component. The original window camera remains at `[-3.2, 2.3, -2.1]`, looking toward `[-8.1, 4.7, -14]`, with a 45° field of view.
+- Layered procedural clouds hide the city base. The saved fog settings are height `1.6`, thickness `2.4`, spread `73`, and density `0.65`. A world-space fade from Z `-5.5` to `-3.5`, followed by clipping, keeps clouds behind the room window regardless of city scale or rotation.
+- Notebook turning leaves no longer cast or receive shadows, avoiding artifacts between their closely spaced faces. Notebook and Upliance close-ups use device pixel ratio up to 2, with matching postprocessing resolution. Upliance artwork textures also use supported anisotropic filtering, capped at 8.
+- The mascot reveals hints character by character with a small synthetic alphabet voice. A–Z produce short sounds; spaces, digits, and punctuation remain silent, with extra timing pauses after punctuation. Audio unlocks on a mascot click, stops on dismissal or hidden/inactive views, and is disposed on unmount. Reduced-motion mode reveals text immediately without chatter. Final amplitude is 15% of the initial prototype. Mobile hints have no rectangular background or box shadow.
+- The approved mobile hoop placement is `x: -1.85`, `y: 2.85`, `z: -1.473`, `rotation: -90`, `size: 0.75`. The renderer, rim scoring, and backboard collision all use `hoopForWidth`; the desktop placement is unchanged. Temporary mobile placement sliders have been removed.
+
+Visual and listening verification is handled by the owner; no browser checks were performed for these changes. Lint and targeted notebook, artwork, shadow-motion, and basketball tests provide code-level validation.
