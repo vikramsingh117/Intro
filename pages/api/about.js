@@ -58,7 +58,7 @@ export default async function handler(req, res) {
     if (!process.env.GEMINI_KEY) { fallback(); return; }
     const client = new GoogleGenerativeAI(process.env.GEMINI_KEY);
     const model = client.getGenerativeModel({
-      model: process.env.GEMINI_MODEL || "gemini-3.8-flash",
+      model: process.env.GEMINI_MODEL || "gemini-3.1-flash-lite",
       systemInstruction: masterPrompt + "\n\nRésumé:\n" + profile + "\n\nRepository context:\n" + repositoryContext,
       generationConfig: { maxOutputTokens: 700, temperature: 0.4 },
     }, { timeout: 18000 });

@@ -51,7 +51,7 @@ Set server-only variables in untracked `.env.local`, then restart the server:
 | Variable | Purpose |
 | --- | --- |
 | `GEMINI_KEY` | Generated assistant replies |
-| `GEMINI_MODEL` | Optional override; current code default is `gemini-3.8-flash` |
+| `GEMINI_MODEL` | Optional override; current code default is `gemini-3.1-flash-lite` |
 | `MONGODB_URI` | Notes, photos and visitor analytics database connection |
 | `MONGODB_DB` | Database name, currently `Portfolio` (case-sensitive) |
 | `NTFY_PHOTO_TOPIC` | Server-only ntfy topic for photos, India visits and new note messages |
