@@ -5,7 +5,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { Box3, Vector3 } from 'three';
 import InteractiveObject from './InteractiveObject';
 
-const RADIO_VOLUME = .4 * .7 * .6;
+const RADIO_VOLUME = .4 * .7 * .6 * .4;
 
 export default function Radio({ keyboardFocused, registerRoomAction, onHover, onPlaybackChange }) {
   const audio = useRef(null);
@@ -14,6 +14,7 @@ export default function Radio({ keyboardFocused, registerRoomAction, onHover, on
   const staticContext=useRef(null);
   const {invalidate}=useThree();
   const requested = useRef(false);
+  const manuallyStopped = useRef(false);
   const [on, setOn] = useState(false);
   const [musicAnimationAllowed,setMusicAnimationAllowed]=useState(false);
   const [failed, setFailed] = useState(false);
@@ -43,7 +44,7 @@ export default function Radio({ keyboardFocused, registerRoomAction, onHover, on
   useEffect(()=>()=>{const context=staticContext.current;staticContext.current=null;if(context&&context.state!=='closed')context.close().catch(()=>{});},[]);
   useEffect(() => {
     const player = new Audio('/audio/cozy-nordic-quiet-spot.m4a');
-    player.preload = 'none';
+    player.preload = 'auto';
     player.loop = true;
     player.volume = RADIO_VOLUME;
     audio.current = player;
@@ -58,8 +59,22 @@ export default function Radio({ keyboardFocused, registerRoomAction, onHover, on
     player.addEventListener('waiting',stopped);
     player.addEventListener('ended',stopped);
     player.addEventListener('error', error);
+    requested.current = true;
+    // Try on landing; browsers that block autoplay retry on the first interaction.
+    const start = () => {
+      if (!requested.current || audio.current !== player || !player.paused) return;
+      player.play().catch(cause => {
+        if (audio.current !== player || !requested.current) return;
+        if (cause.name !== 'NotAllowedError' && cause.name !== 'AbortError') error();
+      });
+    };
+    document.addEventListener('pointerdown', start);
+    document.addEventListener('keydown', start);
+    start();
     return () => {
       requested.current = false;
+      document.removeEventListener('pointerdown', start);
+      document.removeEventListener('keydown', start);
       player.removeEventListener('playing',playing);
       player.removeEventListener('pause',stopped);
       player.removeEventListener('waiting',stopped);
@@ -76,12 +91,13 @@ export default function Radio({ keyboardFocused, registerRoomAction, onHover, on
     const player = audio.current;
     playStatic();
     if (requested.current) {
+      manuallyStopped.current = true;
       requested.current = false; player.pause(); setOn(false);
       onHover('Radio · play music');
       return;
     }
-    // Music and the headphone mascot start only after an explicit radio toggle.
-    setMusicAnimationAllowed(true);
+    // Landing playback stays separate from the mascot until an off/on cycle.
+    setMusicAnimationAllowed(manuallyStopped.current);
     if (failed) player.load();
     requested.current = true; setFailed(false);
     onHover('Radio · turn music off');
