@@ -1,3 +1,4 @@
+import { preloadAboutJourney } from './loadAboutJourney';
 import { useAfterHoursTransition } from '../AfterHoursTransition';
 import { Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Canvas, events as createPointerEvents, useFrame, useLoader, useThree } from '@react-three/fiber';
@@ -282,6 +283,10 @@ function Camera({ paperOrbit, photo, pauseCamera, upliance, onUplianceArrive, en
 }
 export default function MonitorScene({ paperInventory, onPickUpPaper, basketScore, celebrating, onBasket, photo, onPhotoOpen, musicPlaying, onPlaybackChange, onCeilingPowerChange, onNotebookTear, onPaperMotionChange, aimingPaper, heldPaper, paperControls, onPaperThrown, tornPages, keyboardTarget, registerRoomAction, upliance, upliancePage, uplianceArrived, uplianceControlsRef, onUplianceArrive, onUplianceSelect, propPlacement, entered, reduced, onEnter, onArrive, lampOn, onLampToggle, onWindowSelect, outside, onCityReady, desktopRef, desktop, notebook, notebookPage, onNotebookOpen, onHover, notebookOpen, onNotebookPageChange, onNotebookExit, citySettings, wearingGlasses, onWearGlasses, stickyNotes, noteEditorRef }) {
   const { sceneReady } = useAfterHoursTransition();
+  const onRoomReady = useCallback(() => {
+    sceneReady();
+    preloadAboutJourney();
+  }, [sceneReady]);
   const paperOrbit = useRef(null);
   const [lightDragging,setLightDragging]=useState(false);
   const [monitorReady,setMonitorReady]=useState(false);
@@ -294,7 +299,7 @@ export default function MonitorScene({ paperInventory, onPickUpPaper, basketScor
   const markRoomAssetsReady=useCallback(()=>setRoomAssetsReady(true),[]);
   const markNotebookImagesReady=useCallback(()=>setNotebookImagesReady(true),[]);
   return <Canvas events={roomEvents} onPointerMissed={()=>{if(notebook)onNotebookExit();}} shadows camera={{ position:[6, 3.5, 14.8], fov:42 }} dpr={notebook || upliance ? [1, 2] : 1} frameloop="demand" gl={{alpha:true, antialias:true, toneMapping:ACESFilmicToneMapping, toneMappingExposure:.85}}>
-    {screensReady && <FirstRoomFrame onReady={sceneReady}/>}
+    {screensReady && <FirstRoomFrame onReady={onRoomReady}/>}
     {screensReady && <PreloadAssets onReady={markRoomAssetsReady} onError={markRoomAssetsReady}/>}
     <StationaryShadows/>
     <color attach="background" args={['#091321']} />

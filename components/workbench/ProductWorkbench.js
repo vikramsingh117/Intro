@@ -159,7 +159,7 @@ export default function ProductWorkbench() {
     if (target?.isConnected && target !== document.body) target.focus(); else enterButton.current?.focus();
   });
   const openNotebook = () => { if(photo || entered || outside || notebook || upliance) return; rememberFocus(); setNotebookOpen(true); setNotebook(true); };
-  const openMonitor = () => { if(photo || entered || outside || notebook || upliance) return; preloadAboutJourney(); rememberFocus(); setEntered(true); };
+  const openMonitor = () => { if(photo || entered || outside || notebook || upliance) return; rememberFocus(); setEntered(true); };
   const openWindow = () => { if(photo || entered || outside || notebook || upliance) return; rememberFocus(); setOutside(true); };
   const openPhoto = () => { if(photo || entered || outside || notebook || upliance || stickyNotes.editor || stickyNotes.placing) return; rememberFocus(); setPhoto(true); };
   const closePhoto = () => { setPhoto(false); restoreFocus(); };

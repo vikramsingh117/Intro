@@ -42,11 +42,11 @@ export default function AboutJourney({ onOpenUpliance, onOpenNotebook, onToggleR
     setSelected(id);
   };
   const move = direction => {
-    const next = Math.max(0, Math.min(STOPS.length - 1, index + direction));
+    const next = (index + direction + STOPS.length) % STOPS.length;
     if (intro !== 'ready' || changing.current || next === index) return;
     setSelected(null);
     trackInteraction('journey_year', `${STOPS[index].year}->${STOPS[next].year}`);
-    setTimelineMotion({ from: index, direction: next > index ? 1 : -1 });
+    setTimelineMotion({ from: index, direction: direction > 0 ? 1 : -1 });
     setPreviousMonth(month);
     setIndex(next);
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
@@ -131,7 +131,7 @@ export default function AboutJourney({ onOpenUpliance, onOpenNotebook, onToggleR
         event.preventDefault(); event.stopPropagation(); move(event.key === 'ArrowLeft' ? -1 : 1);
       }
     }}>
-      <button onClick={() => move(-1)} disabled={index === 0} aria-disabled={transitioning || undefined} aria-label="Previous year">‹</button>
+      <button onClick={() => move(-1)} aria-disabled={transitioning || intro !== 'ready' || undefined} aria-label="Previous year">‹</button>
       <div className={styles.timelineCenter}>
         <div className={styles.yearReel} aria-hidden="true">
           {transitioning && <span key={`out-${timelineMotion.from}`} className={styles.yearLeaving}>{STOPS[timelineMotion.from].year}</span>}
@@ -143,7 +143,7 @@ export default function AboutJourney({ onOpenUpliance, onOpenNotebook, onToggleR
         </div>
         <span className={styles.srOnly} aria-live="polite" aria-atomic="true">{STOPS[index].year}</span>
       </div>
-      <button onClick={() => move(1)} disabled={index === STOPS.length - 1} aria-disabled={transitioning || undefined} aria-label="Next year">›</button>
+      <button onClick={() => move(1)} aria-disabled={transitioning || intro !== 'ready' || undefined} aria-label="Next year">›</button>
     </nav>
   </div>;
 }
