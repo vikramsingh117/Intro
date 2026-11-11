@@ -1,3 +1,7 @@
+import dynamic from 'next/dynamic';
+import { loadAboutJourney } from './loadAboutJourney';
+
+const AboutJourney = dynamic(loadAboutJourney, { ssr: false, loading: () => <p role="status">Opening About Me…</p> });
 import { contributions } from '../../lib/contributions';
 import styles from '../../styles/Workbench.module.css';
 
@@ -64,23 +68,6 @@ function Projects() {
     </article>
   </div>;
 }
-function About() {
-  return <div className={styles.portfolioApp}>
-    <p className={styles.eyebrow}>MUMBAI, INDIA / AI PRODUCT ENGINEER</p><h2>Hi, I’m Vikram Singh.</h2>
-    <p>I work where product decisions and engineering meet: shaping what an AI experience should do, then owning the interfaces, integrations, and systems needed to make it reliable.</p>
-    <p>At upliance, I work across the touchscreen, mobile experience, and internal AI tools—from cooking assistants and recipe discovery to dietary preferences, real-time updates, and session inspection.</p>
-    <p>Before that, I built and improved backend systems at Office Solutions, working extensively with embedded Power BI reports in browser iframes, and contributed to community software at Cribble Org.</p>
-    <article><small>HOW I WORK</small><h3>Product thinking, with implementation ownership.</h3>
-      <ul><li>Start with what the person should be able to do next.</li><li>Make state and edge cases explicit—from saved preferences to archived chats.</li><li>Build the supporting tools that make AI systems easier to understand, operate, and improve.</li></ul>
-    </article>
-    <article><small>TOOLBOX</small><h3>Across the stack</h3>
-      <p>Java · TypeScript · JavaScript · Python · SQL · Bash · Go</p>
-      <p>React · GraphQL · Spring Boot · Redis · MongoDB · MySQL · Docker · Linux · GCP · Azure · Firebase</p>
-    </article>
-    <article><small>EDUCATION</small><h3>VIT Chennai</h3><p>B.Tech in Computer Science · 2021–2025 · CGPA 8.42/10.</p><p>First on campus among 50+ teams at Google Hash Code.</p></article>
-    <article><small>FIND ME ONLINE</small><h3>Let’s connect.</h3><div className={styles.profileLinks}>{PROFILE_LINKS.map(link=><ExternalLink key={link.title} href={link.href}>{link.title}</ExternalLink>)}<a href="mailto:vikramandanshu@gmail.com">Email me ↗</a></div></article>
-  </div>;
-}
-export default function PortfolioApps({ title, onOpenUpliance }) {
-  return title==='My Work'?<Work onOpenUpliance={onOpenUpliance}/>:title==='Projects'?<Projects/>:<About/>;
+export default function PortfolioApps({ title, onOpenUpliance, onOpenNotebook, onToggleRadio, onToggleCeiling, ceilingOn, onEnterPortfolio, radioPlaying }) {
+  return title==='My Work'?<Work onOpenUpliance={onOpenUpliance}/>:title==='Projects'?<Projects/>:<AboutJourney onOpenUpliance={onOpenUpliance} onOpenNotebook={onOpenNotebook} onToggleRadio={onToggleRadio} onToggleCeiling={onToggleCeiling} ceilingOn={ceilingOn} onEnterPortfolio={onEnterPortfolio} radioPlaying={radioPlaying}/>;
 }
