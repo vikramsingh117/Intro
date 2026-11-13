@@ -126,7 +126,7 @@ const ROOM_TARGET = [0, .2128, -.51];
 const ROOM_MIN_AZIMUTH = -22 * Math.PI / 180;
 const ROOM_MAX_AZIMUTH = 1.2;
 
-function Camera({ paperOrbit, photo, pauseCamera, upliance, onUplianceArrive, entered, outside, notebook, citySettings, reduced, onArrive, interactionBlocked, noteMode, noteX, noteY }) {
+function Camera({ paperOrbit, photo, pauseCamera, upliance, onUplianceArrive, entered, outside, notebook, citySettings, reduced, onArrive, interactionBlocked, noteMode, noteX, noteY, roomResetKey }) {
   const { camera, gl, size, invalidate } = useThree();
   const { cameraX, cameraY, cameraZ, targetX, targetY, targetZ, fov } = citySettings;
   const roomCameraZ=size.width<=760?Math.max(18.5,11.2/(size.width/size.height)):14.8;
@@ -139,6 +139,7 @@ function Camera({ paperOrbit, photo, pauseCamera, upliance, onUplianceArrive, en
   const transition = useRef(null);
   const orbit = useRef(null);
   const roomPosition = useRef(null);
+  const appliedRoomReset = useRef(roomResetKey);
   const wasFocused = useRef(false);
   const windowLook = useRef({center:null,yaw:0,pitch:0,drag:null});
   const initialRoomCamera=useRef(false);
@@ -218,6 +219,11 @@ function Camera({ paperOrbit, photo, pauseCamera, upliance, onUplianceArrive, en
   applianceCallback.current=onUplianceArrive;
   useEffect(() => {
     const focused = photo || entered || outside || notebook || !!upliance || !!noteMode;
+    const resetRoom = !focused && appliedRoomReset.current !== roomResetKey;
+    if (resetRoom) {
+      appliedRoomReset.current = roomResetKey;
+      roomPosition.current = roomHome.clone();
+    }
     const entrance = !transition.current && !focused;
     if (focused && !wasFocused.current) roomPosition.current = camera.position.clone();
     wasFocused.current = focused;
@@ -244,9 +250,9 @@ function Camera({ paperOrbit, photo, pauseCamera, upliance, onUplianceArrive, en
     const photoTarget = new Vector3(...PHOTO_TARGET);
     const photoDistance = Math.max(.68, .68 / (size.width / size.height)) / Math.tan(21 * Math.PI / 180) * 1.3;
     const photoCamera = photoTarget.clone().add(new Vector3(0, 0, photoDistance));
-    transition.current = { from:camera.position.clone(), fovFrom:camera.fov, fovTo:outside ? fov : 42, lookFrom:lookTarget.current.clone(), lookTo:photo ? photoTarget : upliance ? applianceTarget : noteMode ? noteTarget : notebook ? new Vector3(...NOTEBOOK_TARGET) : outside ? new Vector3(targetX,targetY,targetZ) : (entered ? new Vector3(1.5, .2128, -.51) : new Vector3(...ROOM_TARGET)), to:photo ? photoCamera : upliance ? applianceCamera : noteMode ? noteCamera : notebook ? notebookCamera : outside ? new Vector3(cameraX,cameraY,cameraZ) : entered ? new Vector3(1.5, .2128 + .139173 * distance, -.51 + .990268 * distance)  : (roomPosition.current?.clone() || roomHome.clone()), duration:entrance ? 2.4 : 1.45, elapsed:entrance && !reduced ? -.35 : noteMode==='wall' && !reduced ? -.65 : 0, done:false };
+    transition.current = { from:camera.position.clone(), fovFrom:camera.fov, fovTo:outside ? fov : 42, lookFrom:lookTarget.current.clone(), lookTo:photo ? photoTarget : upliance ? applianceTarget : noteMode ? noteTarget : notebook ? new Vector3(...NOTEBOOK_TARGET) : outside ? new Vector3(targetX,targetY,targetZ) : (entered ? new Vector3(1.5, .2128, -.51) : new Vector3(...ROOM_TARGET)), to:photo ? photoCamera : upliance ? applianceCamera : noteMode ? noteCamera : notebook ? notebookCamera : outside ? new Vector3(cameraX,cameraY,cameraZ) : entered ? new Vector3(1.5, .2128 + .139173 * distance, -.51 + .990268 * distance)  : (resetRoom ? roomHome.clone() : roomPosition.current?.clone() || roomHome.clone()), duration:entrance ? 2.4 : 1.45, elapsed:entrance && !reduced ? -.35 : noteMode==='wall' && !reduced ? -.65 : 0, done:false };
     invalidate();
-  }, [photo, upliance, noteMode, noteX, noteY, entered, outside, notebook, cameraX, cameraY, cameraZ, targetX, targetY, targetZ, fov, reduced, camera, size.width, size.height, roomHome, invalidate]);
+  }, [photo, upliance, noteMode, noteX, noteY, entered, outside, notebook, cameraX, cameraY, cameraZ, targetX, targetY, targetZ, fov, reduced, camera, size.width, size.height, roomHome, roomResetKey, invalidate]);
   useFrame((state, dt) => {
     const t = transition.current;
     if (pauseCamera) return;
@@ -281,7 +287,7 @@ function Camera({ paperOrbit, photo, pauseCamera, upliance, onUplianceArrive, en
   }, -1);
   return null;
 }
-export default function MonitorScene({ paperInventory, onPickUpPaper, basketScore, celebrating, onBasket, photo, onPhotoOpen, musicPlaying, onPlaybackChange, onCeilingPowerChange, onNotebookTear, onPaperMotionChange, aimingPaper, heldPaper, paperControls, onPaperThrown, tornPages, keyboardTarget, registerRoomAction, upliance, upliancePage, uplianceArrived, uplianceControlsRef, onUplianceArrive, onUplianceSelect, propPlacement, entered, reduced, onEnter, onArrive, lampOn, onLampToggle, onWindowSelect, outside, onCityReady, desktopRef, desktop, notebook, notebookPage, onNotebookOpen, onHover, notebookOpen, onNotebookPageChange, onNotebookExit, citySettings, wearingGlasses, onWearGlasses, stickyNotes, noteEditorRef }) {
+export default function MonitorScene({ paperInventory, onPickUpPaper, basketScore, celebrating, onBasket, photo, onPhotoOpen, musicPlaying, onPlaybackChange, onCeilingPowerChange, onNotebookTear, onPaperMotionChange, aimingPaper, heldPaper, paperControls, onPaperThrown, tornPages, keyboardTarget, registerRoomAction, upliance, upliancePage, uplianceArrived, uplianceControlsRef, onUplianceArrive, onUplianceSelect, propPlacement, entered, reduced, onEnter, onArrive, lampOn, onLampToggle, onWindowSelect, outside, onCityReady, desktopRef, desktop, notebook, notebookPage, onNotebookOpen, onHover, notebookOpen, onNotebookPageChange, onNotebookExit, citySettings, wearingGlasses, onWearGlasses, stickyNotes, noteEditorRef, roomResetKey }) {
   const { sceneReady } = useAfterHoursTransition();
   const onRoomReady = useCallback(() => {
     sceneReady();
@@ -312,7 +318,7 @@ export default function MonitorScene({ paperInventory, onPickUpPaper, basketScor
     <pointLight position={[-4.6, 2, -2.5]} intensity={18} distance={12} decay={2} color="#8abbd9" />
     <Suspense fallback={null}><InteractiveObject focused={keyboardTarget==='monitor'} label="Monitor · explore my work" onHover={onHover}><Monitor basketScore={basketScore} reduced={reduced} onReady={markMonitorReady} musicPlaying={musicPlaying} onEnter={notebook ? onNotebookExit : onEnter} desktopRef={desktopRef} desktop={desktop} /></InteractiveObject></Suspense>
     {screensReady && <PhotoFrame reduced={reduced} focused={photo} keyboardFocused={keyboardTarget==='photo'} onSelect={onPhotoOpen} onHover={onHover}/>}
-    <Camera paperOrbit={paperOrbit} photo={photo} pauseCamera={aimingPaper} {...{upliance,onUplianceArrive,entered,outside,notebook,citySettings,reduced,onArrive}} noteMode={stickyNotes.editor ? (stickyNotes.editor.id?'read':'write') : stickyNotes.placing?'wall':null} noteX={stickyNotes.editor?.x} noteY={stickyNotes.editor?.y} interactionBlocked={aimingPaper || lightDragging || stickyNotes.dragging || !!stickyNotes.editor || !!stickyNotes.placing}/>
+    <Camera paperOrbit={paperOrbit} photo={photo} pauseCamera={aimingPaper} {...{upliance,onUplianceArrive,entered,outside,notebook,citySettings,reduced,onArrive,roomResetKey}} noteMode={stickyNotes.editor ? (stickyNotes.editor.id?'read':'write') : stickyNotes.placing?'wall':null} noteX={stickyNotes.editor?.x} noteY={stickyNotes.editor?.y} interactionBlocked={aimingPaper || lightDragging || stickyNotes.dragging || !!stickyNotes.editor || !!stickyNotes.placing}/>
     {screensReady && <Suspense fallback={null}><PaperBalls reduced={reduced} orbitControls={paperOrbit} onScore={onBasket} onMotionChange={onPaperMotionChange} aiming={aimingPaper} heldPaper={heldPaper} controls={paperControls} onThrown={onPaperThrown} canThrow={!photo && !entered && !outside && !notebook && !upliance && !stickyNotes.editor && !stickyNotes.placing}/></Suspense>}
     {screensReady && <Suspense fallback={null}><BasketballHoop/></Suspense>}
     {screensReady && <Suspense fallback={null}><PaperPile inventory={paperInventory} aiming={aimingPaper} onPickUp={onPickUpPaper} keyboardFocused={keyboardTarget==='paper-pile'} registerRoomAction={registerRoomAction} onHover={onHover} interactive={!aimingPaper&&!photo&&!entered&&!outside&&!notebook&&!upliance&&!stickyNotes.editor&&!stickyNotes.placing}/></Suspense>}

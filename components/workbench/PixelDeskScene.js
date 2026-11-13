@@ -102,7 +102,7 @@ export default function PixelDeskScene({ month, previousMonth = month, transitio
         <path fill="#a78256" d="M239 186h38v5h-38zm0 10h38v4h-38zm-2 13h42v6h-42z"/>
         <path fill="#d0ac75" d="M240 187h35v1h-35zm-1 23h38v1h-38z"/>
         <path fill="#72513a" d="M244 224h28v3h-28z"/>
-      </Presence><Presence visible={month >= 48} before={previousMonth >= 48} transitioning={transitioning} replay>
+      </Presence><Presence visible={month >= 48} before={previousMonth >= 48} transitioning={transitioning}>
       <path fill="#293b35" d="M231 190h52v27h-52z"/><path fill="#4f6250" d="M228 187h58v24h-58z"/><path fill="#27362f" d="M253 213h8v19h-8zm-20 18h48v4h-48z"/>
       <ChairDetails/>
       </Presence>

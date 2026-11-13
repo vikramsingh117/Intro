@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { contributions } from '../../lib/contributions';
 import { trackInteraction } from '../../lib/visitor-analytics';
 import PortfolioYearNotes from './PortfolioYearNotes';
@@ -16,8 +16,22 @@ const STOPS = [
   { year: '2025', month: 56 },
   { year: '2026', month: 60 },
 ];
+const BOARD_ZOOMS = {
+  github: ['68.33%', '49.17%'],
+  leetcode: ['73.75%', '49.17%'],
+  cribble: ['68.33%', '61.25%'],
+  office: ['73.75%', '61.25%'],
+};
 
-export default function AboutJourney({ onOpenUpliance, onOpenNotebook, onToggleRadio, onToggleCeiling, ceilingOn, onEnterPortfolio, radioPlaying }) {
+function BoardZoom({ id, month, leaving, radioPlaying, ceilingOn }) {
+  const objects = useRef({});
+  const [originX, originY] = BOARD_ZOOMS[id];
+  return <div className={styles.boardZoomViewport} aria-hidden="true"><div className={`${styles.boardZoom} ${leaving ? styles.boardZoomOut : ''}`} style={{ '--board-x': originX, '--board-y': originY }}>
+    <PixelDeskScene month={month} disabled radioPlaying={radioPlaying} ceilingOn={ceilingOn} objectRefs={objects}/>
+  </div></div>;
+}
+
+export default function AboutJourney({ onOpenUpliance, onOpenNotebook, onOpenNotes, onToggleRadio, onToggleCeiling, ceilingOn, onEnterPortfolio, radioPlaying }) {
   const setWindowBack = useContext(WindowBackContext);
   const [intro, setIntro] = useState('loading');
   const [index, setIndex] = useState(0);
@@ -25,7 +39,8 @@ export default function AboutJourney({ onOpenUpliance, onOpenNotebook, onToggleR
   const [previousMonth, setPreviousMonth] = useState(STOPS[0].month);
   const [transitioning, setTransitioning] = useState(false);
   const [selected, setSelected] = useState(null);
-  const objectRefs = useRef({}), back = useRef(null), timer = useRef(null);
+  const [detailMotion, setDetailMotion] = useState(null);
+  const objectRefs = useRef({}), back = useRef(null), timer = useRef(null), detailTimer = useRef(null);
   const loggedOpen = useRef(false);
   const lastObject = useRef(null), changing = useRef(false);
   const month = STOPS[index].month, detail = selected ? DETAILS[selected] : null;
@@ -36,10 +51,19 @@ export default function AboutJourney({ onOpenUpliance, onOpenNotebook, onToggleR
     if (month >= 60) {
       if (id === 'upliance') { onOpenUpliance?.(); return; }
       if (id === 'notebook') { onOpenNotebook?.(); return; }
+      if (id === 'notes') { onOpenNotes?.(); return; }
       if (id === 'ceiling') { onToggleCeiling?.(); return; }
       if (id === 'radio') { onToggleRadio?.(); return; }
     }
     setSelected(id);
+    if (BOARD_ZOOMS[id]) {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) setDetailMotion('view');
+      else {
+        setDetailMotion('in');
+        clearTimeout(detailTimer.current);
+        detailTimer.current = setTimeout(() => setDetailMotion('view'), 500);
+      }
+    } else setDetailMotion(null);
   };
   const move = direction => {
     const next = (index + direction + STOPS.length) % STOPS.length;
@@ -57,7 +81,7 @@ export default function AboutJourney({ onOpenUpliance, onOpenNotebook, onToggleR
       setTransitioning(false);
     }, 500);
   };
-  useEffect(() => () => clearTimeout(timer.current), []);
+  useEffect(() => () => { clearTimeout(timer.current); clearTimeout(detailTimer.current); }, []);
   useEffect(() => {
     if (!loggedOpen.current) { trackInteraction('journey_open', '2021'); loggedOpen.current = true; }
   }, []);
@@ -67,22 +91,30 @@ export default function AboutJourney({ onOpenUpliance, onOpenNotebook, onToggleR
     const finish = setTimeout(() => setIntro('ready'), 2200);
     return () => { clearTimeout(reveal); clearTimeout(finish); };
   }, []);
+  const returnToRoom = useCallback(() => {
+    if (!selected || detailMotion === 'out') return;
+    trackInteraction('journey_back', `${STOPS[index].year}:${selected}`);
+    lastObject.current = selected;
+    if (BOARD_ZOOMS[selected] && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setDetailMotion('out');
+      clearTimeout(detailTimer.current);
+      detailTimer.current = setTimeout(() => { setSelected(null); setDetailMotion(null); }, 500);
+    } else { setSelected(null); setDetailMotion(null); }
+  }, [selected, detailMotion, index]);
   useEffect(() => {
-    setWindowBack?.(() => selected ? () => {
-      trackInteraction('journey_back', `${STOPS[index].year}:${selected}`);
-      lastObject.current = selected;
-      setSelected(null);
-    } : null);
+    setWindowBack?.(() => selected ? returnToRoom : null);
     return () => setWindowBack?.(null);
-  }, [selected, index, setWindowBack]);
-  const returnToRoom = () => { trackInteraction('journey_back', `${STOPS[index].year}:${selected}`); lastObject.current = selected; setSelected(null); };
+  }, [selected, returnToRoom, setWindowBack]);
   useEffect(() => {
-    if (selected) back.current?.focus({ preventScroll: true });
-    else if (lastObject.current) {
+    if (selected) {
+      if (!BOARD_ZOOMS[selected] || detailMotion === 'view') back.current?.focus({ preventScroll: true });
+      return;
+    }
+    if (lastObject.current) {
       objectRefs.current[lastObject.current]?.focus({ preventScroll: true });
       lastObject.current = null;
     }
-  }, [selected]);
+  }, [selected, detailMotion]);
   return <div className={styles.journey} data-intro={intro} onKeyDown={event => {
     if (event.key === 'Escape' && selected) { event.preventDefault(); event.stopPropagation(); returnToRoom(); }
   }}>
@@ -90,7 +122,7 @@ export default function AboutJourney({ onOpenUpliance, onOpenNotebook, onToggleR
       <span>VIKRAM’S ROOM</span><div className={styles.loadingTrack} aria-hidden="true"><i /></div><small>STEPPING INSIDE…</small>
     </div>}
     <main className={styles.stage}>
-      {selected === 'computer' && index === 2 ? <InceptionMonitor onEnterPortfolio={() => { trackInteraction('journey_enter_portfolio', '2026'); onEnterPortfolio?.(); }} radioPlaying={radioPlaying} ceilingOn={ceilingOn}/> : selected === 'leetcode' ? <LeetCodeSnapshot month={month} onBack={returnToRoom} backRef={back} radioPlaying={radioPlaying} ceilingOn={ceilingOn}/> : selected === 'computer' && archiveUrl ? <div className={styles.portfolioLayout}><PortfolioYearNotes year={STOPS[index].year} side="left"/><section className={`${styles.closeup} ${styles.archiveMonitor}`} aria-label="Archived portfolio monitor">
+      {selected && BOARD_ZOOMS[selected] && detailMotion !== 'view' ? <BoardZoom key={`${selected}-${detailMotion}`} id={selected} month={month} leaving={detailMotion === 'out'} radioPlaying={radioPlaying} ceilingOn={ceilingOn}/> : selected === 'computer' && index === 2 ? <InceptionMonitor onEnterPortfolio={() => { trackInteraction('journey_enter_portfolio', '2026'); onEnterPortfolio?.(); }} radioPlaying={radioPlaying} ceilingOn={ceilingOn}/> : selected === 'leetcode' ? <LeetCodeSnapshot month={month} onBack={returnToRoom} backRef={back} radioPlaying={radioPlaying} ceilingOn={ceilingOn}/> : selected === 'computer' && archiveUrl ? <div className={styles.portfolioLayout}><PortfolioYearNotes year={STOPS[index].year} side="left"/><section className={`${styles.closeup} ${styles.archiveMonitor}`} aria-label="Archived portfolio monitor">
         <div className={styles.closeupBar}>
           <button ref={back} onClick={returnToRoom}>← Back to room</button>
           <span className={styles.portfolioYear}>Same portfolio, in {STOPS[index].year}.</span>

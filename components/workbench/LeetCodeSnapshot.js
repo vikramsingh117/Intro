@@ -1,5 +1,3 @@
-import { useEffect, useRef, useState } from 'react';
-import PixelDeskScene from './PixelDeskScene';
 import styles from '../../styles/AboutJourney.module.css';
 
 // Values transcribed from the screenshot supplied by Vikram; not a live API feed.
@@ -8,18 +6,9 @@ const DIFFICULTY = [
   { label: 'Medium', solved: 298, total: 2146, color: '#e8b443' },
   { label: 'Hard', solved: 14, total: 989, color: '#df6563' },
 ];
-export default function LeetCodeSnapshot({ month, onBack, backRef, radioPlaying, ceilingOn }) {
-  const [zooming, setZooming] = useState(true);
-  const objects = useRef({});
-  useEffect(() => {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { setZooming(false); return; }
-    const timer = setTimeout(() => setZooming(false), 500);
-    return () => clearTimeout(timer);
-  }, []);
-  useEffect(() => { if (!zooming) backRef.current?.focus({preventScroll:true}); }, [zooming, backRef]);
-  if (zooming) return <div className={styles.leetcodeZoomViewport}><div className={styles.leetcodeZoom}><PixelDeskScene month={month} disabled radioPlaying={radioPlaying} ceilingOn={ceilingOn} objectRefs={objects}/></div></div>;
-  return <section className={styles.leetcodeView} aria-label="LeetCode profile snapshot">
-    <header className={styles.closeupBar}><button ref={backRef} onClick={onBack}>← Desk</button><span>LEETCODE / SAVED SNAPSHOT</span><a href="https://leetcode.com/u/vikramandanshu/" target="_blank" rel="noopener noreferrer">Live profile ↗</a></header>
+export default function LeetCodeSnapshot({ onBack, backRef, desktop = false }) {
+  return <section className={`${styles.leetcodeView} ${desktop ? styles.desktopProfile : ''}`} aria-label="LeetCode profile snapshot">
+    <header className={styles.closeupBar}>{!desktop && <button ref={backRef} onClick={onBack}>← Desk</button>}<span>LEETCODE / SAVED SNAPSHOT</span><a href="https://leetcode.com/u/vikramandanshu/" target="_blank" rel="noopener noreferrer">Live profile ↗</a></header>
     <div className={styles.leetcodeContent}>
       <aside className={styles.leetcodeProfile}>
         <div className={styles.leetcodeAvatar} aria-hidden="true">🥹</div><h3>vikram singh</h3><p>vikramandanshu</p>

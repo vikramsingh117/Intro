@@ -23,7 +23,7 @@ function resized(rect, edge, dx, dy) {
 export default function DesktopWindow({ title, desktopRef, active, minimized, zIndex, onFocus, onClose, onMinimize, children }) {
   const [rect,setRect]=useState({x:title==='Terminal'?285:210,y:title==='Terminal'?135:100,width:900,height:540});
   const [backAction, setBackAction] = useState(null);
-  const [maximized,setMaximized]=useState(false);
+  const [maximized,setMaximized]=useState(title === 'About Me');
   const gesture=useRef(null), close=useRef(null), initialFocus=useRef(false);
   useEffect(()=>{if(active && !minimized && !initialFocus.current) {initialFocus.current=true;close.current?.focus({preventScroll:true});}},[active,minimized]);
   const begin=(event,edge)=>{
@@ -46,22 +46,21 @@ export default function DesktopWindow({ title, desktopRef, active, minimized, zI
     const dy=event.key==='ArrowDown'?step:event.key==='ArrowUp'?-step:0;
     setRect(current=>resize?resized(current,'se',dx,dy):moved(current,dx,dy));
   };
-  const immersive = title === 'About Me';
   const bounds=maximized?FULL:rect;
-  return <section className={`${styles.desktopWindow} ${active?styles.activeWindow:''} ${immersive?styles.immersiveWindow:''}`} aria-label={title} hidden={minimized}
-    style={{left:bounds.x,top:bounds.y,width:bounds.width,height:bounds.height,zIndex:immersive?100+zIndex:zIndex}} onPointerDownCapture={onFocus} onFocusCapture={onFocus}>
-    {immersive ? <button ref={close} className={styles.immersiveClose} onClick={backAction || onClose} aria-label={backAction ? "Back to About Me room" : "Close About Me"}>×</button> : <header className={styles.windowTitlebar}>
+  return <section className={`${styles.desktopWindow} ${active?styles.activeWindow:''}`} aria-label={title} hidden={minimized}
+    style={{left:bounds.x,top:bounds.y,width:bounds.width,height:bounds.height,zIndex}} onPointerDownCapture={onFocus} onFocusCapture={onFocus}>
+    <header className={styles.windowTitlebar}>
       <div className={styles.windowDrag} data-native-cursor tabIndex={0} role="button" aria-label={`Move ${title}. Use arrow keys to move.`}
         onPointerDown={event=>begin(event,'move')} onPointerMove={move} onPointerUp={end} onPointerCancel={end} onLostPointerCapture={()=>{gesture.current=null;}}
         onKeyDown={event=>keyboard(event,false)} onDoubleClick={()=>setMaximized(value=>!value)}>{title==='Terminal'?'>_':'▰'} &nbsp; {title}</div>
       <div className={styles.windowActions}>
         <button onClick={onMinimize} aria-label={`Minimize ${title}`}>−</button>
         <button className={styles.maximizeWindow} onClick={()=>setMaximized(value=>!value)} aria-label={`${maximized?'Restore':'Maximize'} ${title}`}>{maximized?'❐':'□'}</button>
-        <button ref={close} onClick={onClose} aria-label={`Close ${title}`}>×</button>
+        <button ref={close} onClick={backAction || onClose} aria-label={backAction ? 'Back to About Me room' : `Close ${title}`}>×</button>
       </div>
-    </header>}
-    <div className={`${styles.windowBody} ${title==='About Me'?styles.journeyBody:title==='AI Assistant'?styles.assistantBody:title==='Terminal'?styles.terminalBody:styles.windowContent}`}><WindowBackContext.Provider value={setBackAction}>{children}</WindowBackContext.Provider></div>
-    {!immersive && !maximized && ['n','e','s','w','ne','nw','se','sw'].map(edge=><div key={edge} className={styles.resizeHandle} data-native-cursor data-edge={edge}
+    </header>
+    <div className={`${styles.windowBody} ${title==='About Me'?styles.journeyBody:title==='AI Assistant'?styles.assistantBody:title==='Terminal'?styles.terminalBody:title==='GitHub'||title==='LeetCode'?styles.profileBody:styles.windowContent}`}><WindowBackContext.Provider value={setBackAction}>{children}</WindowBackContext.Provider></div>
+    {!maximized && ['n','e','s','w','ne','nw','se','sw'].map(edge=><div key={edge} className={styles.resizeHandle} data-native-cursor data-edge={edge}
       role={edge==='se'?'button':undefined} tabIndex={edge==='se'?0:undefined} aria-label={edge==='se'?`Resize ${title}. Use arrow keys to resize.`:undefined}
       onKeyDown={event=>keyboard(event,true)} onPointerDown={event=>begin(event,edge)} onPointerMove={move} onPointerUp={end} onPointerCancel={end} onLostPointerCapture={()=>{gesture.current=null;}} />)}
   </section>;
