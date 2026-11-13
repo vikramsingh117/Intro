@@ -24,6 +24,7 @@ import FlyingPlane from './FlyingPlane';
 import Radio from './Radio';
 import CeilingLight from './CeilingLight';
 import Plant from './Plant';
+import Fireflies from './Fireflies';
 import Pascal from './Pascal';
 import Stool from './Stool';
 import Upliance from './Upliance';
@@ -295,6 +296,7 @@ export default function MonitorScene({ paperInventory, onPickUpPaper, basketScor
   }, [sceneReady]);
   const paperOrbit = useRef(null);
   const [lightDragging,setLightDragging]=useState(false);
+  const [fireflyLightHit,setFireflyLightHit]=useState(0);
   const [monitorReady,setMonitorReady]=useState(false);
   const [uplianceReady,setUplianceReady]=useState(false);
   const markMonitorReady=useCallback(()=>setMonitorReady(true),[]);
@@ -304,6 +306,7 @@ export default function MonitorScene({ paperInventory, onPickUpPaper, basketScor
   const [notebookImagesReady,setNotebookImagesReady]=useState(false);
   const markRoomAssetsReady=useCallback(()=>setRoomAssetsReady(true),[]);
   const markNotebookImagesReady=useCallback(()=>setNotebookImagesReady(true),[]);
+  const markFireflyLightHit=useCallback(()=>setFireflyLightHit(value=>value+1),[]);
   return <Canvas events={roomEvents} onPointerMissed={()=>{if(notebook)onNotebookExit();}} shadows camera={{ position:[6, 3.5, 14.8], fov:42 }} dpr={notebook || upliance ? [1, 2] : 1} frameloop="demand" gl={{alpha:true, antialias:true, toneMapping:ACESFilmicToneMapping, toneMappingExposure:.85}}>
     {screensReady && <FirstRoomFrame onReady={onRoomReady}/>}
     {screensReady && <PreloadAssets onReady={markRoomAssetsReady} onError={markRoomAssetsReady}/>}
@@ -326,10 +329,11 @@ export default function MonitorScene({ paperInventory, onPickUpPaper, basketScor
     {stickyNotes.editor && <NoteProjection editor={stickyNotes.editor} elementRef={noteEditorRef}/>}
     {screensReady && <Suspense fallback={null}><Chair/></Suspense>}
     {screensReady && <Suspense fallback={null}><Plant/></Suspense>}
+    {screensReady && <Suspense fallback={null}><Fireflies reduced={reduced} onLightHit={markFireflyLightHit}/></Suspense>}
     {screensReady && <Suspense fallback={null}><Stool placement={propPlacement?.stool}/></Suspense>}
     {screensReady && <Suspense fallback={null}><Pascal placement={propPlacement?.pascal}/></Suspense>}
     <Suspense fallback={null}><Upliance celebrating={celebrating} preloadArtwork={roomAssetsReady&&notebookImagesReady} onReady={markUplianceReady} keyboardFocused={keyboardTarget==='upliance'} registerRoomAction={registerRoomAction} controlsRef={uplianceControlsRef} focused={!!upliance} zoomComplete={uplianceArrived} workPage={upliancePage} onSelect={onUplianceSelect} placement={propPlacement?.upliance} reduced={reduced} interactive={!photo && !entered && !outside && !notebook && !upliance && !stickyNotes.editor && !stickyNotes.placing} onHover={onHover}/></Suspense>
-    {screensReady && <Suspense fallback={null}><CeilingLight onPowerChange={onCeilingPowerChange} basketScore={basketScore} reduced={reduced} onDragging={setLightDragging} interactive={!photo&&!entered&&!outside&&!notebook&&!upliance&&!stickyNotes.editor&&!stickyNotes.placing} keyboardFocused={keyboardTarget==='ceiling-light'} registerRoomAction={registerRoomAction} onHover={onHover}/></Suspense>}
+    {screensReady && <Suspense fallback={null}><CeilingLight fireflyHit={fireflyLightHit} onPowerChange={onCeilingPowerChange} basketScore={basketScore} reduced={reduced} onDragging={setLightDragging} interactive={!photo&&!entered&&!outside&&!notebook&&!upliance&&!stickyNotes.editor&&!stickyNotes.placing} keyboardFocused={keyboardTarget==='ceiling-light'} registerRoomAction={registerRoomAction} onHover={onHover}/></Suspense>}
     <CozyRoom keyboardTarget={keyboardTarget} registerRoomAction={registerRoomAction} reduced={reduced} wearingGlasses={wearingGlasses} onWearGlasses={onWearGlasses} onWindowSelect={notebook ? onNotebookExit : onWindowSelect} onHover={onHover} />
     {screensReady && <InteractiveObject moving focused={keyboardTarget==='notebook'} label="Notebook · ideas & sketches" onHover={onHover}><Notebook onImagesReady={markNotebookImagesReady} onTear={onNotebookTear} canTear={true} tornPages={tornPages} focused={notebook} open={notebookOpen} onPageChange={onNotebookPageChange} page={notebookPage} reduced={reduced} onOpen={onNotebookOpen} /></InteractiveObject>}
     {screensReady && <Suspense fallback={null}><Keyboard /></Suspense>}

@@ -1,6 +1,6 @@
 # Portfolio concepts and technical architecture
 
-**Vikram Singh · Technical overview · 7 November 2026**
+**Vikram Singh · Technical overview · 13 November 2026**
 
 This portfolio combines a readable professional website with an interactive 3D workspace. Its most distinctive engineering work is the coordination between a Three.js scene, a real HTML desktop, browser input, procedural animation, and server-backed features. The room is an interface to the portfolio: objects lead to work, conversations, drawings, visitor contributions, and small playful interactions.
 
@@ -38,7 +38,7 @@ flowchart TD
     Room --> Scene[Three.js scene and camera]
     Room --> Desktop[Projected HTML desktop]
     Scene --> Objects[Notebook appliance lights radio and city]
-    Desktop --> Apps[Work projects assistant terminal photos and tools]
+    Desktop --> Apps[About Me work projects assistant terminal photos and tools]
     Apps --> API[Next.js API routes]
     Objects --> API
     API --> DB[(MongoDB)]
@@ -103,13 +103,15 @@ The loading strategy gives the initial room screens priority over decorative and
 4. The notebook mounts after those screens are ready and loads the supplied doodle images.
 5. The appliance showcase SVGs preload automatically after the room assets and notebook images have settled. They load sequentially with idle scheduling and low image fetch priority, without requiring a visit to the appliance.
 
+About Me starts importing in the background when `FirstRoomFrame` signals readiness after four rendered frames, once the monitor and appliance screens are ready. It does not wait for a monitor click. `loadAboutJourney` shares a cached import promise with the dynamically loaded app and clears that promise after a failed request so a later attempt can retry. A background failure does not block room entry. This preloads the component code; it does not mount the app, run its decorative introduction, or load the historical portfolio iframes.
+
 Preloading uses the same loader paths and cache keys as the live scene. The home card's progress is based on completed assets, not downloaded bytes. A small image and a large model therefore each count as one completed asset.
 
 The background SVG loader is independent of the appliance's visible work page. Its artwork can become ready before the visitor opens it, but it cannot prevent the appliance's initial model and screen from appearing. Image failures fall back to the text presentation rather than suspending the appliance.
 
 This addresses a common performance mistake: putting every optional texture behind the same loading boundary as the object needed immediately.
 
-**Sources:** [AfterHoursPreload](../components/AfterHoursPreload.js), [PreloadAssets](../components/workbench/PreloadAssets.js), [Upliance](../components/workbench/Upliance.js), [Notebook](../components/workbench/Notebook.js).
+**Sources:** [About Me loader](../components/workbench/loadAboutJourney.js), [Scene readiness](../components/workbench/WorkbenchScene.js), [Portfolio app loader](../components/workbench/PortfolioApps.js), [AfterHoursPreload](../components/AfterHoursPreload.js), [PreloadAssets](../components/workbench/PreloadAssets.js), [Upliance](../components/workbench/Upliance.js), [Notebook](../components/workbench/Notebook.js).
 
 ## 6. Rendering only the work that changed
 
@@ -188,7 +190,7 @@ Thrown balls stay mounted, retaining their resting positions. The next inventory
 
 The drag performance change targets rendering cost: the held ball does not invalidate stationary shadow maps. Once thrown, its normal shadow behavior is restored. This avoids changing the established throwing mechanic to address a rendering problem.
 
-**Sources:** [PaperFlick](../components/workbench/PaperFlick.js), [PaperBalls](../components/workbench/PaperBalls.js), [PaperInventory](../components/workbench/PaperInventory.js), [Shadow regression test](../tests/paper-rendering.test.mjs).
+**Sources:** [PaperFlick](../components/workbench/PaperFlick.js), [PaperBalls](../components/workbench/PaperBalls.js), [Paper inventory state](../components/workbench/paperInventoryState.mjs), [Shadow regression test](../tests/paper-rendering.test.mjs).
 
 ## 10. Upliance as an interactive work presentation
 
@@ -220,15 +222,43 @@ The mascot adds stateful feedback: waking, sleeping, walking, exercise, music po
 
 **Sources:** [DesktopWorkspace](../components/workbench/DesktopWorkspace.js), [DesktopWindow](../components/workbench/DesktopWindow.js), [Terminal engine](../components/workbench/terminalEngine.mjs), [TaskManager](../components/workbench/TaskManager.js), [DesktopMascot](../components/workbench/DesktopMascot.js), [Mascot behavior](../components/workbench/mascotBehavior.mjs).
 
+### About Me: a pixel room through time
+
+About Me fills the monitor with an SVG desk scene and a compact year selector. Its artwork uses stepped paths, supplied profile and internship logos, CSS Modules, and the bundled pixel font. It adds no rendering library or sprite-sheet dependency. A decorative loading bar and opening zoom introduce the room; the bar is timed presentation, not download progress.
+
+The timeline has three major stops, represented internally as month offsets `2`, `56`, and `60`. Previous/next buttons and arrow keys cycle through **2021 → 2025 → 2026 → 2021**, including reverse wrapping. Animation direction follows the selected arrow even when the year wraps. Navigation is guarded during the introduction and active transition.
+
+| Chapter | Scene and content |
+| --- | --- |
+| 2021 | A plain laptop, small wooden chair, notebook, and chalk height mark at 5′2″. The notebook presents school and college beginnings, entrance exams, Pokémon modding, and doodles. |
+| 2025 | An upgraded monitor and chair, coding profiles, internship logos, and a 5′4″ mark. The notebook combines college and coding notes, including 20+ Vercel projects. |
+| 2026 | A night window, floor-standing plant, hoop, desk radio, sticky notes, ceiling light above upliance, and 5′6″ mark. The desk drawer moves to the left. Object placement follows the corresponding 3D room. |
+
+`Presence` retains departing SVG groups until the half-second transition finishes. CSS keyframes scale items through intermediate pop-in and pop-out shapes, with staggered arrivals contained within the same 500 ms interval. Chairs use this animation too; the drawer transitions between positions. Window weather crossfades with the year. Reduced motion skips these transitions and the introduction. SVG artwork is paired with labelled HTML buttons positioned over interactive objects; decorative objects do not need click actions.
+
+The 2021 and 2025 monitors embed separately deployed historical portfolios, with chapter notes beside them and an external full-page link. Their URLs and Git history references are maintained in `portfolioHistory.js`. Embedding still depends on the remote deployment allowing framing and public access; the parent app cannot override a remote framing policy. The 2026 monitor instead performs a 1.2-second zoom, closes About Me, and returns to the real 3D room—the current portfolio.
+
+The early notebooks open into a single illustrated two-page spread rather than a multi-page reader. LeetCode opens a zoom followed by a dashboard of supplied screenshot values, including 534 solved problems and a contest rating of 1,471. GitHub displays the shared contribution list for Kestra, MCPJam Inspector, and Claude Agent SDK for Python. Both views identify saved data: they do not fetch live statistics or claim the numbers and contribution statuses are verified snapshots of the selected year.
+
+The window's `WindowBackContext` lets an open detail register a back action. The window × and Escape return from details before closing About Me; focus returns to the selected room object. In 2026, the notebook and upliance hand control to their physical 3D counterparts while preserving the mounted app for the return trip. Radio and ceiling-light clicks call registered room actions, and their displayed states follow the real room controls.
+
+**Sources:** [AboutJourney](../components/workbench/AboutJourney.js), [PixelDeskScene](../components/workbench/PixelDeskScene.js), [Timeline and object data](../components/workbench/journeyTimeline.mjs), [JourneyNotebook](../components/workbench/JourneyNotebook.js), [LeetCodeSnapshot](../components/workbench/LeetCodeSnapshot.js), [Contributions](../lib/contributions.js), [Portfolio history](../components/workbench/portfolioHistory.js), [Current portfolio zoom](../components/workbench/InceptionMonitor.js), [Journey styles](../styles/AboutJourney.module.css).
+
 ## 12. Lighting sound and smaller physical interactions
 
 The hanging light has a simulated rope with connected segments and a moving fixture. Dragging changes its motion, and the simulation can settle to sleep. Instanced cord segments visualize the changing rope without creating a new object for each segment on every frame.
 
 The radio starts off, including when entering from Home. Playback begins directly inside the radio's click, tap, or keyboard activation so it follows browser interaction rules. Leaving the room disposes playback resources. Radio toggles also produce a short static effect using Web Audio.
 
+Three rigged fireflies add a small procedural story to the room. Each instance is a skeleton-safe clone of the same low-poly GLTF, with independent wing speed, route pacing, hover frequency, animation timing, and formation offsets. The imported model is normalized to a maximum dimension of `0.1232` scene units. Its geometry is already approximately 1,900 triangles, so optimization preserves the rig rather than decimating it. The two largest base-color maps were reduced from 2048×2048 to 512×512, bringing the complete local model directory from approximately 3.2 MB to 1 MB. These are asset-directory measurements, not network-transfer timings.
+
+Their 36.5-second choreography uses five-second travel phases but limits the stop at the end of the monitor to 1.5 seconds. The group begins above the plant, crosses the desk, and circles the monitor before two continue to Upliance while the third travels to the chair, switches from its flight clip to its landed-idle clip, and walks a small three-second path across the seat. At Upliance, one of the pair flies upward toward the outside edge of the ceiling-light shade rather than its central cord. The collision uses a fast ease-out trajectory and a temporary body roll to throw the insect backward, applies an impulse to the existing rope simulation, and produces two unequal extended flicker dips across the bulb material, spotlight, and fill light before the insect returns to its companion. The chair firefly then takes a slower seven-second route toward the radio while the pair begins its five-second return, allowing the three to reunite there before returning to the plant. Catmull–Rom curves provide the larger paths. Per-firefly nonlinear pace offsets preserve common departure and arrival points while letting individuals lead or trail in between; distinct wing speeds and sinusoidal hover frequencies further prevent synchronized-looking motion. Reduced-motion mode leaves the group stationary near the plant.
+
+Each firefly combines the model's emissive material with a small tone-mapping-independent emissive core and a local point light. The existing bloom pass turns the core into a soft halo, while the point light lets the insects subtly illuminate nearby surfaces throughout the route. Because this is a continuously active animation, it requests frames from the otherwise demand-rendered scene while enabled. The model is **Lowpoly Firefly** by Caledhril, licensed under CC BY 4.0; its attribution is also exposed in the desktop Credits application.
+
 Other interactions include a drawer that reveals wearable glasses, localized lens blur, a city view with a flying aircraft, and generated paper surfaces for notes. These details demonstrate lifecycle management: animations, audio, streams, and event listeners need cleanup as well as startup.
 
-**Sources:** [CeilingLight](../components/workbench/CeilingLight.js), [Radio](../components/workbench/Radio.js), [GlassesDrawer](../components/workbench/GlassesDrawer.js), [GlassesOverlay](../components/workbench/GlassesOverlay.js), [FlyingPlane](../components/workbench/FlyingPlane.js).
+**Sources:** [CeilingLight](../components/workbench/CeilingLight.js), [Radio](../components/workbench/Radio.js), [Fireflies](../components/workbench/Fireflies.js), [Firefly license](../public/models/firefly/license.txt), [Asset credits](../components/workbench/AssetCredits.js), [GlassesDrawer](../components/workbench/GlassesDrawer.js), [GlassesOverlay](../components/workbench/GlassesOverlay.js), [FlyingPlane](../components/workbench/FlyingPlane.js).
 
 ## 13. A streamed portfolio assistant
 
@@ -287,6 +317,8 @@ The gallery uses cursor pagination with creation time and ID, returning batches 
 
 The portfolio tracks semantic interactions, route views, visit duration, and visible-tab active time. Events are batched, and page-exit beacons improve the chance of sending final activity. Server-side records deduplicate batches and merge cumulative durations rather than simply adding every retry.
 
+About Me uses this same event pipeline: `journey_open`, `journey_year`, `journey_object`, `journey_back`, `journey_link`, and `journey_enter_portfolio`. Targets identify the chapter, object, year transition, or contribution project. Link tracking covers the archive full-page links and GitHub/detail links wired in `AboutJourney`; it does not observe navigation inside the external iframes. Object events record requested actions, not proof that a remote page loaded or a physical transition completed.
+
 These metrics have limits: an IP address is not a unique person, visible-tab time is not guaranteed attention, and beacon delivery is not guaranteed. Interaction analytics avoid typed arguments and message contents; chat questions and responses are stored separately as chat activity. The privacy page describes the data practices.
 
 Notifications are server-side, best-effort ntfy requests with a timeout. A notification failure does not turn a successful data write into a failed upload. There is no durable retry queue in the current notification helper.
@@ -319,6 +351,8 @@ Lint checks source issues; unit tests exercise specific behavior; a build checks
 
 The recent hover tests verify that coarse hover avoids child mesh picks while clicks retain their original targets. Bounds tests check idle reuse, movement, geometry deformation, and removed children. The held-paper test verifies that dragging preserves cached shadows and that thrown-paper movement invalidates them again.
 
+The About Me implementation and circular-timeline update passed targeted ESLint and Git whitespace checks. No build or browser checks were run for those changes; visual transitions, iframe availability, and runtime performance remain owner-verified rather than established by those source checks.
+
 For performance validation, compare the same scene, device, viewport, cache state, and interaction before and after a change. Record frame timing and main-thread work during hover and dragging, and inspect network requests during initial loading. The synthetic hover result above should not be presented as a site-wide speedup.
 
 The curated assistant context and older asset notes can lag implementation changes. For current behavior, the component and API source files linked here are the more precise reference.
@@ -334,7 +368,8 @@ For a portfolio walkthrough or interview, the strongest explanations connect a c
 5. **An interactive CAD asset:** a large assembly is optimized while preserving meaningful parts for lid, light, and display behavior.
 6. **Loading based on perceived importance:** initial screens arrive before secondary art, while optional SVGs still become ready automatically in the background.
 7. **Real backend features with explicit boundaries:** shared notes and photos, streamed AI responses, authenticated admin views, and clearly labelled terminal simulation coexist without pretending to be the same kind of capability.
-8. **Lifecycle discipline:** textures, geometries, pointer capture, event listeners, timers, audio, camera streams, and provider requests have explicit cleanup paths.
+8. **A timeline connected to the real room:** SVG object transitions, archived portfolio embeds, preserved app state, and physical-object callbacks turn biography into navigation.
+9. **Lifecycle discipline:** textures, geometries, pointer capture, event listeners, timers, audio, camera streams, and provider requests have explicit cleanup paths.
 
 The value of the project is the coordination across these systems. A convincing explanation should show how a visitor action travels through input handling, application state, rendering, and persistence, then explain the tradeoffs made to keep that interaction understandable and responsive.
 

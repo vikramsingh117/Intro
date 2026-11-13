@@ -6,7 +6,7 @@ import PortfolioApps, { PROFILE_LINKS } from './PortfolioApps';
 import Terminal from './Terminal';
 import Photos from './Photos';
 import TaskManager from './TaskManager';
-import AssetCredits from './AssetCredits';
+import AssetCredits, { FireflyCredit } from './AssetCredits';
 import AboutChat from '../AboutChat';
 import DesktopWindow from './DesktopWindow';
 import DesktopMascot from './DesktopMascot';
@@ -65,7 +65,7 @@ export default function DesktopWorkspace({ desktopRef, interactive, visible=true
     <DesktopMascot ref={mascot} interactive={interactive} visible={visible} reduced={reduced} hasWindow={!!top} musicPlaying={musicPlaying}/>
     {windows.map((window,index)=><DesktopWindow key={window.title} title={window.title} desktopRef={desktopRef} active={interactive && top===window.title} minimized={window.minimized} zIndex={index+2}
       onFocus={()=>focus(window.title)} onClose={()=>close(window.title)} onMinimize={()=>minimize(window.title)}>
-      {window.title==='AI Assistant'?<AboutChat theme="dark" embedded active={interactive && !window.minimized && top===window.title}/>:window.title==='Photos'?<Photos active={interactive && !window.minimized && top===window.title}/>:window.title==='Task Manager'?<TaskManager windows={windows} activeTitle={top} onFocus={focus} onClose={close} room={room}/>:window.title==='Terminal'?<Terminal windows={windows} onExit={()=>close('Terminal')}/>:window.title==='Credits'?<AssetCredits/>:window.title==='GitHub'?<GitHubSnapshot/>:window.title==='LeetCode'?<LeetCodeSnapshot desktop/>:<PortfolioApps title={window.title} onOpenUpliance={onOpenUpliance} onOpenNotebook={onOpenNotebook} onOpenNotes={onOpenNotes} onToggleRadio={onToggleRadio} onToggleCeiling={onToggleCeiling} ceilingOn={ceilingOn} onEnterPortfolio={()=>{close('About Me');onLeave();}} radioPlaying={radioPlaying}/>}
+      {window.title==='AI Assistant'?<AboutChat theme="dark" embedded active={interactive && !window.minimized && top===window.title}/>:window.title==='Photos'?<Photos active={interactive && !window.minimized && top===window.title}/>:window.title==='Task Manager'?<TaskManager windows={windows} activeTitle={top} onFocus={focus} onClose={close} room={room}/>:window.title==='Terminal'?<Terminal windows={windows} onExit={()=>close('Terminal')}/>:window.title==='Credits'?<><AssetCredits/><FireflyCredit/></>:window.title==='GitHub'?<GitHubSnapshot/>:window.title==='LeetCode'?<LeetCodeSnapshot desktop/>:<PortfolioApps title={window.title} onOpenUpliance={onOpenUpliance} onOpenNotebook={onOpenNotebook} onOpenNotes={onOpenNotes} onToggleRadio={onToggleRadio} onToggleCeiling={onToggleCeiling} ceilingOn={ceilingOn} onEnterPortfolio={()=>{close('About Me');onLeave();}} radioPlaying={radioPlaying}/>}
     </DesktopWindow>)}
     {menu && interactive && <DesktopContextMenu point={menu} width={menu.width} iconsVisible={iconsVisible} onClose={closeMenu}
       onToggleIcons={()=>setIconsVisible(value=>!value)} onRefresh={()=>setRefreshTick(value=>value+1)} onOpen={open}

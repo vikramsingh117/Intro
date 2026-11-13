@@ -13,7 +13,7 @@ const CEILING_HEIGHT = 24;
 const HANG_HEIGHT = 7.2;
 const NECK_OFFSET=2.96;
 const ROPE_LENGTH=CEILING_HEIGHT-HANG_HEIGHT+NECK_OFFSET;
-export default function CeilingLight({ basketScore, keyboardFocused, registerRoomAction, onHover, reduced, interactive=true, onDragging, onPowerChange }) {
+export default function CeilingLight({ basketScore, fireflyHit, keyboardFocused, registerRoomAction, onHover, reduced, interactive=true, onDragging, onPowerChange }) {
   const [on,setOn]=useState(true);
   useEffect(()=>{onPowerChange?.(on);},[on,onPowerChange]);
   const playSwitch=useSwitchSound();
@@ -21,6 +21,7 @@ export default function CeilingLight({ basketScore, keyboardFocused, registerRoo
   const {invalidate,camera}=useThree();
   const fixture=useRef(null),wire=useRef(null),gesture=useRef(null),suppressClick=useRef(false);
   const rope=useRef(null);
+  const fireflyFlicker=useRef(null);
   const spot=useRef(null), fill=useRef(null);
   const segment=useMemo(()=>new Object3D(),[]);
   const direction=useMemo(()=>new Vector3(),[]);
@@ -35,6 +36,12 @@ export default function CeilingLight({ basketScore, keyboardFocused, registerRoo
     if (!basketScore || reduced || gesture.current) return;
     kickLightRope(rope.current); invalidate();
   },[basketScore,reduced,invalidate]);
+  useEffect(()=>{
+    if(!fireflyHit)return;
+    fireflyFlicker.current=performance.now();
+    if(!reduced&&!gesture.current)kickLightRope(rope.current);
+    invalidate();
+  },[fireflyHit,reduced,invalidate]);
   const release=useCallback(()=>{
     const drag=gesture.current;if(!drag)return;
     gesture.current=null;suppressClick.current=drag.moved;
@@ -148,6 +155,22 @@ export default function CeilingLight({ basketScore, keyboardFocused, registerRoo
     if (spot.current) spot.current.intensity = 65 * intensity;
     if (fill.current) fill.current.intensity = 3 * intensity;
     bulbMaterials.forEach(material=>{material.emissiveIntensity=3.5*intensity;});
+  });
+  useFrame(()=>{
+    if(fireflyFlicker.current===null)return;
+    const elapsed=(performance.now()-fireflyFlicker.current)/1000;
+    let gain;
+    if(elapsed<.1)gain=1;
+    else if(elapsed<.42)gain=.06;
+    else if(elapsed<.65)gain=.86;
+    else if(elapsed<1.3)gain=.025;
+    else if(elapsed<1.65)gain=.64+(elapsed-1.3)/.35*.36;
+    else{fireflyFlicker.current=null;gain=1;}
+    const intensity=on?gain:0;
+    if(spot.current)spot.current.intensity=65*intensity;
+    if(fill.current)fill.current.intensity=3*intensity;
+    bulbMaterials.forEach(material=>{material.emissiveIntensity=3.5*intensity;});
+    if(fireflyFlicker.current!==null)invalidate();
   });
   const toggle=useCallback(()=>{playSwitch(!on);setOn(value=>!value);onHover(on?'Ceiling light · turn on':'Ceiling light · turn off');},[on,onHover,playSwitch]);
   useEffect(()=>registerRoomAction?.('ceiling-light',toggle),[registerRoomAction,toggle]);
