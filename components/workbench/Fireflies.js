@@ -1,3 +1,5 @@
+// Animates a three-firefly swarm through the plant, monitor, chair, lights, and radio.
+// It signals WorkbenchScene at lamp impact so CeilingLight can flicker and swing in response.
 import { useEffect, useMemo, useRef } from 'react';
 import { useFrame, useLoader, useThree } from '@react-three/fiber';
 import { AnimationMixer, Box3, CatmullRomCurve3, Quaternion, Vector3 } from 'three';
@@ -174,6 +176,7 @@ function Firefly({ source, animations, config, reduced, onLightHit }) {
     clone.traverse(node => {
       if (!node.isMesh) return;
       node.castShadow = true;
+      node.receiveShadow = true;
       const tune = material => {
         const copy = material.clone();
         if (copy.name === 'M_Firefly') copy.emissiveIntensity = 7;

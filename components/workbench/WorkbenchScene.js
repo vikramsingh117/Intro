@@ -1,3 +1,5 @@
+// Composes the interactive Three.js room and coordinates its camera, objects, and readiness stages.
+// It connects physical objects such as Fireflies and CeilingLight with ProductWorkbench state and UI.
 import { preloadAboutJourney } from './loadAboutJourney';
 import { useAfterHoursTransition } from '../AfterHoursTransition';
 import { Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';

@@ -1,3 +1,5 @@
+// Owns the After Hours experience state and coordinates its HTML overlays with the 3D scene.
+// It connects WorkbenchScene, DesktopWorkspace, focused objects, room actions, and persistence hooks.
 import useTrackedState from './useTrackedState';
 import { UPLIANCE_WORK } from './uplianceWork';
 import Link from 'next/link';

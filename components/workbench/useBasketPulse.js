@@ -1,3 +1,5 @@
+// Converts a basket-score event into a short frame-driven lighting intensity envelope.
+// CeilingLight and DeskLamp use it to synchronize their celebration response.
 import { useEffect, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { celebrationLight } from './basketball.mjs';

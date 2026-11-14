@@ -1,3 +1,5 @@
+// Renders the draggable hanging fixture, rope physics, illumination, and power state.
+// It responds to basket scoring, room controls, and Fireflies impact events from WorkbenchScene.
 import useBasketPulse from './useBasketPulse';
 import useTrackedState from './useTrackedState';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';

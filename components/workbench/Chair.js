@@ -1,3 +1,5 @@
+// Loads, normalizes, and positions the room's chair model within the desk scene.
+// Fireflies uses the chair's world placement for its landed walking sequence.
 import { useMemo } from 'react';
 import { useLoader } from '@react-three/fiber';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';

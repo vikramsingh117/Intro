@@ -1,3 +1,5 @@
+// Implements the projected monitor desktop, shortcuts, windows, taskbar, and app focus state.
+// It connects portfolio apps to physical room actions supplied by ProductWorkbench.
 import { trackInteraction } from '../../lib/visitor-analytics';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import DesktopContextMenu from './DesktopContextMenu';

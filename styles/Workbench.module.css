@@ -206,8 +206,6 @@
 @media(prefers-reduced-motion:reduce){.mascotLayer *{animation:none!important}}
 
 .photoDismiss{position:absolute;inset:0;z-index:20;width:100%;height:100%;padding:0;border:0;background:transparent;cursor:zoom-out}.photoDismiss:focus-visible{outline:2px solid #eac595;outline-offset:-4px}
-.roomKeyboardHint{display:inline}
-@media(max-width:760px),(pointer:coarse){.roomKeyboardHint{display:none}}
 
 .journeyBody{overflow:auto;padding:0;display:flex;flex-direction:column}
 .profileBody{overflow:hidden;padding:0;display:flex;flex-direction:column;background:#191e1b;container-type:inline-size}

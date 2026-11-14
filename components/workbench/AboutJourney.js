@@ -1,3 +1,5 @@
+// Presents the About Me timeline and its zoomable year-specific desk details.
+// It drives PixelDeskScene and hands selected 2026 objects back to the physical room.
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { contributions } from '../../lib/contributions';
 import { trackInteraction } from '../../lib/visitor-analytics';

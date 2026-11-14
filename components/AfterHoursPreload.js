@@ -1,3 +1,5 @@
+// Coordinates the home-page readiness gate for the After Hours experience.
+// It combines tracked room assets from PreloadAssets with route and scene-code prefetching.
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import Router, { useRouter } from 'next/router';
 

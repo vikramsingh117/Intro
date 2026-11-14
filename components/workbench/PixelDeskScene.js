@@ -1,3 +1,5 @@
+// Draws the interactive SVG desk across the About Me timeline's historical states.
+// It supplies object hotspots and BUILD / WORK imagery to AboutJourney.
 import { ComputerDetails, NotebookDetails, ApplianceDetails, ChairDetails, PlantDetails, RadioDetails } from './PixelDeskDetails';
 import { objectsAt, seasonAt } from './journeyTimeline.mjs';
 import styles from '../../styles/AboutJourney.module.css';

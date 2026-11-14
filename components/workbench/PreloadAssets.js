@@ -1,9 +1,11 @@
+// Loads and counts the room models and textures that participate in readiness.
+// It serves both the home-page progress gate and WorkbenchScene's staged room loading.
 import { Component, Suspense, useCallback, useEffect, useState } from 'react';
 import { useLoader } from '@react-three/fiber';
 import { TextureLoader } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
-const models = ['/models/monitor.glb', '/models/desk-lamp.glb', '/models/keyboard/optimized.gltf', '/models/chair/optimized.gltf', '/models/radio/optimized.gltf', '/models/city/optimized.gltf', '/models/plane/scene.gltf', '/models/plant/optimized.gltf', '/models/stool/optimized.gltf', '/models/pascal/optimized.gltf', '/models/upliance/interactive.glb', '/models/ceiling-light/optimized.gltf', '/models/paper-ball/scene.gltf', '/models/basketball-hoop/scene.gltf'];
+const models = ['/models/monitor.glb', '/models/desk-lamp.glb', '/models/keyboard/optimized.gltf', '/models/chair/optimized.gltf', '/models/radio/optimized.gltf', '/models/city/optimized.gltf', '/models/plane/scene.gltf', '/models/plant/optimized.gltf', '/models/firefly/scene.gltf', '/models/stool/optimized.gltf', '/models/pascal/optimized.gltf', '/models/upliance/interactive.glb', '/models/ceiling-light/optimized.gltf', '/models/paper-ball/scene.gltf', '/models/basketball-hoop/scene.gltf'];
 const textures = ['/images/upliance-display.svg', '/images/workbench-desktop-preview.svg', '/images/workbench-desktop-music.svg', '/images/workbench-wallpaper.svg'];
 const priorityModels = ['/models/monitor.glb', '/models/upliance/interactive.glb'];
 const priorityTextures = textures.slice(0, 3);

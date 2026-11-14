@@ -1,6 +1,6 @@
 # Portfolio concepts and technical architecture
 
-**Vikram Singh · Technical overview · 13 November 2026**
+**Vikram Singh · Technical overview · 14 November 2026**
 
 This portfolio combines a readable professional website with an interactive 3D workspace. Its most distinctive engineering work is the coordination between a Three.js scene, a real HTML desktop, browser input, procedural animation, and server-backed features. The room is an interface to the portfolio: objects lead to work, conversations, drawings, visitor contributions, and small playful interactions.
 
@@ -99,11 +99,11 @@ The loading strategy gives the initial room screens priority over decorative and
 
 1. The shared preloader prepares Simple and the After Hours code.
 2. The monitor model, appliance model, appliance display, and actual monitor preview textures load first.
-3. Other room assets load afterward. Scene readiness waits for the two primary screens before revealing the room through its entry transition.
+3. Other room assets load afterward, including the firefly GLTF and its referenced binary and textures. Scene readiness waits for the two primary screens before revealing the room through its entry transition, while the home-page readiness card waits for the full tracked room-asset list.
 4. The notebook mounts after those screens are ready and loads the supplied doodle images.
 5. The appliance showcase SVGs preload automatically after the room assets and notebook images have settled. They load sequentially with idle scheduling and low image fetch priority, without requiring a visit to the appliance.
 
-About Me starts importing in the background when `FirstRoomFrame` signals readiness after four rendered frames, once the monitor and appliance screens are ready. It does not wait for a monitor click. `loadAboutJourney` shares a cached import promise with the dynamically loaded app and clears that promise after a failed request so a later attempt can retry. A background failure does not block room entry. This preloads the component code; it does not mount the app, run its decorative introduction, or load the historical portfolio iframes.
+About Me starts importing in the background when `FirstRoomFrame` signals readiness after four rendered frames, once the monitor and appliance screens are ready. It does not wait for a monitor click. `loadAboutJourney` shares a cached import promise with the dynamically loaded app and clears that promise after a failed request so a later attempt can retry. The same background phase preloads the four BUILD / WORK icon images using their final URLs, so opening the timeline can reuse the browser cache instead of revealing the icons progressively. A background failure does not block room entry. This phase does not mount the app, run its decorative introduction, or load the historical portfolio iframes.
 
 Preloading uses the same loader paths and cache keys as the live scene. The home card's progress is based on completed assets, not downloaded bytes. A small image and a large model therefore each count as one completed asset.
 
@@ -254,7 +254,7 @@ Three rigged fireflies add a small procedural story to the room. Each instance i
 
 Their 36.5-second choreography uses five-second travel phases but limits the stop at the end of the monitor to 1.5 seconds. The group begins above the plant, crosses the desk, and circles the monitor before two continue to Upliance while the third travels to the chair, switches from its flight clip to its landed-idle clip, and walks a small three-second path across the seat. At Upliance, one of the pair flies upward toward the outside edge of the ceiling-light shade rather than its central cord. The collision uses a fast ease-out trajectory and a temporary body roll to throw the insect backward, applies an impulse to the existing rope simulation, and produces two unequal extended flicker dips across the bulb material, spotlight, and fill light before the insect returns to its companion. The chair firefly then takes a slower seven-second route toward the radio while the pair begins its five-second return, allowing the three to reunite there before returning to the plant. Catmull–Rom curves provide the larger paths. Per-firefly nonlinear pace offsets preserve common departure and arrival points while letting individuals lead or trail in between; distinct wing speeds and sinusoidal hover frequencies further prevent synchronized-looking motion. Reduced-motion mode leaves the group stationary near the plant.
 
-Each firefly combines the model's emissive material with a small tone-mapping-independent emissive core and a local point light. The existing bloom pass turns the core into a soft halo, while the point light lets the insects subtly illuminate nearby surfaces throughout the route. Because this is a continuously active animation, it requests frames from the otherwise demand-rendered scene while enabled. The model is **Lowpoly Firefly** by Caledhril, licensed under CC BY 4.0; its attribution is also exposed in the desktop Credits application.
+Each firefly combines the model's emissive material with a small tone-mapping-independent emissive core and a local point light. The existing bloom pass turns the core into a soft halo, while the point light lets the insects subtly illuminate nearby surfaces throughout the route. The animated body meshes continue casting and receiving room shadows for physical continuity. Because this is a continuously active animation, it requests frames from the otherwise demand-rendered scene while enabled. The model is **Lowpoly Firefly** by Caledhril, licensed under CC BY 4.0; its attribution is also exposed in the desktop Credits application.
 
 Other interactions include a drawer that reveals wearable glasses, localized lens blur, a city view with a flying aircraft, and generated paper surfaces for notes. These details demonstrate lifecycle management: animations, audio, streams, and event listeners need cleanup as well as startup.
 
@@ -331,9 +331,9 @@ This is an important distinction: simulated `sudo` does not grant access to serv
 
 ## 16. Accessibility and responsive interaction
 
-The experience includes keyboard selection for room objects, Enter activation, Escape exits, visible focus treatment, and semantic application controls. Notebook text has a screen-reader representation rather than relying entirely on canvas textures. Hidden or inactive desktop regions use accessibility and interaction attributes to avoid exposing the wrong face or screen as active.
+The experience includes keyboard selection for room objects, Enter activation, Escape exits, visible focus treatment, and semantic application controls. The persistent bottom room status shows hover or navigation context without repeating the former visible Enter-activation tip; keyboard instructions remain in the room's accessible label. Notebook text has a screen-reader representation rather than relying entirely on canvas textures. Hidden or inactive desktop regions use accessibility and interaction attributes to avoid exposing the wrong face or screen as active.
 
-Touch interaction uses its own camera mappings and larger controls. Mobile-only layouts remove keyboard instructions that do not help touch users. Reduced-motion preferences affect camera movement, animation, and custom cursor behavior.
+Touch interaction uses its own camera mappings and larger controls. Reduced-motion preferences affect camera movement, animation, and custom cursor behavior.
 
 These are implemented accommodations, not evidence of a completed accessibility audit. The spatial room still needs keyboard, screen-reader, contrast, zoom, and mobile-device testing. The Simple experience provides a conventional route to the same professional information.
 

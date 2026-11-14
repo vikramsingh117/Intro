@@ -1,3 +1,5 @@
+// Renders the Simple versus After Hours chooser and queues entry until preload readiness.
+// It consumes AfterHoursPreload progress and starts the shared route transition when ready.
 import SocialPreview from "../components/SocialPreview";
 import Head from "next/head";
 import Link from "next/link";
