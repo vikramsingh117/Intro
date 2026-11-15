@@ -17,7 +17,7 @@ const HINTS = [
   { id:'notebook', text:'Click notebook pages to flip. Drag the right page to tear it.' },
   { id:'paper-ball', text:'Click the paper-ball icon, then flick to throw. Esc puts it away.' },
   { id:'drawer', text:'Click the top drawer to peek inside.' },
-  { id:'glasses', text:'Try the glasses in the drawer for a different view.' },
+  { id:'glasses', text:'Try the glasses beside the sticky notes for a different view.' },
   { id:'My Work', text:'Open My Work for the story behind the builds.' },
   { id:'About Me', text:'Meet the person behind this desk in About Me.' },
   { id:'Projects', text:'Take a closer look at the Projects app.' },

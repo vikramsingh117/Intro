@@ -175,8 +175,8 @@ function Firefly({ source, animations, config, reduced, onLightHit }) {
     const materials = [];
     clone.traverse(node => {
       if (!node.isMesh) return;
-      node.castShadow = true;
-      node.receiveShadow = true;
+      node.castShadow = false;
+      node.receiveShadow = false;
       const tune = material => {
         const copy = material.clone();
         if (copy.name === 'M_Firefly') copy.emissiveIntensity = 7;

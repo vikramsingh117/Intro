@@ -1,6 +1,6 @@
 # Portfolio concepts and technical architecture
 
-**Vikram Singh · Technical overview · 14 November 2026**
+**Vikram Singh · Technical overview · 15 November 2026**
 
 This portfolio combines a readable professional website with an interactive 3D workspace. Its most distinctive engineering work is the coordination between a Three.js scene, a real HTML desktop, browser input, procedural animation, and server-backed features. The room is an interface to the portfolio: objects lead to work, conversations, drawings, visitor contributions, and small playful interactions.
 
@@ -71,7 +71,7 @@ As the camera moves, the HTML desktop remains attached to the screen. A cached m
 
 This preserves familiar browser capabilities: selectable text, inputs, scrolling, keyboard controls, and React applications. Rebuilding all of those capabilities as 3D meshes would be much more complex.
 
-The HTML desktop is outside the WebGL postprocessing pipeline. Consequently, it has its own approximately one-display-pixel edge mask to soften its perimeter without blurring its contents. The screen projection also determines mobile control sizes, compensating for how large the projected desktop actually appears on the device.
+The HTML desktop is outside the WebGL postprocessing pipeline. Consequently, it has its own approximately one-display-pixel edge mask to soften its perimeter without blurring its contents. The screen projection also determines mobile control sizes, compensating for how large the projected desktop actually appears on the device. When a render-space glasses effect is active, the live HTML surface temporarily hides and reveals the existing Three.js monitor wallpaper underneath. That static fallback participates in the same Pixelated, Crayon, or Sketch pass as the room; opening the monitor removes the glasses and restores the live desktop.
 
 **Why it is interesting:** it joins two rendering systems into one coherent interface, while retaining the strengths of each.
 
@@ -129,11 +129,26 @@ This matters because a small visible change can otherwise cause expensive shadow
 
 ### Rendering quality
 
-The postprocessing sequence is scene rendering, bloom, output conversion, and SMAA antialiasing. SMAA is enabled after its lookup textures are ready. Existing render targets resize with the viewport instead of rebuilding the entire pipeline. Device pixel ratio is capped at 1.5, limiting the number of pixels processed on high-density screens.
+The normal postprocessing sequence is scene rendering, bloom, output conversion, and SMAA antialiasing. Three optional glasses passes sit between bloom and output conversion. SMAA is enabled after its lookup textures are ready. Existing render targets resize with the viewport instead of rebuilding the entire pipeline. Device pixel ratio is capped at 1.5, limiting the number of pixels processed on high-density screens.
+
+### Render-space glasses
+
+Four separate pairs of glasses sit beside the sticky-note pad. Each is a real selectable room object with its own desk model and matching worn frame:
+
+| Pair | Visual treatment |
+| --- | --- |
+| Vintage round wire frames | CSS backdrop blur, clipped to the two lenses |
+| Chunky pixel frames | A reduced-resolution beauty buffer with nearest sampling plus depth- and normal-derived one-pixel edges |
+| Mismatched pastel frames | Quantized, saturated color with layered pastel strokes and geometry-aware outlines |
+| Angular monochrome frames | White/grey tonal shading, graphite hatching, image edges, and depth/normal outlines |
+
+The render-space variants extend Three.js's `RenderPixelatedPass`. They render low-resolution beauty, depth, and normal buffers, then composite the result over the incoming full-resolution frame only inside two screen-space lens masks. Pixel frames use a stepped mask; Crayon uses an ellipse; Sketch uses a squarer angular mask. Their saved tuning values live in `lensSettings.js`, while final room positions live in `propPlacement.js`; no runtime tuning controls ship in the room.
+
+Wearing and removing a pair coordinate CSS and WebGL animation. On entry, the non-blur mask begins below the viewport, moves upward, and increases opacity with the physical frame. On removal, it moves and fades downward with the frame before the pass disables. This avoids the effect appearing at screen center before the glasses arrive or remaining behind after the frame leaves. Reduced motion applies the final state immediately.
 
 The photo frame uses an additional Canvas 2D technique: a Sobel edge calculation produces a muted outline version of the supplied photo. Focusing the frame fades toward the original color image.
 
-**Sources:** [Shadow cache](../components/workbench/shadowCache.mjs), [StationaryShadows](../components/workbench/StationaryShadows.js), [Paper rendering](../components/workbench/paperRendering.mjs), `NightEffects` in [CityExterior](../components/workbench/CityExterior.js), [PhotoFrame](../components/workbench/PhotoFrame.js).
+**Sources:** [Shadow cache](../components/workbench/shadowCache.mjs), [StationaryShadows](../components/workbench/StationaryShadows.js), [Paper rendering](../components/workbench/paperRendering.mjs), `NightEffects` in [CityExterior](../components/workbench/CityExterior.js), [Pixel lens pass](../components/workbench/LensPixelatedPass.js), [Crayon lens pass](../components/workbench/LensCrayonPass.js), [Sketch lens pass](../components/workbench/LensSketchPass.js), [Desk glasses](../components/workbench/DeskGlasses.js), [PhotoFrame](../components/workbench/PhotoFrame.js).
 
 ## 7. Responsive hover without sacrificing precise interaction
 
@@ -254,11 +269,11 @@ Three rigged fireflies add a small procedural story to the room. Each instance i
 
 Their 36.5-second choreography uses five-second travel phases but limits the stop at the end of the monitor to 1.5 seconds. The group begins above the plant, crosses the desk, and circles the monitor before two continue to Upliance while the third travels to the chair, switches from its flight clip to its landed-idle clip, and walks a small three-second path across the seat. At Upliance, one of the pair flies upward toward the outside edge of the ceiling-light shade rather than its central cord. The collision uses a fast ease-out trajectory and a temporary body roll to throw the insect backward, applies an impulse to the existing rope simulation, and produces two unequal extended flicker dips across the bulb material, spotlight, and fill light before the insect returns to its companion. The chair firefly then takes a slower seven-second route toward the radio while the pair begins its five-second return, allowing the three to reunite there before returning to the plant. Catmull–Rom curves provide the larger paths. Per-firefly nonlinear pace offsets preserve common departure and arrival points while letting individuals lead or trail in between; distinct wing speeds and sinusoidal hover frequencies further prevent synchronized-looking motion. Reduced-motion mode leaves the group stationary near the plant.
 
-Each firefly combines the model's emissive material with a small tone-mapping-independent emissive core and a local point light. The existing bloom pass turns the core into a soft halo, while the point light lets the insects subtly illuminate nearby surfaces throughout the route. The animated body meshes continue casting and receiving room shadows for physical continuity. Because this is a continuously active animation, it requests frames from the otherwise demand-rendered scene while enabled. The model is **Lowpoly Firefly** by Caledhril, licensed under CC BY 4.0; its attribution is also exposed in the desktop Credits application.
+Each firefly combines the model's emissive material with a small tone-mapping-independent emissive core and a local point light. The existing bloom pass turns the core into a soft halo, while the point light lets the insects subtly illuminate nearby surfaces throughout the route. Firefly body meshes neither cast nor receive shadows, avoiding small moving shadow artifacts and unnecessary invalidation while preserving their glow and local illumination. Because this is a continuously active animation, it requests frames from the otherwise demand-rendered scene while enabled. The model is **Lowpoly Firefly** by Caledhril, licensed under CC BY 4.0; its attribution is also exposed in the desktop Credits application.
 
-Other interactions include a drawer that reveals wearable glasses, localized lens blur, a city view with a flying aircraft, and generated paper surfaces for notes. These details demonstrate lifecycle management: animations, audio, streams, and event listeners need cleanup as well as startup.
+Other interactions include four directly wearable glasses pairs on the desktop, a city view with a flying aircraft, and generated paper surfaces for notes. These details demonstrate lifecycle management: animations, render targets, audio, streams, and event listeners need cleanup as well as startup.
 
-**Sources:** [CeilingLight](../components/workbench/CeilingLight.js), [Radio](../components/workbench/Radio.js), [Fireflies](../components/workbench/Fireflies.js), [Firefly license](../public/models/firefly/license.txt), [Asset credits](../components/workbench/AssetCredits.js), [GlassesDrawer](../components/workbench/GlassesDrawer.js), [GlassesOverlay](../components/workbench/GlassesOverlay.js), [FlyingPlane](../components/workbench/FlyingPlane.js).
+**Sources:** [CeilingLight](../components/workbench/CeilingLight.js), [Radio](../components/workbench/Radio.js), [Fireflies](../components/workbench/Fireflies.js), [Firefly license](../public/models/firefly/license.txt), [Asset credits](../components/workbench/AssetCredits.js), [DeskGlasses](../components/workbench/DeskGlasses.js), [GlassesOverlay](../components/workbench/GlassesOverlay.js), [FlyingPlane](../components/workbench/FlyingPlane.js).
 
 ## 13. A streamed portfolio assistant
 
@@ -299,7 +314,7 @@ Important implementation limits:
 
 ### Notes on the wall
 
-Wall notes are real shared data backed by MongoDB. Visitors write text on a projected paper editor, then place it on the room wall. Moving a note intersects the pointer ray with the wall plane and clamps the resulting coordinates to the allowed area.
+Wall notes are real shared data backed by MongoDB. Visitors write text on a projected paper editor, then place it on the room wall. The editor's projection uses the sticky-note pad's final position, rotation, and scale, so the HTML writing surface and its 3D source remain aligned. Its hover wrapper updates world bounds when the pad transform changes. Moving a wall note intersects the pointer ray with the wall plane and clamps the resulting coordinates to the allowed area.
 
 Ownership uses a browser token whose hash is stored with the record. Read responses expose whether that browser can edit a note, without returning the stored ownership hash. Mutations filter by both note ID and owner hash. Repeated creates use the same ID and insert-only fields, preventing duplicate notes during retries.
 
@@ -311,7 +326,7 @@ The Photos app supports image selection and browser-camera capture. A captured i
 
 The gallery uses cursor pagination with creation time and ID, returning batches of 40. Browser ownership controls deletion. The API validates requests, bounds writes, and avoids exposing owner hashes in public records.
 
-**Sources:** [StickyNotes](../components/workbench/StickyNotes.js), [Notes hook](../components/workbench/useStickyNotes.js), [Notes API](../pages/api/wall-notes.js), [Photos](../components/workbench/Photos.js), [Photos API](../pages/api/photos.js), [Database connection](../lib/mongodb.js).
+**Sources:** [StickyNotes](../components/workbench/StickyNotes.js), [Note projection](../components/workbench/NoteProjection.js), [Notes hook](../components/workbench/useStickyNotes.js), [Notes API](../pages/api/wall-notes.js), [Photos](../components/workbench/Photos.js), [Photos API](../pages/api/photos.js), [Database connection](../lib/mongodb.js).
 
 ## 15. Analytics notifications and the admin boundary
 

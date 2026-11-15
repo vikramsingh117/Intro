@@ -8,13 +8,21 @@ import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass';
 import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass';
 import { SMAAPass } from 'three/examples/jsm/postprocessing/SMAAPass';
+import LensPixelatedPass from './LensPixelatedPass';
+import LensCrayonPass from './LensCrayonPass';
+import LensSketchPass from './LensSketchPass';
 
-export function NightEffects({ exposure = .85, glow = .55 }) {
+export function NightEffects({ exposure = .85, glow = .55, pixelLens = false, crayonLens = false, sketchLens = false, glassesLeaving = false, lensSettings }) {
   const { gl, scene, camera, size, invalidate } = useThree();
   const get = useThree(state => state.get);
   const dpr = useThree(state => state.viewport.dpr);
   const pipeline = useRef(null);
   const bloomPass = useRef(null);
+  const pixelPass = useRef(null);
+  const crayonPass = useRef(null);
+  const sketchPass = useRef(null);
+  const lensMotion = useRef({ mode:'idle', elapsed:0 });
+  const nonBlurLens = pixelLens || crayonLens || sketchLens;
   useEffect(() => {
     const size = get().size;
     const composer = new EffectComposer(gl);
@@ -22,6 +30,18 @@ export function NightEffects({ exposure = .85, glow = .55 }) {
     // Only HDR highlights bloom, keeping dark surfaces and lettering readable.
     const bloom = new UnrealBloomPass(new Vector2(size.width, size.height), .55, .45, 1.05);
     bloomPass.current = bloom;
+    const pixel = new LensPixelatedPass(7, scene, camera, { normalEdgeStrength: .35, depthEdgeStrength: .45 });
+    pixel.enabled = false;
+    pixel.setLensLayout(size.width, size.height, size.width <= 760);
+    pixelPass.current = pixel;
+    const crayon = new LensCrayonPass(scene, camera, { normalEdgeStrength: .68, depthEdgeStrength: .76 });
+    crayon.enabled = false;
+    crayon.setLensLayout(size.width, size.height, size.width <= 760);
+    crayonPass.current = crayon;
+    const sketch = new LensSketchPass(scene, camera, { normalEdgeStrength: .82, depthEdgeStrength: .92 });
+    sketch.enabled = false;
+    sketch.setLensLayout(size.width, size.height, size.width <= 760);
+    sketchPass.current = sketch;
     const output = new OutputPass();
     const smaa = new SMAAPass(size.width * gl.getPixelRatio(), size.height * gl.getPixelRatio());
     // SMAA operates on the final display colors, after bloom and tone mapping.
@@ -38,6 +58,9 @@ export function NightEffects({ exposure = .85, glow = .55 }) {
     enableSmaa();
     composer.addPass(render);
     composer.addPass(bloom);
+    composer.addPass(pixel);
+    composer.addPass(crayon);
+    composer.addPass(sketch);
     composer.addPass(output);
     composer.addPass(smaa);
     composer.setSize(size.width, size.height);
@@ -46,8 +69,11 @@ export function NightEffects({ exposure = .85, glow = .55 }) {
     return () => {
       pipeline.current = null;
       bloomPass.current = null;
+      pixelPass.current = null;
+      crayonPass.current = null;
+      sketchPass.current = null;
       lookupImages.forEach(image => image.removeEventListener('load', enableSmaa));
-      render.dispose(); bloom.dispose(); output.dispose(); smaa.dispose(); composer.dispose();
+      render.dispose(); bloom.dispose(); pixel.dispose(); crayon.dispose(); sketch.dispose(); output.dispose(); smaa.dispose(); composer.dispose();
     };
   }, [gl, scene, camera, get, invalidate]);
   useEffect(() => {
@@ -55,14 +81,59 @@ export function NightEffects({ exposure = .85, glow = .55 }) {
     // Keep the postprocessing targets at the renderer resolution when a close-up changes DPR.
     pipeline.current?.setPixelRatio(dpr);
     pipeline.current?.setSize(size.width, size.height);
+    pixelPass.current?.setLensLayout(size.width, size.height, size.width <= 760);
+    crayonPass.current?.setLensLayout(size.width, size.height, size.width <= 760);
+    sketchPass.current?.setLensLayout(size.width, size.height, size.width <= 760);
     invalidate();
   }, [size.width, size.height, dpr, invalidate]);
+  useEffect(() => {
+    if (pixelPass.current) pixelPass.current.enabled = pixelLens;
+    invalidate();
+  }, [pixelLens, invalidate]);
+  useEffect(() => {
+    if (crayonPass.current) crayonPass.current.enabled = crayonLens;
+    invalidate();
+  }, [crayonLens, invalidate]);
+  useEffect(() => {
+    if (sketchPass.current) sketchPass.current.enabled = sketchLens;
+    invalidate();
+  }, [sketchLens, invalidate]);
+  useEffect(() => {
+    const passes=[pixelPass.current,crayonPass.current,sketchPass.current];
+    if(glassesLeaving){
+      lensMotion.current={mode:'exit',elapsed:0};
+      passes.forEach(pass=>{pass?.setLensCenterY(.5);pass?.setLensOpacity(1);});
+    }else if(nonBlurLens){
+      lensMotion.current={mode:'enter',elapsed:0};
+      passes.forEach(pass=>{pass?.setLensCenterY(-.35);pass?.setLensOpacity(.35);});
+    }else{
+      lensMotion.current={mode:'idle',elapsed:0};
+      passes.forEach(pass=>{pass?.setLensCenterY(.5);pass?.setLensOpacity(1);});
+    }
+    invalidate();
+  }, [glassesLeaving,nonBlurLens,invalidate]);
+  useEffect(() => {
+    crayonPass.current?.updateSettings(lensSettings?.crayon);
+    sketchPass.current?.updateSettings(lensSettings?.sketch);
+    invalidate();
+  }, [lensSettings, invalidate]);
   useEffect(() => {
     gl.toneMappingExposure = exposure;
     if (bloomPass.current) bloomPass.current.strength = glow;
     invalidate();
   }, [gl, exposure, glow, size.width, size.height, invalidate]);
   useFrame((state, delta) => {
+    const motion=lensMotion.current;
+    if(motion.mode!=='idle'){
+      motion.elapsed+=Math.min(delta,.05);
+      const duration=motion.mode==='enter' ? .7 : .5;
+      const progress=Math.min(1,motion.elapsed/duration);
+      const eased=motion.mode==='enter'?1-(1-progress)**3:progress*progress;
+      const center=motion.mode==='enter'?-.35+eased*.85:.5-eased*.85;
+      const opacity=motion.mode==='enter' ? .35+eased*.65 : 1-eased*.65;
+      [pixelPass.current,crayonPass.current,sketchPass.current].forEach(pass=>{pass?.setLensCenterY(center);pass?.setLensOpacity(opacity);});
+      if(progress<1)state.invalidate();else motion.mode='idle';
+    }
     if (pipeline.current) pipeline.current.render(delta);
     else gl.render(scene, camera);
   }, 1);

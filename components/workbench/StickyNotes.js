@@ -5,6 +5,8 @@ import notePaper from './notePaper';
 import noteDate from './noteDate';
 import InteractiveObject from './InteractiveObject';
 import { noteBoundsForWidth, clampNotePosition, notePlacementRect } from './notePlacement.mjs';
+import { DEFAULT_PROP_PLACEMENT } from './propPlacement';
+
 
 function useNoteTexture(text,createdAt,id) {
   const texture = useMemo(() => {
@@ -78,7 +80,7 @@ function WallNote({ note, api, onHover }) {
     </mesh>
   </InteractiveObject>;
 }
-function FlyingNote({ api, reduced }) {
+function FlyingNote({ api, reduced, placement }) {
   const mesh=useRef(null), motion=useRef({elapsed:0,target:new Vector3(1.8,2.8,-2.6),paste:null});
   const {invalidate}=useThree();
   const bounds=useThree(state=>noteBoundsForWidth(state.size.width));
@@ -93,11 +95,11 @@ function FlyingNote({ api, reduced }) {
     const t=reduced?1:Math.min(1,m.elapsed/1.5);
     if(t<.43){
       const lift=t/.43;
-      mesh.current.position.set(3.7,-1.397+lift*.8,.8+lift*.25);
+      mesh.current.position.set(placement.x,placement.y+.053+lift*.8,placement.z+lift*.25);
       mesh.current.rotation.set(-Math.PI/2+lift*.5,0,-lift*.13);
     }else if(t<1){
       const travel=(t-.43)/.57,ease=travel*travel*(3-2*travel);
-      mesh.current.position.lerpVectors(new Vector3(3.7,-.597,1.05),m.target,ease);
+      mesh.current.position.lerpVectors(new Vector3(placement.x,placement.y+.853,placement.z+.25),m.target,ease);
       mesh.current.rotation.set((-Math.PI/2+.5)*(1-ease),0,-.13*(1-ease));
     }else if(m.paste){
       m.paste.elapsed+=Math.min(delta,.05);
@@ -113,7 +115,7 @@ function FlyingNote({ api, reduced }) {
   });
   const target=event=>{const position=clampNotePosition(event.point.x,event.point.y,bounds);return new Vector3(position.x,position.y,-2.6);};
   return <>
-    <mesh ref={mesh} position={[3.7,-1.397,.8]} rotation={[-Math.PI/2,0,0]} raycast={()=>null}>
+    <mesh ref={mesh} position={[placement.x,placement.y+.053,placement.z]} rotation={[-Math.PI/2,placement.rotation*Math.PI/180,0]} raycast={()=>null}>
       <planeGeometry args={[.72,.72,12,12]}/><meshStandardMaterial map={texture} side={DoubleSide} roughness={.95}/>
     </mesh>
     <mesh position={[area.x,area.y,-3.06]} onPointerMove={event=>{event.stopPropagation();if(!motion.current.paste){motion.current.target.copy(target(event));invalidate();}}}
@@ -126,15 +128,15 @@ function FlyingNote({ api, reduced }) {
     </mesh>
   </>;
 }
-export default function StickyNotes({ api, onHover, reduced }) {
+export default function StickyNotes({ api, onHover, reduced, placement=DEFAULT_PROP_PLACEMENT.stickyNote }) {
   return <group>
-    <InteractiveObject label="Sticky notes · leave a message" onHover={onHover}>
-      <group position={[3.7,-1.45,.8]} rotation={[0,0,0]} onClick={event=>{event.stopPropagation();if(event.delta<=5)api.edit();}}>
+    <InteractiveObject moving label="Sticky notes · leave a message" onHover={onHover}>
+      <group position={[placement.x,placement.y,placement.z]} rotation={[0,placement.rotation*Math.PI/180,0]} scale={placement.scale} onClick={event=>{event.stopPropagation();if(event.delta<=5)api.edit();}}>
         <mesh castShadow><boxGeometry args={[.72,.1,.72]}/><meshStandardMaterial color="#efd67f" roughness={.95}/></mesh>
         <mesh position={[0,.052,-.22]} rotation={[-Math.PI/2,0,0]}><planeGeometry args={[.72,.15]}/><meshStandardMaterial color="#d9ba61"/></mesh>
       </group>
     </InteractiveObject>
     {api.notes.map(note=><WallNote key={note.id} note={note} api={api} onHover={onHover}/>)}
-    {api.placing && <FlyingNote key={api.placing.id} api={api} reduced={reduced}/>}
+    {api.placing && <FlyingNote key={api.placing.id} api={api} reduced={reduced} placement={placement}/>}
   </group>;
 }

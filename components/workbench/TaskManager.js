@@ -4,9 +4,9 @@ import styles from '../../styles/Workbench.module.css';
 export default function TaskManager({ windows, activeTitle, onFocus, onClose, room = {} }) {
   const [tab,setTab]=useState('apps');
   const components=[
-    ['Monitor','Interactive desktop'],['Desk & drawers','Top drawer opens to reveal glasses'],
+    ['Monitor','Interactive desktop'],['Desk & drawers','Glasses and sticky notes rest on the desktop'],
     ['Desk lamp',room.lampOn?'On':'Off'],['Notebook',room.notebookOpen?`Open · spread ${(room.notebookPage || 0)+1}`:'Closed'],
-    ['Glasses',room.wearingGlasses?'Wearing':'In drawer'],['Shared wall',room.notesReady?`${room.noteCount} notes`:'Connecting'],
+    ['Glasses',room.wearingGlasses?'Wearing':'On desk'],['Shared wall',room.notesReady?`${room.noteCount} notes`:'Connecting'],
     ['Sticky note pad','Write and place notes'],['Window / city',room.cityReady?'Loaded':'Loading'],
     ['Airplane','Flyby visible from window'],['Radio','Music playback'],['Ceiling light','Toggleable lighting'],
     ['Keyboard','Decorative'],['Chair','Decorative'],['Plant','Decorative'],['Stool','Decorative'],['Pascal','Soft toy'],['Upliance','Hover to open lid, light up & wake display'],['Room','Walls, ceiling & floor'],

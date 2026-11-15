@@ -1,8 +1,9 @@
 import { useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { Matrix4 } from 'three';
+import { DEFAULT_PROP_PLACEMENT } from './propPlacement';
 
-export default function NoteProjection({ editor, elementRef }) {
+export default function NoteProjection({ editor, elementRef, placement=DEFAULT_PROP_PLACEMENT.stickyNote }) {
   const surface=useRef(null);
   const {camera,size}=useThree();
   useFrame(()=>{
@@ -15,5 +16,8 @@ export default function NoteProjection({ editor, elementRef }) {
     elementRef.current.style.transform=`matrix3d(${projection.elements.join(',')})`;
     elementRef.current.style.visibility='visible';
   });
-  return <group ref={surface} position={editor.id?[editor.x,editor.y,-3.065]:[3.7,-1.397,.8]} rotation={editor.id?[0,0,0]:[-Math.PI/2,0,0]}/>;
+  return <group ref={surface}
+    position={editor.id?[editor.x,editor.y,-3.065]:[placement.x,placement.y+.053,placement.z]}
+    rotation={editor.id?[0,0,0]:[-Math.PI/2,placement.rotation*Math.PI/180,0]}
+    scale={editor.id?1:placement.scale}/>;
 }
