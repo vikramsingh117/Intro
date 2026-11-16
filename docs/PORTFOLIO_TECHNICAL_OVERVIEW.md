@@ -1,6 +1,6 @@
 # Portfolio concepts and technical architecture
 
-**Vikram Singh · Technical overview · 15 November 2026**
+**Vikram Singh · Technical overview · 16 November 2026**
 
 This portfolio combines a readable professional website with an interactive 3D workspace. Its most distinctive engineering work is the coordination between a Three.js scene, a real HTML desktop, browser input, procedural animation, and server-backed features. The room is an interface to the portfolio: objects lead to work, conversations, drawings, visitor contributions, and small playful interactions.
 
@@ -81,6 +81,8 @@ The HTML desktop is outside the WebGL postprocessing pipeline. Consequently, it 
 
 The room camera uses OrbitControls for orbiting and zooming. Panning is disabled, and distance, azimuth, and polar-angle limits keep movement within a deliberate range. The general room view targets the original desk-centered point at `[0, 0.2128, -0.51]`.
 
+On desktop, mouse movement reveals a right-edge zoom scale synchronized with the same `6–24` camera-distance boundaries. The home camera distance reads as `1×`; dragging, wheel zoom, and keyboard adjustments update the scale together. Quantized movement produces a short, rate-limited Web Audio dot without attaching audio work to automatic camera transitions.
+
 Opening a notebook, monitor, photo, appliance, note, or city view temporarily changes the camera's position and look target. Transitions interpolate position, target, and field of view. The room position is remembered so leaving a focused object can return to the previous room viewpoint.
 
 Focus distances are calculated from the field of view and viewport aspect ratio. For example, a tall mobile viewport needs a different camera distance to fit a screen or notebook spread. The appliance focus is based on its measured display dimensions and surface normal, so the camera approaches the physical panel rather than an arbitrary location.
@@ -91,7 +93,7 @@ Browser history participates in this model. A same-URL history entry represents 
 
 **Why it is interesting:** navigation state, browser history, responsive composition, and physical camera movement agree about where the visitor is.
 
-**Sources:** `Camera` in [WorkbenchScene](../components/workbench/WorkbenchScene.js), [Focus history](../components/workbench/useFocusHistory.js), [After Hours transition](../components/AfterHoursTransition.js).
+**Sources:** `Camera` in [WorkbenchScene](../components/workbench/WorkbenchScene.js), [Desktop zoom control](../components/workbench/DesktopZoomControl.js), [Zoom mapping](../components/workbench/cameraZoom.mjs), [Focus history](../components/workbench/useFocusHistory.js), [After Hours transition](../components/AfterHoursTransition.js).
 
 ## 5. Asset loading follows what visitors need first
 
@@ -103,7 +105,7 @@ The loading strategy gives the initial room screens priority over decorative and
 4. The notebook mounts after those screens are ready and loads the supplied doodle images.
 5. The appliance showcase SVGs preload automatically after the room assets and notebook images have settled. They load sequentially with idle scheduling and low image fetch priority, without requiring a visit to the appliance.
 
-About Me starts importing in the background when `FirstRoomFrame` signals readiness after four rendered frames, once the monitor and appliance screens are ready. It does not wait for a monitor click. `loadAboutJourney` shares a cached import promise with the dynamically loaded app and clears that promise after a failed request so a later attempt can retry. The same background phase preloads the four BUILD / WORK icon images using their final URLs, so opening the timeline can reuse the browser cache instead of revealing the icons progressively. A background failure does not block room entry. This phase does not mount the app, run its decorative introduction, or load the historical portfolio iframes.
+About Me starts importing in the background when `FirstRoomFrame` signals readiness after four rendered frames, once the monitor and appliance screens are ready. It does not wait for a monitor click. `loadAboutJourney` shares a cached import promise with the dynamically loaded app and clears that promise after a failed request so a later attempt can retry. The same background phase preloads the BUILD / WORK icon images and the 2026 Upliance badge using their final URLs, so opening the timeline can reuse the browser cache instead of revealing the marks progressively. A background failure does not block room entry. This phase does not mount the app, run its decorative introduction, or load the historical portfolio iframes.
 
 Preloading uses the same loader paths and cache keys as the live scene. The home card's progress is based on completed assets, not downloaded bytes. A small image and a large model therefore each count as one completed asset.
 
@@ -127,9 +129,11 @@ Stationary-light shadows are cached. The cache tracks shadow-casting objects, th
 
 This matters because a small visible change can otherwise cause expensive shadow rendering for the rest of the room. The held paper ball is deliberately excluded from shadow casting and receiving while being dragged. Its shadow behavior returns for the thrown ball. The gesture thresholds, launch velocity calculation, and flight simulation remain unchanged.
 
+Firefly meshes cast but do not receive shadows. Because their parent transforms move continuously, they opt into a lower-priority shadow interval of `1/15` second. This preserves moving silhouettes while preventing the three tiny animated actors from forcing every cached shadow map to refresh at display frame rate.
+
 ### Rendering quality
 
-The normal postprocessing sequence is scene rendering, bloom, output conversion, and SMAA antialiasing. Three optional glasses passes sit between bloom and output conversion. SMAA is enabled after its lookup textures are ready. Existing render targets resize with the viewport instead of rebuilding the entire pipeline. Device pixel ratio is capped at 1.5, limiting the number of pixels processed on high-density screens.
+The normal postprocessing sequence is scene rendering, bloom, output conversion, and SMAA antialiasing. Three optional glasses passes sit between bloom and output conversion. SMAA is enabled after its lookup textures are ready. Existing render targets resize with the viewport instead of rebuilding the entire pipeline. The general room renders at device pixel ratio `1`; notebook and Upliance close-ups may increase up to `2` for readable detail. The standalone city workspace uses a device-aware cap of `1.5`.
 
 ### Render-space glasses
 
@@ -233,9 +237,9 @@ The applications include work and project information, an AI assistant, a termin
 
 The terminal is a browser simulation with a session-only virtual filesystem, command history, completion, path navigation, and supported command parsing. Commands such as `ping` and `sudo` are simulated. It cannot execute host shell commands or access a visitor's files. App listings such as `ps` and `top` reflect open portfolio windows rather than invented operating-system CPU metrics.
 
-The mascot adds stateful feedback: waking, sleeping, walking, exercise, music poses, and hints. Mobile hints are measured with the pixel font and paginated into the available space. They overlay the desktop without resizing the shortcut grid when opened.
+The mascot adds stateful feedback: waking, sleeping, walking, exercise, music poses, and hints. Its hint rotation covers the four lens treatments, desktop zoom scale, and firefly/light choreography alongside room objects and apps. Mobile hints are measured with the pixel font and paginated into the available space. They overlay the desktop without resizing the shortcut grid when opened. Its per-letter synthetic voice now plays at 60% of its previous level.
 
-**Sources:** [DesktopWorkspace](../components/workbench/DesktopWorkspace.js), [DesktopWindow](../components/workbench/DesktopWindow.js), [Terminal engine](../components/workbench/terminalEngine.mjs), [TaskManager](../components/workbench/TaskManager.js), [DesktopMascot](../components/workbench/DesktopMascot.js), [Mascot behavior](../components/workbench/mascotBehavior.mjs).
+**Sources:** [DesktopWorkspace](../components/workbench/DesktopWorkspace.js), [DesktopWindow](../components/workbench/DesktopWindow.js), [Terminal engine](../components/workbench/terminalEngine.mjs), [TaskManager](../components/workbench/TaskManager.js), [DesktopMascot](../components/workbench/DesktopMascot.js), [Mascot behavior](../components/workbench/mascotBehavior.mjs), [Mascot voice hook](../components/workbench/useMascotVoice.js), [Voice synthesis](../components/workbench/mascotVoice.mjs).
 
 ### About Me: a pixel room through time
 
@@ -247,7 +251,7 @@ The timeline has three major stops, represented internally as month offsets `2`,
 | --- | --- |
 | 2021 | A plain laptop, small wooden chair, notebook, and chalk height mark at 5′2″. The notebook presents school and college beginnings, entrance exams, Pokémon modding, and doodles. |
 | 2025 | An upgraded monitor and chair, coding profiles, internship logos, and a 5′4″ mark. The notebook combines college and coding notes, including 20+ Vercel projects. |
-| 2026 | A night window, floor-standing plant, hoop, desk radio, sticky notes, ceiling light above upliance, and 5′6″ mark. The desk drawer moves to the left. Object placement follows the corresponding 3D room. |
+| 2026 | A night window, floor-standing plant, hoop, desk radio, sticky notes, ceiling light above upliance, a supplied Upliance logo badge on the appliance, and a 5′6″ mark. The desk drawer moves to the left. Object placement follows the corresponding 3D room. |
 
 `Presence` retains departing SVG groups until the half-second transition finishes. CSS keyframes scale items through intermediate pop-in and pop-out shapes, with staggered arrivals contained within the same 500 ms interval. Chairs use this animation too; the drawer transitions between positions. Window weather crossfades with the year. Reduced motion skips these transitions and the introduction. SVG artwork is paired with labelled HTML buttons positioned over interactive objects; decorative objects do not need click actions.
 
@@ -263,13 +267,15 @@ The window's `WindowBackContext` lets an open detail register a back action. The
 
 The hanging light has a simulated rope with connected segments and a moving fixture. Dragging changes its motion, and the simulation can settle to sleep. Instanced cord segments visualize the changing rope without creating a new object for each segment on every frame.
 
-The radio starts off, including when entering from Home. Playback begins directly inside the radio's click, tap, or keyboard activation so it follows browser interaction rules. Leaving the room disposes playback resources. Radio toggles also produce a short static effect using Web Audio.
+The radio starts off, including when entering from Home. Playback begins directly inside the radio's click, tap, or keyboard activation so it follows browser interaction rules. Leaving the room disposes playback resources. Radio toggles also produce a short static effect using Web Audio. The looped music level is set independently and is 50% below its previous room mix.
 
 Three rigged fireflies add a small procedural story to the room. Each instance is a skeleton-safe clone of the same low-poly GLTF, with independent wing speed, route pacing, hover frequency, animation timing, and formation offsets. The imported model is normalized to a maximum dimension of `0.1232` scene units. Its geometry is already approximately 1,900 triangles, so optimization preserves the rig rather than decimating it. The two largest base-color maps were reduced from 2048×2048 to 512×512, bringing the complete local model directory from approximately 3.2 MB to 1 MB. These are asset-directory measurements, not network-transfer timings.
 
 Their 36.5-second choreography uses five-second travel phases but limits the stop at the end of the monitor to 1.5 seconds. The group begins above the plant, crosses the desk, and circles the monitor before two continue to Upliance while the third travels to the chair, switches from its flight clip to its landed-idle clip, and walks a small three-second path across the seat. At Upliance, one of the pair flies upward toward the outside edge of the ceiling-light shade rather than its central cord. The collision uses a fast ease-out trajectory and a temporary body roll to throw the insect backward, applies an impulse to the existing rope simulation, and produces two unequal extended flicker dips across the bulb material, spotlight, and fill light before the insect returns to its companion. The chair firefly then takes a slower seven-second route toward the radio while the pair begins its five-second return, allowing the three to reunite there before returning to the plant. Catmull–Rom curves provide the larger paths. Per-firefly nonlinear pace offsets preserve common departure and arrival points while letting individuals lead or trail in between; distinct wing speeds and sinusoidal hover frequencies further prevent synchronized-looking motion. Reduced-motion mode leaves the group stationary near the plant.
 
-Each firefly combines the model's emissive material with a small tone-mapping-independent emissive core and a local point light. The existing bloom pass turns the core into a soft halo, while the point light lets the insects subtly illuminate nearby surfaces throughout the route. Firefly body meshes neither cast nor receive shadows, avoiding small moving shadow artifacts and unnecessary invalidation while preserving their glow and local illumination. Because this is a continuously active animation, it requests frames from the otherwise demand-rendered scene while enabled. The model is **Lowpoly Firefly** by Caledhril, licensed under CC BY 4.0; its attribution is also exposed in the desktop Credits application.
+Their model meshes are cast-only shadow participants: `castShadow` is enabled while `receiveShadow` remains disabled. The shared stationary-light cache samples their continuous movement at 15 FPS and still forces a final refresh after motion settles.
+
+Each firefly combines the model's emissive material with a small tone-mapping-independent emissive core and a local point light. The existing bloom pass turns the core into a soft halo, while the point light lets the insects subtly illuminate nearby surfaces throughout the route. Their bodies do not receive shadows, preserving their glow and local illumination. Because this is a continuously active animation, it requests frames from the otherwise demand-rendered scene while enabled. The model is **Lowpoly Firefly** by Caledhril, licensed under CC BY 4.0; its attribution is also exposed in the desktop Credits application.
 
 Other interactions include four directly wearable glasses pairs on the desktop, a city view with a flying aircraft, and generated paper surfaces for notes. These details demonstrate lifecycle management: animations, render targets, audio, streams, and event listeners need cleanup as well as startup.
 
@@ -393,7 +399,7 @@ The value of the project is the coordination across these systems. A convincing 
 - `/city` provides a dedicated workspace for the shared city model, window-camera view, orbit inspection, and placement, lighting, and cloud controls. The room uses the same city component. The original window camera remains at `[-3.2, 2.3, -2.1]`, looking toward `[-8.1, 4.7, -14]`, with a 45° field of view.
 - Layered procedural clouds hide the city base. The saved fog settings are height `1.6`, thickness `2.4`, spread `73`, and density `0.65`. A world-space fade from Z `-5.5` to `-3.5`, followed by clipping, keeps clouds behind the room window regardless of city scale or rotation.
 - Notebook turning leaves no longer cast or receive shadows, avoiding artifacts between their closely spaced faces. Notebook and Upliance close-ups use device pixel ratio up to 2, with matching postprocessing resolution. Upliance artwork textures also use supported anisotropic filtering, capped at 8.
-- The mascot reveals hints character by character with a small synthetic alphabet voice. A–Z produce short sounds; spaces, digits, and punctuation remain silent, with extra timing pauses after punctuation. Audio unlocks on a mascot click, stops on dismissal or hidden/inactive views, and is disposed on unmount. Reduced-motion mode reveals text immediately without chatter. Final amplitude is 15% of the initial prototype. Mobile hints have no rectangular background or box shadow.
+- The mascot reveals hints character by character with a small synthetic alphabet voice. A–Z produce short sounds; spaces, digits, and punctuation remain silent, with extra timing pauses after punctuation. Audio unlocks on a mascot click, stops on dismissal or hidden/inactive views, and is disposed on unmount. Reduced-motion mode reveals text immediately without chatter. Final amplitude is 9% of the initial prototype. Mobile hints have no rectangular background or box shadow.
 - The approved mobile hoop placement is `x: -1.85`, `y: 2.85`, `z: -1.473`, `rotation: -90`, `size: 0.75`. The renderer, rim scoring, and backboard collision all use `hoopForWidth`; the desktop placement is unchanged. Temporary mobile placement sliders have been removed.
 
 Visual and listening verification is handled by the owner; no browser checks were performed for these changes. Lint and targeted notebook, artwork, shadow-motion, and basketball tests provide code-level validation.

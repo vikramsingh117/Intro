@@ -1,3 +1,5 @@
+// Builds the room shell, desk, drawers, window, and glasses around the separately loaded interactive props.
+// WorkbenchScene supplies selection and lens state while this component owns shared procedural materials.
 import GlassesDrawer from './GlassesDrawer';
 import DeskGlasses from './DeskGlasses';
 import InteractiveObject from './InteractiveObject';

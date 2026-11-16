@@ -1,3 +1,5 @@
+// Runs the projected desktop mascot's movement, poses, paginated hints, and character-by-character speech.
+// It coordinates app activity with MusicMascot, GymMascot, analytics, and the synthetic useMascotVoice hook.
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import styles from '../../styles/Workbench.module.css';
 import { trackInteraction } from '../../lib/visitor-analytics';
@@ -17,7 +19,9 @@ const HINTS = [
   { id:'notebook', text:'Click notebook pages to flip. Drag the right page to tear it.' },
   { id:'paper-ball', text:'Click the paper-ball icon, then flick to throw. Esc puts it away.' },
   { id:'drawer', text:'Click the top drawer to peek inside.' },
-  { id:'glasses', text:'Try the glasses beside the sticky notes for a different view.' },
+  { id:'glasses', text:'Try the four glasses: blur, chunky pixel, pastel crayon, and monochrome sketch.' },
+  { id:'zoom', text:'Move the mouse to reveal the right-edge zoom scale, then drag it up or down.' },
+  { id:'fireflies', text:'Follow the fireflies. One even bumps the hanging light during their room tour.' },
   { id:'My Work', text:'Open My Work for the story behind the builds.' },
   { id:'About Me', text:'Meet the person behind this desk in About Me.' },
   { id:'Projects', text:'Take a closer look at the Projects app.' },

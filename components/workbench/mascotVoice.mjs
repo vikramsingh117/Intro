@@ -1,5 +1,6 @@
-// A lightweight synthetic alphabet for the first voice prototype.
-// Non-ASCII letters, punctuation, digits, and spaces are silent.
+// Generates the mascot's lightweight synthetic alphabet at a deliberately quiet level.
+// Non-ASCII letters, punctuation, digits, and spaces are silent; playback lifecycle lives in useMascotVoice.
+const VOICE_LEVEL = .024 * .6;
 export function mascotLetterIndex(character) {
   if (!/^[a-z]$/i.test(character || '')) return -1;
   return character.toUpperCase().charCodeAt(0) - 65;
@@ -19,7 +20,7 @@ export function createMascotLetter(index, sampleRate) {
       const weight = Math.exp(-(((harmonic * pitch - formant) / 650) ** 2)) / harmonic;
       voice += Math.sin(phase * harmonic) * weight;
     }
-    samples[i] = voice * envelope * .024;
+    samples[i] = voice * envelope * VOICE_LEVEL;
   }
   return samples;
 }

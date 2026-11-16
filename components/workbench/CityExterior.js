@@ -1,3 +1,5 @@
+// Loads and renders the optimized night city together with bloom, antialiasing, and optional glasses passes.
+// WorkbenchScene and CityStudio share this component, so resize and postprocessing state remain self-contained.
 import { useEffect, useMemo, useRef } from 'react';
 import CityFog from './CityFog';
 import { useFrame, useLoader, useThree } from '@react-three/fiber';

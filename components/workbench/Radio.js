@@ -1,3 +1,5 @@
+// Owns the room radio's looping music, static toggle sound, interaction state, and physical model.
+// ProductWorkbench consumes playback state to coordinate the projected desktop mascot's music pose.
 import useTrackedState from './useTrackedState';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useLoader, useThree } from '@react-three/fiber';

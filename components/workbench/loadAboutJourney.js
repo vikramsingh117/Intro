@@ -1,4 +1,4 @@
-// Shares the About Me code import and BUILD / WORK image preloads across callers.
+// Shares the About Me code import and timeline image preloads across callers.
 // WorkbenchScene starts it in the background, while PortfolioApps reuses the cached module.
 let journeyModule;
 let journeyAssets;
@@ -7,6 +7,7 @@ const JOURNEY_ASSETS = [
   '/images/journey/leetcode.svg',
   '/images/journey/cribble.png',
   '/images/journey/office-solutions.png',
+  '/images/journey/upliance-logo.png',
 ];
 
 function preloadJourneyAssets() {

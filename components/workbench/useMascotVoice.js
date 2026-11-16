@@ -1,3 +1,5 @@
+// Owns Web Audio resources for the mascot's per-letter synthetic voice and cleans them up with the desktop.
+// DesktopMascot unlocks it from a click, requests letter sounds while typing, and stops it when dialogue hides.
 import { useCallback, useEffect, useRef } from 'react';
 import { createMascotLetter, mascotLetterIndex } from './mascotVoice.mjs';
 

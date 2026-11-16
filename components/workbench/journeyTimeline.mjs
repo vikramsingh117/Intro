@@ -1,3 +1,5 @@
+// Defines About Me chapters, detail copy, seasonal timing, and interactive SVG hotspot locations.
+// AboutJourney and PixelDeskScene share this data so narrative state and room hit areas stay synchronized.
 export const START = 2; // March 2021
 export const END = 70; // November 2026
 export const CHAPTERS = [

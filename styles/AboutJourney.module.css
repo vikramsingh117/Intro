@@ -1,3 +1,5 @@
+/* Styles the About Me timeline, pixel-room artwork, historical closeups, and responsive chapter navigation.
+   PixelDeskScene and AboutJourney share these transitions so SVG objects and HTML controls move together. */
 .journey{position:relative;height:100%;min-height:0;display:flex;flex-direction:column;background:#40483a;color:#ece4ce;font:14px/1.5 Arial,sans-serif;container-type:inline-size;color-scheme:dark}
 .journey *{box-sizing:border-box}.journey button,.journey a{touch-action:manipulation}.journey button{font:inherit;cursor:pointer}.journey button:focus-visible,.journey a:focus-visible{outline:2px solid #f1cb85;outline-offset:3px}.journey button:disabled{cursor:default}
 .eyebrow{font:10px/1.5 monospace;letter-spacing:1.5px;color:#c3bb96}

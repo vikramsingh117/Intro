@@ -1,5 +1,5 @@
 // Draws the interactive SVG desk across the About Me timeline's historical states.
-// It supplies object hotspots and BUILD / WORK imagery to AboutJourney.
+// It supplies object hotspots, BUILD / WORK imagery, and the 2026 Upliance badge to AboutJourney.
 import { ComputerDetails, NotebookDetails, ApplianceDetails, ChairDetails, PlantDetails, RadioDetails } from './PixelDeskDetails';
 import { objectsAt, seasonAt } from './journeyTimeline.mjs';
 import styles from '../../styles/AboutJourney.module.css';
@@ -77,6 +77,7 @@ export default function PixelDeskScene({ month, previousMonth = month, transitio
       <Presence visible={current} before={previousMonth >= 60} transitioning={transitioning} delay={250}>
         <path fill="#9c8156" d="M382 186h65v7h-65z"/><path fill="#35372d" d="M388 193h6v32h-6zm46 0h6v32h-6z"/>
         <path fill="#c4c5ad" d="M393 154h43v29h-43z"/><path fill="#979e8c" d="M390 174h49v9h-49z"/><path fill="#a3b4ac" d="M399 130h27v25h-27z"/><path fill="#d8d6bd" d="M397 126h31v6h-31z"/><path fill="#2d3935" d="M400 123h26v4h-26zm5 38h21v13h-21z"/><path fill="#78a6a2" d="M408 164h15v6h-15z"/><path fill="#677d73" d="M427 134h8v17h-8v-4h4v-9h-4z"/><ApplianceDetails/>
+        <path fill="#eee7d7" d="M406 134h15v15h-15z"/><image href="/images/journey/upliance-logo.png" x="407" y="135" width="13" height="13" preserveAspectRatio="xMidYMid meet"/>
       </Presence>
       <Presence visible={current} before={previousMonth >= 60} transitioning={transitioning} delay={350}><g transform="translate(-7 -68)">
         <path fill="#d8be79" d="M320 103h16v19h-16z"/><path fill="#b2bd94" d="M340 106h16v18h-16z"/><path stroke="#847956" d="M323 109h10m-10 4h7m13 0h10m-10 4h7"/>

@@ -1,3 +1,5 @@
+// Provides the standalone city tuning workspace with saved camera settings and optional orbit inspection.
+// It reuses CityExterior and NightEffects from the room while exposing editing controls outside the portfolio flow.
 import Link from 'next/link';
 import { Suspense, useEffect, useState } from 'react';
 import { Canvas, useThree } from '@react-three/fiber';

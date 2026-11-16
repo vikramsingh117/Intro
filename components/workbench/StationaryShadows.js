@@ -1,3 +1,5 @@
+// Runs the shared stationary-light shadow cache after scene animations update object transforms.
+// It requests frames only while a throttled caster or light still has a pending final shadow refresh.
 import { useEffect, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { createStationaryShadowCache } from './shadowCache.mjs';

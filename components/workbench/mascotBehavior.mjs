@@ -1,3 +1,5 @@
+// Holds pure mascot transition and measured text-pagination helpers used by DesktopMascot.
+// Keeping layout math outside React makes speech paging deterministic across desktop and mobile sizes.
 export function mascotTransition(previous, next, animate=true) {
   if(previous===next||!animate)return null;
   return next?'tucking':'waking';

@@ -1,4 +1,5 @@
-// Small, grid-aligned highlights, seams and surface details for the desk artwork.
+// Supplies small, grid-aligned highlights, seams, and surface details for PixelDeskScene.
+// Keeping these decorative SVG fragments separate leaves timeline presence and interaction logic in the parent.
 export function ComputerDetails({ laptop = false }) {
   if (laptop) return <g>
     <path fill="#c2c9b5" d="M224 119h71v1h-71zM218 162h82v1h-82z"/>
