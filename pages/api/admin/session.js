@@ -1,3 +1,5 @@
+// Creates and clears the short-lived authenticated session used by the terminal's real admin view.
+// Same-origin checks, rate limiting, password verification, and cookie signing remain isolated from simulated sudo.
 import { configured, sameOrigin, rateLimited, validPassword, setSession } from '../../../lib/admin-auth';
 export const config = { api: { bodyParser: { sizeLimit: '1kb' } } };
 export default function handler(req, res) {

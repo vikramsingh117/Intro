@@ -346,9 +346,11 @@ Notifications are server-side, best-effort ntfy requests with a timeout. A notif
 
 There is also an authenticated admin data path, separate from simulated terminal privileges. Password verification uses scrypt and constant-time comparison. Sessions use an HMAC-signed, expiring cookie with HttpOnly and SameSite restrictions, and Secure in production. Admin data queries authenticate first, use an allowlist of collections, paginate results, and omit selected large or ownership fields.
 
+The terminal-launched admin console provides dataset-wide observability rather than page-local table controls. Each collection exposes an explicit server-side sort allowlist, ascending or descending order, an 80-character escaped text search across collection-specific fields, refresh timestamps, result counts, and pagination. Visitor activity remains grouped by IP with aggregate visits, active time, and interaction counts; matching visits can be searched before grouping, then expanded into paginated per-IP timelines. The API maps public sort names to fixed MongoDB fields and constructs escaped literal regular expressions, preventing arbitrary field selection or operator injection.
+
 This is an important distinction: simulated `sudo` does not grant access to server data. The real admin APIs enforce their own authentication.
 
-**Sources:** [VisitorAnalytics](../components/VisitorAnalytics.js), [Client analytics](../lib/visitor-analytics.js), [Visit API](../pages/api/visit.js), [Notifications](../lib/photo-notifications.js), [Admin authentication](../lib/admin-auth.js), [Admin session API](../pages/api/admin/session.js), [Admin data API](../pages/api/admin/data.js), [Privacy page](../pages/privacy.js).
+**Sources:** [VisitorAnalytics](../components/VisitorAnalytics.js), [Client analytics](../lib/visitor-analytics.js), [Visit API](../pages/api/visit.js), [Notifications](../lib/photo-notifications.js), [Admin authentication](../lib/admin-auth.js), [Admin session API](../pages/api/admin/session.js), [Admin data API](../pages/api/admin/data.js), [Admin console](../components/workbench/AdminView.js), [Visitor drill-down](../components/workbench/AdminVisitors.js), [Admin styles](../styles/AdminView.module.css), [Privacy page](../pages/privacy.js).
 
 ## 16. Accessibility and responsive interaction
 

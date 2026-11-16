@@ -1,3 +1,5 @@
+// Implements the simulated browser terminal and the credential handoff into the real authenticated admin console.
+// Command history remains session-only; AdminView uses separate server APIs and never exposes submitted credentials.
 import { useEffect, useRef, useState } from 'react';
 import { COMMANDS, completeInput, createTerminalState, HOME, runCommand } from './terminalEngine.mjs';
 import styles from '../../styles/Workbench.module.css';

@@ -1,3 +1,5 @@
+// Presents grouped visitor observability metrics and lazily loads per-IP visit timelines.
+// AdminView controls dataset search and ordering; this component owns expansion, nested pagination, and IST formatting.
 import { useEffect, useState } from 'react';
 import styles from '../../styles/AdminView.module.css';
 const format = new Intl.DateTimeFormat('en-IN', { timeZone: 'Asia/Kolkata', dateStyle: 'medium', timeStyle: 'short' });
@@ -45,7 +47,7 @@ function Visits({ ip, onExpired }) {
 export default function AdminVisitors({ data, onExpired }) {
   const [expanded, setExpanded] = useState(null);
   return <div>
-    <div className={styles.visitorTitle}><h3>Visitor activity</h3><p>Grouped by IP · most recently seen first · all times IST</p></div>
+    <div className={styles.visitorTitle}><h3>Visitor activity</h3><p>Grouped by IP · {data.meta?.query ? 'matching visits only · ' : ''}all times IST</p></div>
     <div className={styles.stats}>
       <div><span>IP addresses</span><strong>{data.totals.ips.toLocaleString('en-IN')}</strong></div>
       <div><span>Total visits</span><strong>{data.totals.visits.toLocaleString('en-IN')}</strong></div>
