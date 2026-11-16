@@ -101,6 +101,25 @@
 
 .homeLink{position:absolute;right:max(22px,env(safe-area-inset-right));bottom:max(22px,env(safe-area-inset-bottom));z-index:20;display:inline-flex;align-items:center;min-height:44px;padding:0 4px;border:0;background:transparent;color:#b7beb0;text-decoration:none;font:10px monospace;letter-spacing:.08em;text-shadow:0 1px 4px #0009}.homeLink:hover{color:#e6d5b5}.homeLink:focus-visible{outline:2px solid #e6c994;outline-offset:4px}@media(max-width:760px){.homeLink{right:16px;bottom:calc(65px + env(safe-area-inset-bottom))}}
 
+/* A mouse-revealed camera scale; touch and coarse-pointer devices never render it. */
+.zoomControl{display:none}
+@media (min-width:761px) and (hover:hover) and (pointer:fine){
+  .zoomControl{position:absolute;z-index:25;right:12px;top:50%;display:flex;flex-direction:column;align-items:center;gap:8px;width:72px;transform:translateY(-50%) translateX(8px);opacity:0;pointer-events:none;transition:opacity .18s ease,transform .18s ease;color:#dce7df;text-shadow:0 1px 5px #000}
+  .zoomControl[data-visible=true]{opacity:1;transform:translateY(-50%) translateX(0);pointer-events:auto}
+  .zoomControl[aria-hidden=true]{display:none}
+  .zoomValue{min-width:42px;padding:5px 6px;border:1px solid #b7cabb3d;border-radius:12px;background:#101d22b8;color:#f0dfbd;text-align:center;font:10px/1 monospace;letter-spacing:.04em;backdrop-filter:blur(5px)}
+  .zoomRail{position:relative;box-sizing:border-box;width:54px;height:220px;padding:4px 7px;touch-action:none;cursor:ns-resize;outline:none}
+  .zoomRail:focus-visible{border-radius:8px;box-shadow:0 0 0 2px #e6c994}
+  .zoomTicks{display:flex;flex-direction:column-reverse;align-items:flex-end;justify-content:space-between;width:100%;height:100%;pointer-events:none}
+  .zoomTicks i{display:block;width:15px;height:1px;background:#c9d8d099;box-shadow:0 1px 3px #0008;transition:width .1s ease,background-color .1s ease}
+  .zoomTicks i:nth-child(4n + 1){width:22px}
+  .zoomTicks .zoomTickActive{width:34px;background:#f0d49c;box-shadow:0 0 7px #eac59588}
+  .zoomThumb{position:absolute;right:2px;width:5px;height:10px;border-radius:3px;background:#f0d49c;box-shadow:0 0 8px #eac595aa;pointer-events:none}
+  .zoomHint{font:8px/1 monospace;letter-spacing:.14em;color:#aebdb7;white-space:nowrap}
+  .zoomControl[data-dragging=true] .zoomHint{color:#f0dfbd}
+}
+@media(prefers-reduced-motion:reduce){.zoomControl{transition:none!important}.zoomTicks i{transition:none!important}}
+
 .uplianceSurface{position:absolute;inset:0;pointer-events:auto}
 
 /* Smooth the projected HTML perimeter without softening desktop text. */

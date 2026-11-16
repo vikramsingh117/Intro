@@ -1,5 +1,5 @@
 // Owns the After Hours experience state and coordinates its HTML overlays with the 3D scene.
-// It connects WorkbenchScene, DesktopWorkspace, focused objects, room actions, and persistence hooks.
+// It connects WorkbenchScene, DesktopWorkspace, focused objects, room actions, persistence, and the desktop zoom overlay.
 import useTrackedState from './useTrackedState';
 import { UPLIANCE_WORK } from './uplianceWork';
 import Link from 'next/link';
@@ -17,6 +17,7 @@ import { CELEBRATION_MS } from './basketball.mjs';
 import { initialPaperInventory, consumePaper, refillPage, STARTING_PAPER_COUNT } from './paperInventoryState.mjs';
 import PaperFlick from './PaperFlick';
 import RoomHoverLabel, { useRoomHoverStore } from './RoomHoverLabel';
+import DesktopZoomControl from './DesktopZoomControl';
 import { NOTEBOOK_PAGES } from './notebookPages';
 import { nextNotebookPage } from './notebookPaper.mjs';
 import { DEFAULT_CITY_SETTINGS } from './citySettings';
@@ -323,6 +324,7 @@ export default function ProductWorkbench() {
       </article>
     </>}
     {!focused && <Link href="/"><a className={styles.homeLink} aria-label="Back to home">← Home</a></Link>}
+    <DesktopZoomControl disabled={focused || aimingPaper || paperInFlight}/>
     <StickyNotesUI api={stickyNotes} elementRef={noteEditorRef}/>
     {wearingGlasses && <GlassesOverlay reduced={reduced} lens={glassesLens} onLeaving={()=>setGlassesLeaving(true)} onRemove={removeGlasses}/>}
     <section ref={desktopRef} className={`${styles.desktop} ${styles.monitorDesktop}`}

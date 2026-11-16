@@ -1,3 +1,5 @@
+// Reuses stationary-light shadow maps and refreshes them only when caster geometry or transforms move.
+// Individual casters can request a slower motion interval, keeping tiny continuous actors such as fireflies inexpensive.
 function matrixChanged(matrix, saved) {
   let changed = false;
   for (let i = 0; i < 16; i++) {
@@ -18,6 +20,7 @@ export function createStationaryShadowCache({ motionInterval = 0 } = {}) {
       frame++; time += Math.max(0, delta);
       let pending = false;
       let dirty = false;
+      let dirtyInterval = Infinity;
       scene.updateMatrixWorld();
       scene.traverseVisible(object => {
         if (object.isLight && object.userData.cacheStationaryShadow && object.shadow) {
@@ -33,22 +36,29 @@ export function createStationaryShadowCache({ motionInterval = 0 } = {}) {
         if (!saved) {
           saved = { matrix: new Float64Array(16) };
           casters.set(object, saved); dirty = true;
+          dirtyInterval = Math.min(dirtyInterval, object.userData.shadowMotionInterval ?? motionInterval);
         }
         saved.frame = frame;
-        if (matrixChanged(object.matrixWorld, saved.matrix)) dirty = true;
+        if (matrixChanged(object.matrixWorld, saved.matrix)) {
+          dirty = true;
+          dirtyInterval = Math.min(dirtyInterval, object.userData.shadowMotionInterval ?? motionInterval);
+        }
         const geometry = object.geometry;
         const positionVersion = geometry.attributes.position?.version;
         const indexVersion = geometry.index?.version;
         const instanceVersion = object.instanceMatrix?.version;
         if (saved.geometry !== geometry || saved.positionVersion !== positionVersion ||
             saved.indexVersion !== indexVersion || saved.instanceVersion !== instanceVersion ||
-            saved.material !== object.material) dirty = true;
+            saved.material !== object.material) {
+          dirty = true;
+          dirtyInterval = Math.min(dirtyInterval, object.userData.shadowMotionInterval ?? motionInterval);
+        }
         saved.geometry = geometry; saved.positionVersion = positionVersion;
         saved.indexVersion = indexVersion; saved.instanceVersion = instanceVersion;
         saved.material = object.material;
       });
       for (const [object, saved] of casters) {
-        if (saved.frame !== frame) { casters.delete(object); dirty = true; }
+        if (saved.frame !== frame) { casters.delete(object); dirty = true; dirtyInterval = Math.min(dirtyInterval, motionInterval); }
       }
       for (const [light, saved] of lights) {
         if (saved.frame !== frame) { lights.delete(light); continue; }
@@ -62,11 +72,12 @@ export function createStationaryShadowCache({ motionInterval = 0 } = {}) {
         light.shadow.autoUpdate = false;
         const moving = dirty || lightChanged;
         saved.pending ||= moving;
+        if (moving) saved.pendingInterval = Math.min(saved.pendingInterval ?? Infinity, lightChanged ? motionInterval : dirtyInterval);
         // Reuse maps between motion samples; always render the final settled pose.
         // Brightness pulses do not change shadow geometry and need no new map.
-        if (!light.shadow.map || (saved.pending && (!moving || time - saved.lastRefresh >= motionInterval))) {
+        if (!light.shadow.map || (saved.pending && (!moving || time - saved.lastRefresh >= saved.pendingInterval))) {
           light.shadow.needsUpdate = true;
-          saved.lastRefresh = time; saved.pending = false;
+          saved.lastRefresh = time; saved.pending = false; saved.pendingInterval = Infinity;
         }
         pending ||= saved.pending;
       }

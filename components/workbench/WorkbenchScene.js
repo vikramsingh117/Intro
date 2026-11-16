@@ -1,5 +1,5 @@
 // Composes the interactive Three.js room and coordinates its camera, objects, and readiness stages.
-// It connects physical objects such as Fireflies and CeilingLight with ProductWorkbench state and UI.
+// It connects physical objects with ProductWorkbench state and exposes OrbitControls zoom through roomZoomBridge.
 import { preloadAboutJourney } from './loadAboutJourney';
 import { useAfterHoursTransition } from '../AfterHoursTransition';
 import { Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
@@ -32,6 +32,7 @@ import Stool from './Stool';
 import Upliance from './Upliance';
 import Chair from './Chair';
 import Keyboard from './Keyboard';
+import { distanceForZoomProgress, roomZoomBridge, ROOM_MAX_DISTANCE, ROOM_MIN_DISTANCE, zoomMultiplier, zoomProgressForDistance } from './cameraZoom.mjs';
 import { ACESFilmicToneMapping, Euler, Quaternion, Matrix4, SRGBColorSpace, TextureLoader, TOUCH, Vector3 } from 'three';
 
 function roomEvents(store) {
@@ -141,6 +142,7 @@ function Camera({ paperOrbit, photo, pauseCamera, upliance, onUplianceArrive, en
   }, [roomCameraZ]);
   const transition = useRef(null);
   const orbit = useRef(null);
+  const emitZoom = useRef(() => {});
   const roomPosition = useRef(null);
   const appliedRoomReset = useRef(roomResetKey);
   const wasFocused = useRef(false);
@@ -165,8 +167,8 @@ function Camera({ paperOrbit, photo, pauseCamera, upliance, onUplianceArrive, en
     gl.domElement.style.touchAction = 'none';
     controls.enableDamping = false;
     controls.dampingFactor = .12;
-    controls.minDistance = 6;
-    controls.maxDistance = 24;
+    controls.minDistance = ROOM_MIN_DISTANCE;
+    controls.maxDistance = ROOM_MAX_DISTANCE;
     controls.minAzimuthAngle = ROOM_MIN_AZIMUTH;
     controls.maxAzimuthAngle = ROOM_MAX_AZIMUTH;
     controls.minPolarAngle = .75;
@@ -174,12 +176,43 @@ function Camera({ paperOrbit, photo, pauseCamera, upliance, onUplianceArrive, en
     controls.rotateSpeed = .55;
     controls.zoomSpeed = .7;
     controls.enabled = false;
-    controls.addEventListener('change', invalidate);
+    const homeDistance = roomHome.distanceTo(controls.target);
+    const listeners = new Set();
+    const getSnapshot = () => {
+      const distance = camera.position.distanceTo(controls.target);
+      return {
+        progress: zoomProgressForDistance(distance, controls.minDistance, controls.maxDistance),
+        multiplier: zoomMultiplier(homeDistance, distance),
+        enabled: controls.enabled,
+      };
+    };
+    const notifyZoom = () => {
+      const snapshot = getSnapshot();
+      listeners.forEach(listener => listener(snapshot));
+    };
+    const zoomApi = {
+      getSnapshot,
+      subscribe(listener) { listeners.add(listener); return () => listeners.delete(listener); },
+      setProgress(progress) {
+        if (!controls.enabled) return;
+        const distance = distanceForZoomProgress(progress, controls.minDistance, controls.maxDistance);
+        camera.position.sub(controls.target).setLength(distance).add(controls.target);
+        controls.update();
+        invalidate();
+      },
+    };
+    const onChange = () => { invalidate(); notifyZoom(); };
+    controls.addEventListener('change', onChange);
     orbit.current = controls; paperOrbit.current = controls;
-    return () => { controls.removeEventListener('change', invalidate); controls.dispose(); orbit.current = null; paperOrbit.current = null; };
-  }, [camera, gl, invalidate, paperOrbit]);
+    emitZoom.current = notifyZoom;
+    roomZoomBridge.setApi(zoomApi);
+    return () => { controls.removeEventListener('change', onChange); controls.dispose(); emitZoom.current = () => {}; roomZoomBridge.setApi(null); orbit.current = null; paperOrbit.current = null; };
+  }, [camera, gl, invalidate, paperOrbit, roomHome]);
   useEffect(() => {
-    if(orbit.current) orbit.current.enabled = !interactionBlocked && !photo && !entered && !outside && !notebook && !upliance && !!transition.current?.done;
+    if(orbit.current) {
+      orbit.current.enabled = !interactionBlocked && !photo && !entered && !outside && !notebook && !upliance && !!transition.current?.done;
+      emitZoom.current();
+    }
   }, [interactionBlocked, entered, outside, notebook, upliance, photo]);
   useEffect(() => { if (orbit.current) orbit.current.enableDamping = !reduced; }, [reduced]);
   const lookTarget = useRef(new Vector3(...ROOM_TARGET));
@@ -232,7 +265,7 @@ function Camera({ paperOrbit, photo, pauseCamera, upliance, onUplianceArrive, en
     wasFocused.current = focused;
     if (orbit.current) {
       orbit.current.enabled = false;
-      orbit.current.maxDistance = 24;
+      orbit.current.maxDistance = ROOM_MAX_DISTANCE;
       orbit.current.minAzimuthAngle = ROOM_MIN_AZIMUTH;
       orbit.current.maxAzimuthAngle = ROOM_MAX_AZIMUTH;
     }
@@ -284,6 +317,7 @@ function Camera({ paperOrbit, photo, pauseCamera, upliance, onUplianceArrive, en
         orbit.current.target.copy(lookTarget.current);
         orbit.current.enabled = !interactionBlocked;
         orbit.current.update();
+        emitZoom.current();
       }
       if (entered && !outside) callback.current();
     }

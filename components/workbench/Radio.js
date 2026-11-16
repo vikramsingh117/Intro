@@ -5,7 +5,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { Box3, Vector3 } from 'three';
 import InteractiveObject from './InteractiveObject';
 
-const RADIO_VOLUME = .4 * .7 * .6 * .4;
+const RADIO_VOLUME = .4 * .7 * .6 * .4 * .5;
 
 export default function Radio({ keyboardFocused, registerRoomAction, onHover, onPlaybackChange }) {
   const audio = useRef(null);

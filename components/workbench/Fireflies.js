@@ -1,5 +1,5 @@
 // Animates a three-firefly swarm through the plant, monitor, chair, lights, and radio.
-// It signals WorkbenchScene at lamp impact so CeilingLight can flicker and swing in response.
+// Fireflies cast throttled, low-priority shadows but never receive them; lamp impacts also drive CeilingLight.
 import { useEffect, useMemo, useRef } from 'react';
 import { useFrame, useLoader, useThree } from '@react-three/fiber';
 import { AnimationMixer, Box3, CatmullRomCurve3, Quaternion, Vector3 } from 'three';
@@ -175,8 +175,10 @@ function Firefly({ source, animations, config, reduced, onLightHit }) {
     const materials = [];
     clone.traverse(node => {
       if (!node.isMesh) return;
-      node.castShadow = false;
+      node.castShadow = true;
       node.receiveShadow = false;
+      // Their parent moves continuously, so refresh shared shadow maps less often than larger interactions.
+      node.userData.shadowMotionInterval = 1 / 15;
       const tune = material => {
         const copy = material.clone();
         if (copy.name === 'M_Firefly') copy.emissiveIntensity = 7;
