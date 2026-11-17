@@ -36,9 +36,9 @@ function BoardZoom({ id, month, leaving, radioPlaying, ceilingOn }) {
 export default function AboutJourney({ onOpenUpliance, onOpenNotebook, onOpenNotes, onToggleRadio, onToggleCeiling, ceilingOn, onEnterPortfolio, radioPlaying }) {
   const setWindowBack = useContext(WindowBackContext);
   const [intro, setIntro] = useState('loading');
-  const [index, setIndex] = useState(0);
-  const [timelineMotion, setTimelineMotion] = useState({ from: 0, direction: 1 });
-  const [previousMonth, setPreviousMonth] = useState(STOPS[0].month);
+  const [index, setIndex] = useState(STOPS.length - 1);
+  const [timelineMotion, setTimelineMotion] = useState({ from: STOPS.length - 1, direction: 1 });
+  const [previousMonth, setPreviousMonth] = useState(STOPS[STOPS.length - 1].month);
   const [transitioning, setTransitioning] = useState(false);
   const [selected, setSelected] = useState(null);
   const [detailMotion, setDetailMotion] = useState(null);
@@ -85,7 +85,7 @@ export default function AboutJourney({ onOpenUpliance, onOpenNotebook, onOpenNot
   };
   useEffect(() => () => { clearTimeout(timer.current); clearTimeout(detailTimer.current); }, []);
   useEffect(() => {
-    if (!loggedOpen.current) { trackInteraction('journey_open', '2021'); loggedOpen.current = true; }
+    if (!loggedOpen.current) { trackInteraction('journey_open', STOPS[STOPS.length - 1].year); loggedOpen.current = true; }
   }, []);
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { setIntro('ready'); return; }

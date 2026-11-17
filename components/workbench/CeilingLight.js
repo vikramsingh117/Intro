@@ -9,6 +9,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import InteractiveObject from './InteractiveObject';
 import useSwitchSound from './useSwitchSound';
 import { createLightRope, stepLightRope, kickLightRope } from './lightRope.mjs';
+import { ceilingLightBridge } from './ceilingLightBridge';
 
 const CEILING_HEIGHT = 24;
 // Keep the shade in the room framing while retaining the ceiling connection.
@@ -24,6 +25,17 @@ export default function CeilingLight({ basketScore, fireflyHit, keyboardFocused,
   const fixture=useRef(null),wire=useRef(null),gesture=useRef(null),suppressClick=useRef(false);
   const rope=useRef(null);
   const fireflyFlicker=useRef(null);
+  const pixelDrag=useRef(null);
+  useEffect(()=>{
+    const end=()=>{pixelDrag.current=null;onDragging?.(false);invalidate();};
+    const api={
+      start(){if(!rope.current||gesture.current)return false;pixelDrag.current={origin:rope.current.points[32].clone(),destination:rope.current.points[32].clone()};onDragging?.(true);return true;},
+      move(dx,dy){const drag=pixelDrag.current;if(!drag)return;drag.destination.copy(drag.origin);drag.destination.x=Math.max(-4,Math.min(4,drag.origin.x+dx/25));drag.destination.y=Math.max(-ROPE_LENGTH,Math.min(-ROPE_LENGTH+6,drag.origin.y-dy/25));if(drag.destination.length()>ROPE_LENGTH)drag.destination.setLength(ROPE_LENGTH);rope.current.asleep=false;rope.current.quiet=0;invalidate();},
+      end,
+    };
+    ceilingLightBridge.api=api;window.addEventListener('blur',end);
+    return ()=>{window.removeEventListener('blur',end);end();if(ceilingLightBridge.api===api){ceilingLightBridge.api=null;ceilingLightBridge.x=ceilingLightBridge.y=0;}};
+  },[invalidate,onDragging]);
   const spot=useRef(null), fill=useRef(null);
   const segment=useMemo(()=>new Object3D(),[]);
   const direction=useMemo(()=>new Vector3(),[]);
@@ -58,9 +70,11 @@ export default function CeilingLight({ basketScore, fireflyHit, keyboardFocused,
   useFrame((_,delta)=>{
     if(!fixture.current||!wire.current||!rope.current)return;
     const state=rope.current;
-    stepLightRope(state,delta,gesture.current?.moved?gesture.current.destination:null);
+    stepLightRope(state,delta,pixelDrag.current?.destination || (gesture.current?.moved?gesture.current.destination:null));
     const points=state.points,end=points[32];
     fixture.current.position.copy(end);
+    ceilingLightBridge.x=end.x*25;
+    ceilingLightBridge.y=-(end.y+ROPE_LENGTH)*25;
     direction.subVectors(end,points[31]);
     const blend=1-Math.exp(-8*Math.min(delta,.05));
     const tiltX=state.asleep?0:Math.max(-.3,Math.min(.3,-direction.z));
@@ -195,7 +209,7 @@ export default function CeilingLight({ basketScore, fireflyHit, keyboardFocused,
     </InteractiveObject>
     <primitive object={lightTarget}/>
     <spotLight userData={{cacheStationaryShadow:true}} ref={spot} position={lightPosition} target={lightTarget} color="#ffd09a" intensity={on?65:0} distance={14} decay={2}
-      angle={Math.PI/3} penumbra={1} castShadow shadow-mapSize={[512,512]}
+      angle={Math.PI* .42} penumbra={1} castShadow shadow-mapSize={[512,512]}
       shadow-camera-near={.1} shadow-camera-far={14} shadow-normalBias={.025} shadow-bias={-.0001}/>
     <pointLight ref={fill} position={bulb} color="#ffd09a" intensity={on?3:0} distance={5} decay={2}/>
     </group></group>

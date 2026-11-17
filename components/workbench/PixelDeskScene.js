@@ -2,12 +2,32 @@
 // It supplies object hotspots, BUILD / WORK imagery, and the 2026 Upliance badge to AboutJourney.
 import { ComputerDetails, NotebookDetails, ApplianceDetails, ChairDetails, PlantDetails, RadioDetails } from './PixelDeskDetails';
 import { objectsAt, seasonAt } from './journeyTimeline.mjs';
+import usePixelFireflies from './pixelFireflies';
+import usePixelCeilingDrag from './usePixelCeilingDrag';
 import styles from '../../styles/AboutJourney.module.css';
 
 function Presence({ visible, before, transitioning, delay = 0, replay = false, children }) {
   if (!visible && !(transitioning && before)) return null;
-  const motion = transitioning && (visible !== before || (visible && replay)) ? (visible ? styles.itemIn : styles.itemOut) : undefined;
-  return <g className={motion} style={{ '--drop-delay': `${Math.round(delay / 5)}ms` }}>{children}</g>;
+  const changed = transitioning && (visible !== before || (visible && replay));
+  const motion = changed ? (visible ? styles.itemIn : styles.itemOut) : undefined;
+  return <g className={motion} style={{ '--drop-delay': `${Math.round(delay / 5)}ms`, '--item-delay': `${delay}ms` }}>{children}</g>;
+}
+
+function DesktopComputer({ current = false }) {
+  return <>
+    <path fill={current ? '#17221f' : '#202d2c'} d="M215 92h91v63h-91z"/>
+    {current && <path fill="#0d1715" d="M306 96h5v63h-5l-5-4V98z"/>}
+    <path fill="#6c8378" d="M220 97h81v51h-81z"/><path fill="#263c38" d="M224 101h73v43h-73z"/>
+    <path fill="#677366" d="M254 155h13v9h14v4h-42v-4h15z"/><path fill="#c4b59a" d="M218 170h79v5h-79z"/>
+    {current && <><path fill="#b7d69b" d="M292 150h4v2h-4z"/><path fill="#39473f" d="M223 172h70v1h-70z"/></>}
+    <path fill="#91b4a0" d="M232 110h16v3h-16zm0 7h38v3h-38zm0 7h27v3h-27z"/><ComputerDetails/>
+  </>;
+}
+
+function PixelFirefly({ index }) {
+  return <g data-pixel-firefly={index} transform="translate(67 142)">
+    <path fill="#8b9d7d" d="M-3-1h2v2h-2zm4 0h2v2H1z"/><path fill="#f7df72" d="M-1-2h2v4h-2z"/>
+  </g>;
 }
 
 function Weather({ season }) {
@@ -23,7 +43,9 @@ function Weather({ season }) {
 
 export default function PixelDeskScene({ month, previousMonth = month, transitioning = false, disabled = false, radioPlaying = false, ceilingOn = true, onSelect, objectRefs }) {
   const season = month >= 60 ? 'Night' : seasonAt(month), current = month >= 60, upgraded = month >= 50;
-  return <div className={styles.sceneFrame}>
+  const swarmRef = usePixelFireflies(current);
+  const ceilingDrag = usePixelCeilingDrag(current && !disabled && !transitioning, swarmRef);
+  return <div ref={swarmRef} className={styles.sceneFrame}>
     <svg className={styles.art} viewBox="0 0 480 240" shapeRendering="crispEdges" role="img" aria-label={`${season} outside a pixel desk room. ${current ? 'A monitor and upliance fill the workspace. Height: 5 feet 6 inches.' : upgraded ? 'An upgraded monitor sits on the desk. Height: 5 feet 4 inches.' : 'A plain laptop and notebook sit on the desk. Height: 5 feet 2 inches.'}`}>
       <path fill="#40483a" d="M0 0h480v185H0z"/><path fill="#354033" d="M360 0h120v185H360z"/>
       <path fill="#30392f" d="M0 181h480v7H0z"/><path fill="#685340" d="M0 188h480v52H0z"/>
@@ -43,7 +65,7 @@ export default function PixelDeskScene({ month, previousMonth = month, transitio
       <g key={season} className={transitioning && (previousMonth >= 60 ? 'Night' : seasonAt(previousMonth)) !== season ? styles.weatherIn : undefined}><Weather season={season}/></g>
       <path fill="#776b50" d="M87 27h5v97h-5zM27 78h125v5H27zM17 125h145v7H17z"/>
       </g>
-      {current && ceilingOn && <path fill="#efd297" opacity=".07" d="M395 37h36l23 149h-82z"/>}
+      {current && ceilingOn && <g data-pixel-fixture><path data-firefly-light fill="#efd29712" d="M395 37h36l49 149H346z"/></g>}
       <path fill="#b28b5e" d="M94 165h273v9H94z"/><path fill="#76533c" d="M98 174h265v10H98z"/><path fill="#302f28" d="M103 184h9v43h-9zm245 0h9v43h-9z"/>
       {[false, true].map(left => <Presence key={String(left)} visible={current === left} before={(previousMonth >= 60) === left} transitioning={transitioning}>
         <g transform={left ? 'translate(-205 0)' : undefined}>
@@ -57,7 +79,8 @@ export default function PixelDeskScene({ month, previousMonth = month, transitio
       {/* Notebook, drawn as two stepped paper blocks. */}
       <path fill="#d7cba4" d="M142 155h20v-2h5v2h20v17h-45z"/><path stroke="#8c8969" d="M164 155v16m-17-10h12m10 0h12m-34 5h12m10 0h12"/>
       <NotebookDetails/>
-      <Presence visible={upgraded} before={previousMonth >= 50} transitioning={transitioning} delay={450}><path fill="#202d2c" d="M215 92h91v63h-91z"/><path fill="#6c8378" d="M220 97h81v51h-81z"/><path fill="#263c38" d="M224 101h73v43h-73z"/><path fill="#677366" d="M254 155h13v9h14v4h-42v-4h15z"/><path fill="#c4b59a" d="M218 170h79v5h-79z"/><path fill="#91b4a0" d="M232 110h16v3h-16zm0 7h38v3h-38zm0 7h27v3h-27z"/><ComputerDetails/></Presence><Presence visible={!upgraded} before={previousMonth < 50} transitioning={transitioning} delay={450}><path fill="#272e2d" d="M222 117h75v44h-75z"/><path fill="#92a99b" d="M227 122h65v34h-65z"/><path fill="#3f5b50" d="M232 130h22v3h-22zm0 8h42v3h-42z"/><path fill="#b0aea0" d="M216 161h87v7h-87z"/><path fill="#616e63" d="M247 162h24v3h-24z"/><ComputerDetails laptop/></Presence>
+      <Presence visible={upgraded} before={previousMonth >= 50} transitioning={transitioning} delay={450}><DesktopComputer current/></Presence>
+      <Presence visible={!upgraded} before={previousMonth < 50} transitioning={transitioning} delay={450}><path fill="#272e2d" d="M222 117h75v44h-75z"/><path fill="#92a99b" d="M227 122h65v34h-65z"/><path fill="#3f5b50" d="M232 130h22v3h-22zm0 8h42v3h-42z"/><path fill="#b0aea0" d="M216 161h87v7h-87z"/><path fill="#616e63" d="M247 162h24v3h-24z"/><ComputerDetails laptop/></Presence>
       <Presence visible={month >= 48} before={previousMonth >= 48} transitioning={transitioning} delay={100}>
         <path fill="#25382f" d="M313 94h57v69h-57z"/><path fill="#7e8c6c" d="M313 94h57v2h-57zM313 94h2v69h-2z"/>
         <text x="319" y="103" fill="#bbc5a5" fontSize="4" fontFamily="MascotPixel, monospace">BUILD / WORK</text>
@@ -74,32 +97,57 @@ export default function PixelDeskScene({ month, previousMonth = month, transitio
         <path fill="#917259" d="M347 156h14v1h-14z"/>
       </Presence>
 
-      <Presence visible={current} before={previousMonth >= 60} transitioning={transitioning} delay={250}>
+      <Presence visible={current} before={previousMonth >= 60} transitioning={transitioning} delay={80}>
+        {/* Stool and appliance echo the main room model: tapered jar, raised lid, light ring, and angled display. */}
         <path fill="#9c8156" d="M382 186h65v7h-65z"/><path fill="#35372d" d="M388 193h6v32h-6zm46 0h6v32h-6z"/>
-        <path fill="#c4c5ad" d="M393 154h43v29h-43z"/><path fill="#979e8c" d="M390 174h49v9h-49z"/><path fill="#a3b4ac" d="M399 130h27v25h-27z"/><path fill="#d8d6bd" d="M397 126h31v6h-31z"/><path fill="#2d3935" d="M400 123h26v4h-26zm5 38h21v13h-21z"/><path fill="#78a6a2" d="M408 164h15v6h-15z"/><path fill="#677d73" d="M427 134h8v17h-8v-4h4v-9h-4z"/><ApplianceDetails/>
-        <path fill="#eee7d7" d="M406 134h15v15h-15z"/><image href="/images/journey/upliance-logo.png" x="407" y="135" width="13" height="13" preserveAspectRatio="xMidYMid meet"/>
+        <path fill="#aeb5a2" d="M394 153h42l4 25-5 7h-39l-6-8z"/><path fill="#7e887c" d="M390 174h49v9h-49z"/>
+        <path fill="#a3b4ac" d="M400 131h26l4 22-5 5h-20l-6-6z"/><path fill="#d8d6bd" d="M397 125h31v6h-31z"/>
+        <path fill="#2d3935" d="M400 121h26v4h-26zm5 39h22l4 14h-26z"/><path fill="#78a6a2" d="M409 164h15v6h-15z"/>
+        <path fill="#397eff" opacity=".8" d="M400 128h27v2h-27z"/><path fill="#677d73" d="M427 134h8v17h-8v-4h4v-9h-4z"/><ApplianceDetails/>
+        <path fill="#eee7d7" d="M406 135h15v14h-15z"/><image href="/images/journey/upliance-logo.png" x="407" y="135.5" width="13" height="13" preserveAspectRatio="xMidYMid meet"/>
       </Presence>
-      <Presence visible={current} before={previousMonth >= 60} transitioning={transitioning} delay={350}><g transform="translate(-7 -68)">
+      <Presence visible={current} before={previousMonth >= 60} transitioning={transitioning} delay={65}><g transform="translate(-7 -68)">
         <path fill="#d8be79" d="M320 103h16v19h-16z"/><path fill="#b2bd94" d="M340 106h16v18h-16z"/><path stroke="#847956" d="M323 109h10m-10 4h7m13 0h10m-10 4h7"/>
       </g></Presence>
-      <Presence visible={current} before={previousMonth >= 60} transitioning={transitioning} delay={100}><g transform="translate(-42 -114) scale(1.6 2)">
+      <Presence visible={current} before={previousMonth >= 60} transitioning={transitioning} delay={10}><g transform="translate(-42 -114) scale(1.6 2)">
         <path fill="#778651" d="M54 140h9v-16h7v16h8v-9h7v16H58v-7z"/><path fill="#a77551" d="M58 148h25v18H58z"/><PlantDetails/>
       </g></Presence>
 
 
 
-      <Presence visible={current} before={previousMonth >= 60} transitioning={transitioning} delay={80}><g transform="translate(154 0)">
-        <path fill="#252d29" d="M258 0h3v23h-3z"/><path fill="#b9a275" d="M244 22h31v5h-31zm-8 5h47v7h-47z"/><path fill={ceilingOn ? '#e7ce8c' : '#686d55'} d="M240 34h39v3h-39z"/><path fill="#d6bc86" d="M246 23h27v1h-27zM239 28h41v2h-41z"/><path fill="#6e6548" d="M238 32h43v1h-43z"/>
-      </g></Presence>
-      <Presence visible={current} before={previousMonth >= 60} transitioning={transitioning} delay={200}><g transform="translate(-235.4 20) scale(.62)">
+      <Presence visible={current} before={previousMonth >= 60} transitioning={transitioning} delay={90}><path data-pixel-rope fill="none" stroke="#252d29" strokeWidth="3" d="M414 0 Q414 12 414 23"/><g data-pixel-fixture><g transform="translate(154 0)">
+        <path fill="#b9a275" d="M244 22h31v5h-31zm-8 5h47v7h-47z"/><path data-firefly-light={ceilingOn ? true : undefined} fill={ceilingOn ? '#e7ce8c' : '#686d55'} d="M240 34h39v3h-39z"/><path fill="#d6bc86" d="M246 23h27v1h-27zM239 28h41v2h-41z"/><path fill="#6e6548" d="M238 32h43v1h-43z"/>
+      </g></g></Presence>
+      <Presence visible={current} before={previousMonth >= 60} transitioning={transitioning} delay={5}><g transform="translate(-235.4 20) scale(.62)">
         <path fill="#bda981" d="M391 29h54v40h-54z"/><path fill="#e1d3b2" d="M395 33h46v32h-46z"/><path fill="none" stroke="#a75c3f" strokeWidth="2" d="M409 47h18v14h-18zM403 65h31"/>
         <path fill="none" stroke="#c5c1a5" strokeWidth="1.5" d="M405 68l4 17h19l4-17m-22 0l4 17m12-17l-4 17m-15-11h24m-22 6h20"/>
       </g></Presence>
 
-      <Presence visible={current} before={previousMonth >= 60} transitioning={transitioning} delay={320}><g transform="translate(72 -15)">
+      <Presence visible={current} before={previousMonth >= 60} transitioning={transitioning} delay={20}><g transform="translate(72 -15)">
         <path fill="#b29a70" d="M29 164h40v16H29z"/><path fill="#343e32" d="M33 167h18v9H33z"/><path fill="#d0c09a" d="M56 167h7v7h-7z"/><path fill={radioPlaying ? '#a5cf80' : '#5a6249'} d="M64 176h3v2h-3z"/><path stroke="#a7a68a" d="M35 169h14m-14 3h14M61 164v-18"/><RadioDetails/>
 
       </g></Presence>
+      <Presence visible={current} before={previousMonth >= 60} transitioning={transitioning} delay={35}>
+        {/* Dark wood lip, left drawer stack, and keyboard align the flat desk with the main room prop. */}
+        <path fill="#4d392e" d="M96 174h269v10H96z"/><path fill="#8b6246" d="M99 176h60v7H99z"/>
+        <path fill="#5d4435" d="M104 184h54v35h-54z"/><path fill="#9c7353" d="M108 188h46v12h-46zm0 16h46v12h-46z"/>
+        <path fill="#c0a277" d="M128 193h9v2h-9zm0 16h9v2h-9z"/>
+      </Presence>
+      <Presence visible={current} before={previousMonth >= 60} transitioning={transitioning} delay={60}>
+        {/* One enlarged wearable frame represents the selectable lens collection on the real desk. */}
+        <g transform="translate(319 160)">
+          <path fill="#8fb3b0" d="M0 0h8v7H0zm12 0h8v7h-8z"/><path fill="#263630" d="M2 2h4v3H2zm12 0h4v3h-4zM8 2h4v2H8zM0 1l-4-2v2l4 3zm20 0l4-2v2l-4 3z"/>
+        </g>
+      </Presence>
+      <Presence visible={current} before={previousMonth >= 60} transitioning={transitioning} delay={45}>
+        {/* The three starter paper balls mirror the throwable pile in the main room. */}
+        {[190,198,206].map((x,index)=><g key={index} transform={`translate(${x} 163)`}>
+          <path fill="#ded8c8" d="M0 1l2-3 4 1 2 4-3 3-4-1z"/><path fill="none" d="M2 0l3 3m-4 1l4-2" strokeWidth=".6" stroke="#9e998d"/>
+        </g>)}
+      </Presence>
+      {['striker','follower','scout'].map((role,index)=><Presence key={role} visible={current} before={previousMonth >= 60} transitioning={transitioning} delay={10+index*8}>
+        <PixelFirefly role={role} index={index}/>
+      </Presence>)}
       <Presence visible={month < 48} before={previousMonth < 48} transitioning={transitioning}>
         <path fill="#5b412e" d="M241 187h5v44h-5zm29 0h5v44h-5z"/>
         <path fill="#a78256" d="M239 186h38v5h-38zm0 10h38v4h-38zm-2 13h42v6h-42z"/>
@@ -110,6 +158,6 @@ export default function PixelDeskScene({ month, previousMonth = month, transitio
       <ChairDetails/>
       </Presence>
     </svg>
-    {objectsAt(month).map(object => <button key={object.id} ref={node => { objectRefs.current[object.id] = node; }} className={styles.hotspot} disabled={transitioning || disabled} aria-label={object.id === 'radio' ? `Radio · ${radioPlaying ? 'turn music off' : 'play music'}` : object.id === 'ceiling' ? `Ceiling light · turn ${ceilingOn ? 'off' : 'on'}` : `Explore ${object.label}`} aria-pressed={object.id === 'radio' ? radioPlaying : object.id === 'ceiling' ? ceilingOn : undefined} title={object.label} onClick={() => onSelect(object.id)} style={{ left: `${object.box[0] / 4.8}%`, top: `${object.box[1] / 2.4}%`, width: `${object.box[2] / 4.8}%`, height: `${object.box[3] / 2.4}%` }}><span>{object.label}</span></button>)}
+    {objectsAt(month).map(object => <button {...(object.id === "ceiling" ? ceilingDrag : {})} data-ceiling-hotspot={object.id === "ceiling" ? true : undefined} key={object.id} ref={node => { objectRefs.current[object.id] = node; }} className={styles.hotspot} disabled={transitioning || disabled} aria-label={object.id === 'radio' ? `Radio · ${radioPlaying ? 'turn music off' : 'play music'}` : object.id === 'ceiling' ? `Ceiling light · turn ${ceilingOn ? 'off' : 'on'}` : `Explore ${object.label}`} aria-pressed={object.id === 'radio' ? radioPlaying : object.id === 'ceiling' ? ceilingOn : undefined} title={object.label} onClick={() => onSelect(object.id)} style={{ touchAction: object.id === "ceiling" ? "none" : undefined, left: `${object.box[0] / 4.8}%`, top: `${object.box[1] / 2.4}%`, width: `${object.box[2] / 4.8}%`, height: `${object.box[3] / 2.4}%` }}><span>{object.label}</span></button>)}
   </div>;
 }

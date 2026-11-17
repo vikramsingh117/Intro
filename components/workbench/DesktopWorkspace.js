@@ -28,7 +28,7 @@ function AboutIcon() {
   </svg>;
 }
 export default function DesktopWorkspace({ desktopRef, interactive, visible=true, reduced=false, exitRef, onLeave, onOpenUpliance, onOpenNotebook, onOpenNotes, onToggleRadio, onToggleCeiling, ceilingOn, radioPlaying, room, musicPlaying=false }) {
-  const [windows,setWindows]=useState([]);
+  const [windows,setWindows]=useState([{title:'About Me',minimized:false}]);
   const [menu,setMenu]=useState(null);
   const [iconsVisible,setIconsVisible]=useState(true);
   const [refreshTick,setRefreshTick]=useState(0);
