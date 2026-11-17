@@ -1,7 +1,7 @@
+// Replaces expensive triangle raycasts on complex room meshes with local bounding-box intersections.
+// Each mesh remains the event target so existing click and drag bubbling works, and cleanup restores original handlers.
 import { Matrix4, Mesh, Ray, Vector3 } from 'three';
 
-// Keep each mesh as the event target so its existing click/drag handlers still
-// bubble through the same parents. Only replace expensive triangle picking.
 export function installRoomHitboxes(root) {
   const restore = [];
   root.traverse(mesh => {

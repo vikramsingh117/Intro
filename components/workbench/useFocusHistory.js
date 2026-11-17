@@ -1,7 +1,8 @@
+// Gives focused room close-ups one same-URL history entry so browser Back exits focus before leaving the page.
+// It coordinates programmatic exits with Next.js pop-state handling to avoid consuming or creating duplicate entries.
 import { useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 
-// One same-URL entry represents a focused room view; Back consumes it before leaving.
 export default function useFocusHistory(focused, onExit) {
   const router=useRouter();
   const owned=useRef(false), pending=useRef(false), exit=useRef(onExit);

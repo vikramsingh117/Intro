@@ -1,3 +1,5 @@
+// Implements the monitor terminal's bounded virtual filesystem, parser, command runtime, and tab completion.
+// Runtime window and activity data are read-only snapshots; commands never access the host OS, network, or real credentials.
 export const HOME = '/home/vikram';
 const ACTIVITY_FILE = `${HOME}/adminview`;
 export function formatSessionActivity(events=[]) {

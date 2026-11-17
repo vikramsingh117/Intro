@@ -1,8 +1,8 @@
+// Extends Three.js's depth-and-normal pass with monochrome graphite shading clipped to both glasses lenses.
+// The scene composer supplies responsive lens geometry and live tuning while the original frame remains outside it.
 import { Vector2 } from 'three';
 import { RenderPixelatedPass } from 'three/examples/jsm/postprocessing/RenderPixelatedPass';
 
-// A monochrome graphite treatment that retains model silhouettes and surface
-// breaks from the scene depth and normal buffers.
 export default class LensSketchPass extends RenderPixelatedPass {
   constructor(scene, camera, options) {
     super(2, scene, camera, options);

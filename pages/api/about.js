@@ -1,3 +1,5 @@
+// Streams the résumé-grounded portfolio assistant with bounded history, rate limiting, timeout, and deterministic fallback.
+// Every attempt is finalized in chat observability, while only completed responses trigger the private notification workflow.
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { profile, resumeAnswer } from "../../lib/profile";
 import { masterPrompt, repositoryContext } from "../../lib/assistant-context";
@@ -46,7 +48,7 @@ export default async function handler(req, res) {
     }
   };
   const fallback = () => {
-    responseText = resumeAnswer(prompt);
+    responseText = resumeAnswer(prompt.trim());
     responseMode = "resume";
     completed = true;
     emit({ type: "delta", text: responseText, mode: responseMode });

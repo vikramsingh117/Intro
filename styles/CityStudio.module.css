@@ -1,3 +1,5 @@
+/* Styles the full-screen city tuning canvas and keeps its toolbar interactive above Three.js controls. */
+/* Compact mobile spacing preserves access to actions and the non-interactive camera hint. */
 .studio{position:fixed;inset:0;background:#091321;color:#e2e8df;font:13px/1.5 sans-serif}
 .toolbar{position:absolute;top:18px;left:18px;right:18px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;pointer-events:none}
 .toolbar>*{pointer-events:auto}

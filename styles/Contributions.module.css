@@ -1,3 +1,5 @@
+/* Styles the compact contribution list shared by the readable portfolio's open-source section. */
+/* Status, title, and hover treatments preserve hierarchy while inheriting the active page theme tokens. */
 .list { margin-top:22px; max-width:520px; }
 .list>a { display:block; padding:15px 0; border-bottom:1px solid var(--line); }
 .top { display:flex; align-items:baseline; justify-content:space-between; gap:14px; }

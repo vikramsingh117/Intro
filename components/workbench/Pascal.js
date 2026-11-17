@@ -1,3 +1,5 @@
+// Loads and normalizes the Pascal desk model before applying its shared room-layout placement.
+// The static prop participates in the scene's cast and receive shadow pipeline without owning interaction state.
 import { useMemo } from 'react';
 import { DEFAULT_PROP_PLACEMENT } from './propPlacement';
 import { useLoader } from '@react-three/fiber';

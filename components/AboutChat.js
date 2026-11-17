@@ -1,3 +1,5 @@
+// Renders the reusable portfolio chat UI and incrementally decodes SSE replies from /api/about.
+// It owns bounded conversation history, cancellation, retry-friendly errors, and focus restoration for embedded or standalone use.
 import { useEffect, useRef, useState } from "react";
 import styles from "../styles/AboutChat.module.css";
 
@@ -82,6 +84,7 @@ export default function AboutChat({ theme, embedded = false, active = true }) {
       clearTimeout(timeout);
       await reader?.cancel().catch(() => {});
       controller.abort();
+      if (request.current === controller) request.current = null;
       busy.current = false;
       setLoading(false);
       if (activeRef.current) input.current?.focus({ preventScroll: true });
@@ -89,7 +92,7 @@ export default function AboutChat({ theme, embedded = false, active = true }) {
   }
 
   return <div className={`${styles.chat} ${theme === "dark" ? styles.dark : ""} ${embedded ? styles.embedded : ""}`}>
-    <div className={styles.header}><div className={styles.avatar}>v<span>✳</span></div><div><strong>Ask Vikram’s assistant</strong><small>{mode === "resume" ? "Résumé mode · saved profile answers" : mode === "ai" ? "AI mode · grounded in the résumé" : "Experience, projects & everything between"}</small></div><button aria-label="Start a new conversation" title="New conversation" disabled={loading} onClick={() => { setMessages([initialMessage]); setPrompt(""); setError(""); setMode(""); input.current?.focus(); }}>↺</button></div>
+    <div className={styles.header}><div className={styles.avatar}>v<span>✳</span></div><div><strong>Ask Vikram’s assistant</strong><small>{mode === "resume" ? "Résumé mode · saved profile answers" : mode === "ai" ? "AI mode · grounded in résumé + site context" : "Experience, projects & everything between"}</small></div><button aria-label="Start a new conversation" title="New conversation" disabled={loading} onClick={() => { setMessages([initialMessage]); setPrompt(""); setError(""); setMode(""); input.current?.focus(); }}>↺</button></div>
     <div className={styles.feed} ref={feed} role="log" aria-label="Conversation" aria-live="polite" aria-relevant="additions text">
       {messages.map((message, index) => <div className={message.role === "user" ? styles.userMessage : styles.assistantMessage} key={index}><small>{message.role === "user" ? "YOU" : "VS / ASSISTANT"}{message.mode === "resume" ? " · RÉSUMÉ EXCERPT" : ""}</small><p>{message.text}</p></div>)}
       {messages.length === 1 && <div className={styles.suggestions}>{suggestions.map(question => <button disabled={loading} onClick={() => send(question)} key={question}>{question}<span>↗</span></button>)}</div>}

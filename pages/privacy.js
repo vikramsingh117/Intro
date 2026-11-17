@@ -1,3 +1,5 @@
+// Explains the portfolio's visit analytics, public submissions, assistant logging, notifications, and retention behavior.
+// It provides a direct contact path for questions or deletion requests without loading interactive site features.
 import Head from 'next/head';
 import Link from 'next/link';
 

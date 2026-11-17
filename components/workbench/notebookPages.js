@@ -1,3 +1,5 @@
+// Defines the scratch-work and sketchbook content painted into the interactive room notebook.
+// Notebook and its drawing helpers share these entries for page text, tear behavior, image crops, and paper color.
 export const NOTEBOOK_PAGES = [
   {
     title: 'upliance / bits to check', subtitle: 'SCRATCH WORK', doodle: 'loop',

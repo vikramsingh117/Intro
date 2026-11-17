@@ -1,3 +1,5 @@
+// Visualizes the assistant request lifecycle as an illustrative, manually navigable six-step replay.
+// It documents validation, grounding, provider streaming, fallback behavior, and limitations without implying live telemetry.
 import { useEffect, useState } from "react";
 import styles from "../styles/AssistantJourney.module.css";
 

@@ -1,3 +1,5 @@
+// Defines the concise work-story pages rendered on the physical Upliance display in the About journey.
+// Upliance owns navigation and animated artwork while its canvas renderer lays out these titles and lines.
 export const UPLIANCE_WORK = [
   { title: 'AI engineering × product', subtitle: 'Vikram Singh / upliance.ai', lines: [
     'I help decide how features should work,', 'then build the experience people use.', '',

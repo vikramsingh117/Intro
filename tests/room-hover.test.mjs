@@ -1,3 +1,5 @@
+// Verifies coarse room hover picking stays stable while precise child targets remain available for clicks.
+// Bounds refresh tests cover transforms, geometry deformation, child removal, and pointer-mode gating.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { Group, Mesh, BoxGeometry, MeshBasicMaterial, Raycaster, Vector3 } from 'three';

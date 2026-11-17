@@ -1,3 +1,5 @@
+// Plays the pixel mascot's frame-by-frame workout sequence used by the gym portfolio experience.
+// The timer pauses with its parent or page visibility and resolves to a static pose for reduced motion.
 import { useEffect, useState } from 'react';
 
 // Pose values reuse the same SVG geometry; delays are deliberately uneven.

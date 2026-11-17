@@ -1,3 +1,5 @@
+// Coordinates the route-spanning preview zoom, blackout, and room reveal used when entering After Hours.
+// The provider waits for WorkbenchScene readiness and guarantees cleanup if navigation, animation, or WebGL fails.
 import { createContext, useCallback, useContext, useRef } from 'react';
 import { useRouter } from 'next/router';
 

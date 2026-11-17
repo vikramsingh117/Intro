@@ -1,3 +1,5 @@
+// Drives the fine-pointer custom cursor across chooser themes and interactive room targets.
+// It falls back to native cursors for form controls, embedded content, coarse pointers, and reduced-motion users.
 import { useEffect, useRef } from "react";
 import styles from "../styles/ThemeCursor.module.css";
 

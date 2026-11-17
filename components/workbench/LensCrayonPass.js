@@ -1,8 +1,8 @@
+// Extends Three.js's depth-and-normal render pass with a crayon treatment clipped to both glasses lenses.
+// Runtime lens layout and tuning are supplied by the scene composer so the surrounding room stays unchanged.
 import { Vector2, Vector3 } from 'three';
 import { RenderPixelatedPass } from 'three/examples/jsm/postprocessing/RenderPixelatedPass';
 
-// Reuse the beauty, depth and normal buffers from Three's pixel pass, but draw
-// them as layered pastel wax strokes instead of square pixels.
 export default class LensCrayonPass extends RenderPixelatedPass {
   constructor(scene, camera, options) {
     super(2, scene, camera, options);

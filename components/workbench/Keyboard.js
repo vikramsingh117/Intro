@@ -1,9 +1,10 @@
+// Loads and normalizes the keyboard model to a stable desk-space width beside the interactive monitor.
+// This is a static prop: it participates in room lighting and shadows but intentionally has no input handlers.
 import { useMemo } from 'react';
 import { useLoader } from '@react-three/fiber';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { Box3, Vector3 } from 'three';
 
-// Static prop: no pointer handlers or keyboard interaction.
 export default function Keyboard() {
   const { scene } = useLoader(GLTFLoader, '/models/keyboard/optimized.gltf');
   const { model, scale, offset } = useMemo(() => {

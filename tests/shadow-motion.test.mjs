@@ -1,3 +1,5 @@
+// Verifies stationary shadow maps throttle moving casters, capture their final pose, and return to cached idle state.
+// The scenario covers light, target, and mesh movement plus cleanup of the room's shared shadow-cache controller.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { Scene, SpotLight, Mesh, BoxGeometry, MeshStandardMaterial } from 'three';

@@ -1,3 +1,5 @@
+// Mirrors the monitor's open-window manager and key 3D room states in a compact desktop utility.
+// Users can focus or close apps here, while the room tab remains a read-only inventory of live and decorative components.
 import { useState } from 'react';
 import styles from '../../styles/Workbench.module.css';
 

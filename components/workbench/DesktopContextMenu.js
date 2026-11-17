@@ -1,3 +1,5 @@
+// Renders the keyboard-accessible desktop context menu and keeps it inside the monitor workspace.
+// Menu actions delegate to the desktop window manager while outside clicks and focus movement handle dismissal.
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import styles from '../../styles/Workbench.module.css';
 

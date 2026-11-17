@@ -1,3 +1,5 @@
+// Serves the public sticky-note wall with anonymous ownership, validation, bounded reads, and write rate limiting.
+// MongoDB stores private owner hashes while responses expose only public note fields plus editability for the current browser.
 import { databaseTime } from '../../lib/database-time.mjs';
 import { notifyStickyNote } from '../../lib/photo-notifications';
 import { createHash } from 'crypto';

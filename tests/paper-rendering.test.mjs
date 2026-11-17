@@ -1,3 +1,5 @@
+// Verifies held paper bypasses room shadow-map refreshes while a released ball resumes cast/receive shadow behavior.
+// This protects the performance contract between paper mesh preparation and the stationary shadow cache.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { Scene, DirectionalLight, Mesh, BoxGeometry, MeshStandardMaterial } from 'three';

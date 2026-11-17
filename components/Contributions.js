@@ -1,3 +1,5 @@
+// Renders the shared curated contribution links used by the readable portfolio experience.
+// Statuses come from local profile data and are explicitly labelled as supplied snapshots rather than live GitHub state.
 import { contributions } from "../lib/contributions";
 import styles from "../styles/Contributions.module.css";
 

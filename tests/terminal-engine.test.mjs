@@ -1,3 +1,5 @@
+// Verifies the browser terminal's parser, virtual filesystem, commands, completion, limits, and runtime snapshots.
+// Safety cases ensure shell syntax is never executed, sudo remains simulated, and activity observability stays read-only.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createTerminalState, runCommand, completeInput, HOME } from '../components/workbench/terminalEngine.mjs';

@@ -1,3 +1,5 @@
+// Verifies starter and torn-page paper balls form a stable queue with duplicate-safe consumption.
+// It also protects the deterministic pile layout and guarantees every rendered ball remains above the desktop.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { initialPaperInventory, consumePaper, STARTING_PAPER_COUNT, pilePosition, PAPER_PILE_ORIGIN, PAPER_RADIUS } from '../components/workbench/paperInventoryState.mjs';

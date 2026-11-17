@@ -1,3 +1,5 @@
+// Verifies low-priority Upliance artwork loading handles decoded caches, unsupported SVG decode, errors, and stalls.
+// These cases ensure one failed animation frame cannot block later work pages from preloading.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { loadArtworkImage } from '../components/workbench/loadArtwork.mjs';

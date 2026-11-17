@@ -1,3 +1,5 @@
+// Renders layered procedural cloud planes that conceal the city model's base behind the room window.
+// World-space clipping keeps fog outside regardless of city placement, while editor settings control density and volume.
 import { useMemo } from 'react';
 import { DoubleSide } from 'three';
 

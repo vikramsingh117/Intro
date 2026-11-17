@@ -1,3 +1,5 @@
+// Verifies notebook page navigation, bundled turns across torn leaves, deterministic remnants, and peel deformation.
+// These focused unit cases protect the geometry/state helpers consumed by the interactive Notebook component.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { PlaneGeometry } from 'three';

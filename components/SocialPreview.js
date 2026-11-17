@@ -1,3 +1,5 @@
+// Centralizes canonical, Open Graph, and Twitter metadata for the portfolio's public routes.
+// Routes supply page copy while the component keeps the absolute origin and shared social artwork consistent.
 import Head from 'next/head';
 
 const ORIGIN = 'https://vikram-singh.vercel.app';

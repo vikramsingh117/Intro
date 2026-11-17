@@ -1,3 +1,5 @@
+// Renders the education-era notebook close-up selected from the About Me journey timeline.
+// The same illustrated spread switches between 2021 origins and 2025 systems work, with a shared desk return action.
 import styles from '../../styles/JourneyNotebook.module.css';
 
 function Doodle({ kind }) {

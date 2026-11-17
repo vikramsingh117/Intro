@@ -1,3 +1,5 @@
+// Implements the ceiling-light pull rope as a constrained Verlet chain with sleep and drag support.
+// The light component advances this state, while basketball scores reuse the same simulation through a small impulse.
 import { Vector3 } from 'three';
 
 const COUNT=32;

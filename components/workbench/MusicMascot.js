@@ -1,6 +1,7 @@
+// Renders the mascot's stepped headphone pose while the radio experience is active.
+// Phase attributes drive the shared CSS transition, and the headphone animation reports when removal finishes.
 import styles from '../../styles/Workbench.module.css';
 
-// Approved headphone pose, split into independently stepped pixel parts.
 export default function MusicMascot({phase='on',onTransitionEnd}) {
   return <svg className={styles.mascotMusicSprite} data-phase={phase} viewBox="0 0 107 86" aria-hidden="true" shapeRendering="crispEdges" onAnimationEnd={event=>{if(event.target.dataset.headphones==='true')onTransitionEnd?.();}}>
     <g className={styles.mascotMusicBounce}>

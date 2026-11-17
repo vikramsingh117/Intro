@@ -1,3 +1,5 @@
+// Projects the DOM sticky-note editor onto its matching surface in the Three.js room.
+// It combines camera, viewport, and prop transforms each frame so typed text remains aligned while the view moves.
 import { useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { Matrix4 } from 'three';

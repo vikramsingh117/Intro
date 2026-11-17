@@ -1,3 +1,5 @@
+// Paints a lightweight canvas-texture confetti burst over the monitor after a basketball score.
+// The animation invalidates the demand-rendered scene only while active and uses a static scatter for reduced motion.
 import { useEffect, useMemo, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { CanvasTexture, NearestFilter, SRGBColorSpace } from 'three';

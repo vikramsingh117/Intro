@@ -1,3 +1,5 @@
+// Renders the accessible, document-style portfolio with experience, projects, contributions, and the grounded assistant.
+// It coordinates reveal motion, reading progress, role tabs, and the assistant architecture flip without loading the 3D room.
 import SocialPreview from "../components/SocialPreview";
 import Head from "next/head";
 import Link from "next/link";
@@ -150,7 +152,7 @@ export default function SimplePortfolio() {
             <div className={styles.heroActions}><a className={styles.primaryLink} href="#ask">Ask my assistant <span>↗</span></a><a className={styles.textLink} href="#work">Explore my work ↓</a><a className={styles.textLink} href="https://github.com/vikramsingh117" target="_blank" rel="noreferrer">GitHub ↗</a></div>
           </div>
           <div id="ask" className={styles.heroVisual}>
-            <button data-track="assistant:how_it_works" className={styles.howItWorks} onClick={() => setShowJourney(!showJourney)} aria-expanded={showJourney} aria-controls="assistant-journey">
+            <button data-track="assistant:how_it_works" className={styles.howItWorks} onClick={() => setShowJourney(value => !value)} aria-expanded={showJourney} aria-controls="assistant-journey">
               {showJourney ? "Back to assistant" : "How this assistant works"}
             </button>
             <div className={styles.flipCard}>

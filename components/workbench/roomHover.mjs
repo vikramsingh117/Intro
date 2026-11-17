@@ -1,3 +1,5 @@
+// Supplies the room's lightweight hover-only picking path and transform-aware aggregate bounds.
+// InteractiveObject uses these helpers for stable outlines while preserving precise child picking during clicks and drags.
 import { Box3, Matrix4, Vector3 } from 'three';
 
 export function isRoomHover(event, captured = false) {

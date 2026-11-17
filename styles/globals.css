@@ -1,3 +1,5 @@
+/* Establishes portfolio-wide color tokens, typography, focus treatment, custom cursors, and text selection. */
+/* Reduced-motion and mascot-font rules apply once through pages/_app.js across both Simple and After Hours routes. */
 :root {
   --paper: #f4f1e8;
   --ink: #243c32;

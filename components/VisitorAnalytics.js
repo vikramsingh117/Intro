@@ -1,3 +1,5 @@
+// Bridges route, visibility, lifecycle, and safe semantic-click events into the batched visitor analytics client.
+// It avoids scraping visitor-authored text and flushes cumulative activity on page hiding or departure.
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { flushActivity, trackInteraction, syncVisitVisibility } from '../lib/visitor-analytics';

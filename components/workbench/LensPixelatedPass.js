@@ -1,9 +1,8 @@
+// Extends Three.js's pixel pass and composites its beauty, depth, and normal result only inside the glasses lenses.
+// The scene composer updates the responsive lens mask while the untouched incoming frame remains visible outside it.
 import { Vector2 } from 'three';
 import { RenderPixelatedPass } from 'three/examples/jsm/postprocessing/RenderPixelatedPass';
 
-// Three's RenderPixelatedPass provides the low-resolution beauty, depth and
-// normal buffers. This variant composites that result over the incoming frame
-// only where the two glasses lenses sit on screen.
 export default class LensPixelatedPass extends RenderPixelatedPass {
   constructor(pixelSize, scene, camera, options) {
     super(pixelSize, scene, camera, options);

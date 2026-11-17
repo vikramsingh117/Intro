@@ -1,3 +1,5 @@
+/* Styles the split home chooser, its Simple and After Hours previews, and preload-progress cover. */
+/* Pointer-specific cursors, arrival motion, reduced-motion handling, and mobile rules mirror the destination themes. */
 .page { min-height: 100vh; min-height: 100svh; display: grid; position: relative; overflow: hidden; }
 .page::after { content: ""; position: absolute; top: 0; bottom: 0; left: 50%; transform: translateX(-50%); width: 36px; background: linear-gradient(90deg, transparent, #82968d25 45%, #a9e5d555 50%, #82968d25 55%, transparent); pointer-events: none; }
 .srOnly { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }

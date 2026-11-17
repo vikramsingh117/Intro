@@ -1,3 +1,5 @@
+// Clones and normalizes the paper-ball asset for both the desk pile and active throw simulation.
+// Held balls skip picking and shadow maps so pointer-driven aiming does not invalidate expensive stationary-light shadows.
 import { Box3, Vector3 } from 'three';
 import { PAPER_RADIUS } from './paperInventoryState.mjs';
 

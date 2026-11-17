@@ -1,3 +1,5 @@
+// Loads and normalizes the floor plant model to fit its reserved corner of the 3D room.
+// The static clone participates in scene lighting and shadows without introducing interaction or animation work.
 import { useMemo } from 'react';
 import { useLoader } from '@react-three/fiber';
 import { Box3, Vector3 } from 'three';

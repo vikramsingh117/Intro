@@ -1,10 +1,13 @@
-import { databaseTime, indianTime } from '../../lib/database-time.mjs';
+// Ingests privacy-scoped portfolio activity batches with origin checks, bot filtering, validation, and idempotent storage.
+// Production-only MongoDB records power admin observability while visitor totals and India notifications update on new landings.
 import { createHash } from 'crypto';
 import { isIP } from 'net';
+import { databaseTime, indianTime } from '../../lib/database-time.mjs';
 import { portfolioCollection } from '../../lib/mongodb';
 import { validId } from '../../lib/wall-notes.mjs';
 import { INDIA_REGIONS } from '../../lib/india-regions';
 import { notifyIndiaVisit } from '../../lib/photo-notifications';
+
 export const config={api:{bodyParser:{sizeLimit:'16kb'}}};
 const paths=new Set(['/','/simple','/after-hours','/workbench']);
 const buckets=new Map();

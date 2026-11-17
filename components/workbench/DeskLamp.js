@@ -1,3 +1,5 @@
+// Loads the interactive desk lamp, synchronizing its bulb material and real light with room state.
+// It registers a shared room action, plays switch feedback, and briefly pulses from basketball scores.
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import useBasketPulse from './useBasketPulse';
 import useSwitchSound from './useSwitchSound';

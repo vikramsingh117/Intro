@@ -1,3 +1,5 @@
+// Exposes grouped city, camera, fog, lighting, and postprocessing tuning controls for CityStudio.
+// Settings can be reset or copied as JSON without persisting temporary editor values into the production room.
 import { useState } from 'react';
 import { DEFAULT_CITY_SETTINGS } from './citySettings';
 import styles from '../../styles/Workbench.module.css';

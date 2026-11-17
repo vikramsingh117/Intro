@@ -1,3 +1,5 @@
+// Builds the interactive desk photo frame, deriving a muted Sobel-outline texture for its resting state.
+// Focusing the frame coordinates the full-color reveal with the room camera transition and reduced-motion preference.
 import { Suspense, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { useFrame, useLoader, useThree } from '@react-three/fiber';
 import { CanvasTexture, SRGBColorSpace, TextureLoader } from 'three';

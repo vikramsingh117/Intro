@@ -1,3 +1,5 @@
+/* Styles the step-by-step explanation of the assistant's request, grounding, generation, and streaming flow. */
+/* Light and monitor-dark variants share responsive navigation, source context, safeguards, and animated examples. */
 .journey { min-width: 0; background: #fbfaf5; border: 1px solid var(--line); }
 .top { display: flex; align-items: center; justify-content: space-between; padding: 18px 20px; border-bottom: 1px solid var(--line); gap: 10px; }
 .top > span { font: 9px monospace; letter-spacing: 1px; }

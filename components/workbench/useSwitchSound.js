@@ -1,3 +1,5 @@
+// Synthesizes a short mechanical switch click for room lights without loading an audio asset.
+// A lazily created AudioContext is reused across toggles and disposed when the owning component unmounts.
 import { useCallback, useEffect, useRef } from 'react';
 
 export default function useSwitchSound() {

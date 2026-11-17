@@ -1,3 +1,5 @@
+// Renders the remaining paper-ball inventory as a deterministic desk pile and exposes its pickup action.
+// The held ball is removed during aiming, while the shared interactive wrapper supplies hover and keyboard focus feedback.
 import { useCallback, useEffect, useMemo } from 'react';
 import { useLoader } from '@react-three/fiber';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';

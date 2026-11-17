@@ -1,3 +1,5 @@
+/* Styles the readable portfolio's responsive layout, assistant flip, experience diagram, projects, and footer. */
+/* Motion and interaction states pair with pages/simple.js while reduced-motion and mobile rules preserve accessibility. */
 .page { max-width: 1440px; margin: auto; padding: 0 6%; }
 .readProgress { position: fixed; inset: 0 0 auto; height: 3px; background: var(--orange); z-index: 30; transform: scaleX(0); transform-origin: left; pointer-events: none; }
 .page [data-reveal] { transition: opacity .7s ease, transform .7s cubic-bezier(.2,.7,.2,1); }

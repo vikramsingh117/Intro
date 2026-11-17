@@ -1,3 +1,5 @@
+// Presents the GitHub journey detail and curated contribution history inside a desktop window.
+// Timeline copy supplies the profile narrative while the shared contributions list links to saved pull requests.
 import { contributions } from '../../lib/contributions';
 import { DETAILS } from './journeyTimeline.mjs';
 import styles from '../../styles/AboutJourney.module.css';

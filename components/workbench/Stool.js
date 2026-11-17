@@ -1,3 +1,5 @@
+// Loads the stool, stretches its lower frame in model space, and places it through shared room-layout settings.
+// Cloned geometry preserves the seat shape, participates in shadows, and is explicitly disposed on unmount.
 import { useEffect, useMemo } from 'react';
 import { useLoader } from '@react-three/fiber';
 import { Box3, Vector3 } from 'three';

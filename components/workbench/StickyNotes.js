@@ -1,3 +1,5 @@
+// Renders persistent wall notes, editable drag behavior, and the desk-to-wall placement animation.
+// The parent notes API owns storage and mutations while this module converts them into Three.js textures and gestures.
 import { useEffect, useMemo, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { CanvasTexture, DoubleSide, Plane, SRGBColorSpace, Vector3 } from 'three';
@@ -81,7 +83,12 @@ function WallNote({ note, api, onHover }) {
   </InteractiveObject>;
 }
 function FlyingNote({ api, reduced, placement }) {
-  const mesh=useRef(null), motion=useRef({elapsed:0,target:new Vector3(1.8,2.8,-2.6),paste:null});
+  const mesh=useRef(null), motion=useRef({
+    elapsed:0,
+    target:new Vector3(1.8,2.8,-2.6),
+    travelFrom:new Vector3(placement.x,placement.y+.853,placement.z+.25),
+    paste:null,
+  });
   const {invalidate}=useThree();
   const bounds=useThree(state=>noteBoundsForWidth(state.size.width));
   const area=notePlacementRect(bounds);
@@ -99,7 +106,7 @@ function FlyingNote({ api, reduced, placement }) {
       mesh.current.rotation.set(-Math.PI/2+lift*.5,0,-lift*.13);
     }else if(t<1){
       const travel=(t-.43)/.57,ease=travel*travel*(3-2*travel);
-      mesh.current.position.lerpVectors(new Vector3(placement.x,placement.y+.853,placement.z+.25),m.target,ease);
+      mesh.current.position.lerpVectors(m.travelFrom,m.target,ease);
       mesh.current.rotation.set((-Math.PI/2+.5)*(1-ease),0,-.13*(1-ease));
     }else if(m.paste){
       m.paste.elapsed+=Math.min(delta,.05);

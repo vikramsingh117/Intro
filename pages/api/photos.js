@@ -1,9 +1,12 @@
-import { databaseTime } from '../../lib/database-time.mjs';
-import { notifyPhotoUpload } from '../../lib/photo-notifications';
+// Serves the shared photo gallery with validated JPEG uploads, thumbnails, cursor pagination, and owner-only deletion.
+// Uploads are size- and dimension-bounded before MongoDB storage, with hourly per-IP limiting and notification handoff.
 import { createHash } from 'crypto';
 import { Binary } from 'mongodb';
+import { databaseTime } from '../../lib/database-time.mjs';
+import { notifyPhotoUpload } from '../../lib/photo-notifications';
 import { portfolioCollection } from '../../lib/mongodb';
 import { validId } from '../../lib/wall-notes.mjs';
+
 export const config={api:{bodyParser:{sizeLimit:'1mb'}}};
 const writes=new Map();
 function jpeg(value,maxBytes,maxSide){

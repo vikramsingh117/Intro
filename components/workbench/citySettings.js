@@ -1,3 +1,5 @@
+// Centralizes the default city transform, camera framing, lighting, fog, and material tuning.
+// CityStudio and its scene helpers consume this shape so debug adjustments remain compatible with production rendering.
 export const DEFAULT_CITY_SETTINGS = {
   x: -9.7, y: 2.2, z: -13.7, scale: .85, rotation: 64,
   cameraX: -3.2, cameraY: 2.3, cameraZ: -2.1,

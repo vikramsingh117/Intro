@@ -1,3 +1,5 @@
+// Verifies sticky-note validation, public response shaping, ownership enforcement, and idempotent API creation.
+// An in-memory collection isolates the route contract without changing or depending on the production database.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { validNote, validId, publicNote } from '../lib/wall-notes.mjs';

@@ -1,3 +1,5 @@
+// Composes every page with route transitions, After Hours preloading, cursor theming, and privacy-aware analytics.
+// Global styles and the pixel mascot font are initialized once here so individual routes share consistent presentation.
 import '../styles/globals.css';
 import { Analytics } from '@vercel/analytics/react';
 import AfterHoursPreload from '../components/AfterHoursPreload';

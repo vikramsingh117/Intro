@@ -1,3 +1,5 @@
+// Verifies hoop scoring and collisions across fast shots, transformed viewports, celebration lighting, and rope impulses.
+// Mobile and desktop cases keep the rendered rim, backboard physics, and post-score room feedback aligned.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { Vector3 } from 'three';

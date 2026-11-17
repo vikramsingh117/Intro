@@ -1,3 +1,5 @@
+// Provides draggable, resizable, minimizable monitor windows within the perspective-projected desktop.
+// It coordinates window focus, maximize bounds, keyboard movement, and child-defined back navigation.
 import { createContext, useEffect, useRef, useState } from 'react';
 import localPoint from './desktopPoint';
 import styles from '../../styles/Workbench.module.css';
@@ -7,7 +9,6 @@ export const WindowBackContext = createContext(null);
 const LIMITS = { left: 10, top: 70, right: 1270, bottom: 718 };
 const FULL = { x: 10, y: 70, width: 1260, height: 648 };
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
-// The desktop is perspective-projected onto the monitor, not a flat screen overlay.
 
 function moved(rect, dx, dy) {
   return {...rect, x:clamp(rect.x+dx,LIMITS.left,LIMITS.right-rect.width), y:clamp(rect.y+dy,LIMITS.top,LIMITS.bottom-rect.height)};

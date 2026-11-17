@@ -1,3 +1,5 @@
+// Builds the interactive 3D notebook, including cover motion, page turns, image-backed textures, and tear gestures.
+// Parent journey state owns the selected and torn pages while this component coordinates geometry, input, and demand rendering.
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { CanvasTexture, DoubleSide, PlaneGeometry, SRGBColorSpace } from 'three';

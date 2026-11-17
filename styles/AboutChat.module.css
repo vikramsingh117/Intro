@@ -1,3 +1,5 @@
+/* Styles the shared portfolio assistant for both the light Simple card and dark monitor window. */
+/* Embedded, mobile, and reduced-motion variants keep the feed scrollable while controls remain reachable. */
 .chat { min-width: 0; border: 1px solid #d2d4c7; background: #fbfaf5; box-shadow: 0 8px 25px #243c3207; }
 .header { padding: 19px 20px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #e2e3d8; }
 .avatar { background: #243c32; color: #f4f1e8; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; font: italic 25px Georgia, serif; position: relative; flex-shrink: 0; }

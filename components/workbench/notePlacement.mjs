@@ -1,3 +1,5 @@
+// Defines responsive wall-note placement bounds and helpers for clamping pointers into the valid region.
+// Mobile bounds account for the basketball hoop so StickyNotes never places paper through the rim or backboard.
 import { MOBILE_HOOP } from './basketball.mjs';
 
 export const NOTE_HALF_SIZE = .36;

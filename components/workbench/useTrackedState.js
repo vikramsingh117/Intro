@@ -1,5 +1,8 @@
+// Reports changes in selected room-state values to the visitor analytics interaction stream.
+// The initial render establishes a baseline, preventing page setup from being mistaken for a user action.
 import { useEffect, useRef } from 'react';
 import { trackInteraction } from '../../lib/visitor-analytics';
+
 export default function useTrackedState(values){
   const previous=useRef(null);
   useEffect(()=>{

@@ -1,6 +1,7 @@
+// Keeps paper pickup geometry aligned with the screen-space flick overlay and camera field of view.
+// PaperBalls uses these helpers for eased pickup motion and bounded orbit rotation during the aiming mode.
 import { Spherical, Vector3 } from 'three';
 
-// Shared screen position keeps the 3D ball and pointer pickup area aligned.
 export const PAPER_AIM_Y = .68;
 export const PAPER_AIM_DISTANCE = 2.3;
 

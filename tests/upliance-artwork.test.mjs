@@ -1,3 +1,5 @@
+// Verifies Upliance artwork stays page-scoped during asynchronous loading and never displaces display copy.
+// The cases exercise the selectors and canvas layout shared by the physical appliance's animated work pages.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { UPLIANCE_ARTWORK, selectArtwork, drawUplianceWork } from '../components/workbench/uplianceArtwork.mjs';

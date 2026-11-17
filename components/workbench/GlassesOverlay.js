@@ -1,3 +1,5 @@
+// Draws the selected glasses and lens status above the 3D scene while post-processing runs beneath it.
+// Escape or the take-off control starts a coordinated exit, keeping the overlay mounted through its animation.
 import { useEffect, useRef, useState } from 'react';
 import styles from '../../styles/Workbench.module.css';
 

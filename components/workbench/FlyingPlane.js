@@ -1,3 +1,5 @@
+// Animates the distant city plane along a camera-relative route with subtle banking and contrails.
+// Rendering pauses when the scene is inactive or hidden, while reduced motion holds the aircraft stationary.
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useFrame, useLoader, useThree } from '@react-three/fiber';
 import { Box3, Vector3 } from 'three';

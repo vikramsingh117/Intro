@@ -1,3 +1,5 @@
+// Defines paper-ball inventory, deterministic pile layout, consumption, and notebook refill-page selection.
+// Notebook tearing creates inventory entries while PaperPile and PaperBalls share these helpers to keep ownership consistent.
 export const STARTING_PAPER_COUNT = 3;
 export const PAPER_RADIUS = .24;
 export const PAPER_PILE_ORIGIN = [-1.15, -1.5 + PAPER_RADIUS, -.62];

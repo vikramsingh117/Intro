@@ -1,3 +1,5 @@
+// Defines the production shader tuning for the crayon and graphite glasses effects.
+// WorkbenchScene passes these values into the matching post-processing classes through their update interfaces.
 export const DEFAULT_LENS_SETTINGS = {
   crayon: {
     contrastLow: 0, contrastHigh: .5, saturation: 1.5, paletteSteps: 15,

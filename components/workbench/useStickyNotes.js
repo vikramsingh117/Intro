@@ -1,3 +1,5 @@
+// Owns wall-note polling, anonymous edit identity, editor state, placement state, and API mutations.
+// Three.js notes and the DOM editor share this hook's API so interaction pauses refreshes and preserves optimistic scene state.
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 export default function useStickyNotes() {

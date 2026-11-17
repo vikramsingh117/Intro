@@ -1,3 +1,5 @@
+// Maps each sticky-note identifier to a stable paper palette using a small deterministic hash.
+// Both the DOM editor and Three.js texture painter consume the same colors to keep transitions visually consistent.
 const papers=[
   ['#fff0ac','#efd583','#dfbc65','#d4b660'],
   ['#e0efcb','#bdd8aa','#a3bf91','#a5bf8c'],

@@ -1,3 +1,5 @@
+// Drives the interactive Upliance model, including lid, LEDs, display artwork, hover bounds, and camera-focus handoff.
+// Work pages and animation state come from the parent journey, while artwork preloads independently so the appliance never suspends.
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { loadArtworkImage } from './loadArtwork.mjs';
 import { UPLIANCE_ARTWORK, selectArtwork, drawUplianceWork } from './uplianceArtwork.mjs';
@@ -142,7 +144,6 @@ export default function Upliance({ celebrating=false, keyboardFocused=false, reg
       surface.style.clipPath=`polygon(${corners.join(',')})`;
       projectedEdge.set(0,0,.03).applyMatrix4(panel.current.matrixWorld).project(camera);
       surface.dataset.centerX=String((projectedEdge.x+1)*size.width/2);
-
     }
 
     const target=active?1:0;

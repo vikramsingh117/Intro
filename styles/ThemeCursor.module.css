@@ -1,3 +1,5 @@
+/* Styles the animated cursor handoff between the Simple and glossy After Hours themes. */
+/* Interactive, coarse-pointer, and reduced-motion states coordinate with ThemeCursor's route and target detection. */
 .cursor {
   position: fixed;
   top: 0;

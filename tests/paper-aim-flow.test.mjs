@@ -1,3 +1,5 @@
+// Verifies paper aiming preserves orbit constraints, pickup readiness respects reduced motion, and notebook refills skip tears.
+// These cases cover the state handoff between camera gestures, held-ball animation, and paper inventory replenishment.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { PerspectiveCamera, Spherical, Vector3 } from 'three';

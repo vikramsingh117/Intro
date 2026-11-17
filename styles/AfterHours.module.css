@@ -1,3 +1,5 @@
+/* Styles the dark narrative After Hours layout, animated system instrument, projects, and contact sections. */
+/* Calm, reduced-motion, hover, and mobile variants coordinate with the page's scene selection and custom cursor state. */
 .page { --paper:#0c171f; --ink:#eeeae0; --muted:#9baeb3; --line:#29403f; --orange:#a0ddc5; background:#080f17; color:var(--ink); position:relative; isolation:isolate; overflow:clip; color-scheme:dark; }
 .page::before { content:""; position:absolute; inset:0; z-index:-1; pointer-events:none; background:radial-gradient(ellipse at 85% 8%,#234f483b,transparent 26%),radial-gradient(ellipse at 0% 65%,#2e405733,transparent 30%); }
 .controls { position:absolute; top:28px; left:5%; right:5%; display:flex; gap:24px; align-items:center; z-index:5; font:10px monospace; letter-spacing:1px; }

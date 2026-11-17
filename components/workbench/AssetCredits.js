@@ -1,3 +1,5 @@
+// Lists third-party room assets, authors, licenses, and the portfolio-specific transformations applied to them.
+// FireflyCredit is exported separately because its attribution accompanies the animated swarm description elsewhere.
 import styles from '../../styles/Workbench.module.css';
 
 export function FireflyCredit() {

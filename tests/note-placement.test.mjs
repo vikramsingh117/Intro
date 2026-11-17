@@ -1,3 +1,5 @@
+// Verifies responsive sticky-note bounds keep whole papers clear of the mobile basketball hoop.
+// Desktop coverage and mobile hoop scaling remain explicit so visual placement cannot regress silently.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { noteBoundsForWidth, clampNotePosition, notePlacementRect, NOTE_HALF_SIZE } from '../components/workbench/notePlacement.mjs';

@@ -1,14 +1,16 @@
+// Animates the desk drawer and exposes the same toggle through pointer and shared room actions.
+// Drawer state is reported to the activity tracker while reduced motion resolves the slide immediately.
 import useTrackedState from './useTrackedState';
 import { useEffect, useRef, useState } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import InteractiveObject from './InteractiveObject';
 
 function Wood({ position, size, map, color = '#aa805b' }) {
-  useTrackedState({drawer:open});
   return <mesh position={position} castShadow receiveShadow><boxGeometry args={size}/><meshStandardMaterial color={color} map={map} roughness={.8}/></mesh>;
 }
 export default function GlassesDrawer({ keyboardFocused, registerRoomAction, wood, reduced, onHover }) {
   const [open, setOpen] = useState(false);
+  useTrackedState({drawer:open});
   const tray = useRef(null);
   const slide = useRef(null);
   const { invalidate } = useThree();

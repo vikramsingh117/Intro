@@ -1,3 +1,5 @@
+// Manages paper pickup, camera-relative aiming, flick throws, collisions, scoring, and resting bodies in the room.
+// It exposes gesture controls to the parent scene while demand-rendering only during pickup or active physics motion.
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useFrame, useLoader, useThree } from '@react-three/fiber';
 import { Vector3 } from 'three';

@@ -1,8 +1,9 @@
+// Recreates the current pixel desk inside the journey monitor before handing control back to the 3D room.
+// The timed transition respects reduced motion and preserves ceiling and radio state in the nested preview.
 import { useEffect, useRef } from 'react';
 import PixelDeskScene from './PixelDeskScene';
 import styles from '../../styles/AboutJourney.module.css';
 
-// The current portfolio is the real 3D room surrounding this app.
 export default function InceptionMonitor({ onEnterPortfolio, radioPlaying, ceilingOn }) {
   const objects = useRef({});
   const enter = useRef(onEnterPortfolio);

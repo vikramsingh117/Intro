@@ -1,3 +1,5 @@
+// Loads the hoop model and combines it with a custom backboard aligned to shared scoring geometry.
+// Responsive placement comes from basketball.mjs so rendering, paper collision, and mobile adjustments use one source of truth.
 import { useMemo } from 'react';
 import { useLoader, useThree } from '@react-three/fiber';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';

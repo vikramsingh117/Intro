@@ -1,3 +1,5 @@
+// Procedurally builds the four selectable desk glasses and registers their room actions.
+// Each frame geometry matches a distinct worn overlay and lens mode while shared placement keeps the row source-controlled.
 import { useEffect, useMemo } from 'react';
 import { CatmullRomCurve3, Path, Shape, Vector3 } from 'three';
 import InteractiveObject from './InteractiveObject';

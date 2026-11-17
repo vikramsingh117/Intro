@@ -1,3 +1,5 @@
+// Supplies the handwritten side notes that flank each selected year in the About Me journey.
+// The timeline chooses a year and page side, while this component renders the matching curated annotations.
 import styles from '../../styles/AboutJourney.module.css';
 
 const NOTES = {

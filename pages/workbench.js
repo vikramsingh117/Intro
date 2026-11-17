@@ -1,4 +1,6 @@
-import SocialPreview from "../components/SocialPreview";
+// Serves the interactive 3D workspace at its legacy workbench route.
+// Metadata and social previews match the public After Hours experience rendered by ProductWorkbench.
+import SocialPreview from '../components/SocialPreview';
 import Head from 'next/head';
 import ProductWorkbench from '../components/workbench/ProductWorkbench';
 import styles from '../styles/Workbench.module.css';

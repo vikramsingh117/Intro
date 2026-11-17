@@ -1,9 +1,11 @@
+// Routes monitor windows to the About journey, work history, or project history experiences.
+// Shared callbacks let those app views open physical room objects while profile and contribution links stay external.
 import dynamic from 'next/dynamic';
 import { loadAboutJourney } from './loadAboutJourney';
-
-const AboutJourney = dynamic(loadAboutJourney, { ssr: false, loading: () => <p role="status">Opening About Me…</p> });
 import { contributions } from '../../lib/contributions';
 import styles from '../../styles/Workbench.module.css';
+
+const AboutJourney = dynamic(loadAboutJourney, { ssr: false, loading: () => <p role="status">Opening About Me…</p> });
 
 export const PROFILE_LINKS = [
   {title:'GitHub',icon:'GH',href:'https://github.com/vikramsingh117'},

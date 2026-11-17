@@ -1,3 +1,5 @@
+// Displays the supplied LeetCode profile snapshot either as a journey close-up or desktop app.
+// Its saved metrics remain explicitly separate from the live-profile link and are not fetched at runtime.
 import styles from '../../styles/AboutJourney.module.css';
 
 // Values transcribed from the screenshot supplied by Vikram; not a live API feed.
