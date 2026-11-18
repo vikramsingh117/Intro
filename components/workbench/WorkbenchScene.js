@@ -16,6 +16,7 @@ import MonitorConfetti from './MonitorConfetti';
 import PreloadAssets from './PreloadAssets';
 import { isRoomHover } from './roomHover.mjs';
 import StationaryShadows from './StationaryShadows';
+import OptimisedFrames from './OptimisedFrames';
 import InteractiveObject from './InteractiveObject';
 import NoteProjection from './NoteProjection';
 import StickyNotes from './StickyNotes';
@@ -324,7 +325,7 @@ function Camera({ paperOrbit, photo, pauseCamera, upliance, onUplianceArrive, en
   }, -1);
   return null;
 }
-export default function MonitorScene({ paperInventory, onPickUpPaper, basketScore, celebrating, onBasket, photo, onPhotoOpen, musicPlaying, onPlaybackChange, onCeilingPowerChange, onNotebookTear, onPaperMotionChange, aimingPaper, heldPaper, paperControls, onPaperThrown, tornPages, keyboardTarget, registerRoomAction, upliance, upliancePage, uplianceArrived, uplianceControlsRef, onUplianceArrive, onUplianceSelect, propPlacement, glassesPlacement, stickyNotePlacement, lensSettings, entered, reduced, onEnter, onArrive, lampOn, onLampToggle, onWindowSelect, outside, onCityReady, desktopRef, desktop, notebook, notebookPage, onNotebookOpen, onHover, notebookOpen, onNotebookPageChange, onNotebookExit, citySettings, wearingGlasses, glassesLens, glassesLeaving, onWearGlasses, stickyNotes, noteEditorRef, roomResetKey }) {
+export default function MonitorScene({ optimised = false, paperInventory, onPickUpPaper, basketScore, celebrating, onBasket, photo, onPhotoOpen, musicPlaying, onPlaybackChange, onCeilingPowerChange, onNotebookTear, onPaperMotionChange, aimingPaper, heldPaper, paperControls, onPaperThrown, tornPages, keyboardTarget, registerRoomAction, upliance, upliancePage, uplianceArrived, uplianceControlsRef, onUplianceArrive, onUplianceSelect, propPlacement, glassesPlacement, stickyNotePlacement, lensSettings, entered, reduced, onEnter, onArrive, lampOn, onLampToggle, onWindowSelect, outside, onCityReady, desktopRef, desktop, notebook, notebookPage, onNotebookOpen, onHover, notebookOpen, onNotebookPageChange, onNotebookExit, citySettings, wearingGlasses, glassesLens, glassesLeaving, onWearGlasses, stickyNotes, noteEditorRef, roomResetKey }) {
   const { sceneReady } = useAfterHoursTransition();
   const onRoomReady = useCallback(() => {
     sceneReady();
@@ -343,13 +344,14 @@ export default function MonitorScene({ paperInventory, onPickUpPaper, basketScor
   const markRoomAssetsReady=useCallback(()=>setRoomAssetsReady(true),[]);
   const markNotebookImagesReady=useCallback(()=>setNotebookImagesReady(true),[]);
   const markFireflyLightHit=useCallback(()=>setFireflyLightHit(value=>value+1),[]);
-  return <Canvas events={roomEvents} onPointerMissed={()=>{if(notebook)onNotebookExit();}} shadows camera={{ position:[6, 3.5, 14.8], fov:42 }} dpr={notebook || upliance ? [1, 2] : 1} frameloop="demand" gl={{alpha:true, antialias:true, toneMapping:ACESFilmicToneMapping, toneMappingExposure:.85}}>
+  return <Canvas events={roomEvents} onPointerMissed={()=>{if(notebook)onNotebookExit();}} shadows camera={{ position:[6, 3.5, 14.8], fov:42 }} dpr={optimised ? (notebook || upliance ? 1 : .75) : notebook || upliance ? [1, 2] : 1} frameloop={optimised ? "never" : "demand"} gl={{alpha:true, antialias:true, toneMapping:ACESFilmicToneMapping, toneMappingExposure:.85}}>
+    <OptimisedFrames enabled={optimised}/>
     {screensReady && <FirstRoomFrame onReady={onRoomReady}/>}
     {screensReady && <PreloadAssets onReady={markRoomAssetsReady} onError={markRoomAssetsReady}/>}
     <StationaryShadows/>
     <color attach="background" args={['#091321']} />
     <group onClick={event=>{if(notebook && event.delta<=5){event.stopPropagation();onNotebookExit();}}}>
-    <NightEffects exposure={outside ? citySettings.exposure : .85} glow={outside ? citySettings.glow : .55} pixelLens={wearingGlasses && glassesLens === 'pixel'} crayonLens={wearingGlasses && glassesLens === 'crayon'} sketchLens={wearingGlasses && glassesLens === 'sketch'} glassesLeaving={glassesLeaving} lensSettings={lensSettings} />
+    <NightEffects optimised={optimised} exposure={outside ? citySettings.exposure : .85} glow={outside ? citySettings.glow : .55} pixelLens={wearingGlasses && glassesLens === 'pixel'} crayonLens={wearingGlasses && glassesLens === 'crayon'} sketchLens={wearingGlasses && glassesLens === 'sketch'} glassesLeaving={glassesLeaving} lensSettings={lensSettings} />
     {screensReady && <Suspense fallback={null}><CityExterior onReady={onCityReady} settings={citySettings} /></Suspense>}
     {screensReady && <Suspense fallback={null}><FlyingPlane active={outside} reduced={reduced} settings={citySettings}/></Suspense>}
     <hemisphereLight args={['#c8d4d0', '#494237', outside ? citySettings.ambient : .65]} />
@@ -365,11 +367,11 @@ export default function MonitorScene({ paperInventory, onPickUpPaper, basketScor
     {stickyNotes.editor && <NoteProjection editor={stickyNotes.editor} elementRef={noteEditorRef} placement={stickyNotePlacement}/>}
     {screensReady && <Suspense fallback={null}><Chair/></Suspense>}
     {screensReady && <Suspense fallback={null}><Plant/></Suspense>}
-    {screensReady && <Suspense fallback={null}><Fireflies reduced={reduced} onLightHit={markFireflyLightHit}/></Suspense>}
+    {screensReady && <Suspense fallback={null}><Fireflies optimised={optimised} reduced={reduced} onLightHit={markFireflyLightHit}/></Suspense>}
     {screensReady && <Suspense fallback={null}><Stool placement={propPlacement?.stool}/></Suspense>}
     {screensReady && <Suspense fallback={null}><Pascal placement={propPlacement?.pascal}/></Suspense>}
     <Suspense fallback={null}><Upliance celebrating={celebrating} preloadArtwork={roomAssetsReady&&notebookImagesReady} onReady={markUplianceReady} keyboardFocused={keyboardTarget==='upliance'} registerRoomAction={registerRoomAction} controlsRef={uplianceControlsRef} focused={!!upliance} zoomComplete={uplianceArrived} workPage={upliancePage} onSelect={onUplianceSelect} placement={propPlacement?.upliance} reduced={reduced} interactive={!photo && !entered && !outside && !notebook && !upliance && !stickyNotes.editor && !stickyNotes.placing} onHover={onHover}/></Suspense>
-    {screensReady && <Suspense fallback={null}><CeilingLight fireflyHit={fireflyLightHit} onPowerChange={onCeilingPowerChange} basketScore={basketScore} reduced={reduced} onDragging={setLightDragging} interactive={!photo&&!entered&&!outside&&!notebook&&!upliance&&!stickyNotes.editor&&!stickyNotes.placing} keyboardFocused={keyboardTarget==='ceiling-light'} registerRoomAction={registerRoomAction} onHover={onHover}/></Suspense>}
+    {screensReady && <Suspense fallback={null}><CeilingLight optimised={optimised} fireflyHit={fireflyLightHit} onPowerChange={onCeilingPowerChange} basketScore={basketScore} reduced={reduced} onDragging={setLightDragging} interactive={!photo&&!entered&&!outside&&!notebook&&!upliance&&!stickyNotes.editor&&!stickyNotes.placing} keyboardFocused={keyboardTarget==='ceiling-light'} registerRoomAction={registerRoomAction} onHover={onHover}/></Suspense>}
     <CozyRoom keyboardTarget={keyboardTarget} registerRoomAction={registerRoomAction} reduced={reduced} wearingGlasses={wearingGlasses} glassesPlacement={glassesPlacement} glassesLens={glassesLens} onWearGlasses={onWearGlasses} onWindowSelect={notebook ? onNotebookExit : onWindowSelect} onHover={onHover} />
     {screensReady && <InteractiveObject moving focused={keyboardTarget==='notebook'} label="Notebook · ideas & sketches" onHover={onHover}><Notebook onImagesReady={markNotebookImagesReady} onTear={onNotebookTear} canTear={true} tornPages={tornPages} focused={notebook} open={notebookOpen} onPageChange={onNotebookPageChange} page={notebookPage} reduced={reduced} onOpen={onNotebookOpen} /></InteractiveObject>}
     {screensReady && <Suspense fallback={null}><Keyboard /></Suspense>}

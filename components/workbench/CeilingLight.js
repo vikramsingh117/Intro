@@ -16,7 +16,7 @@ const CEILING_HEIGHT = 24;
 const HANG_HEIGHT = 7.2;
 const NECK_OFFSET=2.96;
 const ROPE_LENGTH=CEILING_HEIGHT-HANG_HEIGHT+NECK_OFFSET;
-export default function CeilingLight({ basketScore, fireflyHit, keyboardFocused, registerRoomAction, onHover, reduced, interactive=true, onDragging, onPowerChange }) {
+export default function CeilingLight({ optimised = false, basketScore, fireflyHit, keyboardFocused, registerRoomAction, onHover, reduced, interactive=true, onDragging, onPowerChange }) {
   const [on,setOn]=useState(true);
   useEffect(()=>{onPowerChange?.(on);},[on,onPowerChange]);
   const playSwitch=useSwitchSound();
@@ -70,7 +70,7 @@ export default function CeilingLight({ basketScore, fireflyHit, keyboardFocused,
   useFrame((_,delta)=>{
     if(!fixture.current||!wire.current||!rope.current)return;
     const state=rope.current;
-    stepLightRope(state,delta,pixelDrag.current?.destination || (gesture.current?.moved?gesture.current.destination:null));
+    stepLightRope(state,delta,pixelDrag.current?.destination || (gesture.current?.moved?gesture.current.destination:null),optimised);
     const points=state.points,end=points[32];
     fixture.current.position.copy(end);
     ceilingLightBridge.x=end.x*25;

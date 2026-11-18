@@ -14,7 +14,7 @@ import LensPixelatedPass from './LensPixelatedPass';
 import LensCrayonPass from './LensCrayonPass';
 import LensSketchPass from './LensSketchPass';
 
-export function NightEffects({ exposure = .85, glow = .55, pixelLens = false, crayonLens = false, sketchLens = false, glassesLeaving = false, lensSettings }) {
+export function NightEffects({ optimised = false, exposure = .85, glow = .55, pixelLens = false, crayonLens = false, sketchLens = false, glassesLeaving = false, lensSettings }) {
   const { gl, scene, camera, size, invalidate } = useThree();
   const get = useThree(state => state.get);
   const dpr = useThree(state => state.viewport.dpr);
@@ -26,6 +26,7 @@ export function NightEffects({ exposure = .85, glow = .55, pixelLens = false, cr
   const lensMotion = useRef({ mode:'idle', elapsed:0 });
   const nonBlurLens = pixelLens || crayonLens || sketchLens;
   useEffect(() => {
+    if(optimised)return;
     const size = get().size;
     const composer = new EffectComposer(gl);
     const render = new RenderPass(scene, camera);
@@ -77,7 +78,7 @@ export function NightEffects({ exposure = .85, glow = .55, pixelLens = false, cr
       lookupImages.forEach(image => image.removeEventListener('load', enableSmaa));
       render.dispose(); bloom.dispose(); pixel.dispose(); crayon.dispose(); sketch.dispose(); output.dispose(); smaa.dispose(); composer.dispose();
     };
-  }, [gl, scene, camera, get, invalidate]);
+  }, [gl, scene, camera, get, invalidate, optimised]);
   useEffect(() => {
     // Resize existing render targets instead of rebuilding shaders and SMAA textures.
     // Keep the postprocessing targets at the renderer resolution when a close-up changes DPR.
@@ -87,19 +88,19 @@ export function NightEffects({ exposure = .85, glow = .55, pixelLens = false, cr
     crayonPass.current?.setLensLayout(size.width, size.height, size.width <= 760);
     sketchPass.current?.setLensLayout(size.width, size.height, size.width <= 760);
     invalidate();
-  }, [size.width, size.height, dpr, invalidate]);
+  }, [size.width, size.height, dpr, invalidate, optimised]);
   useEffect(() => {
     if (pixelPass.current) pixelPass.current.enabled = pixelLens;
     invalidate();
-  }, [pixelLens, invalidate]);
+  }, [pixelLens, invalidate, optimised]);
   useEffect(() => {
     if (crayonPass.current) crayonPass.current.enabled = crayonLens;
     invalidate();
-  }, [crayonLens, invalidate]);
+  }, [crayonLens, invalidate, optimised]);
   useEffect(() => {
     if (sketchPass.current) sketchPass.current.enabled = sketchLens;
     invalidate();
-  }, [sketchLens, invalidate]);
+  }, [sketchLens, invalidate, optimised]);
   useEffect(() => {
     const passes=[pixelPass.current,crayonPass.current,sketchPass.current];
     if(glassesLeaving){
@@ -118,12 +119,12 @@ export function NightEffects({ exposure = .85, glow = .55, pixelLens = false, cr
     crayonPass.current?.updateSettings(lensSettings?.crayon);
     sketchPass.current?.updateSettings(lensSettings?.sketch);
     invalidate();
-  }, [lensSettings, invalidate]);
+  }, [lensSettings, invalidate, optimised]);
   useEffect(() => {
     gl.toneMappingExposure = exposure;
     if (bloomPass.current) bloomPass.current.strength = glow;
     invalidate();
-  }, [gl, exposure, glow, size.width, size.height, invalidate]);
+  }, [gl, exposure, glow, size.width, size.height, invalidate, optimised]);
   useFrame((state, delta) => {
     const motion=lensMotion.current;
     if(motion.mode!=='idle'){

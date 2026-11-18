@@ -10,7 +10,7 @@ const MODEL_URL = '/models/firefly/scene.gltf';
 import { LOOP_SECONDS, SWARM, choreography, liveFireflies } from './fireflyChoreography.mjs';
 const MODEL_FORWARD = new Vector3(0, -1, 0);
 const RECOIL_AXIS = new Vector3(0, 0, 1);
-function Firefly({ source, animations, config, reduced, onLightHit }) {
+function Firefly({ optimised, source, animations, config, reduced, onLightHit }) {
   const group = useRef(null);
   const elapsed = useRef(0);
   const impactCycle = useRef(-1);
@@ -45,6 +45,7 @@ function Firefly({ source, animations, config, reduced, onLightHit }) {
     clone.position.sub(center.multiplyScalar(scale));
     return { model: clone, mixer: new AnimationMixer(clone), materials };
   }, [source]);
+  useEffect(()=>{model.traverse(node=>{if(node.isMesh)node.castShadow=!optimised;});invalidate();},[model,optimised,invalidate]);
   useEffect(() => {
     const flyClip = animations.find(animation => animation.name.includes('Landed_Fly')) || animations[0];
     const idleClip = animations.find(animation => animation.name.includes('Landed_Idol'));
@@ -105,10 +106,10 @@ function Firefly({ source, animations, config, reduced, onLightHit }) {
   </group>;
 }
 
-export default function Fireflies({ reduced = false, onLightHit }) {
+export default function Fireflies({ optimised = false, reduced = false, onLightHit }) {
   const { scene, animations } = useLoader(GLTFLoader, MODEL_URL);
   return <group name="Firefly swarm">
-    {SWARM.map(config => <Firefly key={config.seed} source={scene} animations={animations} config={config} reduced={reduced} onLightHit={onLightHit}/>)}
+    {SWARM.map(config => <Firefly optimised={optimised} key={config.seed} source={scene} animations={animations} config={config} reduced={reduced} onLightHit={onLightHit}/>)}
   </group>;
 }
 

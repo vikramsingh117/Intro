@@ -16,11 +16,11 @@ export function createLightRope(length,drop=true){
   return rope;
 }
 
-export function stepLightRope(rope,elapsed,target){
+export function stepLightRope(rope,elapsed,target,optimised=false){
   if(rope.asleep&&!target)return;
   if(target)rope.delay=0;
   if(rope.delay>0){rope.delay=Math.max(0,rope.delay-Math.min(elapsed,.05));return;}
-  const {points,previous,delta,length}=rope,last=points.length-1,step=1/120;
+  const {points,previous,delta,length}=rope,last=points.length-1,step=optimised?1/60:1/120;
   rope.accumulator+=Math.min(elapsed,.05);
   while(rope.accumulator>=step){
     rope.accumulator-=step;
@@ -28,7 +28,7 @@ export function stepLightRope(rope,elapsed,target){
       delta.subVectors(points[i],previous[i]).multiplyScalar(Math.exp(-.65*step));
       previous[i].copy(points[i]);points[i].add(delta);points[i].y-=18*step*step;
     }
-    for(let pass=0;pass<48;pass++){
+    for(let pass=0;pass<(optimised?12:48);pass++){
       points[0].set(0,0,0);
       if(target)points[last].copy(target);
       for(let i=0;i<last;i++){
