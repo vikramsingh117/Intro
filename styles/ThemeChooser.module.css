@@ -55,7 +55,7 @@
 .asterisk { font-size: 90px; color: var(--orange); transition: transform .65s ease; }
 .pane:is(:hover,:focus-within) .asterisk { transform: rotate(90deg); }
 .previewFooter { display: flex; justify-content: space-between; border-top: 1px solid var(--line); padding-top: 12px; margin-top: 22px; font: 6px monospace; letter-spacing: 1px; }
-.glossyPreview { background: #222c2a url("/images/after-hours-workbench.svg") center/cover no-repeat; color: #e9f2f2; border-color: #263744; }
+.glossyPreview { background: #18211e url("/images/workbench-about-pixel.svg") center/cover no-repeat; color: #e9f2f2; border-color: #263744; image-rendering: pixelated; }
 .concept { position: absolute; bottom: 13px; right: 20px; font: 7px monospace; letter-spacing: 1px; color: #a5bdc4; }
 .description { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; margin-top: 20px; }
 .description h2 { font-size: 21px; font-weight: 400; letter-spacing: -.5px; margin: 0; }

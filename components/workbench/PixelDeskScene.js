@@ -34,11 +34,11 @@ function PixelFirefly({ index }) {
 
 function PixelPhotoFrame() {
   return <g>
-    <path fill="#6d4e38" d="M318 104h38v40h-38z"/><path fill="#d9ccb0" d="M322 108h30v31h-30z"/>
-    <path fill="#87958c" d="M331 113h12v12h-12z"/>
-    <path fill="#87958c" d="M326 128h22v11h-22v-4h2v-4h3v-3h12v3h3v4h2z"/>
-    <path fill="#55645d" d="M333 116h8v7h-8zm-3 17h14v6h-14z"/>
-    <path fill="#4c382b" d="M332 144h10l5 8h-20z"/><path fill="#957151" d="M321 139h32v3h-32z"/>
+    <path fill="#111917" d="M318 104h38v40h-38z"/><path fill="#26312d" d="M322 108h30v31h-30z"/>
+    <path fill="#75837d" d="M331 113h12v12h-12z"/>
+    <path fill="#75837d" d="M326 128h22v11h-22v-4h2v-4h3v-3h12v3h3v4h2z"/>
+    <path fill="#46534e" d="M333 116h8v7h-8zm-3 17h14v6h-14z"/>
+    <path fill="#0b1110" d="M332 144h10l5 8h-20z"/><path fill="#3b4943" d="M321 139h32v3h-32z"/>
   </g>;
 }
 
