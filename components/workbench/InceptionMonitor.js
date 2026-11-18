@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react';
 import PixelDeskScene from './PixelDeskScene';
 import styles from '../../styles/AboutJourney.module.css';
 
-export default function InceptionMonitor({ onEnterPortfolio, radioPlaying, ceilingOn }) {
+export default function InceptionMonitor({ onEnterPortfolio, lampOn, radioPlaying, ceilingOn }) {
   const objects = useRef({});
   const enter = useRef(onEnterPortfolio);
   useEffect(()=>{enter.current=onEnterPortfolio;},[onEnterPortfolio]);
@@ -15,7 +15,7 @@ export default function InceptionMonitor({ onEnterPortfolio, radioPlaying, ceili
   }, []);
   return <section className={styles.inceptionJourney} aria-label="Zooming into the monitor to enter the current 3D portfolio">
     <div className={styles.deskZoomViewport}>
-      <div className={styles.deskZoom}><PixelDeskScene month={60} disabled ceilingOn={ceilingOn} radioPlaying={radioPlaying} objectRefs={objects}/></div>
+      <div className={styles.deskZoom}><PixelDeskScene month={60} disabled lampOn={lampOn} ceilingOn={ceilingOn} radioPlaying={radioPlaying} objectRefs={objects}/></div>
     </div>
   </section>;
 }

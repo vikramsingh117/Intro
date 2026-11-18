@@ -70,6 +70,6 @@ function Projects() {
     </article>
   </div>;
 }
-export default function PortfolioApps({ title, onOpenUpliance, onOpenNotebook, onOpenNotes, onToggleRadio, onToggleCeiling, ceilingOn, onEnterPortfolio, radioPlaying }) {
-  return title==='My Work'?<Work onOpenUpliance={onOpenUpliance}/>:title==='Projects'?<Projects/>:<AboutJourney onOpenUpliance={onOpenUpliance} onOpenNotebook={onOpenNotebook} onOpenNotes={onOpenNotes} onToggleRadio={onToggleRadio} onToggleCeiling={onToggleCeiling} ceilingOn={ceilingOn} onEnterPortfolio={onEnterPortfolio} radioPlaying={radioPlaying}/>;
+export default function PortfolioApps({ title, roomYear, onRequestYear, onOpenUpliance, onOpenNotebook, onOpenNotes, onToggleLamp, lampOn, onToggleRadio, onToggleCeiling, ceilingOn, onEnterPortfolio, radioPlaying }) {
+  return title==='My Work'?<Work onOpenUpliance={onOpenUpliance}/>:title==='Projects'?<Projects/>:<AboutJourney roomYear={roomYear} onRequestYear={onRequestYear} onOpenUpliance={onOpenUpliance} onOpenNotebook={onOpenNotebook} onOpenNotes={onOpenNotes} onToggleLamp={onToggleLamp} lampOn={lampOn} onToggleRadio={onToggleRadio} onToggleCeiling={onToggleCeiling} ceilingOn={ceilingOn} onEnterPortfolio={onEnterPortfolio} radioPlaying={radioPlaying}/>;
 }

@@ -3,6 +3,8 @@
 import { MOBILE_HOOP } from './basketball.mjs';
 
 export const NOTE_HALF_SIZE = .36;
+export const NOTE_WALL_Z = -3.075;
+export const NOTE_EDITOR_Z = NOTE_WALL_Z + .01;
 const DESKTOP_BOUNDS = Object.freeze({ minX: -2.25, maxX: 6, minY: .9, maxY: 4.7 });
 // Keep the entire paper square, not only its center, clear of the rim/backboard.
 const MOBILE_BOUNDS = Object.freeze({ ...DESKTOP_BOUNDS,

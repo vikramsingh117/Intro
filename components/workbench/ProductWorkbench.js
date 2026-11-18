@@ -21,6 +21,7 @@ import DesktopZoomControl from './DesktopZoomControl';
 import { NOTEBOOK_PAGES } from './notebookPages';
 import { nextNotebookPage } from './notebookPaper.mjs';
 import { DEFAULT_CITY_SETTINGS } from './citySettings';
+import { DEFAULT_ROOM_YEAR, roomYearFor } from './roomYears.mjs';
 import styles from '../../styles/Workbench.module.css';
 const Scene = dynamic(() => import('./WorkbenchScene'), { ssr:false });
 class Boundary extends Component {
@@ -45,6 +46,7 @@ const ROOM_OBJECTS = [
   {id:'glasses-sketch',label:'Monochrome glasses · wear sketch lens'},
 ];
 export default function ProductWorkbench() {
+  const [roomYear,setRoomYear]=useState(DEFAULT_ROOM_YEAR);
   const [optimised,setOptimised]=useState(false);
   const [sceneRestarting,setSceneRestarting]=useState(false);
   const [sceneRestartKey,setSceneRestartKey]=useState(0);
@@ -160,6 +162,7 @@ export default function ProductWorkbench() {
     roomActions.current.set(id,action);
     return ()=>{if(roomActions.current.get(id)===action)roomActions.current.delete(id);};
   },[]);
+  const activeRoomObjects=roomYearFor(roomYear).objects;
   const [reduced,setReduced] = useState(true);
   const enterButton = useRef(null), exitButton = useRef(null);
   useEffect(() => { const q=matchMedia('(prefers-reduced-motion: reduce)'); const update=()=>setReduced(q.matches); update(); q.addEventListener('change',update); return ()=>q.removeEventListener('change',update); },[]);
@@ -203,7 +206,7 @@ export default function ProductWorkbench() {
   };
   useEffect(() => { if(notebook) notebookText.current?.focus(); }, [notebook]);
   const leave = () => { setDesktop(false); setEntered(false); setRoomResetKey(value=>value+1); restoreFocus(); };
-  useTrackedState({photo,monitor:entered,window:outside,notebook,notebookPage:notebook?notebookPage:'closed',upliance:!!upliance,upliancePage:upliance?upliancePage:'closed',lamp:lampOn,glasses:wearingGlasses,noteEditor:!!stickyNotes.editor,notePlacement:!!stickyNotes.placing});
+  useTrackedState({roomYear,photo,monitor:entered,window:outside,notebook,notebookPage:notebook?notebookPage:'closed',upliance:!!upliance,upliancePage:upliance?upliancePage:'closed',lamp:lampOn,glasses:wearingGlasses,noteEditor:!!stickyNotes.editor,notePlacement:!!stickyNotes.placing});
   const focused=!!(photo||entered||outside||notebook||upliance||stickyNotes.editor||stickyNotes.placing);
   useEffect(() => {
     if (paperInventory.length || lastFlickAt === null || tearHintShown.current) return;
@@ -229,7 +232,8 @@ export default function ProductWorkbench() {
     if(returnToMonitor){setDesktop(false);setEntered(true);}
     restoreFocus();
   };
-  const keyboardTarget=keyboardObject>=0?ROOM_OBJECTS[keyboardObject]:null;
+  const availableRoomObjects=ROOM_OBJECTS.filter(object=>activeRoomObjects.includes(object.id));
+  const keyboardTarget=keyboardObject>=0?availableRoomObjects[keyboardObject]:null;
   useEffect(()=>{if(!focused&&keyboardTarget)setHoverLabel(keyboardTarget.label);},[focused,keyboardTarget,setHoverLabel]);
   const keyboardLabel = useRef('');
   keyboardLabel.current = keyboardTarget?.label || '';
@@ -275,6 +279,14 @@ export default function ProductWorkbench() {
     setDesktop(false);setEntered(true);
   },[stickyNotes.editor,stickyNotes.placing]);
   const toggleRadioFromMonitor=()=>{roomActions.current.get('radio')?.();};
+  const requestRoomYear=year=>{
+    const chapter=roomYearFor(year);
+    if(chapter.year===roomYear)return;
+    setAimingPaper(false);setPaperInFlight(false);setCelebrating(false);setKeyboardObject(-1);setHoverLabel('');
+    setWearingGlasses(false);setGlassesLeaving(false);setPhoto(false);setOutside(false);setNotebook(false);setUpliance(null);setUplianceArrived(false);
+    stickyNotes.cancel(true);
+    setRoomYear(chapter.year);
+  };
   const handleWorkbenchKeyDown=event=>{
     if(aimingPaper){event.preventDefault();return;}
     if(photo && event.key==='Escape'){event.preventDefault();closePhoto();return;}
@@ -289,8 +301,8 @@ export default function ProductWorkbench() {
       event.preventDefault();
       const direction=event.key==='ArrowLeft'||event.key==='ArrowUp'?-1:1;
       setKeyboardObject(current=>{
-        const next=current<0?(direction>0?0:ROOM_OBJECTS.length-1):(current+direction+ROOM_OBJECTS.length)%ROOM_OBJECTS.length;
-        setHoverLabel(ROOM_OBJECTS[next].label);
+        const next=current<0?(direction>0?0:availableRoomObjects.length-1):(current+direction+availableRoomObjects.length)%availableRoomObjects.length;
+        setHoverLabel(availableRoomObjects[next].label);
         return next;
       });
       return;
@@ -307,14 +319,14 @@ export default function ProductWorkbench() {
     setUpliance(null);setUplianceArrived(false);stickyNotes.cancel(true);restoreFocus();
   });
   return <div ref={workbenchRef} className={styles.workbench} onKeyDown={handleWorkbenchKeyDown}>
-    <button type="button" className={styles.optimiseButton} aria-pressed={optimised} aria-describedby="optimise-details" disabled={sceneRestarting} onClick={toggleOptimisation}>
-      {sceneRestarting ? 'Optimising…' : optimised ? 'Optimised ✓' : 'Optimise'}
+    {!aimingPaper&&<button type="button" className={styles.optimiseButton} aria-pressed={optimised} aria-describedby="optimise-details" disabled={sceneRestarting} onClick={toggleOptimisation}>
+      {sceneRestarting ? 'Optimising…' : optimised ? 'Optimised' : 'Optimise'}
       <span id="optimise-details" className={styles.optimiseDetails}>30 FPS cap · lower resolution · lighter lighting and effects</span>
-    </button>
+    </button>}
     <div style={{display:'contents'}} inert={aimingPaper ? '' : undefined} aria-hidden={aimingPaper ? true : undefined}>
     <div className={`${styles.scene}${sceneRestarting?` ${styles.sceneRestarting}`:''}`} onPointerMoveCapture={releaseKeyboardSelection} onPointerDownCapture={releaseKeyboardSelection} style={{pointerEvents:photo || entered || upliance ? 'none' : undefined}} aria-hidden={desktop} ref={enterButton} role="group" aria-label="Interactive room. Use arrow keys to select objects, Enter to activate, and Escape to return." tabIndex={photo || desktop || outside || notebook || !!upliance ? -1 : 0}>
-      <div hidden={photo || desktop || outside || notebook || !!upliance} className={styles.sceneLabel}>VIKRAM’S WORKSPACE <span>01 / ENTER TO EXPLORE</span></div>
-      <Boundary onEnter={()=>{preloadAboutJourney();setEntered(true);setDesktop(true);}}><Scene key={sceneRestartKey} optimised={optimised} paperInventory={paperInventory} onPickUpPaper={pickUpPaper} basketScore={basketScore} celebrating={celebrating} onBasket={onBasket} photo={photo} onPhotoOpen={openPhoto} musicPlaying={musicPlaying} onPlaybackChange={handlePlaybackChange} onCeilingPowerChange={setCeilingOn} onNotebookTear={tearPage} onPaperMotionChange={setPaperInFlight} aimingPaper={aimingPaper} heldPaper={heldPaper} paperControls={paperControls} onPaperThrown={onPaperThrown} tornPages={tornPages} keyboardTarget={keyboardTarget?.id} registerRoomAction={registerRoomAction} upliance={upliance} upliancePage={upliancePage} uplianceArrived={uplianceArrived} uplianceControlsRef={uplianceBack} onUplianceArrive={()=>setUplianceArrived(true)} onUplianceSelect={view=>{if(photo||entered||outside||notebook||stickyNotes.editor||stickyNotes.placing)return;rememberFocus();setWearingGlasses(false);setUplianceArrived(false);setUpliance(view);}} propPlacement={propPlacement} glassesPlacement={glassesPlacement} stickyNotePlacement={stickyNotePlacement} lensSettings={lensSettings} noteEditorRef={noteEditorRef} stickyNotes={stickyNotes} wearingGlasses={wearingGlasses} glassesLens={glassesLens} glassesLeaving={glassesLeaving} onWearGlasses={wearGlasses} citySettings={citySettings} notebookOpen={notebookOpen} onNotebookPageChange={setNotebookPage} onNotebookExit={leaveNotebook} notebook={notebook} notebookPage={notebookPage} onNotebookOpen={openNotebook} onHover={handleHover} desktopRef={desktopRef} desktop={desktop} outside={outside} onCityReady={setCityReady} onWindowSelect={openWindow} lampOn={lampOn} onLampToggle={()=>setLampOn(value=>!value)} entered={entered} reduced={reduced} roomResetKey={roomResetKey} onEnter={openMonitor} onArrive={()=>setDesktop(true)} /></Boundary>
+      <div hidden={photo || desktop || outside || notebook || !!upliance} className={styles.sceneLabel}>VIKRAM’S WORKSPACE <span>{roomYear} / ENTER TO EXPLORE</span></div>
+      <Boundary onEnter={()=>{preloadAboutJourney();setEntered(true);setDesktop(true);}}><Scene key={sceneRestartKey} roomYear={roomYear} optimised={optimised} paperInventory={paperInventory} onPickUpPaper={pickUpPaper} basketScore={basketScore} celebrating={celebrating} onBasket={onBasket} photo={photo} onPhotoOpen={openPhoto} onPlaybackChange={handlePlaybackChange} onCeilingPowerChange={setCeilingOn} onNotebookTear={tearPage} onPaperMotionChange={setPaperInFlight} aimingPaper={aimingPaper} heldPaper={heldPaper} paperControls={paperControls} onPaperThrown={onPaperThrown} tornPages={tornPages} keyboardTarget={keyboardTarget?.id} registerRoomAction={registerRoomAction} upliance={upliance} upliancePage={upliancePage} uplianceArrived={uplianceArrived} uplianceControlsRef={uplianceBack} onUplianceArrive={()=>setUplianceArrived(true)} onUplianceSelect={view=>{if(photo||entered||outside||notebook||stickyNotes.editor||stickyNotes.placing)return;rememberFocus();setWearingGlasses(false);setUplianceArrived(false);setUpliance(view);}} propPlacement={propPlacement} glassesPlacement={glassesPlacement} stickyNotePlacement={stickyNotePlacement} lensSettings={lensSettings} noteEditorRef={noteEditorRef} stickyNotes={stickyNotes} wearingGlasses={wearingGlasses} glassesLens={glassesLens} glassesLeaving={glassesLeaving} onWearGlasses={wearGlasses} citySettings={citySettings} notebookOpen={notebookOpen} onNotebookPageChange={setNotebookPage} onNotebookExit={leaveNotebook} notebook={notebook} notebookPage={notebookPage} onNotebookOpen={openNotebook} onHover={handleHover} desktopRef={desktopRef} desktop={desktop} outside={outside} onCityReady={setCityReady} onWindowSelect={openWindow} lampOn={lampOn} onLampToggle={()=>setLampOn(value=>!value)} entered={entered} reduced={reduced} roomResetKey={roomResetKey} onEnter={openMonitor} onArrive={()=>setDesktop(true)} /></Boundary>
       <div hidden={photo || desktop || notebook || !!upliance} className={styles.enterRow}><RoomHoverLabel store={hoverStore} outside={outside} cityReady={cityReady} entered={entered}/></div>
     </div>
     {upliance && <div ref={uplianceBack} tabIndex={-1} className={styles.uplianceControls} onClick={event=>{if(event.target===event.currentTarget)closeUpliance();}} style={{opacity:uplianceArrived?1:0}} inert={uplianceArrived?undefined:''} aria-hidden={!uplianceArrived} aria-label="Upliance work. Click either side of the screen or use arrow keys to change pages. Click outside or press Escape to return to the desk." onKeyDown={event=>{
@@ -346,10 +358,12 @@ export default function ProductWorkbench() {
     <DesktopZoomControl disabled={focused || aimingPaper || paperInFlight}/>
     <StickyNotesUI api={stickyNotes} elementRef={noteEditorRef}/>
     {wearingGlasses && <GlassesOverlay reduced={reduced} lens={glassesLens} onLeaving={()=>setGlassesLeaving(true)} onRemove={removeGlasses}/>}
+    {/* Keep the projected desktop rendered during a throw: its inactive state freezes the open app in place. */}
+    {/* Non-blur lens passes run in WebGL, so they use the static monitor surface instead of unfiltered projected HTML. */}
     <section ref={desktopRef} className={`${styles.desktop} ${styles.monitorDesktop}`}
-      style={{pointerEvents:desktop ? 'auto' : 'none', opacity:celebrating || photo || outside || notebook || upliance || (wearingGlasses && glassesLens !== 'blur') || (!desktop && (aimingPaper || paperInFlight)) ? 0 : 1}}
+      style={{pointerEvents:desktop ? 'auto' : 'none', opacity:photo || outside || notebook || upliance || (wearingGlasses && glassesLens !== 'blur') ? 0 : 1}}
       inert={desktop ? undefined : ''} aria-hidden={!desktop} aria-label="Vikram’s monitor desktop">
-      <DesktopWorkspace musicPlaying={musicPlaying} room={{lampOn,notebookOpen,notebookPage,wearingGlasses,cityReady,notesReady:stickyNotes.ready,noteCount:stickyNotes.notes.length}} desktopRef={desktopRef} interactive={desktop} visible={!photo&&!outside&&!notebook&&!upliance} reduced={reduced} exitRef={exitButton} onLeave={leave} onOpenUpliance={openUplianceFromMonitor} onOpenNotebook={openNotebookFromMonitor} onOpenNotes={openNotesFromMonitor} onToggleRadio={toggleRadioFromMonitor} onToggleCeiling={()=>roomActions.current.get('ceiling-light')?.()} ceilingOn={ceilingOn} radioPlaying={radioPlaying}/>
+      <DesktopWorkspace celebrating={celebrating} musicPlaying={musicPlaying} roomYear={roomYear} onRequestYear={requestRoomYear} room={{lampOn,notebookOpen,notebookPage,wearingGlasses,cityReady,notesReady:stickyNotes.ready,noteCount:stickyNotes.notes.length}} desktopRef={desktopRef} interactive={desktop} visible={!photo&&!outside&&!notebook&&!upliance} reduced={reduced} exitRef={exitButton} onLeave={leave} onOpenUpliance={openUplianceFromMonitor} onOpenNotebook={openNotebookFromMonitor} onOpenNotes={openNotesFromMonitor} onToggleLamp={()=>roomActions.current.get('desk-lamp')?.()} lampOn={lampOn} onToggleRadio={toggleRadioFromMonitor} onToggleCeiling={()=>roomActions.current.get('ceiling-light')?.()} ceilingOn={ceilingOn} radioPlaying={radioPlaying}/>
     </section>
     </div>
     {aimingPaper && <PaperFlick remaining={paperInventory.length} controls={paperControls} onCancel={() => { setAimingPaper(false); requestAnimationFrame(() => enterButton.current?.focus({preventScroll:true})); }}/>}

@@ -20,7 +20,7 @@ import OptimisedFrames from './OptimisedFrames';
 import InteractiveObject from './InteractiveObject';
 import NoteProjection from './NoteProjection';
 import StickyNotes from './StickyNotes';
-import { noteBoundsForWidth, notePlacementRect } from './notePlacement.mjs';
+import { NOTE_EDITOR_Z, NOTE_WALL_Z, noteBoundsForWidth, notePlacementRect } from './notePlacement.mjs';
 import CozyRoom from './CozyRoom';
 import DeskLamp from './DeskLamp';
 import FlyingPlane from './FlyingPlane';
@@ -33,6 +33,7 @@ import Stool from './Stool';
 import Upliance from './Upliance';
 import Chair from './Chair';
 import Keyboard from './Keyboard';
+import { DEFAULT_ROOM_YEAR, roomHasObject } from './roomYears.mjs';
 import { distanceForZoomProgress, roomZoomBridge, ROOM_MAX_DISTANCE, ROOM_MIN_DISTANCE, zoomMultiplier, zoomProgressForDistance } from './cameraZoom.mjs';
 import { ACESFilmicToneMapping, Euler, Quaternion, Matrix4, SRGBColorSpace, TextureLoader, TOUCH, Vector3 } from 'three';
 
@@ -56,7 +57,16 @@ function FirstRoomFrame({ onReady }) {
   return null;
 }
 
-function Monitor({ basketScore, reduced, onEnter, desktopRef, desktop, musicPlaying, onReady }) {
+function WorkBuildPlaceholder({ year }) {
+  if (year !== '2025') return null;
+  return <group position={[5.2, .45, -3.02]}>
+    <mesh castShadow receiveShadow><boxGeometry args={[3.1, 2.45, .14]}/><meshStandardMaterial color="#26382f" roughness={.86}/></mesh>
+    <mesh position={[0, .93, .08]}><boxGeometry args={[2.75, .16, .04]}/><meshStandardMaterial color="#7e8c6c" roughness={.8}/></mesh>
+    {[[-.72,.34],[.72,.34],[-.72,-.48],[.72,-.48]].map(([x,y])=><mesh key={`${x}-${y}`} position={[x,y,.09]}><boxGeometry args={[1.08,.62,.035]}/><meshStandardMaterial color="#667768" roughness={.9}/></mesh>)}
+  </group>;
+}
+
+function Monitor({ basketScore, reduced, onEnter, desktopRef, desktop, onReady }) {
   const screen = useRef(null);
   const { camera, size, invalidate } = useThree();
   const projection = useMemo(() => new Matrix4(), []);
@@ -109,12 +119,11 @@ function Monitor({ basketScore, reduced, onEnter, desktopRef, desktop, musicPlay
   });
   const { scene } = useLoader(GLTFLoader, '/models/monitor.glb');
   useEffect(() => { scene.traverse(object => { if (object.isMesh) { object.castShadow = true; object.receiveShadow = true; } }); }, [scene]);
-  const preview = useLoader(TextureLoader, '/images/workbench-desktop-preview.svg');
-  const music = useLoader(TextureLoader, '/images/workbench-desktop-music.svg');
-  const wallpapers = [preview, music];
+  const preview = useLoader(TextureLoader, '/images/workbench-about-pixel.svg');
   useEffect(() => { onReady(); }, [onReady]);
-  wallpapers.forEach(texture => { texture.colorSpace = SRGBColorSpace; });
-  const wallpaper = wallpapers[musicPlaying ? 1 : 0];
+  preview.colorSpace = SRGBColorSpace;
+  // Lens passes can only filter the WebGL texture, so use the static About Me preview for either radio state.
+  const wallpaper = preview;
   return <group position={[1.5, 0, 0]} rotation={[0, Math.PI, 0]} scale={10} onClick={event => { event.stopPropagation(); if (event.delta <= 5) onEnter(); }}>
     <group position={[.196344, -.15, 0]}>
       <primitive object={scene} />
@@ -131,7 +140,7 @@ const ROOM_TARGET = [0, .2128, -.51];
 const ROOM_MIN_AZIMUTH = -22 * Math.PI / 180;
 const ROOM_MAX_AZIMUTH = 1.2;
 
-function Camera({ paperOrbit, photo, pauseCamera, upliance, onUplianceArrive, entered, outside, notebook, citySettings, reduced, onArrive, interactionBlocked, noteMode, noteX, noteY, roomResetKey }) {
+function Camera({ paperOrbit, photo, pauseCamera, upliance, onUplianceArrive, entered, outside, notebook, citySettings, reduced, onArrive, interactionBlocked, noteMode, noteX, noteY, notePlacement, roomResetKey }) {
   const { camera, gl, size, invalidate } = useThree();
   const { cameraX, cameraY, cameraZ, targetX, targetY, targetZ, fov } = citySettings;
   const roomCameraZ=size.width<=760?Math.max(18.5,11.2/(size.width/size.height)):14.8;
@@ -275,9 +284,10 @@ function Camera({ paperOrbit, photo, pauseCamera, upliance, onUplianceArrive, en
     // Fill the viewport with the open spread, seen almost straight down.
     const notebookDistance = Math.max(.82, 1.15 / (size.width / size.height)) / Math.tan(21 * Math.PI / 180) * 1.2;
     const notebookCamera = new Vector3(...NOTEBOOK_TARGET).add(new Vector3(0, .96, .28).multiplyScalar(notebookDistance));
-    const noteDistance = Math.max(.43, .43/(size.width/size.height))/Math.tan(21*Math.PI/180)*1.2;
+    // Fit the full square sheet vertically; the previous width-only calculation cropped and offset the note.
+    const noteDistance = Math.max(.36,.36/(size.width/size.height))/Math.tan(21*Math.PI/180)*1.25;
     const noteArea = notePlacementRect(noteBoundsForWidth(size.width));
-    const noteTarget = noteMode==='wall' ? new Vector3(noteArea.x,noteArea.y,-3.075) : noteMode==='read' ? new Vector3(noteX,noteY,-3.075) : new Vector3(3.7,-1.397,.8);
+    const noteTarget = noteMode==='wall' ? new Vector3(noteArea.x,noteArea.y,NOTE_WALL_Z) : noteMode==='read' ? new Vector3(noteX,noteY,NOTE_EDITOR_Z) : new Vector3(notePlacement.x,notePlacement.y+.053,notePlacement.z);
     const noteCamera = noteMode==='wall'
       ? noteTarget.clone().add(new Vector3(0,0,Math.max(2.5,(noteArea.width/2+.415)/(size.width/size.height))/Math.tan(21*Math.PI/180)))
       : noteTarget.clone().add(noteMode==='read'?new Vector3(0,0,noteDistance):new Vector3(0,.995,.1).multiplyScalar(noteDistance));
@@ -289,7 +299,7 @@ function Camera({ paperOrbit, photo, pauseCamera, upliance, onUplianceArrive, en
     const photoCamera = photoTarget.clone().add(new Vector3(0, 0, photoDistance));
     transition.current = { from:camera.position.clone(), fovFrom:camera.fov, fovTo:outside ? fov : 42, lookFrom:lookTarget.current.clone(), lookTo:photo ? photoTarget : upliance ? applianceTarget : noteMode ? noteTarget : notebook ? new Vector3(...NOTEBOOK_TARGET) : outside ? new Vector3(targetX,targetY,targetZ) : (entered ? new Vector3(1.5, .2128, -.51) : new Vector3(...ROOM_TARGET)), to:photo ? photoCamera : upliance ? applianceCamera : noteMode ? noteCamera : notebook ? notebookCamera : outside ? new Vector3(cameraX,cameraY,cameraZ) : entered ? new Vector3(1.5, .2128 + .139173 * distance, -.51 + .990268 * distance)  : (resetRoom ? roomHome.clone() : roomPosition.current?.clone() || roomHome.clone()), duration:entrance ? 2.4 : 1.45, elapsed:entrance && !reduced ? -.35 : noteMode==='wall' && !reduced ? -.65 : 0, done:false };
     invalidate();
-  }, [photo, upliance, noteMode, noteX, noteY, entered, outside, notebook, cameraX, cameraY, cameraZ, targetX, targetY, targetZ, fov, reduced, camera, size.width, size.height, roomHome, roomResetKey, invalidate]);
+  }, [photo, upliance, noteMode, noteX, noteY, notePlacement, entered, outside, notebook, cameraX, cameraY, cameraZ, targetX, targetY, targetZ, fov, reduced, camera, size.width, size.height, roomHome, roomResetKey, invalidate]);
   useFrame((state, dt) => {
     const t = transition.current;
     if (pauseCamera) return;
@@ -325,7 +335,7 @@ function Camera({ paperOrbit, photo, pauseCamera, upliance, onUplianceArrive, en
   }, -1);
   return null;
 }
-export default function MonitorScene({ optimised = false, paperInventory, onPickUpPaper, basketScore, celebrating, onBasket, photo, onPhotoOpen, musicPlaying, onPlaybackChange, onCeilingPowerChange, onNotebookTear, onPaperMotionChange, aimingPaper, heldPaper, paperControls, onPaperThrown, tornPages, keyboardTarget, registerRoomAction, upliance, upliancePage, uplianceArrived, uplianceControlsRef, onUplianceArrive, onUplianceSelect, propPlacement, glassesPlacement, stickyNotePlacement, lensSettings, entered, reduced, onEnter, onArrive, lampOn, onLampToggle, onWindowSelect, outside, onCityReady, desktopRef, desktop, notebook, notebookPage, onNotebookOpen, onHover, notebookOpen, onNotebookPageChange, onNotebookExit, citySettings, wearingGlasses, glassesLens, glassesLeaving, onWearGlasses, stickyNotes, noteEditorRef, roomResetKey }) {
+export default function MonitorScene({ roomYear=DEFAULT_ROOM_YEAR, optimised = false, paperInventory, onPickUpPaper, basketScore, celebrating, onBasket, photo, onPhotoOpen, onPlaybackChange, onCeilingPowerChange, onNotebookTear, onPaperMotionChange, aimingPaper, heldPaper, paperControls, onPaperThrown, tornPages, keyboardTarget, registerRoomAction, upliance, upliancePage, uplianceArrived, uplianceControlsRef, onUplianceArrive, onUplianceSelect, propPlacement, glassesPlacement, stickyNotePlacement, lensSettings, entered, reduced, onEnter, onArrive, lampOn, onLampToggle, onWindowSelect, outside, onCityReady, desktopRef, desktop, notebook, notebookPage, onNotebookOpen, onHover, notebookOpen, onNotebookPageChange, onNotebookExit, citySettings, wearingGlasses, glassesLens, glassesLeaving, onWearGlasses, stickyNotes, noteEditorRef, roomResetKey }) {
   const { sceneReady } = useAfterHoursTransition();
   const onRoomReady = useCallback(() => {
     sceneReady();
@@ -338,7 +348,9 @@ export default function MonitorScene({ optimised = false, paperInventory, onPick
   const [uplianceReady,setUplianceReady]=useState(false);
   const markMonitorReady=useCallback(()=>setMonitorReady(true),[]);
   const markUplianceReady=useCallback(()=>setUplianceReady(true),[]);
-  const screensReady=monitorReady&&uplianceReady;
+  const currentRoom=roomYear==='2026';
+  const showObject=id=>roomHasObject(roomYear,id);
+  const screensReady=monitorReady&&(!currentRoom||uplianceReady);
   const [roomAssetsReady,setRoomAssetsReady]=useState(false);
   const [notebookImagesReady,setNotebookImagesReady]=useState(false);
   const markRoomAssetsReady=useCallback(()=>setRoomAssetsReady(true),[]);
@@ -347,7 +359,7 @@ export default function MonitorScene({ optimised = false, paperInventory, onPick
   return <Canvas events={roomEvents} onPointerMissed={()=>{if(notebook)onNotebookExit();}} shadows camera={{ position:[6, 3.5, 14.8], fov:42 }} dpr={optimised ? (notebook || upliance ? 1 : .75) : notebook || upliance ? [1, 2] : 1} frameloop={optimised ? "never" : "demand"} gl={{alpha:true, antialias:true, toneMapping:ACESFilmicToneMapping, toneMappingExposure:.85}}>
     <OptimisedFrames enabled={optimised}/>
     {screensReady && <FirstRoomFrame onReady={onRoomReady}/>}
-    {screensReady && <PreloadAssets onReady={markRoomAssetsReady} onError={markRoomAssetsReady}/>}
+    {screensReady && currentRoom && <PreloadAssets onReady={markRoomAssetsReady} onError={markRoomAssetsReady}/>}
     <StationaryShadows/>
     <color attach="background" args={['#091321']} />
     <group onClick={event=>{if(notebook && event.delta<=5){event.stopPropagation();onNotebookExit();}}}>
@@ -357,25 +369,26 @@ export default function MonitorScene({ optimised = false, paperInventory, onPick
     <hemisphereLight args={['#c8d4d0', '#494237', outside ? citySettings.ambient : .65]} />
     <directionalLight userData={{cacheStationaryShadow:true}} position={[3, 5, 4]} intensity={.8} color="#c7d5df" castShadow shadow-mapSize={[1024, 1024]} shadow-camera-left={-9} shadow-camera-right={9} shadow-camera-top={8} shadow-camera-bottom={-8} shadow-normalBias={.04} />
     <pointLight position={[-4.6, 2, -2.5]} intensity={18} distance={12} decay={2} color="#8abbd9" />
-    <Suspense fallback={null}><InteractiveObject focused={keyboardTarget==='monitor'} label="Monitor · explore my work" onHover={onHover}><Monitor basketScore={basketScore} reduced={reduced} onReady={markMonitorReady} musicPlaying={musicPlaying} onEnter={notebook ? onNotebookExit : onEnter} desktopRef={desktopRef} desktop={desktop} /></InteractiveObject></Suspense>
-    {screensReady && <PhotoFrame reduced={reduced} focused={photo} keyboardFocused={keyboardTarget==='photo'} onSelect={onPhotoOpen} onHover={onHover}/>}
-    <Camera paperOrbit={paperOrbit} photo={photo} pauseCamera={aimingPaper} {...{upliance,onUplianceArrive,entered,outside,notebook,citySettings,reduced,onArrive,roomResetKey}} noteMode={stickyNotes.editor ? (stickyNotes.editor.id?'read':'write') : stickyNotes.placing?'wall':null} noteX={stickyNotes.editor?.x} noteY={stickyNotes.editor?.y} interactionBlocked={aimingPaper || lightDragging || stickyNotes.dragging || !!stickyNotes.editor || !!stickyNotes.placing}/>
-    {screensReady && <Suspense fallback={null}><PaperBalls reduced={reduced} orbitControls={paperOrbit} onScore={onBasket} onMotionChange={onPaperMotionChange} aiming={aimingPaper} heldPaper={heldPaper} controls={paperControls} onThrown={onPaperThrown} canThrow={!photo && !entered && !outside && !notebook && !upliance && !stickyNotes.editor && !stickyNotes.placing}/></Suspense>}
-    {screensReady && <Suspense fallback={null}><BasketballHoop/></Suspense>}
-    {screensReady && <Suspense fallback={null}><PaperPile inventory={paperInventory} aiming={aimingPaper} onPickUp={onPickUpPaper} keyboardFocused={keyboardTarget==='paper-pile'} registerRoomAction={registerRoomAction} onHover={onHover} interactive={!aimingPaper&&!photo&&!entered&&!outside&&!notebook&&!upliance&&!stickyNotes.editor&&!stickyNotes.placing}/></Suspense>}
-    <StickyNotes api={stickyNotes} onHover={onHover} reduced={reduced} placement={stickyNotePlacement}/>
-    {stickyNotes.editor && <NoteProjection editor={stickyNotes.editor} elementRef={noteEditorRef} placement={stickyNotePlacement}/>}
+    <Suspense fallback={null}><InteractiveObject focused={keyboardTarget==='monitor'} label="Monitor · explore my work" onHover={onHover}><Monitor basketScore={basketScore} reduced={reduced} onReady={markMonitorReady} onEnter={notebook ? onNotebookExit : onEnter} desktopRef={desktopRef} desktop={desktop} /></InteractiveObject></Suspense>
+    <Suspense fallback={null}><Radio visible={showObject('radio')} onPlaybackChange={onPlaybackChange} keyboardFocused={keyboardTarget==='radio'} registerRoomAction={registerRoomAction} onHover={onHover}/></Suspense>
+    {screensReady && showObject('photo') && <PhotoFrame reduced={reduced} focused={photo} keyboardFocused={keyboardTarget==='photo'} onSelect={onPhotoOpen} onHover={onHover}/>}
+    <Camera paperOrbit={paperOrbit} photo={photo} pauseCamera={aimingPaper} {...{upliance,onUplianceArrive,entered,outside,notebook,citySettings,reduced,onArrive,roomResetKey}} noteMode={stickyNotes.editor ? (stickyNotes.editor.id?'read':'write') : stickyNotes.placing?'wall':null} noteX={stickyNotes.editor?.x} noteY={stickyNotes.editor?.y} notePlacement={stickyNotePlacement} interactionBlocked={aimingPaper || lightDragging || stickyNotes.dragging || !!stickyNotes.editor || !!stickyNotes.placing}/>
+    {screensReady && currentRoom && <Suspense fallback={null}><PaperBalls reduced={reduced} orbitControls={paperOrbit} onScore={onBasket} onMotionChange={onPaperMotionChange} aiming={aimingPaper} heldPaper={heldPaper} controls={paperControls} onThrown={onPaperThrown} canThrow={!photo && !entered && !outside && !notebook && !upliance && !stickyNotes.editor && !stickyNotes.placing}/></Suspense>}
+    {screensReady && currentRoom && <Suspense fallback={null}><BasketballHoop/></Suspense>}
+    {screensReady && showObject('paper-pile') && <Suspense fallback={null}><PaperPile inventory={paperInventory} aiming={aimingPaper} onPickUp={onPickUpPaper} keyboardFocused={keyboardTarget==='paper-pile'} registerRoomAction={registerRoomAction} onHover={onHover} interactive={!aimingPaper&&!photo&&!entered&&!outside&&!notebook&&!upliance&&!stickyNotes.editor&&!stickyNotes.placing}/></Suspense>}
+    {currentRoom && <StickyNotes api={stickyNotes} onHover={onHover} reduced={reduced} placement={stickyNotePlacement}/>}
+    {currentRoom && stickyNotes.editor && <NoteProjection editor={stickyNotes.editor} elementRef={noteEditorRef} placement={stickyNotePlacement}/>}
     {screensReady && <Suspense fallback={null}><Chair/></Suspense>}
-    {screensReady && <Suspense fallback={null}><Plant/></Suspense>}
-    {screensReady && <Suspense fallback={null}><Fireflies optimised={optimised} reduced={reduced} onLightHit={markFireflyLightHit}/></Suspense>}
-    {screensReady && <Suspense fallback={null}><Stool placement={propPlacement?.stool}/></Suspense>}
-    {screensReady && <Suspense fallback={null}><Pascal placement={propPlacement?.pascal}/></Suspense>}
-    <Suspense fallback={null}><Upliance celebrating={celebrating} preloadArtwork={roomAssetsReady&&notebookImagesReady} onReady={markUplianceReady} keyboardFocused={keyboardTarget==='upliance'} registerRoomAction={registerRoomAction} controlsRef={uplianceControlsRef} focused={!!upliance} zoomComplete={uplianceArrived} workPage={upliancePage} onSelect={onUplianceSelect} placement={propPlacement?.upliance} reduced={reduced} interactive={!photo && !entered && !outside && !notebook && !upliance && !stickyNotes.editor && !stickyNotes.placing} onHover={onHover}/></Suspense>
-    {screensReady && <Suspense fallback={null}><CeilingLight optimised={optimised} fireflyHit={fireflyLightHit} onPowerChange={onCeilingPowerChange} basketScore={basketScore} reduced={reduced} onDragging={setLightDragging} interactive={!photo&&!entered&&!outside&&!notebook&&!upliance&&!stickyNotes.editor&&!stickyNotes.placing} keyboardFocused={keyboardTarget==='ceiling-light'} registerRoomAction={registerRoomAction} onHover={onHover}/></Suspense>}
-    <CozyRoom keyboardTarget={keyboardTarget} registerRoomAction={registerRoomAction} reduced={reduced} wearingGlasses={wearingGlasses} glassesPlacement={glassesPlacement} glassesLens={glassesLens} onWearGlasses={onWearGlasses} onWindowSelect={notebook ? onNotebookExit : onWindowSelect} onHover={onHover} />
+    {screensReady && currentRoom && <Suspense fallback={null}><Plant/></Suspense>}
+    {screensReady && currentRoom && <Suspense fallback={null}><Fireflies optimised={optimised} reduced={reduced} onLightHit={markFireflyLightHit}/></Suspense>}
+    {screensReady && currentRoom && <Suspense fallback={null}><Stool placement={propPlacement?.stool}/></Suspense>}
+    {screensReady && currentRoom && <Suspense fallback={null}><Pascal placement={propPlacement?.pascal}/></Suspense>}
+    {currentRoom && <Suspense fallback={null}><Upliance celebrating={celebrating} preloadArtwork={roomAssetsReady&&notebookImagesReady} onReady={markUplianceReady} keyboardFocused={keyboardTarget==='upliance'} registerRoomAction={registerRoomAction} controlsRef={uplianceControlsRef} focused={!!upliance} zoomComplete={uplianceArrived} workPage={upliancePage} onSelect={onUplianceSelect} placement={propPlacement?.upliance} reduced={reduced} interactive={!photo && !entered && !outside && !notebook && !upliance && !stickyNotes.editor && !stickyNotes.placing} onHover={onHover}/></Suspense>}
+    {screensReady && showObject('ceiling-light') && <Suspense fallback={null}><CeilingLight optimised={optimised} fireflyHit={fireflyLightHit} onPowerChange={onCeilingPowerChange} basketScore={basketScore} reduced={reduced} onDragging={setLightDragging} interactive={!photo&&!entered&&!outside&&!notebook&&!upliance&&!stickyNotes.editor&&!stickyNotes.placing} keyboardFocused={keyboardTarget==='ceiling-light'} registerRoomAction={registerRoomAction} onHover={onHover}/></Suspense>}
+    <CozyRoom roomYear={roomYear} keyboardTarget={keyboardTarget} registerRoomAction={registerRoomAction} reduced={reduced} wearingGlasses={wearingGlasses} glassesPlacement={glassesPlacement} glassesLens={glassesLens} onWearGlasses={onWearGlasses} onWindowSelect={notebook ? onNotebookExit : onWindowSelect} onHover={onHover} />
+    {screensReady && <WorkBuildPlaceholder year={roomYear}/>}
     {screensReady && <InteractiveObject moving focused={keyboardTarget==='notebook'} label="Notebook · ideas & sketches" onHover={onHover}><Notebook onImagesReady={markNotebookImagesReady} onTear={onNotebookTear} canTear={true} tornPages={tornPages} focused={notebook} open={notebookOpen} onPageChange={onNotebookPageChange} page={notebookPage} reduced={reduced} onOpen={onNotebookOpen} /></InteractiveObject>}
     {screensReady && <Suspense fallback={null}><Keyboard /></Suspense>}
-    {screensReady && <Suspense fallback={null}><Radio onPlaybackChange={onPlaybackChange} keyboardFocused={keyboardTarget==='radio'} registerRoomAction={registerRoomAction} onHover={onHover}/></Suspense>}
     {screensReady && <Suspense fallback={null}><InteractiveObject focused={keyboardTarget==='desk-lamp'} label={lampOn ? "Lamp · turn off" : "Lamp · turn on"} onHover={onHover}><DeskLamp basketScore={basketScore} reduced={reduced} on={lampOn} registerRoomAction={registerRoomAction} onToggle={notebook ? onNotebookExit : onLampToggle} /></InteractiveObject></Suspense>}
     <pointLight position={[1.5,.15,.1]} color="#9cc8df" intensity={3} distance={5} />
     </group>

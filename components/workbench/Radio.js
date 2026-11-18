@@ -2,15 +2,50 @@
 // ProductWorkbench consumes playback state to coordinate the projected desktop mascot's music pose.
 import useTrackedState from './useTrackedState';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useLoader, useThree } from '@react-three/fiber';
+import { useFrame, useLoader, useThree } from '@react-three/fiber';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { Box3, Vector3 } from 'three';
 import InteractiveObject from './InteractiveObject';
 
 const RADIO_VOLUME = .4 * .7 * .6 * .4 * .5;
 
-export default function Radio({ keyboardFocused, registerRoomAction, onHover, onPlaybackChange }) {
+function MusicNotes({ playing }) {
+  const notes=useRef([]);
+  const {invalidate}=useThree();
+  const stoppedAt=useRef(null);
+  const [visible,setVisible]=useState(playing);
+  useEffect(()=>{
+    if(playing){stoppedAt.current=null;setVisible(true);return;}
+    if(visible){stoppedAt.current=performance.now();invalidate();}
+  },[playing,visible,invalidate]);
+  useFrame(({clock})=>{
+    if(!visible)return;
+    const elapsed=clock.elapsedTime;
+    const ending=stoppedAt.current===null?1:Math.max(0,1-(performance.now()-stoppedAt.current)/520);
+    notes.current.forEach((note,index)=>{
+      if(!note)return;
+      const progress=(elapsed*.34+index*.31)%1;
+      const opacity=Math.sin(progress*Math.PI)*.92*ending;
+      note.position.set(.1+index*.16+Math.sin(elapsed*1.7+index)*.045,.5+progress*1.1,.31+index*.018);
+      note.rotation.z=-.16+Math.sin(elapsed*1.9+index)*.1;
+      note.scale.setScalar(.72+progress*.26);
+      note.traverse(node=>{if(node.material?.transparent)node.material.opacity=opacity;});
+    });
+    if(!ending){setVisible(false);return;}
+    invalidate();
+  });
+  return visible?<group>
+    {[0,1,2].map(index=><group key={index} ref={node=>{notes.current[index]=node;}}>
+      {index===0&&<><mesh position={[0,0,0]}><sphereGeometry args={[.055,10,8]}/><meshBasicMaterial color="#f1d28b" transparent depthWrite={false} toneMapped={false}/></mesh><mesh position={[.045,.125,0]}><boxGeometry args={[.028,.25,.028]}/><meshBasicMaterial color="#f1d28b" transparent depthWrite={false} toneMapped={false}/></mesh><mesh position={[.105,.235,0]} rotation={[0,0,-.36]}><boxGeometry args={[.12,.028,.028]}/><meshBasicMaterial color="#f1d28b" transparent depthWrite={false} toneMapped={false}/></mesh></>}
+      {index===1&&<><mesh position={[0,0,0]} scale={[1.25,.8,1]}><sphereGeometry args={[.055,10,8]}/><meshBasicMaterial color="#a8d9cb" transparent depthWrite={false} toneMapped={false}/></mesh><mesh position={[.05,.15,0]}><boxGeometry args={[.028,.3,.028]}/><meshBasicMaterial color="#a8d9cb" transparent depthWrite={false} toneMapped={false}/></mesh></>}
+      {index===2&&<><mesh position={[-.09,0,0]}><sphereGeometry args={[.05,10,8]}/><meshBasicMaterial color="#f1d28b" transparent depthWrite={false} toneMapped={false}/></mesh><mesh position={[.1,.025,0]}><sphereGeometry args={[.05,10,8]}/><meshBasicMaterial color="#f1d28b" transparent depthWrite={false} toneMapped={false}/></mesh><mesh position={[-.045,.135,0]}><boxGeometry args={[.026,.27,.028]}/><meshBasicMaterial color="#f1d28b" transparent depthWrite={false} toneMapped={false}/></mesh><mesh position={[.145,.16,0]}><boxGeometry args={[.026,.27,.028]}/><meshBasicMaterial color="#f1d28b" transparent depthWrite={false} toneMapped={false}/></mesh><mesh position={[.05,.285,0]} rotation={[0,0,.15]}><boxGeometry args={[.22,.03,.028]}/><meshBasicMaterial color="#f1d28b" transparent depthWrite={false} toneMapped={false}/></mesh></>}
+    </group>)}
+  </group>:null;
+}
+
+export default function Radio({ visible=true, keyboardFocused, registerRoomAction, onHover, onPlaybackChange }) {
   const audio = useRef(null);
+  const fadeFrame = useRef(null);
   const hoverCallback = useRef(onHover);
   useEffect(()=>{hoverCallback.current=onHover;},[onHover]);
   const staticContext=useRef(null);
@@ -61,7 +96,7 @@ export default function Radio({ keyboardFocused, registerRoomAction, onHover, on
     player.addEventListener('waiting',stopped);
     player.addEventListener('ended',stopped);
     player.addEventListener('error', error);
-    requested.current = true;
+    requested.current = visible;
     // Try on landing; browsers that block autoplay retry on the first interaction.
     const start = () => {
       if (!requested.current || audio.current !== player || !player.paused) return;
@@ -72,7 +107,7 @@ export default function Radio({ keyboardFocused, registerRoomAction, onHover, on
     };
     document.addEventListener('pointerdown', start);
     document.addEventListener('keydown', start);
-    start();
+    if(visible)start();
     return () => {
       requested.current = false;
       document.removeEventListener('pointerdown', start);
@@ -87,6 +122,22 @@ export default function Radio({ keyboardFocused, registerRoomAction, onHover, on
     };
   // Own the player for the mounted radio's lifetime, not the hover callback's lifetime.
   }, []);
+  useEffect(() => {
+    const player=audio.current;
+    cancelAnimationFrame(fadeFrame.current);
+    if(!player)return;
+    if(visible){player.volume=RADIO_VOLUME;return;}
+    if(player.paused){requested.current=false;setOn(false);player.volume=RADIO_VOLUME;return;}
+    const started=performance.now(),startVolume=player.volume;
+    const fade=now=>{
+      const progress=Math.min(1,(now-started)/520);
+      player.volume=startVolume*(1-progress);
+      if(progress<1){fadeFrame.current=requestAnimationFrame(fade);return;}
+      requested.current=false;player.pause();player.volume=RADIO_VOLUME;setOn(false);
+    };
+    fadeFrame.current=requestAnimationFrame(fade);
+    return ()=>cancelAnimationFrame(fadeFrame.current);
+  },[visible]);
   const toggle = useCallback(event => {
     event?.stopPropagation();
     if ((event?.delta ?? 0) > 5 || !audio.current) return;
@@ -110,7 +161,7 @@ export default function Radio({ keyboardFocused, registerRoomAction, onHover, on
       onHover('Radio · unable to play, tap to retry');
     });
   },[failed,onHover,playStatic]);
-  useEffect(()=>registerRoomAction?.('radio',()=>toggle()),[registerRoomAction,toggle]);
+  useEffect(()=>visible ? registerRoomAction?.('radio',()=>toggle()) : undefined,[visible,registerRoomAction,toggle]);
   useTrackedState({radio:on});
   const { scene } = useLoader(GLTFLoader, '/models/radio/optimized.gltf');
   const model = useMemo(() => {
@@ -125,9 +176,10 @@ export default function Radio({ keyboardFocused, registerRoomAction, onHover, on
     return clone;
   }, [scene]);
   return <InteractiveObject focused={keyboardFocused} label={failed ? 'Radio · tap to retry' : on ? 'Radio · turn music off' : 'Radio · play music'} onHover={onHover}>
-    <group position={[-3.65,-1.49,1.05]} rotation={[0,.12,0]} onClick={toggle}><primitive object={model}/>
+    <group visible={visible} position={[-3.65,-1.49,1.05]} rotation={[0,.12,0]} onClick={toggle}><primitive object={model}/>
       <mesh position={[.44,.6,.237]}><sphereGeometry args={[.029,12,8]}/><meshStandardMaterial color="#212921" roughness={.7}/></mesh>
       <mesh position={[.44,.6,.258]}><sphereGeometry args={[.018,12,8]}/><meshStandardMaterial color={on?'#b9ef89':'#40513b'} emissive="#8ee65c" emissiveIntensity={on?2.5:0} toneMapped={false}/></mesh>
+      <MusicNotes playing={on}/>
     </group>
   </InteractiveObject>;
 }

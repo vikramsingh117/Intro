@@ -245,15 +245,29 @@ The mascot adds stateful feedback: waking, sleeping, walking, exercise, music po
 
 About Me fills the monitor with an SVG desk scene and a compact year selector. Its artwork uses stepped paths, supplied profile and internship logos, CSS Modules, and the bundled pixel font. It adds no rendering library or sprite-sheet dependency. A decorative loading bar and opening zoom introduce the room; the bar is timed presentation, not download progress.
 
+Each logical SVG item is positioned through `pixelRoomLayout.mjs` on the shared 480 × 240 scene. The `2021`, `2025`, and `2026` sections expose copy-paste-friendly `{ x, y, width, height }` entries for the window, desk, lamp, notebook, computer, WORK / BUILD board, radio, chair, and year-specific props. `PixelDeskScene` applies the same transform to the art and derives interactive hotspot bounds from it, so repositioning or resizing an item does not require editing path data or manually realigning its button. Omitting an item from a year hides it. The source bounds live separately in `PIXEL_ITEM_BOUNDS` and normally do not need art-direction edits.
+
+Appending `?pixel-editor=1` to the portfolio URL enables the owner layout editor without exposing controls in the ordinary experience. The editor supports SVG-item or dropdown selection, live `x`, `y`, `width`, and `height` sliders with numeric inputs, a selection outline, per-year/all-year reset, and a copy-ready JSON block containing every year. Drafts persist locally under `pixel-room-layout-draft-v3`, so a refresh does not discard unfinished placement work. Interactive object clicks select their owning item while editor mode is active rather than triggering the room action.
+
+Example final-position handoff:
+
+```js
+'2025': {
+  lamp: { x: 121, y: 113, width: 54, height: 53 },
+  notebook: { x: 156, y: 148, width: 51, height: 24 },
+  'work-board': { x: 308, y: 92, width: 57, height: 69 },
+}
+```
+
 The timeline has three major stops, represented internally as month offsets `2`, `56`, and `60`. Previous/next buttons and arrow keys cycle through **2021 → 2025 → 2026 → 2021**, including reverse wrapping. Animation direction follows the selected arrow even when the year wraps. Navigation is guarded during the introduction and active transition.
 
 | Chapter | Scene and content |
 | --- | --- |
-| 2021 | A plain laptop, small wooden chair, notebook, and chalk height mark at 5′2″. The notebook presents school and college beginnings, entrance exams, Pokémon modding, and doodles. |
-| 2025 | An upgraded monitor and chair, coding profiles, internship logos, and a 5′4″ mark. The notebook combines college and coding notes, including 20+ Vercel projects. |
-| 2026 | A night window, floor-standing plant, hoop, desk radio, sticky notes, ceiling light above upliance, a supplied Upliance logo badge on the appliance, and a 5′6″ mark. The desk drawer moves to the left. Object placement follows the corresponding 3D room. |
+| 2021 | The shared monitor, chair, keyboard, left-drawer desk and toggleable desk lamp, plus a notebook and chalk height mark at 5′2″. The notebook presents school and college beginnings, entrance exams, Pokémon modding, and doodles. |
+| 2025 | The same monitor, chair, keyboard, drawer desk, window, lamp and notebook positions. The WORK / BUILD board sits separately at `{ x: 308, y: 92, width: 57, height: 69 }`. The radio uses the 2026 placement, alongside a 5′4″ mark. |
+| 2026 | The same persistent furniture and notebook/lamp positions plus a night window, floor-standing plant, hoop, desk radio, sticky notes, ceiling light above upliance, a small generic faceless portrait replacing the WORK / BUILD board, a supplied Upliance logo badge on the appliance, and a 5′6″ mark. Object placement follows the corresponding 3D room. |
 
-`Presence` retains departing SVG groups until the half-second transition finishes. CSS keyframes scale items through intermediate pop-in and pop-out shapes, with staggered arrivals contained within the same 500 ms interval. Chairs use this animation too; the drawer transitions between positions. Window weather crossfades with the year. Reduced motion skips these transitions and the introduction. SVG artwork is paired with labelled HTML buttons positioned over interactive objects; decorative objects do not need click actions.
+`Presence` retains departing year-specific SVG groups until the half-second transition finishes. CSS keyframes scale those items through intermediate pop-in and pop-out shapes, with staggered arrivals contained within the same 500 ms interval. The monitor, chair, keyboard, drawer desk, lamp and notebook reuse the same positions without presence animations. Window weather crossfades with the year. Reduced motion skips these transitions and the introduction. SVG artwork is paired with labelled HTML buttons positioned over interactive objects; hotspot coordinates follow their owning layout items. The pixel lamp's lit state follows the physical desk lamp, and its hotspot invokes the registered 3D lamp action in every year. Removing the WORK / BUILD item from 2026 also removes its associated historical-board hotspots.
 
 The 2021 and 2025 monitors embed separately deployed historical portfolios, with chapter notes beside them and an external full-page link. Their URLs and Git history references are maintained in `portfolioHistory.js`. Embedding still depends on the remote deployment allowing framing and public access; the parent app cannot override a remote framing policy. The 2026 monitor instead performs a 1.2-second zoom, closes About Me, and returns to the real 3D room—the current portfolio.
 
@@ -405,3 +419,45 @@ The value of the project is the coordination across these systems. A convincing 
 - The approved mobile hoop placement is `x: -1.85`, `y: 2.85`, `z: -1.473`, `rotation: -90`, `size: 0.75`. The renderer, rim scoring, and backboard collision all use `hoopForWidth`; the desktop placement is unchanged. Temporary mobile placement sliders have been removed.
 
 Visual and listening verification is handled by the owner; no browser checks were performed for these changes. Lint and targeted notebook, artwork, shadow-motion, and basketball tests provide code-level validation.
+
+## 20. Planned: synchronize the About Me timeline with the physical room
+
+**Status: implementation started.** The shared year manifest, lifted `roomYear`, desktop callback path, active-object gating, persistent furniture policy, persistent synchronized desk lamp and notebook placement, 2025 WORK / BUILD placeholder, 2026 pixel photo frame, and 2021 radio fade are implemented. Selecting 2021, 2025, or 2026 in the monitor's About Me timeline now also selects that chapter's physical 3D room. The initial room remains 2026. Leaving About Me reveals the selected year without a second year switch. The monitor, computer, chair, keyboard, drawer desk, desk lamp, room shell, and camera remain mounted so the transition does not restart the experience. Priority loading, pending/error UI, coordinated crossfades, final period assets, and year-specific light/weather treatment remain planned.
+
+### Ownership and scene definition
+
+`ProductWorkbench` now owns the committed `roomYear` (`2026` initially). It passes `roomYear` and `onRequestYear` through `DesktopWorkspace` and `PortfolioApps` to `AboutJourney`, and passes `roomYear` to `WorkbenchScene`. About Me keeps only its half-second SVG transition state locally and initializes its stop from the committed room year. The shared manifest defines the three stops, month mapping, visible actions, temporary prop groups, and future asset slots. Because the first older-year props are procedural and require no asynchronous load, this slice commits the shared year synchronously; the readiness-gated commit described below belongs to the planned asset-loader phase.
+
+| Layer | 2021 | 2025 | 2026 |
+| --- | --- | --- | --- |
+| Persistent core | Room shell, drawer desk, window, notebook, toggleable desk lamp, monitor/computer, chair, keyboard, projection and camera | Same core | Same core |
+| Period props | None yet | Shared radio and a blank WORK / BUILD holder | Current upliance, hoop, radio, fireflies, plant, ceiling light, sticky notes, glasses, paper balls, pixel photo frame and other current props |
+| Screen content | Historical portfolio and 2021 About Me art | Historical portfolio and 2025 About Me art | Current desktop and 2026 About Me art |
+
+The monitor/computer, chair, keyboard and drawer desk intentionally do not vary by year in either representation. The same desk-lamp graphic, physical lamp model, and 2D notebook/lamp coordinates persist too. The 2025 WORK / BUILD board is independent at its supplied position; its 3D counterpart currently uses a blank wall-mounted holder until the final treatment is supplied. The 2026 2D scene omits that board and its hotspots, using a separately positionable small photo frame in the area instead. No substitute historical computer or chair is planned. A separate year manifest keeps future period additions as data changes rather than scene rewrites.
+
+### State and interaction policy
+
+Changing years should reset *ephemeral physical interaction* state: cancel paper aiming and in-flight balls, clear celebration and hover/keyboard target, remove worn glasses, close an open physical focus or sticky-note editor, and settle the hanging light. The radio remains mounted and interactive in 2025 and 2026. Entering 2021 fades active music over roughly half a second before pausing it and hiding the radio. The existing notebook page and torn-page inventory, sticky-note data, and open desktop windows should be retained for the current visit; they can be used again when their objects return. Do not clear the notebook's existing localStorage entry. If a year change starts while About Me is on the monitor, close only incompatible physical overlays and keep the monitor camera and About Me window open. The shared projection anchor and interaction plane remain stable because the monitor itself is persistent.
+
+Gate scene actions from the manifest: the keyboard object list, hover targets, room action registry, camera focus destinations, and click handlers must not point to hidden props. When an object disappears or becomes inactive, its registration cleanup removes its action. The 2D timeline can continue showing its historical detail views; physical handoff is limited to objects enabled by the active manifest. The 2025 radio is the first older-year handoff. The current historical portfolio iframes remain on demand, not part of room asset loading.
+
+### Loading and transition sequence
+
+1. Keep the first visit focused on the 2026 critical path. Load the physical monitor, initial display and only the models needed for the first visible 2026 frame. Move optional 2026 props out of the current global `PreloadAssets` list; the city already streams after the main room. Keep the radio audio file on its existing entry path only if initial progress is intended to include it; otherwise fetch it on first radio interaction and make that change explicit in the progress UI.
+2. Only after the visitor enters the monitor and About Me is active, schedule a low-priority prefetch of the nearest other year; focus on its year control is another intent signal. Mere background import or mounting of About Me must not start this prefetch. A deliberate year click takes priority over idle prefetch. Load that year's manifest URLs using the *same* GLTF and texture loader/cache keys as the mounted components. GLTF dependencies such as `.bin` and textures must be included by the loader, not counted as independent user-facing scene milestones.
+3. On a year request, retain the current room and 2D selected stop while the target's minimum visible asset set loads. Show a small in-context loading state on the timeline; do not reuse the homepage entry progress bar. Ignore stale completions using a monotonically increasing request ID when users rapidly request different years. If loading fails, keep the old physical year, restore the old 2D selection, and offer Retry.
+4. After assets and their first shader compilation are ready, stage the target group in the existing Canvas, then run the 2D and 3D swap together over roughly 500 ms. Fade/scale or occlude only changing props; do not remount the Canvas, camera, projected desktop, room shell, or shared notebook state. Crossfade lighting and weather, and refresh cached shadows once per settled swap. Respect reduced motion by making the swap immediate after readiness. Commit `roomYear` at the swap point and announce the selected year for assistive technology.
+5. Keep the previous year's parsed assets in the browser/Three loader cache for quick back-and-forth, but unmount its meshes and release year-local animation, audio, listeners, timers, and temporary render targets. Do not call `useLoader.clear` or dispose shared cached geometry/materials during ordinary switches. Bound memory by avoiding prefetch of all years at once; measure cache retention and only add explicit eviction if profiling shows a real memory problem.
+
+Loading starts from an explicit intent or idle hint, not from merely landing on the page. Dynamic imports can split large year-specific React components; separate manifests and `Suspense` boundaries prevent an optional year from blocking 2026 entry. The homepage readiness count covers only the entry-critical set and reaches completion even if 2021/2025 assets have never been requested. A later timeline change has its own ready/error state. Browser HTTP caching and the Three loader cache make revisits fast within the same session; any longer-term guarantee depends on deployment cache headers.
+
+### Implementation order and checks
+
+1. **Started:** define the shared year manifest and audit which current objects are truly year-specific; agree the missing-model art brief and object placement with the owner. The manifest and initial visibility audit exist; the final art brief remains open.
+2. **Implemented for the synchronous first slice:** lift timeline state and wire the callback through the desktop, including reopen/back behavior and the historical monitor view.
+3. **Started:** split the room into persistent core and keyed year prop groups. Persistent furniture now stays mounted in every year, 2025 has a blank WORK / BUILD holder, the radio spans 2025/2026 and fades out for 2021, and keyboard/click actions are gated against the active manifest; final holder content and coordinated prop transitions remain open.
+4. Build the priority loader, in-context pending/error UI, stale-request guard, and coordinated transition. Then add final 2021/2025 assets as they become available.
+5. Review cold-load network requests, initial progress completion, switching and rapid reversal, missing-asset fallback, focus and audio cleanup, reduced motion, mobile projection, and GPU memory on a lower-end device. The intended checks are behavioral acceptance criteria; no performance or visual result is claimed here.
+
+**Primary change points:** [AboutJourney](../components/workbench/AboutJourney.js), [Room year manifest](../components/workbench/roomYears.mjs), [2D item layout](../components/workbench/pixelRoomLayout.mjs), [Timeline data](../components/workbench/journeyTimeline.mjs), [DesktopWorkspace](../components/workbench/DesktopWorkspace.js), [PortfolioApps](../components/workbench/PortfolioApps.js), [ProductWorkbench](../components/workbench/ProductWorkbench.js), [WorkbenchScene](../components/workbench/WorkbenchScene.js), [PreloadAssets](../components/workbench/PreloadAssets.js), [Room shell](../components/workbench/CozyRoom.js), [Model inventory](../public/models/README.md).
