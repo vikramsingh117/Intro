@@ -18,8 +18,26 @@ function useNoteTexture(text,createdAt,id) {
     const paper=c.createLinearGradient(0,0,430,512);
     paper.addColorStop(0,colors.light);paper.addColorStop(.65,colors.base);paper.addColorStop(1,colors.shade);
     c.fillStyle=paper;c.fillRect(0,0,512,512);
-    // Deterministic paper grain keeps redraws stable.
-    for(let i=0;i<1700;i++){c.fillStyle=i%2?'#704a1410':'#ffffff28';c.fillRect((i*137)%512,(i*227)%512,1,2);}
+    // Deterministic grain, pulp fibers, and flecks keep redraws stable while reading as paper up close.
+    for(let i=0;i<2100;i++){c.fillStyle=i%2?'#704a1410':'#ffffff28';c.fillRect((i*137)%512,(i*227)%512,1+(i%3===0),1+(i%2));}
+    c.lineCap='round';
+    for(let i=0;i<430;i++){
+      const x=(i*83)%512,y=(i*191)%512,length=3+(i*29)%15;
+      c.strokeStyle=i%3===0?'#fff7d92e':'#755a2720';c.lineWidth=i%7===0?1.2:.55;
+      c.beginPath();c.moveTo(x,y);c.quadraticCurveTo(x+length*.45,y+(i%5-2)*.45,x+length,y+(i%3-1)*.7);c.stroke();
+    }
+    for(let i=0;i<95;i++){
+      const x=(i*149)%506+3,y=(i*263)%506+3,r=.45+(i%4)*.28;
+      c.fillStyle=i%4===0?'#73552225':'#fff7d82b';c.beginPath();c.arc(x,y,r,0,Math.PI*2);c.fill();
+    }
+    // Very soft handling creases become visible only in the close-up.
+    c.lineWidth=1;
+    [['#72552218',[-28,342,180,286,548,320]],['#fffbe638',[-12,345,185,290,536,324]],['#72552212',[358,-20,344,174,408,530]],['#fffbe62c',[361,-20,348,174,412,530]]].forEach(([stroke,[x1,y1,cx,cy,x2,y2]])=>{
+      c.strokeStyle=stroke;c.beginPath();c.moveTo(x1,y1);c.quadraticCurveTo(cx,cy,x2,y2);c.stroke();
+    });
+    const edge=c.createRadialGradient(250,238,155,256,256,370);
+    edge.addColorStop(0,'#ffffff00');edge.addColorStop(.78,'#6d4d1605');edge.addColorStop(1,'#563b151f');
+    c.fillStyle=edge;c.fillRect(0,0,512,512);
     c.fillStyle=colors.band;c.fillRect(0,0,512,46);
     c.fillStyle='#fff6ca55';c.fillRect(0,46,512,2);
     c.fillStyle='#b28c4438';c.beginPath();c.moveTo(469,512);c.lineTo(512,467);c.lineTo(512,512);c.fill();
@@ -48,7 +66,7 @@ function WallNote({ note, api, onHover }) {
   const texture = useNoteTexture(note.text,note.createdAt,note.id);
   const wall = useMemo(()=>new Plane(new Vector3(0,0,1),3.075),[]);
   const point = useMemo(()=>new Vector3(),[]);
-  return <InteractiveObject moving label={note.canEdit ? "Your note · drag to move, tap to edit" : "Visitor note · tap to read"} onHover={onHover}>
+  return <InteractiveObject moving label={note.canEdit ? "Your note · drag to move, tap to edit" : "Visitor note · tap to read"} onHover={onHover} onFocus={()=>api.edit(note)}>
     <mesh ref={mesh} position={[note.x,note.y,-3.075]}
       onPointerDown={event=>{
         if(api.placing || api.busy || event.button!==0)return;
@@ -137,7 +155,7 @@ function FlyingNote({ api, reduced, placement }) {
 }
 export default function StickyNotes({ api, onHover, reduced, placement=DEFAULT_PROP_PLACEMENT.stickyNote }) {
   return <group>
-    <InteractiveObject moving label="Sticky notes · leave a message" onHover={onHover}>
+    <InteractiveObject moving label="Sticky notes · leave a message" onHover={onHover} onFocus={()=>api.edit()}>
       <group position={[placement.x,placement.y,placement.z]} rotation={[0,placement.rotation*Math.PI/180,0]} scale={placement.scale} onClick={event=>{event.stopPropagation();if(event.delta<=5)api.edit();}}>
         <mesh castShadow><boxGeometry args={[.72,.1,.72]}/><meshStandardMaterial color="#efd67f" roughness={.95}/></mesh>
         <mesh position={[0,.052,-.22]} rotation={[-Math.PI/2,0,0]}><planeGeometry args={[.72,.15]}/><meshStandardMaterial color="#d9ba61"/></mesh>

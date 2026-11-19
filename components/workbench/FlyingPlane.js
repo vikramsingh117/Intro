@@ -7,8 +7,13 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
 const PLANE_SIZE = 1.5;
 const FLIGHT_SPEED = .18;
+const PLANE_LIGHT={
+  '2021':{color:'#8b8171',intensity:.06},
+  '2025':{color:'#78929a',intensity:.12},
+  '2026':{color:'#657b95',intensity:.18},
+};
 
-export default function FlyingPlane({ active, reduced, settings }) {
+export default function FlyingPlane({ active, reduced, settings, year='2026' }) {
   const { scene } = useLoader(GLTFLoader, '/models/plane/scene.gltf');
   const { gl, invalidate } = useThree();
   const aircraft = useRef(null), elapsed = useRef(22);
@@ -33,6 +38,11 @@ export default function FlyingPlane({ active, reduced, settings }) {
     });
     return {model,materials};
   },[scene]);
+  useEffect(()=>{
+    const light=PLANE_LIGHT[year]||PLANE_LIGHT['2026'];
+    materials.forEach(material=>{material.emissive.set(light.color);material.emissiveIntensity=light.intensity;});
+    invalidate();
+  },[year,materials,invalidate]);
   const route = useMemo(() => {
     const right = new Vector3(settings.cameraZ-settings.targetZ,0,settings.targetX-settings.cameraX).normalize();
     return {right, center:new Vector3(settings.targetX,settings.y+5,settings.targetZ), yaw:Math.atan2(-right.x,-right.z)};

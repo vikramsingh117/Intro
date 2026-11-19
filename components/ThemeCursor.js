@@ -13,6 +13,26 @@ export default function ThemeCursor() {
     let visible = false;
     let hoveredTarget = null;
     let spin = null;
+    let aimCenter = null;
+    let lastPointer = null;
+    let aimMotion = null;
+    const place = ([x,y]) => { node.style.transform = `translate3d(${x}px, ${y}px, 0)`; };
+    const glide = (from,to,duration=480) => {
+      if (!from || !node.animate) { place(to); return; }
+      aimMotion?.cancel();
+      const start=`translate3d(${from[0]}px, ${from[1]}px, 0)`,end=`translate3d(${to[0]}px, ${to[1]}px, 0)`;
+      node.style.transform=start;
+      const motion=node.animate([{transform:start},{transform:end}],{duration,easing:'cubic-bezier(.22,1,.36,1)',fill:'forwards'});
+      aimMotion=motion;
+      motion.onfinish=()=>{
+        if(aimMotion!==motion)return;
+        // Persist the destination as an inline transform, then release the
+        // fill-forwards animation so live pointer movement can take over again.
+        place(to);
+        motion.cancel();
+        aimMotion=null;
+      };
+    };
     const updateHover = target => {
       const next = target?.tagName === 'CANVAS'
         ? target.dataset.cursorObject || null
@@ -32,6 +52,9 @@ export default function ThemeCursor() {
       if (!visible && !document.documentElement.dataset.chooserCursor) return;
       visible = false;
       hoveredTarget = null;
+      aimCenter = null;
+      aimMotion?.cancel();
+      aimMotion = null;
       spin?.cancel();
       node.dataset.visible = "false";
       icon.current.dataset.visible = "false";
@@ -44,8 +67,12 @@ export default function ThemeCursor() {
         hide();
         return;
       }
-      const transform = `translate3d(${event.clientX}px, ${event.clientY}px, 0)`;
-      node.style.transform = transform;
+      lastPointer = [event.clientX,event.clientY];
+      if (!aimCenter) {
+        aimMotion?.cancel();
+        aimMotion=null;
+        place(lastPointer);
+      } else if (!aimMotion) place(aimCenter);
       const pane = target?.closest("[data-cursor-theme]");
       node.dataset.theme = pane?.dataset.cursorTheme || "simple";
       icon.current.dataset.theme = node.dataset.theme;
@@ -58,9 +85,30 @@ export default function ThemeCursor() {
         node.dataset.visible = "true";
       }
     };
+    const roomZoomAim = event => {
+      if (!media.matches) return;
+      if (event.detail?.active) {
+        const nextCenter=[event.detail.x,event.detail.y];
+        const from=lastPointer||aimCenter||nextCenter;
+        aimCenter=nextCenter;
+        glide(from,aimCenter);
+        node.dataset.theme = 'glossy';
+        node.dataset.interactive = 'true';
+        node.dataset.visible = 'true';
+        icon.current.dataset.theme = 'glossy';
+        icon.current.dataset.visible = 'true';
+        document.documentElement.dataset.chooserCursor = 'true';
+        visible = true;
+      } else {
+        const from=aimCenter;
+        aimCenter = null;
+        if (lastPointer) glide(from||lastPointer,lastPointer,360);
+      }
+    };
 
     window.addEventListener("pointermove", move, { passive: true });
     window.addEventListener('cursor-object-change', objectHover);
+    window.addEventListener('room-zoom-cursor',roomZoomAim);
     window.addEventListener("blur", hide);
     window.addEventListener("scroll", hide, { passive: true, capture: true });
     document.documentElement.addEventListener("pointerleave", hide);
@@ -70,6 +118,7 @@ export default function ThemeCursor() {
       hide();
       window.removeEventListener("pointermove", move);
       window.removeEventListener('cursor-object-change', objectHover);
+      window.removeEventListener('room-zoom-cursor',roomZoomAim);
       window.removeEventListener("blur", hide);
       window.removeEventListener("scroll", hide, true);
       document.documentElement.removeEventListener("pointerleave", hide);

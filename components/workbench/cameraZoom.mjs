@@ -3,6 +3,8 @@
 export const ROOM_MIN_DISTANCE = 6;
 export const ROOM_MAX_DISTANCE = 24;
 export const ZOOM_TICK_COUNT = 17;
+// Hysteresis keeps trackpad momentum from repeatedly opening a close-up near the cutoff.
+export const ROOM_FOCUS_PROGRESS = .78;
 
 export const roomZoomBridge = (() => {
   let api = null;

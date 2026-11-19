@@ -4,6 +4,7 @@ import { useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { Matrix4 } from 'three';
 import { DEFAULT_PROP_PLACEMENT } from './propPlacement';
+import { NOTE_EDITOR_Z } from './notePlacement.mjs';
 
 export default function NoteProjection({ editor, elementRef, placement=DEFAULT_PROP_PLACEMENT.stickyNote }) {
   const surface=useRef(null);
@@ -19,7 +20,7 @@ export default function NoteProjection({ editor, elementRef, placement=DEFAULT_P
     elementRef.current.style.visibility='visible';
   });
   return <group ref={surface}
-    position={editor.id?[editor.x,editor.y,-3.065]:[placement.x,placement.y+.053,placement.z]}
+    position={editor.id?[editor.x,editor.y,NOTE_EDITOR_Z]:[placement.x,placement.y+.053,placement.z]}
     rotation={editor.id?[0,0,0]:[-Math.PI/2,placement.rotation*Math.PI/180,0]}
     scale={editor.id?1:placement.scale}/>;
 }

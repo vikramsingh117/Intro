@@ -162,7 +162,7 @@ export default function Upliance({ celebrating=false, keyboardFocused=false, reg
     <group scale={scale}><group position={offset}>
       <primitive object={model}/>
       {/* Fixed hit volume prevents the moving lid from repeatedly retriggering hover. */}
-      <mesh ref={hitArea} position={hitCenter} raycast={interactive?Mesh.prototype.raycast:noRaycast}
+      <mesh ref={hitArea} position={hitCenter} raycast={interactive?Mesh.prototype.raycast:noRaycast} userData={{roomZoomFocus:select}}
         onPointerOver={event=>{event.stopPropagation();if(event.pointerType!=='touch'&&event.pointerType!=='pen'){setHovered(true);onHover('Upliance · explore my work');}}}
         onPointerOut={()=>{setHovered(false);onHover('');}}
         onPointerCancel={()=>{setHovered(false);setLatched(false);onHover('');}}

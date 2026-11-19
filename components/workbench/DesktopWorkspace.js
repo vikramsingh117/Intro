@@ -27,7 +27,7 @@ function AboutIcon() {
     <path fill="#f5ca68" d="M38 7h2v8h-2zm-3 3h8v2h-8z"/>
   </svg>;
 }
-export default function DesktopWorkspace({ desktopRef, interactive, visible=true, reduced=false, exitRef, onLeave, roomYear, onRequestYear, onOpenUpliance, onOpenNotebook, onOpenNotes, onToggleLamp, lampOn, onToggleRadio, onToggleCeiling, ceilingOn, radioPlaying, room, musicPlaying=false, celebrating=false }) {
+export default function DesktopWorkspace({ desktopRef, interactive, visible=true, reduced=false, exitRef, onLeave, roomYear, wallNotes, onRequestYear, projectorState, onProjectorChange, workBoardDetail, onWorkBoardDetailShown, onOpenWorkBoard, onOpenUpliance, onOpenNotebook, onOpenNotes, onOpenWindow, onToggleLamp, lampOn, onToggleRadio, onToggleCeiling, ceilingOn, radioPlaying, room, musicPlaying=false, celebrating=false }) {
   const [windows,setWindows]=useState([{title:'About Me',minimized:false}]);
   const [menu,setMenu]=useState(null);
   const [iconsVisible,setIconsVisible]=useState(true);
@@ -67,7 +67,12 @@ export default function DesktopWorkspace({ desktopRef, interactive, visible=true
     <DesktopMascot ref={mascot} interactive={interactive} visible={visible} reduced={reduced} hasWindow={!!top} musicPlaying={musicPlaying}/>
     {windows.map((window,index)=><DesktopWindow key={window.title} title={window.title} desktopRef={desktopRef} active={interactive && top===window.title} minimized={window.minimized} zIndex={index+2}
       onFocus={()=>focus(window.title)} onClose={()=>close(window.title)} onMinimize={()=>minimize(window.title)}>
-      {window.title==='AI Assistant'?<AboutChat theme="dark" embedded active={interactive && !window.minimized && top===window.title}/>:window.title==='Photos'?<Photos active={interactive && !window.minimized && top===window.title}/>:window.title==='Task Manager'?<TaskManager windows={windows} activeTitle={top} onFocus={focus} onClose={close} room={room}/>:window.title==='Terminal'?<Terminal windows={windows} onExit={()=>close('Terminal')}/>:window.title==='Credits'?<><AssetCredits/><FireflyCredit/></>:window.title==='GitHub'?<GitHubSnapshot/>:window.title==='LeetCode'?<LeetCodeSnapshot desktop/>:<PortfolioApps title={window.title} roomYear={roomYear} onRequestYear={onRequestYear} onOpenUpliance={onOpenUpliance} onOpenNotebook={onOpenNotebook} onOpenNotes={onOpenNotes} onToggleLamp={onToggleLamp} lampOn={lampOn} onToggleRadio={onToggleRadio} onToggleCeiling={onToggleCeiling} ceilingOn={ceilingOn} onEnterPortfolio={()=>{close('About Me');onLeave();}} radioPlaying={radioPlaying}/>}
+      {window.title==='AI Assistant'?<AboutChat theme="dark" embedded active={interactive && !window.minimized && top===window.title}/>:window.title==='Photos'?<Photos active={interactive && !window.minimized && top===window.title}/>:window.title==='Task Manager'?<TaskManager windows={windows} activeTitle={top} onFocus={focus} onClose={close} room={room}/>:window.title==='Terminal'?<Terminal windows={windows} onExit={()=>close('Terminal')}/>:window.title==='Credits'?<><AssetCredits/><FireflyCredit/></>:window.title==='GitHub'?<GitHubSnapshot/>:window.title==='LeetCode'?<LeetCodeSnapshot desktop/>:<PortfolioApps
+        title={window.title} roomYear={roomYear} wallNotes={wallNotes} onRequestYear={onRequestYear} projectorState={projectorState} onProjectorChange={onProjectorChange}
+        workBoardDetail={workBoardDetail} onWorkBoardDetailShown={onWorkBoardDetailShown} onOpenWorkBoard={onOpenWorkBoard}
+        onOpenUpliance={onOpenUpliance} onOpenNotebook={onOpenNotebook} onOpenNotes={onOpenNotes} onOpenWindow={onOpenWindow}
+        onToggleLamp={onToggleLamp} lampOn={lampOn} onToggleRadio={onToggleRadio} onToggleCeiling={onToggleCeiling} ceilingOn={ceilingOn}
+        onEnterPortfolio={()=>{close('About Me');onLeave();}} radioPlaying={radioPlaying}/>}
     </DesktopWindow>)}
     {celebrating&&<div className={styles.desktopCelebration} aria-hidden="true">{Array.from({length:32},(_,index)=><i key={index} style={{'--confetti-left':`${(index*37)%100}%`,'--confetti-drift':`${index%2?120:-120}px`}}/>)}</div>}
     {menu && interactive && <DesktopContextMenu point={menu} width={menu.width} iconsVisible={iconsVisible} onClose={closeMenu}

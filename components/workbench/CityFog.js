@@ -1,7 +1,7 @@
 // Renders layered procedural cloud planes that conceal the city model's base behind the room window.
 // World-space clipping keeps fog outside regardless of city placement, while editor settings control density and volume.
 import { useMemo } from 'react';
-import { DoubleSide } from 'three';
+import { Color, DoubleSide } from 'three';
 
 const vertexShader = `
   varying vec2 cloudUv;
@@ -17,6 +17,8 @@ const fragmentShader = `
   varying float worldZ;
   uniform float layer;
   uniform float density;
+  uniform vec3 lowerColor;
+  uniform vec3 upperColor;
   float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
   float noise(vec2 p) {
     vec2 i = floor(p), f = fract(p);
@@ -36,18 +38,25 @@ const fragmentShader = `
     // Dense lower layers seal the base; the upper layers break into softer billows.
     float body = mix(0.95, smoothstep(0.15, 0.8, cloud), layer);
     float alpha = exteriorFade * edge * body * density * mix(0.85, 0.4, layer);
-    vec3 color = mix(vec3(0.045, 0.075, 0.115), vec3(0.22, 0.29, 0.36), cloud * 0.6 + layer * 0.4);
+    vec3 color = mix(lowerColor, upperColor, cloud * 0.6 + layer * 0.4);
     gl_FragColor = vec4(color, alpha);
     #include <tonemapping_fragment>
     #include <colorspace_fragment>
   }
 `;
 
-export default function CityFog({ base, settings }) {
+const FOG_COLORS={
+  '2021':['#827456','#d6c18c'],
+  '2025':['#31494f','#84999b'],
+  '2026':['#0b131d','#384a5c'],
+};
+
+export default function CityFog({ base, settings, year='2026' }) {
   const density = settings.fogDensity ?? 1;
+  const colors=FOG_COLORS[year]||FOG_COLORS['2026'];
   const layers = useMemo(() => Array.from({ length: 18 }, (_, i) => ({
-    layer: { value: i / 17 }, density: { value: density },
-  })), [density]);
+    layer:{value:i/17},density:{value:density},lowerColor:{value:new Color(colors[0])},upperColor:{value:new Color(colors[1])},
+  })), [density,colors]);
   const height = settings.fogHeight ?? 2;
   const thickness = settings.fogThickness ?? 4;
   const spread = settings.fogSpread ?? 80;

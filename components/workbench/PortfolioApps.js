@@ -70,6 +70,6 @@ function Projects() {
     </article>
   </div>;
 }
-export default function PortfolioApps({ title, roomYear, onRequestYear, onOpenUpliance, onOpenNotebook, onOpenNotes, onToggleLamp, lampOn, onToggleRadio, onToggleCeiling, ceilingOn, onEnterPortfolio, radioPlaying }) {
-  return title==='My Work'?<Work onOpenUpliance={onOpenUpliance}/>:title==='Projects'?<Projects/>:<AboutJourney roomYear={roomYear} onRequestYear={onRequestYear} onOpenUpliance={onOpenUpliance} onOpenNotebook={onOpenNotebook} onOpenNotes={onOpenNotes} onToggleLamp={onToggleLamp} lampOn={lampOn} onToggleRadio={onToggleRadio} onToggleCeiling={onToggleCeiling} ceilingOn={ceilingOn} onEnterPortfolio={onEnterPortfolio} radioPlaying={radioPlaying}/>;
+export default function PortfolioApps({ title, roomYear, wallNotes, onRequestYear, projectorState, onProjectorChange, workBoardDetail, onWorkBoardDetailShown, onOpenWorkBoard, onOpenUpliance, onOpenNotebook, onOpenNotes, onOpenWindow, onToggleLamp, lampOn, onToggleRadio, onToggleCeiling, ceilingOn, onEnterPortfolio, radioPlaying }) {
+  return title==='My Work'?<Work onOpenUpliance={onOpenUpliance}/>:title==='Projects'?<Projects/>:<AboutJourney roomYear={roomYear} wallNotes={wallNotes} onRequestYear={onRequestYear} projectorState={projectorState} onProjectorChange={onProjectorChange} workBoardDetail={workBoardDetail} onWorkBoardDetailShown={onWorkBoardDetailShown} onOpenWorkBoard={onOpenWorkBoard} onOpenUpliance={onOpenUpliance} onOpenNotebook={onOpenNotebook} onOpenNotes={onOpenNotes} onOpenWindow={onOpenWindow} onToggleLamp={onToggleLamp} lampOn={lampOn} onToggleRadio={onToggleRadio} onToggleCeiling={onToggleCeiling} ceilingOn={ceilingOn} onEnterPortfolio={onEnterPortfolio} radioPlaying={radioPlaying}/>;
 }

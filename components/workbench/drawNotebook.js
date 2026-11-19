@@ -40,6 +40,98 @@ export function drawNotebook(canvas, entry, page, pageCount) {
     write('Keep going. Make a pile.',700,650,25,pencil);
   }else if(entry.doodle==='blank' || entry.doodle==='photo'){
     // Leave the ruled paper empty for tearing.
+  }else if(entry.doodle==='education'){
+    write('Mumbai → Chennai / 2021',82,82,27,ink,-.025);
+    write('10th  /  SNPS School',94,153,26);write('Mumbai',125,191,22,pencil);
+    arrow(270,185,326,228);write('12th  /  MNR College',94,276,25);write('Mumbai',126,314,22,pencil);
+    write('JEE  →  VITEEE',92,403,29,ink,.012);ellipse(225,395,148,35,pencil);
+    write('AIR < 10,000!',130,474,33,rust,-.035);star(425,449,11);star(466,492,7);
+    write('new chapter:',92,590,24,pencil);write('Computer Science',124,637,28);write('VIT Chennai',157,681,29,ink,-.02);
+
+    write('before the first semester',690,82,28,ink,-.025);
+    // A rough trophy, certificate and achievement star matching the 2D field notes.
+    box(714,145,140,115);line([[714,172],[680,172],[680,205],[714,224]],ink,2);line([[854,172],[888,172],[888,205],[854,224]],ink,2);
+    line([[759,260],[759,314],[728,314],[728,337],[842,337],[842,314],[811,314],[811,260]],ink,2);
+    write('#1',762,220,32,rust,-.04);
+    box(906,151,212,176);write('VITEEE',938,197,25);write('AIR',946,243,22,pencil);write('< 10,000',933,291,29,rust,-.025);
+    star(1025,407,37);star(913,456,15);star(1110,496,10);
+    write('pack notes',719,520,24,pencil);line([[715,535],[1068,531]],pencil,1);
+    write('ask too many questions',728,585,25);write('find the lab',746,628,24);write('start building things',718,682,27,ink,.015);
+  }else if(entry.doodle==='pokemon'){
+    write('pokemon modding / 2021',82,82,28,ink,-.03);
+    write('not just play → explore',94,145,25,pencil);write('change one thing',116,196,27);write('then test it',160,236,25,ink,-.02);
+    // Abstract creature head from the journey notebook, deliberately not a literal character copy.
+    line([[118,486],[104,334],[157,402],[200,286],[232,408],[307,347],[275,493],[237,548],[159,548],[118,486]],ink,2.5);
+    ellipse(169,459,4,5);ellipse(233,457,4,5);line([[177,497],[198,507],[221,494]],rust,2);
+    line([[113,492],[54,460],[87,423],[53,388]],pencil,2);star(354,340,14);star(399,524,8);
+    write('what if I could change',92,672,24,pencil);write('the game myself?',137,716,29,rust,-.025);
+
+    write('ideas / sketches / side quests',679,82,25,ink,-.02);
+    ellipse(789,260,93,93);line([[696,260],[759,260]],ink,2);line([[819,260],[882,260]],ink,2);ellipse(789,260,30,30);ellipse(789,260,10,10,rust);
+    box(938,137,180,236);box(967,172,122,91);write('map',1005,228,22,pencil);
+    line([[981,303],[1039,303]],ink,4);line([[1010,274],[1010,332]],ink,4);ellipse(1071,292,7,7);ellipse(1091,319,7,7);
+    line([[986,238],[1018,210],[1042,237],[1070,194]],rust,2);
+    write('[ map ]  →  [ new idea ]',689,475,25,ink,.01);box(705,510,132,92);box(967,510,148,92);arrow(846,553,952,553);
+    write('patch',742,564,23,pencil);write('try again',987,563,22,pencil);
+    write('keep the side quests',724,701,27,rust,-.035);
+  }else if(entry.doodle==='first-builds'){
+    write('map → new idea',82,82,31,ink,-.025);write('FIRST EXPERIMENTS',102,126,19,pencil);
+    // A loose tile map with two possible routes.
+    for(let row=0;row<5;row++)for(let col=0;col<6;col++)box(88+col*63,182+row*63,52,52);
+    line([[110,208],[173,208],[173,271],[299,271],[299,397],[362,397],[362,460]],rust,5);
+    line([[110,208],[110,334],[236,334],[236,460],[425,460]],ink,3);
+    ellipse(110,208,9,9,rust);star(425,460,12);write('new route?',318,522,23,pencil,-.04);
+    write('explore → change → test',93,620,27);write('repeat',195,676,30,rust,.025);
+
+    write('tiny patch notes',699,82,29,ink,-.02);box(697,137,420,184);
+    write('+ move the object',723,185,24);write('+ change one map tile',723,227,24);write('- broken edge',723,269,24,pencil);line([[718,256],[900,272]],rust,1.5);
+    box(721,375,160,108);write('play',767,438,27);box(955,375,160,108);write('make',995,438,27);arrow(891,429,943,429);
+    write('games = systems to inspect',705,561,25,pencil);write('and places to make stranger',720,606,24);
+    star(756,684,10);star(1084,665,16);star(970,719,7);
+  }else if(entry.doodle==='graduation'){
+    write('VIT Chennai / 2025',82,82,29,ink,-.025);write('B.Tech · Computer Science',90,153,27);write('2021 → 2025',152,197,25,pencil);
+    write('CGPA',91,302,25);write('8.4 / 10',204,315,39,rust,-.035);ellipse(300,302,118,43,pencil);
+    write('Google Hash Code',91,431,27);write('1st on campus',122,477,31,ink,-.02);write('among 50+ teams',145,520,24,pencil);
+    write('four years later',111,672,31,ink,.015);star(421,636,13);
+
+    write('achievement marks',699,82,28,ink,-.02);
+    // Graduation cap and tassel.
+    line([[705,190],[824,132],[944,190],[824,250],[705,190]],ink,3);line([[754,213],[756,298],[894,298],[896,213]],pencil,2);line([[944,190],[944,286],[968,318]],rust,2);ellipse(970,328,8,15,rust);
+    // Trophy and certificate.
+    box(711,395,140,105);line([[711,417],[680,417],[681,450],[711,471]],ink,2);line([[851,417],[881,417],[880,450],[851,471]],ink,2);
+    line([[757,500],[757,548],[727,548],[727,571],[836,571],[836,548],[806,548],[806,500]],ink,2);write('#1',758,468,30,rust);
+    box(927,395,193,163);write('B.Tech',964,443,25);write('CSE',987,486,29,rust);line([[950,520],[1091,520]],pencil,1.5);
+    write('keep building →',722,675,27,pencil);write('20+ projects',959,688,28,ink,-.03);
+  }else if(entry.doodle==='systems'){
+    write('practice → build → repeat',82,82,27,ink,-.025);write('LeetCode',91,151,28);write('two pointers / graphs',114,190,23,pencil);
+    write('Linux',91,263,28);write('ps · grep · shell',114,302,24,pencil);
+    write('GitHub',91,376,28);write('branch → commit → merge',114,415,24,pencil);
+    write('Spring Boot · Redis · SQL',89,537,24);write('Go · MongoDB · Git',121,580,24);
+    write('check the edge cases',116,692,27,rust,-.035);line([[108,677],[375,701]],pencil,1.2);
+
+    write('client → service → storage',681,82,27,ink,-.02);
+    box(683,145,153,126);box(879,145,153,126);arrow(841,207,871,207);
+    write('client',721,184,24);write('service',917,184,24);write('> _',721,235,27,rust);line([[909,215],[999,215]],pencil,2);line([[909,239],[978,239]],pencil,2);
+    // Layered database cylinder.
+    ellipse(1092,170,64,22);line([[1028,170],[1028,337],[1156,337],[1156,170]],ink,2);ellipse(1092,254,64,22);ellipse(1092,337,64,22);
+    write('storage',1045,392,23,pencil);arrow(1038,207,1058,207);
+    box(729,445,321,184);write('if request:',755,489,23);write('validate()',787,529,22);write('cache?',755,570,23,rust);write('persist(result)',787,611,22);
+    arrow(1059,548,1120,505);write('retry?',1067,476,21,pencil,-.05);star(1115,690,9);
+  }else if(entry.doodle==='projects'){
+    write('20+ projects / 2025',82,82,31,ink,-.025);write('portfolio',99,161,27);arrow(257,157,337,157);write('iterate',348,165,24,pencil);
+    write('Go crawler',99,256,27);arrow(263,252,343,252);write('MongoDB',352,260,24,pencil);
+    write('Cribble',99,351,27);arrow(220,347,295,347);write('Office Solutions',305,355,23,pencil);
+    line([[88,414],[481,414]],pencil,1);write('deploy / learn / repeat',104,478,27,rust,-.02);
+    write('Vercel',106,562,24);write('Git',266,562,24);write('systems',364,562,24);
+    star(126,673,9);star(446,647,15);write('shipped > perfect',164,699,26,ink,.01);
+
+    write('build log',701,82,29,ink,-.02);
+    const cards=[[701,143,'portfolio'],[917,143,'crawler'],[701,331,'Cribble'],[917,331,'office']];
+    cards.forEach(([x,y,label],index)=>{box(x,y,180,132);write(label,x+22,y+47,22,index===2?rust:ink,(index%2?1:-1)*.01);line([[x+22,y+75],[x+150,y+75]],pencil,1.5);line([[x+22,y+96],[x+118,y+96]],pencil,1.5);});
+    arrow(886,397,907,397);write('→',888,418,28,rust);
+    line([[734,558],[793,558],[793,618],[877,618]],ink,2);line([[793,586],[940,586],[940,650],[1050,650]],ink,2);
+    ellipse(734,558,8,8);ellipse(877,618,8,8);ellipse(1050,650,8,8);
+    write('branch → commit → merge',710,728,24,pencil,-.02);
   }else if(entry.doodle==='recursion'){
     write('fib / rough',84,82,29,ink,-.035);
     write('n = 4',104,142,25);write('3 ?',235,146,24,pencil,.06);

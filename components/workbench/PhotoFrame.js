@@ -80,7 +80,7 @@ function Photo({ revealed, reduced }) {
 }
 
 export default function PhotoFrame({ focused, reduced, keyboardFocused, onSelect, onHover }) {
-  return <InteractiveObject focused={focused || keyboardFocused} label="Photo frame · take a closer look" onHover={onHover}>
+  return <InteractiveObject focused={focused || keyboardFocused} label="Photo frame · take a closer look" onHover={onHover} onFocus={onSelect}>
     <group position={PHOTO_TARGET} onClick={event => { event.stopPropagation(); if (event.delta <= 5) onSelect(); }}>
       <mesh castShadow receiveShadow>
         <boxGeometry args={[1.12, 1.12, .12]} />

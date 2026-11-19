@@ -6,7 +6,7 @@ import { Box3Helper } from 'three';
 import { createRoomBounds, installObjectHover } from './roomHover.mjs';
 import { installRoomHitboxes } from './roomHitboxes.mjs';
 
-export default function InteractiveObject({ label, onHover, focused = false, moving = false, children }) {
+export default function InteractiveObject({ label, onHover, onFocus, focused = false, moving = false, children }) {
   const target = useRef(null);
   const outlineRef = useRef(null);
   const boundsRef = useRef(null);
@@ -14,6 +14,13 @@ export default function InteractiveObject({ label, onHover, focused = false, mov
   useFrame(()=>{if(moving)boundsRef.current?.update();}, -.25);
   const [hovered, setHovered] = useState(false);
   const { scene, gl, invalidate } = useThree();
+  useEffect(() => {
+    const object = target.current;
+    if (!object) return;
+    if (onFocus) object.userData.roomZoomFocus = onFocus;
+    else delete object.userData.roomZoomFocus;
+    return () => { if (object.userData.roomZoomFocus === onFocus) delete object.userData.roomZoomFocus; };
+  }, [onFocus]);
   useLayoutEffect(() => {
     target.current.updateWorldMatrix(true, true);
     const restoreHitboxes = installRoomHitboxes(target.current);

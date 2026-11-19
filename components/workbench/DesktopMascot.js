@@ -9,19 +9,20 @@ import MusicMascot from './MusicMascot';
 import GymMascot, { GYM_DURATION_MS } from './GymMascot';
 
 const HINTS = [
-  { id:'radio', text:'You can pause music by clicking on the radio.' },
+  { id:'radio', text:'Click the radio for music. Notes drift out while it plays, then gently finish fading when it stops.' },
   { id:'Terminal', text:'Try help in the terminal. There’s more to explore.' },
   { id:'notes', text:'Leave a little hello on the sticky-note wall.' },
   { id:'window', text:'Click the window. The city is still awake.' },
-  { id:'upliance', text:'Explore more work on the upliance screen.' },
+  { id:'upliance', text:'Explore more work on the upliance screen, including the updated 2026 desk story.' },
   { id:'ceiling-light', text:'Lift the hanging light, then let it drop.' },
   { id:'desk-lamp', text:'Click the desk lamp to change the mood.' },
   { id:'notebook', text:'Click notebook pages to flip. Drag the right page to tear it.' },
-  { id:'paper-ball', text:'Click the paper-ball icon, then flick to throw. Esc puts it away.' },
+  { id:'paper-ball', text:'Click the paper-ball icon, then flick to throw. The ready shape shows when your release will count. Esc puts it away.' },
   { id:'drawer', text:'Click the top drawer to peek inside.' },
-  { id:'glasses', text:'Try the four glasses: blur, chunky pixel, pastel crayon, and monochrome sketch.' },
-  { id:'zoom', text:'Move the mouse to reveal the right-edge zoom scale, then drag it up or down.' },
-  { id:'fireflies', text:'Follow the fireflies. One even bumps the hanging light during their room tour.' },
+  { id:'glasses', text:'Try the four glasses: blur, chunky pixel, pastel crayon, and monochrome sketch. Open apps stay visible through every lens.' },
+  { id:'zoom', text:'On desktop, move the mouse to reveal the right-edge 1× zoom scale, then drag it up or down.' },
+  { id:'fireflies', text:'Follow the fireflies. Their flight path and the hanging light blink are mirrored in the 2D desk graphic.' },
+  { id:'optimise', text:'Need a lighter scene? Use Optimise for a 30 FPS cap, lower resolution, and gentler lighting and effects.' },
   { id:'My Work', text:'Open My Work for the story behind the builds.' },
   { id:'About Me', text:'Meet the person behind this desk in About Me.' },
   { id:'Projects', text:'Take a closer look at the Projects app.' },
@@ -79,16 +80,19 @@ const DesktopMascot=forwardRef(function DesktopMascot({interactive, visible, red
   const hintBox=useRef(null),wasSleeping=useRef(false);
   const seen=useRef(new Set()),cursor=useRef(-1);
   const [hint,setHint]=useState(null),[paused,setPaused]=useState(false),[characterCount,setCharacterCount]=useState(0),[motion,setMotion]=useState(null);
+  const [speakingInTaskbar,setSpeakingInTaskbar]=useState(false);
   const [fontReady,setFontReady]=useState(false),[pages,setPages]=useState([]),[page,setPage]=useState(0),[motionStyle,setMotionStyle]=useState({});
   const [walking,setWalking]=useState(false);
   const [gym,setGym]=useState(false);
   const [musicPhase,setMusicPhase]=useState('off');
+  const pageText=pages[page]||'';
   useEffect(()=>{
     setMusicPhase(previous=>musicPlaying?(reduced?'on':'putting'):previous==='off'||reduced?'off':'removing');
   },[musicPlaying,reduced]);
   const musicVisible=musicPlaying||musicPhase!=='off';
   const stroll=useRef({x:0,target:0,walking:false,wait:4800,stops:0,gym:false});
-  const sleeping=hasWindow&&interactive&&!hint;
+  // A mascot already tucked into the taskbar speaks there, rather than waking up to roam.
+  const sleeping=hasWindow&&interactive&&(!hint||speakingInTaskbar);
   const canWalk=visible&&!paused&&!reduced&&!musicVisible&&!sleeping&&!motion;
   useEffect(()=>{
     if(!canWalk)return;
@@ -169,6 +173,9 @@ const DesktopMascot=forwardRef(function DesktopMascot({interactive, visible, red
     return ()=>document.removeEventListener('pointerdown',dismissOutside,true);
   },[hint]);
   useEffect(()=>{
+    if(!hint)setSpeakingInTaskbar(false);
+  },[hint]);
+  useEffect(()=>{
     const update=()=>setPaused(document.hidden);
     document.addEventListener('visibilitychange',update);update();
     return ()=>document.removeEventListener('visibilitychange',update);
@@ -195,7 +202,14 @@ const DesktopMascot=forwardRef(function DesktopMascot({interactive, visible, red
   useEffect(()=>{
     if(!hint||!fontReady||!pages[page])return;
     const total=pages[page].length;
-    if(reduced){setCharacterCount(total);return;}
+    if(reduced){
+      setCharacterCount(total);
+      if(page<pages.length-1){
+        const timer=setTimeout(()=>{setPage(value=>value+1);setCharacterCount(0);},700);
+        return ()=>clearTimeout(timer);
+      }
+      return;
+    }
     if(paused||!visible)return;
     if(characterCount<total){
       const character=pages[page][characterCount];
@@ -206,6 +220,16 @@ const DesktopMascot=forwardRef(function DesktopMascot({interactive, visible, red
     }
     if(page<pages.length-1){const timer=setTimeout(()=>{setPage(value=>value+1);setCharacterCount(0);},700);return ()=>clearTimeout(timer);}
   },[hint,fontReady,pages,page,characterCount,reduced,paused,visible,playLetter]);
+  useEffect(()=>{
+    if(!hint||!fontReady||!pages.length||paused||!visible)return;
+    const complete=page===pages.length-1&&characterCount>=pageText.length;
+    if(!complete)return;
+    const timer=setTimeout(()=>{
+      trackInteraction('mascot_hint_dismiss','complete');
+      setHint(null);
+    },1000);
+    return ()=>clearTimeout(timer);
+  },[hint,fontReady,pages,page,characterCount,pageText,paused,visible]);
   useEffect(() => {
     if(paused || !visible || !interactive || !hint) stop();
     return stop;
@@ -224,10 +248,11 @@ const DesktopMascot=forwardRef(function DesktopMascot({interactive, visible, red
       const candidate=(cursor.current+1+step)%HINTS.length;
       if(!seen.current.has(HINTS[candidate].id)){index=candidate;break;}
     }
-    cursor.current=index;seen.current.add(HINTS[index].id);setPages([]);setPage(0);setCharacterCount(0);setHint(HINTS[index]);
+    cursor.current=index;seen.current.add(HINTS[index].id);setPages([]);setPage(0);setCharacterCount(0);
+    setSpeakingInTaskbar(sleeping);
+    setHint(HINTS[index]);
     trackInteraction('mascot_hint',HINTS[index].id);
   };
-  const pageText=pages[page]||'';
   const visibleText=fontReady?pageText.slice(0,characterCount):'';
   const hasMore=characterCount<pageText.length||page<pages.length-1;
   const continuation=visibleText&&hasMore&&!/[.!?]$/.test(visibleText)?'...':'';
@@ -237,7 +262,7 @@ const DesktopMascot=forwardRef(function DesktopMascot({interactive, visible, red
       <span className={styles.screenReaderOnly} aria-live="polite">{hint.text}</span>
     </div>}
     <div ref={walkLane} className={styles.mascotWalkLane} data-walking={walking} data-running={roaming} data-hint={!!hint}>
-    <div className={styles.mascotActor} style={motionStyle} data-tucking={motion==='tucking'} data-waking={motion==='waking'} data-pose={musicVisible?'music':workingOut?'gym':roaming?'walk':canWalk?'wave':hint?'hint':!interactive?'wave':sleeping?'sleep':'idle'}>
+    <div className={styles.mascotActor} style={motionStyle} data-tucking={motion==='tucking'} data-waking={motion==='waking'} data-pose={musicVisible?'music':workingOut?'gym':roaming?'walk':canWalk?'wave':sleeping?'sleep':hint?'hint':!interactive?'wave':'idle'}>
       <button ref={button} className={styles.mascotButton} data-track="mascot" data-analytics="semantic" onClick={nextHint} onKeyDown={event=>{if(event.key==='Escape'&&hint){event.preventDefault();event.stopPropagation();trackInteraction('mascot_hint_dismiss','escape');setHint(null);}}} disabled={!interactive} aria-label={hint?'Show the next workspace hint':'Ask the mascot for a workspace hint'} aria-expanded={!!hint} aria-controls={hint?'mascot-hint':undefined}>{musicVisible?<MusicMascot phase={musicPhase==='off'?'putting':musicPhase} onTransitionEnd={()=>setMusicPhase(musicPlaying?'on':'off')}/>:workingOut?<GymMascot paused={paused||!visible}/>:<Character/>}</button>
     </div>
     </div>

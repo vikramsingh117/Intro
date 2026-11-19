@@ -24,16 +24,16 @@ export function chapterAt(month) { return CHAPTERS.reduce((found, chapter) => mo
 export function seasonAt(month) { const m = month % 12; return m < 2 || m === 11 ? 'Winter' : m < 5 ? 'Spring' : m < 9 ? 'Monsoon' : 'Autumn'; }
 export function dateLabel(month) { return `${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][month % 12]} ${2021 + Math.floor(month / 12)}`; }
 export const OBJECTS = [
+  { id: 'window', label: 'Window · city view', at: START, box: [49.6, 21, 116, 111] },
   { id: 'lamp', label: 'Desk lamp · toggle', at: START, box: [104, 128, 34, 46] },
   { id: 'notebook', label: 'College notebook', at: START, box: [141, 153, 47, 23] },
   { id: 'computer', label: 'Computer · projects', at: START, box: [215, 91, 93, 82] },
-  { id: 'cribble', label: 'Cribble internship', at: 48, box: [318, 135, 20, 24] },
-  { id: 'office', label: 'Office Solutions internship', at: 50, box: [344, 135, 20, 24] },
-  { id: 'github', label: 'GitHub', at: 48, box: [318, 108, 20, 20] },
-  { id: 'leetcode', label: 'LeetCode', at: 48, box: [344, 108, 20, 20] },
+  { id: 'cribble', label: 'Cribble internship', at: 48, box: [174, 96, 58, 33] },
+  { id: 'office', label: 'Office Solutions internship', at: 50, box: [248, 96, 58, 33] },
+  { id: 'github', label: 'GitHub', at: 48, box: [174, 60, 58, 28] },
+  { id: 'leetcode', label: 'LeetCode', at: 48, box: [248, 60, 58, 28] },
   { id: 'upliance', label: 'upliance · my work', at: 60, box: [389, 123, 51, 63] },
   { id: 'radio', label: 'Radio · toggle music', at: 56, box: [99, 146, 44, 20] },
   { id: 'ceiling', label: 'Ceiling light · toggle', at: 60, box: [388, 20, 51, 20] },
-  { id: 'notes', label: 'Sticky notes · how I work', at: 60, box: [312, 33, 40, 25] },
 ];
 export function objectsAt(month) { return OBJECTS.filter(object => month >= object.at); }

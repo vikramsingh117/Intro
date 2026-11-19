@@ -42,7 +42,7 @@ export default function CityStudio() {
       <NightEffects exposure={settings.exposure} glow={settings.glow} />
       <hemisphereLight args={['#c8d4d0', '#494237', settings.ambient]} />
       <directionalLight position={[3, 5, 4]} intensity={.8} color="#c7d5df" />
-      <Suspense fallback={null}><CityExterior settings={settings} onReady={setReady} /></Suspense>
+      <Suspense fallback={null}><CityExterior settings={settings} outside onReady={setReady} /></Suspense>
       <View settings={settings} orbit={orbit} />
     </Canvas>
     <header className={styles.toolbar}>

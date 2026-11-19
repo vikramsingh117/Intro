@@ -1,0 +1,8 @@
+/* Keeps the projected monitor readable while the physical room swaps behind near-black cover. */
+.veil{position:absolute;inset:0;z-index:3;pointer-events:none;background:#010202;opacity:0;transition:opacity 340ms cubic-bezier(.3,.05,.15,1)}
+.idle{opacity:0}
+.darkening,.holding{opacity:.965}
+.holding{transition:none}
+.revealing{opacity:0;transition-duration:600ms;transition-timing-function:cubic-bezier(.16,.75,.25,1)}
+.status{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@media(prefers-reduced-motion:reduce){.veil{display:none;transition:none}}

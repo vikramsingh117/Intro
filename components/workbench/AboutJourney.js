@@ -16,21 +16,21 @@ import styles from '../../styles/AboutJourney.module.css';
 
 const STOPS = ROOM_YEARS;
 const BOARD_ZOOMS = {
-  github: ['68.33%', '49.17%'],
-  leetcode: ['73.75%', '49.17%'],
-  cribble: ['68.33%', '61.25%'],
-  office: ['73.75%', '61.25%'],
+  github: ['42.29%', '30.83%'],
+  leetcode: ['57.71%', '30.83%'],
+  cribble: ['42.29%', '46.88%'],
+  office: ['57.71%', '46.88%'],
 };
 
-function BoardZoom({ id, month, leaving, lampOn, radioPlaying, ceilingOn }) {
+function BoardZoom({ id, month, leaving, lampOn, radioPlaying, ceilingOn, projectorState, onProjectorChange }) {
   const objects = useRef({});
   const [originX, originY] = BOARD_ZOOMS[id];
   return <div className={styles.boardZoomViewport} aria-hidden="true"><div className={`${styles.boardZoom} ${leaving ? styles.boardZoomOut : ''}`} style={{ '--board-x': originX, '--board-y': originY }}>
-    <PixelDeskScene month={month} disabled lampOn={lampOn} radioPlaying={radioPlaying} ceilingOn={ceilingOn} objectRefs={objects}/>
+    <PixelDeskScene month={month} disabled lampOn={lampOn} radioPlaying={radioPlaying} ceilingOn={ceilingOn} projectorState={projectorState} onProjectorChange={onProjectorChange} objectRefs={objects}/>
   </div></div>;
 }
 
-export default function AboutJourney({ roomYear=DEFAULT_ROOM_YEAR, onRequestYear, onOpenUpliance, onOpenNotebook, onOpenNotes, onToggleLamp, lampOn, onToggleRadio, onToggleCeiling, ceilingOn, onEnterPortfolio, radioPlaying }) {
+export default function AboutJourney({ roomYear=DEFAULT_ROOM_YEAR, wallNotes=[], onRequestYear, projectorState, onProjectorChange, workBoardDetail, onWorkBoardDetailShown, onOpenWorkBoard, onOpenUpliance, onOpenNotebook, onOpenNotes, onOpenWindow, onToggleLamp, lampOn, onToggleRadio, onToggleCeiling, ceilingOn, onEnterPortfolio, radioPlaying }) {
   const setWindowBack = useContext(WindowBackContext);
   const [layoutEditor,setLayoutEditor]=useState(false);
   useEffect(()=>setLayoutEditor(new URLSearchParams(window.location.search).get('pixel-editor')==='1'),[]);
@@ -47,17 +47,19 @@ export default function AboutJourney({ roomYear=DEFAULT_ROOM_YEAR, onRequestYear
   const lastObject = useRef(null), changing = useRef(false);
   const month = STOPS[index].month, detail = selected ? DETAILS[selected] : null;
   const archiveUrl = index === 0 ? EARLY_PORTFOLIO_URL : index === 1 ? LEGACY_PORTFOLIO_URL : null;
-  const selectObject = id => {
+  const selectObject = (id, objectData) => {
     if (intro !== 'ready' || changing.current) return;
     trackInteraction('journey_object', `${STOPS[index].year}:${id}`);
+    if (id === 'window') { onOpenWindow?.(); return; }
     if (id === 'lamp') { onToggleLamp?.(); return; }
     if (id === 'radio' && month >= 56) { onToggleRadio?.(); return; }
     if (month >= 60) {
       if (id === 'upliance') { onOpenUpliance?.(); return; }
       if (id === 'notebook') { onOpenNotebook?.(); return; }
-      if (id === 'notes') { onOpenNotes?.(); return; }
+      if (id === 'notes') { onOpenNotes?.(objectData); return; }
       if (id === 'ceiling') { onToggleCeiling?.(); return; }
     }
+    if (BOARD_ZOOMS[id] && onOpenWorkBoard) { onOpenWorkBoard(id); return; }
     setSelected(id);
     if (BOARD_ZOOMS[id]) {
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) setDetailMotion('view');
@@ -68,6 +70,11 @@ export default function AboutJourney({ roomYear=DEFAULT_ROOM_YEAR, onRequestYear
       }
     } else setDetailMotion(null);
   };
+  useEffect(()=>{
+    const id=workBoardDetail?.id;
+    if(!BOARD_ZOOMS[id])return;
+    setSelected(id);setDetailMotion('view');onWorkBoardDetailShown?.();
+  },[workBoardDetail,onWorkBoardDetailShown]);
   const move = direction => {
     const next = (index + direction + STOPS.length) % STOPS.length;
     if (intro !== 'ready' || changing.current || next === index) return;
@@ -126,7 +133,7 @@ export default function AboutJourney({ roomYear=DEFAULT_ROOM_YEAR, onRequestYear
       <span>VIKRAM’S ROOM</span><div className={styles.loadingTrack} aria-hidden="true"><i /></div><small>STEPPING INSIDE…</small>
     </div>}
     <main className={styles.stage}>
-      {selected && BOARD_ZOOMS[selected] && detailMotion !== 'view' ? <BoardZoom key={`${selected}-${detailMotion}`} id={selected} month={month} leaving={detailMotion === 'out'} lampOn={lampOn} radioPlaying={radioPlaying} ceilingOn={ceilingOn}/> : selected === 'computer' && index === 2 ? <InceptionMonitor onEnterPortfolio={() => { trackInteraction('journey_enter_portfolio', '2026'); onEnterPortfolio?.(); }} lampOn={lampOn} radioPlaying={radioPlaying} ceilingOn={ceilingOn}/> : selected === 'leetcode' ? <LeetCodeSnapshot month={month} onBack={returnToRoom} backRef={back} radioPlaying={radioPlaying} ceilingOn={ceilingOn}/> : selected === 'computer' && archiveUrl ? <div className={styles.portfolioLayout}><PortfolioYearNotes year={STOPS[index].year} side="left"/><section className={`${styles.closeup} ${styles.archiveMonitor}`} aria-label="Archived portfolio monitor">
+      {selected && BOARD_ZOOMS[selected] && detailMotion !== 'view' ? <BoardZoom key={`${selected}-${detailMotion}`} id={selected} month={month} leaving={detailMotion === 'out'} lampOn={lampOn} radioPlaying={radioPlaying} ceilingOn={ceilingOn} projectorState={projectorState} onProjectorChange={onProjectorChange}/> : selected === 'computer' && index === 2 ? <InceptionMonitor onEnterPortfolio={() => { trackInteraction('journey_enter_portfolio', '2026'); onEnterPortfolio?.(); }} lampOn={lampOn} radioPlaying={radioPlaying} ceilingOn={ceilingOn} wallNotes={wallNotes}/> : selected === 'leetcode' ? <LeetCodeSnapshot month={month} onBack={returnToRoom} backRef={back} radioPlaying={radioPlaying} ceilingOn={ceilingOn}/> : selected === 'computer' && archiveUrl ? <div className={styles.portfolioLayout}><PortfolioYearNotes year={STOPS[index].year} side="left"/><section className={`${styles.closeup} ${styles.archiveMonitor}`} aria-label="Archived portfolio monitor">
         <div className={styles.closeupBar}>
           <button ref={back} onClick={returnToRoom}>← Back to room</button>
           <span className={styles.portfolioYear}>Same portfolio, in {STOPS[index].year}.</span>
@@ -159,7 +166,7 @@ export default function AboutJourney({ roomYear=DEFAULT_ROOM_YEAR, onRequestYear
           {detail.href && <a onClick={() => trackInteraction('journey_link', `${STOPS[index].year}:${selected}`)} href={detail.href} target="_blank" rel="noopener noreferrer">{detail.link} ↗ <span className={styles.srOnly}>(opens in a new tab)</span></a>}
         </article>
       </section> : <div className={styles.room}>
-        <div className={styles.sceneViewport}><PixelDeskScene month={month} previousMonth={previousMonth} transitioning={transitioning} onSelect={selectObject} layoutEditor={layoutEditor} lampOn={lampOn} ceilingOn={ceilingOn} radioPlaying={radioPlaying} disabled={intro !== 'ready'} objectRefs={objectRefs}/></div>
+        <div className={styles.sceneViewport}><PixelDeskScene month={month} previousMonth={previousMonth} transitioning={transitioning} onSelect={selectObject} layoutEditor={layoutEditor} lampOn={lampOn} ceilingOn={ceilingOn} radioPlaying={radioPlaying} wallNotes={wallNotes} projectorState={projectorState} onProjectorChange={onProjectorChange} disabled={intro !== 'ready'} objectRefs={objectRefs}/></div>
       </div>}
     </main>
     <nav hidden={selected === 'computer' && index === 2} className={styles.timeline} style={{ '--time-direction': timelineMotion.direction, '--time-stop': index }} aria-label="Journey year" onKeyDown={event => {

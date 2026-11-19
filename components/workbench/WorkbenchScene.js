@@ -33,9 +33,16 @@ import Stool from './Stool';
 import Upliance from './Upliance';
 import Chair from './Chair';
 import Keyboard from './Keyboard';
+import WorkBuildBoard, { WORK_BOARD_TARGET } from './WorkBuildBoard';
 import { DEFAULT_ROOM_YEAR, roomHasObject } from './roomYears.mjs';
-import { distanceForZoomProgress, roomZoomBridge, ROOM_MAX_DISTANCE, ROOM_MIN_DISTANCE, zoomMultiplier, zoomProgressForDistance } from './cameraZoom.mjs';
-import { ACESFilmicToneMapping, Euler, Quaternion, Matrix4, SRGBColorSpace, TextureLoader, TOUCH, Vector3 } from 'three';
+import { distanceForZoomProgress, roomZoomBridge, ROOM_FOCUS_PROGRESS, ROOM_MAX_DISTANCE, ROOM_MIN_DISTANCE, zoomMultiplier, zoomProgressForDistance } from './cameraZoom.mjs';
+import { ACESFilmicToneMapping, Box3, Euler, Quaternion, Matrix4, SRGBColorSpace, TextureLoader, TOUCH, Vector3 } from 'three';
+
+const ROOM_ATMOSPHERE={
+  '2021':{background:'#8faea8',sky:'#dce9dc',ground:'#76644e',ambient:.92,directional:1.15,directionalColor:'#fff0cd',windowLight:8,windowColor:'#d8eff0',exposure:1},
+  '2025':{background:'#354e54',sky:'#aabfc0',ground:'#4c5048',ambient:.68,directional:.7,directionalColor:'#c5d6d8',windowLight:11,windowColor:'#9ec7cf',exposure:.88},
+  '2026':{background:'#091321',sky:'#c8d4d0',ground:'#494237',ambient:.65,directional:.8,directionalColor:'#c7d5df',windowLight:18,windowColor:'#8abbd9',exposure:.85},
+};
 
 function roomEvents(store) {
   const events = createPointerEvents(store);
@@ -55,15 +62,6 @@ function FirstRoomFrame({ onReady }) {
     else invalidate();
   });
   return null;
-}
-
-function WorkBuildPlaceholder({ year }) {
-  if (year !== '2025') return null;
-  return <group position={[5.2, .45, -3.02]}>
-    <mesh castShadow receiveShadow><boxGeometry args={[3.1, 2.45, .14]}/><meshStandardMaterial color="#26382f" roughness={.86}/></mesh>
-    <mesh position={[0, .93, .08]}><boxGeometry args={[2.75, .16, .04]}/><meshStandardMaterial color="#7e8c6c" roughness={.8}/></mesh>
-    {[[-.72,.34],[.72,.34],[-.72,-.48],[.72,-.48]].map(([x,y])=><mesh key={`${x}-${y}`} position={[x,y,.09]}><boxGeometry args={[1.08,.62,.035]}/><meshStandardMaterial color="#667768" roughness={.9}/></mesh>)}
-  </group>;
 }
 
 function Monitor({ basketScore, reduced, onEnter, desktopRef, desktop, onReady }) {
@@ -140,8 +138,8 @@ const ROOM_TARGET = [0, .2128, -.51];
 const ROOM_MIN_AZIMUTH = -22 * Math.PI / 180;
 const ROOM_MAX_AZIMUTH = 1.2;
 
-function Camera({ paperOrbit, photo, pauseCamera, upliance, onUplianceArrive, entered, outside, notebook, citySettings, reduced, onArrive, interactionBlocked, noteMode, noteX, noteY, notePlacement, roomResetKey }) {
-  const { camera, gl, size, invalidate } = useThree();
+function Camera({ paperOrbit, photo, workBoard, projectorState, pauseCamera, upliance, onUplianceArrive, entered, outside, onOutsideArrive, notebook, citySettings, reduced, onArrive, interactionBlocked, noteMode, noteX, noteY, notePlacement, roomResetKey }) {
+  const { camera, gl, scene, size, invalidate } = useThree();
   const { cameraX, cameraY, cameraZ, targetX, targetY, targetZ, fov } = citySettings;
   const roomCameraZ=size.width<=760?Math.max(18.5,11.2/(size.width/size.height)):14.8;
   const roomHome = useMemo(() => {
@@ -156,6 +154,11 @@ function Camera({ paperOrbit, photo, pauseCamera, upliance, onUplianceArrive, en
   const roomPosition = useRef(null);
   const appliedRoomReset = useRef(roomResetKey);
   const wasFocused = useRef(false);
+  const zoomFocusArmed = useRef(true);
+  const zoomFocusTarget = useRef(null);
+  const zoomAimStart = useRef(null);
+  const zoomReturn = useRef(null);
+  const zoomSightReturn = useRef(null);
   const windowLook = useRef({center:null,yaw:0,pitch:0,drag:null});
   const initialRoomCamera=useRef(false);
   useLayoutEffect(()=>{
@@ -185,8 +188,105 @@ function Camera({ paperOrbit, photo, pauseCamera, upliance, onUplianceArrive, en
     controls.maxPolarAngle = 1.55;
     controls.rotateSpeed = .55;
     controls.zoomSpeed = .7;
+    // Preserve the pointer ray while the object itself is pulled toward the
+    // view centre, so trackpad zoom does not feel detached from the cursor.
+    controls.zoomToCursor = true;
+    controls.screenSpacePanning = true;
     controls.enabled = false;
     const homeDistance = roomHome.distanceTo(controls.target);
+    const defaultTarget = new Vector3(...ROOM_TARGET);
+    const focusBounds = new Box3();
+    const focusCenter = new Vector3();
+    let aimResetTimer = null;
+    const interruptZoomReturn = () => {
+      if (!zoomReturn.current) return false;
+      zoomReturn.current = null;
+      zoomAimStart.current = null;
+      zoomFocusTarget.current = null;
+      zoomFocusArmed.current = true;
+      // The partially returned camera becomes the baseline for the next
+      // gesture instead of forcing the visitor to wait for the old one.
+      roomPosition.current = camera.position.clone();
+      controls.enabled = true;
+      controls.update();
+      invalidate();
+      return true;
+    };
+    const setCenteredCursor = active => {
+      const bounds = gl.domElement.getBoundingClientRect();
+      window.dispatchEvent(new CustomEvent('room-zoom-cursor',{detail:{active,x:bounds.left+bounds.width/2,y:bounds.top+bounds.height/2}}));
+    };
+    const restoreUncommittedAim = () => {
+      const start = zoomAimStart.current;
+      if (!start || !zoomFocusArmed.current) return;
+      window.clearTimeout(aimResetTimer);
+      aimResetTimer = null;
+      zoomAimStart.current = null;
+      zoomFocusTarget.current = null;
+      zoomSightReturn.current = null;
+      setCenteredCursor(false);
+      controls.enabled = false;
+      zoomReturn.current = {
+        fromPosition:camera.position.clone(),
+        toPosition:start.position,
+        fromTarget:controls.target.clone(),
+        toTarget:defaultTarget.clone(),
+        elapsed:0,
+        duration:3,
+      };
+      invalidate();
+    };
+    const scheduleAimRestore = () => {
+      window.clearTimeout(aimResetTimer);
+      aimResetTimer = window.setTimeout(restoreUncommittedAim,110);
+    };
+    const retargetZoom = inward => {
+      if (!inward) {
+        if (controls.target.distanceToSquared(defaultTarget) > .0001) {
+          zoomSightReturn.current={from:controls.target.clone(),to:defaultTarget.clone(),elapsed:0,duration:1.35};
+          invalidate();
+        }
+        return;
+      }
+      zoomSightReturn.current=null;
+      let nextTarget = defaultTarget;
+      if (inward) {
+        const hovered = scene.getObjectByProperty('uuid', gl.domElement.dataset.cursorObject || '');
+        if (typeof hovered?.userData?.roomZoomFocus === 'function') {
+          if (zoomFocusTarget.current && zoomFocusTarget.current !== hovered) restoreUncommittedAim();
+          if (!zoomAimStart.current) {
+            zoomAimStart.current = {position:camera.position.clone(),target:controls.target.clone()};
+            setCenteredCursor(true);
+          }
+          zoomFocusTarget.current = hovered;
+          scheduleAimRestore();
+        }
+        const object = zoomFocusTarget.current;
+        if (typeof object?.userData?.roomZoomFocus !== 'function') return;
+        object.updateWorldMatrix(true,true);
+        focusBounds.setFromObject(object);
+        if (focusBounds.isEmpty()) return;
+        nextTarget = focusBounds.getCenter(focusCenter);
+      }
+      controls.target.lerp(nextTarget,.55);
+      camera.lookAt(controls.target);
+      camera.updateMatrixWorld();
+    };
+    // Run before OrbitControls' bubble listener so its dolly follows the newly
+    // aimed line of sight instead of always moving toward the middle of the desk.
+    const aimWheel = event => {
+      interruptZoomReturn();
+      if (!controls.enabled || !event.deltaY) return;
+      retargetZoom(event.deltaY < 0);
+    };
+    const interruptPointer = () => { zoomSightReturn.current=null;interruptZoomReturn(); };
+    const cancelAimWhenPointerLeaves = () => {
+      const hoveredId = gl.domElement.dataset.cursorObject;
+      if (zoomFocusTarget.current && zoomFocusTarget.current.uuid !== hoveredId) restoreUncommittedAim();
+    };
+    gl.domElement.addEventListener('wheel',aimWheel,{capture:true,passive:true});
+    gl.domElement.addEventListener('pointerdown',interruptPointer,{capture:true,passive:true});
+    gl.domElement.addEventListener('cursor-object-change',cancelAimWhenPointerLeaves);
     const listeners = new Set();
     const getSnapshot = () => {
       const distance = camera.position.distanceTo(controls.target);
@@ -199,13 +299,32 @@ function Camera({ paperOrbit, photo, pauseCamera, upliance, onUplianceArrive, en
     const notifyZoom = () => {
       const snapshot = getSnapshot();
       listeners.forEach(listener => listener(snapshot));
+      // There is no lower buffer zone: object-directed aiming starts at any
+      // room zoom and remains tentative until it focuses or rolls back.
+      if (snapshot.progress < ROOM_FOCUS_PROGRESS) zoomFocusArmed.current = true;
+      if (snapshot.progress >= ROOM_FOCUS_PROGRESS && zoomFocusArmed.current) {
+        const hovered = scene.getObjectByProperty('uuid', gl.domElement.dataset.cursorObject || '');
+        const object = typeof hovered?.userData?.roomZoomFocus === 'function' ? hovered : zoomFocusTarget.current;
+        const focus = object?.userData?.roomZoomFocus;
+        if (typeof focus === 'function') {
+          zoomFocusArmed.current = false;
+          zoomAimStart.current = null;
+          zoomReturn.current = null;
+          zoomSightReturn.current = null;
+          setCenteredCursor(false);
+          window.clearTimeout(aimResetTimer);
+          focus();
+        }
+      }
     };
     const zoomApi = {
       getSnapshot,
       subscribe(listener) { listeners.add(listener); return () => listeners.delete(listener); },
       setProgress(progress) {
+        interruptZoomReturn();
         if (!controls.enabled) return;
         const distance = distanceForZoomProgress(progress, controls.minDistance, controls.maxDistance);
+        retargetZoom(distance < camera.position.distanceTo(controls.target));
         camera.position.sub(controls.target).setLength(distance).add(controls.target);
         controls.update();
         invalidate();
@@ -216,15 +335,17 @@ function Camera({ paperOrbit, photo, pauseCamera, upliance, onUplianceArrive, en
     orbit.current = controls; paperOrbit.current = controls;
     emitZoom.current = notifyZoom;
     roomZoomBridge.setApi(zoomApi);
-    return () => { controls.removeEventListener('change', onChange); controls.dispose(); emitZoom.current = () => {}; roomZoomBridge.setApi(null); orbit.current = null; paperOrbit.current = null; };
-  }, [camera, gl, invalidate, paperOrbit, roomHome]);
+    return () => { window.clearTimeout(aimResetTimer); setCenteredCursor(false); gl.domElement.removeEventListener('wheel',aimWheel,{capture:true}); gl.domElement.removeEventListener('pointerdown',interruptPointer,{capture:true}); gl.domElement.removeEventListener('cursor-object-change',cancelAimWhenPointerLeaves); controls.removeEventListener('change', onChange); controls.dispose(); emitZoom.current = () => {}; roomZoomBridge.setApi(null); orbit.current = null; paperOrbit.current = null; };
+  }, [camera, gl, scene, invalidate, paperOrbit, roomHome]);
   useEffect(() => {
+    if(photo||workBoard||entered||outside||notebook||upliance||noteMode)zoomSightReturn.current=null;
     if(orbit.current) {
-      orbit.current.enabled = !interactionBlocked && !photo && !entered && !outside && !notebook && !upliance && !!transition.current?.done;
+      orbit.current.enabled = !interactionBlocked && !photo && !workBoard && !entered && !outside && !notebook && !upliance && !!transition.current?.done;
       emitZoom.current();
     }
-  }, [interactionBlocked, entered, outside, notebook, upliance, photo]);
+  }, [interactionBlocked, entered, outside, notebook, upliance, photo, workBoard, noteMode]);
   useEffect(() => { if (orbit.current) orbit.current.enableDamping = !reduced; }, [reduced]);
+  const focused = !!(photo || workBoard || entered || outside || notebook || upliance || noteMode);
   const lookTarget = useRef(new Vector3(...ROOM_TARGET));
   useEffect(() => {
     const element=gl.domElement, look=windowLook.current;
@@ -263,10 +384,12 @@ function Camera({ paperOrbit, photo, pauseCamera, upliance, onUplianceArrive, en
   callback.current = onArrive;
   const applianceCallback=useRef(onUplianceArrive);
   applianceCallback.current=onUplianceArrive;
+  const outsideCallback=useRef(onOutsideArrive);
+  outsideCallback.current=onOutsideArrive;
   useEffect(() => {
-    const focused = photo || entered || outside || notebook || !!upliance || !!noteMode;
+    const returningToRoom = !focused && wasFocused.current;
     const resetRoom = !focused && appliedRoomReset.current !== roomResetKey;
-    if (resetRoom) {
+    if (resetRoom || returningToRoom) {
       appliedRoomReset.current = roomResetKey;
       roomPosition.current = roomHome.clone();
     }
@@ -297,10 +420,57 @@ function Camera({ paperOrbit, photo, pauseCamera, upliance, onUplianceArrive, en
     const photoTarget = new Vector3(...PHOTO_TARGET);
     const photoDistance = Math.max(.68, .68 / (size.width / size.height)) / Math.tan(21 * Math.PI / 180) * 1.3;
     const photoCamera = photoTarget.clone().add(new Vector3(0, 0, photoDistance));
-    transition.current = { from:camera.position.clone(), fovFrom:camera.fov, fovTo:outside ? fov : 42, lookFrom:lookTarget.current.clone(), lookTo:photo ? photoTarget : upliance ? applianceTarget : noteMode ? noteTarget : notebook ? new Vector3(...NOTEBOOK_TARGET) : outside ? new Vector3(targetX,targetY,targetZ) : (entered ? new Vector3(1.5, .2128, -.51) : new Vector3(...ROOM_TARGET)), to:photo ? photoCamera : upliance ? applianceCamera : noteMode ? noteCamera : notebook ? notebookCamera : outside ? new Vector3(cameraX,cameraY,cameraZ) : entered ? new Vector3(1.5, .2128 + .139173 * distance, -.51 + .990268 * distance)  : (resetRoom ? roomHome.clone() : roomPosition.current?.clone() || roomHome.clone()), duration:entrance ? 2.4 : 1.45, elapsed:entrance && !reduced ? -.35 : noteMode==='wall' && !reduced ? -.65 : 0, done:false };
+    const projectorPull=projectorState?.pull||{x:0,y:0};
+    const workBoardTarget = new Vector3(
+      WORK_BOARD_TARGET[0]+projectorPull.x*2.4*1.18,
+      WORK_BOARD_TARGET[1]+projectorPull.y*1.35*.82,
+      WORK_BOARD_TARGET[2]
+    );
+    const workBoardDistance = Math.max(1.575,2.6/(size.width/size.height))/Math.tan(21*Math.PI/180)*1.24;
+    const workBoardCamera = workBoardTarget.clone().add(new Vector3(0,.05,workBoardDistance));
+    transition.current = { from:camera.position.clone(), fovFrom:camera.fov, fovTo:outside ? fov : 42, lookFrom:lookTarget.current.clone(), lookTo:photo ? photoTarget : workBoard ? workBoardTarget : upliance ? applianceTarget : noteMode ? noteTarget : notebook ? new Vector3(...NOTEBOOK_TARGET) : outside ? new Vector3(targetX,targetY,targetZ) : (entered ? new Vector3(1.5, .2128, -.51) : new Vector3(...ROOM_TARGET)), to:photo ? photoCamera : workBoard ? workBoardCamera : upliance ? applianceCamera : noteMode ? noteCamera : notebook ? notebookCamera : outside ? new Vector3(cameraX,cameraY,cameraZ) : entered ? new Vector3(1.5, .2128 + .139173 * distance, -.51 + .990268 * distance)  : (resetRoom ? roomHome.clone() : roomPosition.current?.clone() || roomHome.clone()), duration:entrance ? 2.4 : 1.45, elapsed:entrance && !reduced ? -.35 : noteMode==='wall' && !reduced ? -.65 : 0, done:false };
     invalidate();
-  }, [photo, upliance, noteMode, noteX, noteY, notePlacement, entered, outside, notebook, cameraX, cameraY, cameraZ, targetX, targetY, targetZ, fov, reduced, camera, size.width, size.height, roomHome, roomResetKey, invalidate]);
+  }, [focused, photo, workBoard, projectorState, upliance, noteMode, noteX, noteY, notePlacement, entered, outside, notebook, cameraX, cameraY, cameraZ, targetX, targetY, targetZ, fov, reduced, camera, size.width, size.height, roomHome, roomResetKey, invalidate]);
   useFrame((state, dt) => {
+    const returning = zoomReturn.current;
+    if (returning && !focused) {
+      returning.elapsed += Math.min(dt,.05);
+      const progress = Math.min(1,returning.elapsed/returning.duration);
+      // A non-zero initial slope gives the requested 0.1x start; the quadratic
+      // term continuously accelerates the camera through the three-second return.
+      const ease = .1*progress+.9*progress*progress;
+      camera.position.lerpVectors(returning.fromPosition,returning.toPosition,ease);
+      orbit.current?.target.lerpVectors(returning.fromTarget,returning.toTarget,ease);
+      camera.lookAt(orbit.current?.target || returning.toTarget);
+      camera.updateMatrixWorld();
+      if(progress<1)state.invalidate();
+      else {
+        zoomReturn.current=null;
+        if(orbit.current){
+          orbit.current.target.copy(returning.toTarget);
+          orbit.current.enabled=!interactionBlocked;
+          orbit.current.update();
+          emitZoom.current();
+        }
+      }
+      return;
+    }
+    const sightReturn=zoomSightReturn.current;
+    if(sightReturn&&!focused){
+      sightReturn.elapsed+=Math.min(dt,.05);
+      const progress=Math.min(1,sightReturn.elapsed/sightReturn.duration);
+      const ease=progress*progress*(3-2*progress);
+      orbit.current?.target.lerpVectors(sightReturn.from,sightReturn.to,ease);
+      camera.lookAt(orbit.current?.target||sightReturn.to);
+      camera.updateMatrixWorld();
+      if(progress<1)state.invalidate();
+      else {
+        zoomSightReturn.current=null;
+        orbit.current?.target.copy(sightReturn.to);
+        orbit.current?.update();
+      }
+      return;
+    }
     const t = transition.current;
     if (pauseCamera) return;
     if (!t || t.done) {
@@ -323,8 +493,9 @@ function Camera({ paperOrbit, photo, pauseCamera, upliance, onUplianceArrive, en
       if(outside) {
         windowLook.current.center=camera.quaternion.clone();
         windowLook.current.yaw=0;windowLook.current.pitch=0;
+        outsideCallback.current?.();
       }
-      if (!photo && !entered && !outside && !notebook && !upliance && !noteMode && orbit.current) {
+      if (!photo && !workBoard && !entered && !outside && !notebook && !upliance && !noteMode && orbit.current) {
         orbit.current.target.copy(lookTarget.current);
         orbit.current.enabled = !interactionBlocked;
         orbit.current.update();
@@ -335,7 +506,7 @@ function Camera({ paperOrbit, photo, pauseCamera, upliance, onUplianceArrive, en
   }, -1);
   return null;
 }
-export default function MonitorScene({ roomYear=DEFAULT_ROOM_YEAR, optimised = false, paperInventory, onPickUpPaper, basketScore, celebrating, onBasket, photo, onPhotoOpen, onPlaybackChange, onCeilingPowerChange, onNotebookTear, onPaperMotionChange, aimingPaper, heldPaper, paperControls, onPaperThrown, tornPages, keyboardTarget, registerRoomAction, upliance, upliancePage, uplianceArrived, uplianceControlsRef, onUplianceArrive, onUplianceSelect, propPlacement, glassesPlacement, stickyNotePlacement, lensSettings, entered, reduced, onEnter, onArrive, lampOn, onLampToggle, onWindowSelect, outside, onCityReady, desktopRef, desktop, notebook, notebookPage, onNotebookOpen, onHover, notebookOpen, onNotebookPageChange, onNotebookExit, citySettings, wearingGlasses, glassesLens, glassesLeaving, onWearGlasses, stickyNotes, noteEditorRef, roomResetKey }) {
+export default function MonitorScene({ roomYear=DEFAULT_ROOM_YEAR, optimised = false, paperInventory, onPickUpPaper, basketScore, celebrating, onBasket, photo, onPhotoOpen, workBoard, workBoardTile, onWorkBoardOpen, onWorkBoardTileSelect, projectorState, onProjectorChange, onPlaybackChange, onCeilingPowerChange, onNotebookTear, onPaperMotionChange, aimingPaper, heldPaper, paperControls, onPaperThrown, tornPages, keyboardTarget, registerRoomAction, upliance, upliancePage, uplianceArrived, uplianceControlsRef, onUplianceArrive, onUplianceSelect, propPlacement, glassesPlacement, stickyNotePlacement, lensSettings, entered, reduced, onEnter, onArrive, lampOn, onLampToggle, onWindowSelect, outside, onCityReady, desktopRef, desktop, notebook, notebookPage, onNotebookOpen, onHover, notebookOpen, onNotebookPageChange, onNotebookExit, citySettings, wearingGlasses, glassesLens, glassesLeaving, onWearGlasses, stickyNotes, noteEditorRef, roomResetKey }) {
   const { sceneReady } = useAfterHoursTransition();
   const onRoomReady = useCallback(() => {
     sceneReady();
@@ -343,13 +514,20 @@ export default function MonitorScene({ roomYear=DEFAULT_ROOM_YEAR, optimised = f
   }, [sceneReady]);
   const paperOrbit = useRef(null);
   const [lightDragging,setLightDragging]=useState(false);
+  const [projectorDragging,setProjectorDragging]=useState(false);
   const [fireflyLightHit,setFireflyLightHit]=useState(0);
   const [monitorReady,setMonitorReady]=useState(false);
   const [uplianceReady,setUplianceReady]=useState(false);
+  const [outsideArrived,setOutsideArrived]=useState(false);
+  useEffect(()=>{if(!outside)setOutsideArrived(false);},[outside]);
   const markMonitorReady=useCallback(()=>setMonitorReady(true),[]);
   const markUplianceReady=useCallback(()=>setUplianceReady(true),[]);
+  const markOutsideArrived=useCallback(()=>setOutsideArrived(true),[]);
   const currentRoom=roomYear==='2026';
+  const graduationRoom=roomYear==='2025';
+  const atmosphere=ROOM_ATMOSPHERE[roomYear]||ROOM_ATMOSPHERE['2026'];
   const showObject=id=>roomHasObject(roomYear,id);
+  const exteriorSettled=outside&&outsideArrived;
   const screensReady=monitorReady&&(!currentRoom||uplianceReady);
   const [roomAssetsReady,setRoomAssetsReady]=useState(false);
   const [notebookImagesReady,setNotebookImagesReady]=useState(false);
@@ -361,33 +539,33 @@ export default function MonitorScene({ roomYear=DEFAULT_ROOM_YEAR, optimised = f
     {screensReady && <FirstRoomFrame onReady={onRoomReady}/>}
     {screensReady && currentRoom && <PreloadAssets onReady={markRoomAssetsReady} onError={markRoomAssetsReady}/>}
     <StationaryShadows/>
-    <color attach="background" args={['#091321']} />
+    <color attach="background" args={[atmosphere.background]} />
     <group onClick={event=>{if(notebook && event.delta<=5){event.stopPropagation();onNotebookExit();}}}>
-    <NightEffects optimised={optimised} exposure={outside ? citySettings.exposure : .85} glow={outside ? citySettings.glow : .55} pixelLens={wearingGlasses && glassesLens === 'pixel'} crayonLens={wearingGlasses && glassesLens === 'crayon'} sketchLens={wearingGlasses && glassesLens === 'sketch'} glassesLeaving={glassesLeaving} lensSettings={lensSettings} />
-    {screensReady && <Suspense fallback={null}><CityExterior onReady={onCityReady} settings={citySettings} /></Suspense>}
-    {screensReady && <Suspense fallback={null}><FlyingPlane active={outside} reduced={reduced} settings={citySettings}/></Suspense>}
-    <hemisphereLight args={['#c8d4d0', '#494237', outside ? citySettings.ambient : .65]} />
-    <directionalLight userData={{cacheStationaryShadow:true}} position={[3, 5, 4]} intensity={.8} color="#c7d5df" castShadow shadow-mapSize={[1024, 1024]} shadow-camera-left={-9} shadow-camera-right={9} shadow-camera-top={8} shadow-camera-bottom={-8} shadow-normalBias={.04} />
-    <pointLight position={[-4.6, 2, -2.5]} intensity={18} distance={12} decay={2} color="#8abbd9" />
-    <Suspense fallback={null}><InteractiveObject focused={keyboardTarget==='monitor'} label="Monitor · explore my work" onHover={onHover}><Monitor basketScore={basketScore} reduced={reduced} onReady={markMonitorReady} onEnter={notebook ? onNotebookExit : onEnter} desktopRef={desktopRef} desktop={desktop} /></InteractiveObject></Suspense>
+    <NightEffects optimised={optimised} exposure={outside ? citySettings.exposure : atmosphere.exposure} glow={outside ? citySettings.glow : .55} pixelLens={wearingGlasses && glassesLens === 'pixel'} crayonLens={wearingGlasses && glassesLens === 'crayon'} sketchLens={wearingGlasses && glassesLens === 'sketch'} glassesLeaving={glassesLeaving} lensSettings={lensSettings} />
+    {screensReady && <Suspense fallback={null}><CityExterior onReady={onCityReady} settings={citySettings} year={roomYear} outside={exteriorSettled} rain={graduationRoom&&exteriorSettled} reduced={reduced}/></Suspense>}
+    {screensReady && <Suspense fallback={null}><FlyingPlane active={exteriorSettled} reduced={reduced} settings={citySettings} year={roomYear}/></Suspense>}
+    <hemisphereLight args={[atmosphere.sky,atmosphere.ground,outside?citySettings.ambient:atmosphere.ambient]} />
+    <directionalLight userData={{cacheStationaryShadow:true}} position={[3,5,4]} intensity={atmosphere.directional} color={atmosphere.directionalColor} castShadow shadow-mapSize={[1024,1024]} shadow-camera-left={-9} shadow-camera-right={9} shadow-camera-top={8} shadow-camera-bottom={-8} shadow-normalBias={.04} />
+    <pointLight position={[-4.6,2,-2.5]} intensity={atmosphere.windowLight} distance={12} decay={2} color={atmosphere.windowColor} />
+    <Suspense fallback={null}><InteractiveObject focused={keyboardTarget==='monitor'} label="Monitor · explore my work" onHover={onHover} onFocus={notebook ? onNotebookExit : onEnter}><Monitor basketScore={basketScore} reduced={reduced} onReady={markMonitorReady} onEnter={notebook ? onNotebookExit : onEnter} desktopRef={desktopRef} desktop={desktop} /></InteractiveObject></Suspense>
     <Suspense fallback={null}><Radio visible={showObject('radio')} onPlaybackChange={onPlaybackChange} keyboardFocused={keyboardTarget==='radio'} registerRoomAction={registerRoomAction} onHover={onHover}/></Suspense>
     {screensReady && showObject('photo') && <PhotoFrame reduced={reduced} focused={photo} keyboardFocused={keyboardTarget==='photo'} onSelect={onPhotoOpen} onHover={onHover}/>}
-    <Camera paperOrbit={paperOrbit} photo={photo} pauseCamera={aimingPaper} {...{upliance,onUplianceArrive,entered,outside,notebook,citySettings,reduced,onArrive,roomResetKey}} noteMode={stickyNotes.editor ? (stickyNotes.editor.id?'read':'write') : stickyNotes.placing?'wall':null} noteX={stickyNotes.editor?.x} noteY={stickyNotes.editor?.y} notePlacement={stickyNotePlacement} interactionBlocked={aimingPaper || lightDragging || stickyNotes.dragging || !!stickyNotes.editor || !!stickyNotes.placing}/>
+    <Camera paperOrbit={paperOrbit} photo={photo} workBoard={workBoard} projectorState={projectorState} pauseCamera={aimingPaper} {...{upliance,onUplianceArrive,entered,outside,notebook,citySettings,reduced,onArrive,roomResetKey}} onOutsideArrive={markOutsideArrived} noteMode={stickyNotes.editor ? (stickyNotes.editor.id?'read':'write') : stickyNotes.placing?'wall':null} noteX={stickyNotes.editor?.x} noteY={stickyNotes.editor?.y} notePlacement={stickyNotePlacement} interactionBlocked={aimingPaper || lightDragging || projectorDragging || stickyNotes.dragging || !!stickyNotes.editor || !!stickyNotes.placing}/>
     {screensReady && currentRoom && <Suspense fallback={null}><PaperBalls reduced={reduced} orbitControls={paperOrbit} onScore={onBasket} onMotionChange={onPaperMotionChange} aiming={aimingPaper} heldPaper={heldPaper} controls={paperControls} onThrown={onPaperThrown} canThrow={!photo && !entered && !outside && !notebook && !upliance && !stickyNotes.editor && !stickyNotes.placing}/></Suspense>}
     {screensReady && currentRoom && <Suspense fallback={null}><BasketballHoop/></Suspense>}
     {screensReady && showObject('paper-pile') && <Suspense fallback={null}><PaperPile inventory={paperInventory} aiming={aimingPaper} onPickUp={onPickUpPaper} keyboardFocused={keyboardTarget==='paper-pile'} registerRoomAction={registerRoomAction} onHover={onHover} interactive={!aimingPaper&&!photo&&!entered&&!outside&&!notebook&&!upliance&&!stickyNotes.editor&&!stickyNotes.placing}/></Suspense>}
     {currentRoom && <StickyNotes api={stickyNotes} onHover={onHover} reduced={reduced} placement={stickyNotePlacement}/>}
     {currentRoom && stickyNotes.editor && <NoteProjection editor={stickyNotes.editor} elementRef={noteEditorRef} placement={stickyNotePlacement}/>}
     {screensReady && <Suspense fallback={null}><Chair/></Suspense>}
-    {screensReady && currentRoom && <Suspense fallback={null}><Plant/></Suspense>}
+    {screensReady && roomYear!=='2021' && <Suspense fallback={null}><Plant/></Suspense>}
     {screensReady && currentRoom && <Suspense fallback={null}><Fireflies optimised={optimised} reduced={reduced} onLightHit={markFireflyLightHit}/></Suspense>}
     {screensReady && currentRoom && <Suspense fallback={null}><Stool placement={propPlacement?.stool}/></Suspense>}
     {screensReady && currentRoom && <Suspense fallback={null}><Pascal placement={propPlacement?.pascal}/></Suspense>}
     {currentRoom && <Suspense fallback={null}><Upliance celebrating={celebrating} preloadArtwork={roomAssetsReady&&notebookImagesReady} onReady={markUplianceReady} keyboardFocused={keyboardTarget==='upliance'} registerRoomAction={registerRoomAction} controlsRef={uplianceControlsRef} focused={!!upliance} zoomComplete={uplianceArrived} workPage={upliancePage} onSelect={onUplianceSelect} placement={propPlacement?.upliance} reduced={reduced} interactive={!photo && !entered && !outside && !notebook && !upliance && !stickyNotes.editor && !stickyNotes.placing} onHover={onHover}/></Suspense>}
     {screensReady && showObject('ceiling-light') && <Suspense fallback={null}><CeilingLight optimised={optimised} fireflyHit={fireflyLightHit} onPowerChange={onCeilingPowerChange} basketScore={basketScore} reduced={reduced} onDragging={setLightDragging} interactive={!photo&&!entered&&!outside&&!notebook&&!upliance&&!stickyNotes.editor&&!stickyNotes.placing} keyboardFocused={keyboardTarget==='ceiling-light'} registerRoomAction={registerRoomAction} onHover={onHover}/></Suspense>}
-    <CozyRoom roomYear={roomYear} keyboardTarget={keyboardTarget} registerRoomAction={registerRoomAction} reduced={reduced} wearingGlasses={wearingGlasses} glassesPlacement={glassesPlacement} glassesLens={glassesLens} onWearGlasses={onWearGlasses} onWindowSelect={notebook ? onNotebookExit : onWindowSelect} onHover={onHover} />
-    {screensReady && <WorkBuildPlaceholder year={roomYear}/>}
-    {screensReady && <InteractiveObject moving focused={keyboardTarget==='notebook'} label="Notebook · ideas & sketches" onHover={onHover}><Notebook onImagesReady={markNotebookImagesReady} onTear={onNotebookTear} canTear={true} tornPages={tornPages} focused={notebook} open={notebookOpen} onPageChange={onNotebookPageChange} page={notebookPage} reduced={reduced} onOpen={onNotebookOpen} /></InteractiveObject>}
+    <CozyRoom roomYear={roomYear} outside={outside} keyboardTarget={keyboardTarget} registerRoomAction={registerRoomAction} reduced={reduced} wearingGlasses={wearingGlasses} glassesPlacement={glassesPlacement} glassesLens={glassesLens} onWearGlasses={onWearGlasses} onWindowSelect={notebook ? onNotebookExit : onWindowSelect} onHover={onHover} />
+    {screensReady && graduationRoom && <WorkBuildBoard focused={workBoard} selectedTile={workBoardTile} keyboardFocused={keyboardTarget==='work-board'} registerRoomAction={registerRoomAction} onSelect={onWorkBoardOpen} onTileSelect={onWorkBoardTileSelect} onHover={onHover} onDragging={setProjectorDragging} projectorState={projectorState} onProjectorChange={onProjectorChange}/>}
+    {screensReady && <InteractiveObject moving focused={keyboardTarget==='notebook'} label="Notebook · ideas & sketches" onHover={onHover} onFocus={onNotebookOpen}><Notebook roomYear={roomYear} onImagesReady={markNotebookImagesReady} onTear={onNotebookTear} canTear={true} tornPages={tornPages} focused={notebook} open={notebookOpen} onPageChange={onNotebookPageChange} page={notebookPage} reduced={reduced} onOpen={onNotebookOpen} /></InteractiveObject>}
     {screensReady && <Suspense fallback={null}><Keyboard /></Suspense>}
     {screensReady && <Suspense fallback={null}><InteractiveObject focused={keyboardTarget==='desk-lamp'} label={lampOn ? "Lamp · turn off" : "Lamp · turn on"} onHover={onHover}><DeskLamp basketScore={basketScore} reduced={reduced} on={lampOn} registerRoomAction={registerRoomAction} onToggle={notebook ? onNotebookExit : onLampToggle} /></InteractiveObject></Suspense>}
     <pointLight position={[1.5,.15,.1]} color="#9cc8df" intensity={3} distance={5} />

@@ -2,10 +2,14 @@
 // The shared layout manifest drives both artwork transforms and interactive hotspots.
 import { ComputerDetails, NotebookDetails, ApplianceDetails, ChairDetails, PlantDetails, RadioDetails } from './PixelDeskDetails';
 import { objectsAt, seasonAt } from './journeyTimeline.mjs';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import usePixelFireflies from './pixelFireflies';
 import usePixelCeilingDrag from './usePixelCeilingDrag';
 import { PIXEL_ROOM_LAYOUTS, pixelItemTransform, pixelRoomYear, placePixelBox } from './pixelRoomLayout.mjs';
+import { CENTERED_PROJECTOR, resistedPull } from './projectorMotion.mjs';
+import { DESKTOP_NOTE_BOUNDS } from './notePlacement.mjs';
+import notePaper from './notePaper';
+import { WORK_BOARD_TILES } from './workBoardTiles.mjs';
 import styles from '../../styles/AboutJourney.module.css';
 
 function Presence({ visible, before, transitioning, delay = 0, replay = false, children }) {
@@ -55,8 +59,33 @@ function Weather({ season }) {
 
 const OBJECT_ITEMS = {
   lamp: 'lamp', notebook: 'notebook', computer: 'computer', github: 'work-board', leetcode: 'work-board', cribble: 'work-board', office: 'work-board',
-  upliance: 'upliance', radio: 'radio', ceiling: 'ceiling-light', notes: 'notes',
+  upliance: 'upliance', radio: 'radio', ceiling: 'ceiling-light', window: 'window',
 };
+
+const PIXEL_NOTE_AREA={left:160,right:371,top:35,bottom:133,size:17};
+function pixelNotePosition(note) {
+  const xProgress=(note.x-DESKTOP_NOTE_BOUNDS.minX)/(DESKTOP_NOTE_BOUNDS.maxX-DESKTOP_NOTE_BOUNDS.minX);
+  const yProgress=(note.y-DESKTOP_NOTE_BOUNDS.minY)/(DESKTOP_NOTE_BOUNDS.maxY-DESKTOP_NOTE_BOUNDS.minY);
+  return {
+    x:PIXEL_NOTE_AREA.left+xProgress*(PIXEL_NOTE_AREA.right-PIXEL_NOTE_AREA.left)-PIXEL_NOTE_AREA.size/2,
+    y:PIXEL_NOTE_AREA.bottom-yProgress*(PIXEL_NOTE_AREA.bottom-PIXEL_NOTE_AREA.top)-PIXEL_NOTE_AREA.size/2,
+  };
+}
+function PixelWallNotes({ notes }) {
+  return notes.map(note=>{
+    const {x,y}=pixelNotePosition(note),colors=notePaper(note.id);
+    return <g key={note.id} transform={`translate(${x} ${y})`}>
+      <path fill={colors.base} d={`M0 0h${PIXEL_NOTE_AREA.size}v${PIXEL_NOTE_AREA.size}H0z`}/>
+      <path fill={colors.band} d={`M0 0h${PIXEL_NOTE_AREA.size}v2H0z`}/>
+      <path stroke={colors.shade} strokeWidth=".7" d="M3 6h11M3 9h9M3 12h10"/>
+    </g>;
+  });
+}
+
+function PixelWorkIcon({ tile, x, y, size=20 }) {
+  const unit=size/(tile.iconGrid||16);
+  return <g>{tile.icon.map(([left,top,width,height,color],index)=><rect key={index} fill={color||tile.ink} x={x+left*unit} y={y+top*unit} width={width*unit} height={height*unit}/>)}</g>;
+}
 
 function PixelItem({ id, layout, children }) {
   const placement=layout[id],transform=pixelItemTransform(id,placement);
@@ -89,8 +118,39 @@ function objectBoxAt(object, layout) {
   return item ? placePixelBox(object.box,item,layout[item]) : object.box;
 }
 
-export default function PixelDeskScene({ month, previousMonth = month, transitioning = false, disabled = false, layoutEditor = false, lampOn = true, radioPlaying = false, ceilingOn = true, onSelect, objectRefs }) {
+export default function PixelDeskScene({ month, previousMonth = month, transitioning = false, disabled = false, layoutEditor = false, lampOn = true, radioPlaying = false, ceilingOn = true, wallNotes = [], projectorState=CENTERED_PROJECTOR, onProjectorChange, onSelect, objectRefs }) {
   const [draftLayouts,setDraftLayouts]=useState(cloneLayouts);
+  const pixelProjectorOn=projectorState.powered,pixelPull=projectorState.pull||CENTERED_PROJECTOR.pull;
+  const pixelProjectorOffset={x:pixelPull.x*55,y:-pixelPull.y*28};
+  const [pixelProjectorFlicker,setPixelProjectorFlicker]=useState(false);
+  const pixelProjectorDrag=useRef(null),pixelProjectorDragged=useRef(false),pixelProjectorFrame=useRef(0),pixelFlickerTimer=useRef(0),pixelPullRef=useRef(pixelPull);
+  useEffect(()=>{pixelPullRef.current=pixelPull;},[pixelPull]);
+  useEffect(()=>()=>{cancelAnimationFrame(pixelProjectorFrame.current);clearTimeout(pixelFlickerTimer.current);},[]);
+  const flickerPixelProjector=()=>{
+    setPixelProjectorFlicker(true);clearTimeout(pixelFlickerTimer.current);
+    pixelFlickerTimer.current=setTimeout(()=>setPixelProjectorFlicker(false),500);
+  };
+  const setPixelPull=next=>{pixelPullRef.current=next;onProjectorChange?.(current=>({...current,pull:next}));};
+  const startPixelProjectorDrag=event=>{
+    event.stopPropagation();cancelAnimationFrame(pixelProjectorFrame.current);pixelProjectorDragged.current=false;
+    pixelProjectorDrag.current={pointerId:event.pointerId,x:event.clientX,y:event.clientY,pull:{...pixelPullRef.current},svg:event.currentTarget.ownerSVGElement.getBoundingClientRect()};
+    event.currentTarget.setPointerCapture?.(event.pointerId);flickerPixelProjector();
+  };
+  const movePixelProjector=event=>{
+    const active=pixelProjectorDrag.current;if(!active||active.pointerId!==event.pointerId)return;
+    event.stopPropagation();const dx=event.clientX-active.x,dy=event.clientY-active.y;
+    if(Math.hypot(dx,dy)>3)pixelProjectorDragged.current=true;
+    setPixelPull({x:resistedPull(active.pull.x,dx/Math.max(1,active.svg.width)*3.2),y:resistedPull(active.pull.y,-dy/Math.max(1,active.svg.height)*3)});
+    flickerPixelProjector();
+  };
+  const endPixelProjectorDrag=event=>{
+    const active=pixelProjectorDrag.current;if(!active||active.pointerId!==event.pointerId)return;
+    event.stopPropagation();event.currentTarget.releasePointerCapture?.(event.pointerId);pixelProjectorDrag.current=null;flickerPixelProjector();
+    const from={...pixelPullRef.current},started=performance.now(),duration=900;
+    const animate=now=>{const progress=Math.min(1,(now-started)/duration),envelope=(1-progress)**2,oscillation=Math.cos(progress*Math.PI*4);setPixelPull({x:from.x*envelope*oscillation,y:from.y*envelope*oscillation});if(progress<1)pixelProjectorFrame.current=requestAnimationFrame(animate);else setPixelPull({x:0,y:0});};
+    pixelProjectorFrame.current=requestAnimationFrame(animate);
+  };
+  const togglePixelProjector=event=>{event.stopPropagation();if(pixelProjectorDragged.current){pixelProjectorDragged.current=false;return;}onProjectorChange?.(current=>({...current,powered:!current.powered}));};
   const year=pixelRoomYear(month),layouts=layoutEditor?draftLayouts:PIXEL_ROOM_LAYOUTS;
   const [selectedItem,setSelectedItem]=useState('lamp');
   useEffect(()=>{
@@ -121,7 +181,7 @@ export default function PixelDeskScene({ month, previousMonth = month, transitio
   const swarmRef = usePixelFireflies(current);
   const ceilingDrag = usePixelCeilingDrag(current && !disabled && !transitioning, swarmRef);
   return <div ref={swarmRef} className={styles.sceneFrame}>
-    <svg className={styles.art} viewBox="0 0 480 240" shapeRendering="crispEdges" role="img" onPointerDown={event=>{if(!layoutEditor)return;const item=event.target.closest?.('[data-pixel-item]')?.dataset.pixelItem;if(item&&activeLayout[item])setSelectedItem(item);}} aria-label={`${season} outside a pixel desk room. ${current ? 'The shared monitor, chair, keyboard and drawer desk sit beside the upliance. Height: 5 feet 6 inches.' : graduationRoom ? 'The shared monitor, chair, keyboard and drawer desk sit beneath the work board. Height: 5 feet 4 inches.' : 'The shared monitor, chair, keyboard and drawer desk fill the workspace. Height: 5 feet 2 inches.'}`}>
+    <svg className={styles.art} viewBox="0 0 480 240" shapeRendering="crispEdges" role="img" onPointerDown={event=>{if(!layoutEditor)return;const item=event.target.closest?.('[data-pixel-item]')?.dataset.pixelItem;if(item&&activeLayout[item])setSelectedItem(item);}} aria-label={`${season} outside a pixel desk room. ${current ? 'The shared monitor, chair, keyboard and drawer desk sit beside the upliance. Height: 5 feet 6 inches.' : graduationRoom ? 'A desk projector displays the Work and Build archive on the wall. Height: 5 feet 4 inches.' : 'The shared monitor, chair, keyboard and drawer desk fill the workspace. Height: 5 feet 2 inches.'}`}>
       <path fill="#40483a" d="M0 0h480v185H0z"/><path fill="#354033" d="M360 0h120v185H360z"/>
       <path fill="#30392f" d="M0 181h480v7H0z"/><path fill="#685340" d="M0 188h480v52H0z"/>
       <path stroke="#574836" strokeWidth="2" d="M0 207h480M0 229h480M62 188v19m114 0v22m-74 0v11m201-52v19m97 0v22m-69 0v11"/>
@@ -140,6 +200,7 @@ export default function PixelDeskScene({ month, previousMonth = month, transitio
       <g key={season} className={transitioning && (previousMonth >= 60 ? 'Night' : seasonAt(previousMonth)) !== season ? styles.weatherIn : undefined}><Weather season={season}/></g>
       <path fill="#776b50" d="M87 27h5v97h-5zM27 78h125v5H27zM17 125h145v7H17z"/>
       </g></PixelItem>
+      <Presence visible={current} before={previousMonth >= 60} transitioning={transitioning} delay={65}><PixelWallNotes notes={wallNotes}/></Presence>
       {current && ceilingOn && <PixelItem id="ceiling-light" layout={layout}><g data-pixel-fixture><path data-firefly-light fill="#efd29712" d="M395 37h36l49 149H346z"/></g></PixelItem>}
       <PixelItem id="desk" layout={layout}><path fill="#b28b5e" d="M94 165h273v9H94z"/><path fill="#76533c" d="M98 174h265v10H98z"/><path fill="#302f28" d="M103 184h9v43h-9zm245 0h9v43h-9z"/>
       <g transform="translate(-205 0)">
@@ -161,26 +222,40 @@ export default function PixelDeskScene({ month, previousMonth = month, transitio
         <path fill="#d7cba4" d="M142 155h20v-2h5v2h20v17h-45z"/><path stroke="#8c8969" d="M164 155v16m-17-10h12m10 0h12m-34 5h12m10 0h12"/>
         <NotebookDetails/>
       </PixelItem>
+      <Presence visible={month >= 48 && month < 60} before={previousMonth >= 48 && previousMonth < 60} transitioning={transitioning} delay={100}>
+        <PixelItem id="work-board" layout={layout}>
+        <path fill="none" stroke="#303a34" strokeWidth="2" d={`M240 0L${240+pixelProjectorOffset.x} ${10+pixelProjectorOffset.y}`}/>
+        {pixelProjectorOn&&<g transform={`translate(${pixelProjectorOffset.x} ${pixelProjectorOffset.y})`} className={pixelProjectorFlicker?styles.pixelProjectorFlicker:undefined}>
+          <path fill="#d8e0b51a" d="M237 28L165 38h150l-72-10z"/>
+          <path fill="#172820" d="M165 38h150v98H165z"/><path fill="#7e987d" d="M165 38h150v2H165zM165 38h2v98h-2z"/>
+          <path fill="#30493b" d="M170 44h140v11H170z"/>
+          <text x="176" y="52" fill="#d5d8a7" fontSize="6" fontFamily="MascotPixel, monospace">WORK / BUILD 2025</text>
+          <path fill={WORK_BOARD_TILES[0].color} d="M174 60h58v28h-58z"/>
+          <path fill={WORK_BOARD_TILES[1].color} d="M248 60h58v28h-58z"/>
+          <PixelWorkIcon tile={WORK_BOARD_TILES[0]} x={189} y={62} size={24}/>
+          <PixelWorkIcon tile={WORK_BOARD_TILES[1]} x={265} y={62} size={24}/>
+          <path fill={WORK_BOARD_TILES[2].color} d="M174 96h58v33h-58z"/>
+          <PixelWorkIcon tile={WORK_BOARD_TILES[2]} x={192} y={100} size={24}/>
+          <path fill="#647e64" d="M181 126h44v1h-44z"/>
+        </g>}
+        <g transform={`translate(${pixelProjectorOffset.x} ${pixelProjectorOffset.y})`} onPointerDown={startPixelProjectorDrag} onPointerMove={movePixelProjector} onPointerUp={endPixelProjectorDrag} onPointerCancel={endPixelProjectorDrag} onClick={togglePixelProjector} style={{cursor:'grab',touchAction:'none'}} aria-label={`Projector · ${pixelProjectorOn?'turn off':'turn on'} or drag`}>
+          <path fill="#59665b" d="M230 8h20v3h-20z"/>
+          <path fill="#4f5b50" d="M222 11h36v14h-36z"/><path fill="#758375" d="M225 9h30v4h-30z"/>
+          <path fill={pixelProjectorOn?'#d8e0b5':'#55584c'} d="M237 24h6v4h-6z"/><path fill="#313b34" d="M229 25h22v3h-22z"/>
+        </g>
+        </PixelItem>
+      </Presence>
+      <Presence visible={month >= 50 && month < 60} before={previousMonth >= 50 && previousMonth < 60} transitioning={transitioning} delay={300}>
+        <PixelItem id="work-board" layout={layout}>
+        {pixelProjectorOn&&<g transform={`translate(${pixelProjectorOffset.x} ${pixelProjectorOffset.y})`} className={pixelProjectorFlicker?styles.pixelProjectorFlicker:undefined}>
+          <path fill={WORK_BOARD_TILES[3].color} d="M248 96h58v33h-58z"/>
+          <PixelWorkIcon tile={WORK_BOARD_TILES[3]} x={266} y={100} size={24}/>
+          <path fill="#917259" d="M255 126h44v1h-44z"/>
+        </g>}
+        </PixelItem>
+      </Presence>
+      {/* The physical monitor sits in front of the wall projection, so paint it after every projected tile. */}
       <PixelItem id="computer" layout={layout}><DesktopComputer current/></PixelItem>
-      <Presence visible={month >= 48} before={previousMonth >= 48} transitioning={transitioning} delay={100}>
-        <PixelItem id="work-board" layout={layout}>
-        <path fill="#25382f" d="M313 94h57v69h-57z"/><path fill="#7e8c6c" d="M313 94h57v2h-57zM313 94h2v69h-2z"/>
-        <text x="319" y="103" fill="#bbc5a5" fontSize="4" fontFamily="MascotPixel, monospace">BUILD / WORK</text>
-        <path fill="#d9d7c6" d="M318 108h20v20h-20zM344 108h20v20h-20z"/>
-        <image href="/images/journey/github.svg" x="320" y="110" width="16" height="16"/>
-        <image href="/images/journey/leetcode.svg" x="346" y="110" width="16" height="16"/>
-        <path fill="#a6b494" d="M318 135h20v24h-20z"/>
-        <image href="/images/journey/cribble.png" x="319" y="136" width="18" height="18"/>
-        <path fill="#647e64" d="M321 156h14v1h-14z"/>
-        </PixelItem>
-      </Presence>
-      <Presence visible={month >= 50} before={previousMonth >= 50} transitioning={transitioning} delay={300}>
-        <PixelItem id="work-board" layout={layout}>
-        <path fill="#bb957d" d="M344 135h20v24h-20z"/>
-        <image href="/images/journey/office-solutions.png" x="345" y="136" width="18" height="18"/>
-        <path fill="#917259" d="M347 156h14v1h-14z"/>
-        </PixelItem>
-      </Presence>
 
       <Presence visible={current} before={previousMonth >= 60} transitioning={transitioning} delay={100}>
         <PixelItem id="photo-frame" layout={layout}><PixelPhotoFrame/></PixelItem>
@@ -197,10 +272,7 @@ export default function PixelDeskScene({ month, previousMonth = month, transitio
         <path fill="#eee7d7" d="M406 135h15v14h-15z"/><image href="/images/journey/upliance-logo.png" x="407" y="135.5" width="13" height="13" preserveAspectRatio="xMidYMid meet"/>
         </PixelItem>
       </Presence>
-      <Presence visible={current} before={previousMonth >= 60} transitioning={transitioning} delay={65}><PixelItem id="notes" layout={layout}><g transform="translate(-7 -68)">
-        <path fill="#d8be79" d="M320 103h16v19h-16z"/><path fill="#b2bd94" d="M340 106h16v18h-16z"/><path stroke="#847956" d="M323 109h10m-10 4h7m13 0h10m-10 4h7"/>
-      </g></PixelItem></Presence>
-      <Presence visible={current} before={previousMonth >= 60} transitioning={transitioning} delay={10}><PixelItem id="plant" layout={layout}><g transform="translate(-42 -114) scale(1.6 2)">
+      <Presence visible={month >= 56} before={previousMonth >= 56} transitioning={transitioning} delay={10}><PixelItem id="plant" layout={layout}><g transform="translate(-42 -114) scale(1.6 2)">
         <PlantDetails/>
       </g></PixelItem></Presence>
 
@@ -247,7 +319,8 @@ export default function PixelDeskScene({ month, previousMonth = month, transitio
       </g></PixelItem>
       {layoutEditor&&activeLayout[selectedItem]&&<rect className={styles.pixelLayoutSelection} x={activeLayout[selectedItem].x} y={activeLayout[selectedItem].y} width={activeLayout[selectedItem].width} height={activeLayout[selectedItem].height} vectorEffect="non-scaling-stroke" pointerEvents="none"/>}
     </svg>
-    {objectsAt(month).filter(object=>{const item=OBJECT_ITEMS[object.id];return !item||!!activeLayout[item];}).map(object => { const box=objectBoxAt(object,activeLayout),item=OBJECT_ITEMS[object.id]; return <button {...(object.id === "ceiling" && !layoutEditor ? ceilingDrag : {})} data-ceiling-hotspot={object.id === "ceiling" ? true : undefined} key={object.id} ref={node => { objectRefs.current[object.id] = node; }} className={styles.hotspot} disabled={transitioning || disabled} aria-label={object.id === 'lamp' ? `Desk lamp · turn ${lampOn ? 'off' : 'on'}` : object.id === 'radio' ? `Radio · ${radioPlaying ? 'turn music off' : 'play music'}` : object.id === 'ceiling' ? `Ceiling light · turn ${ceilingOn ? 'off' : 'on'}` : `Explore ${object.label}`} aria-pressed={object.id === 'lamp' ? lampOn : object.id === 'radio' ? radioPlaying : object.id === 'ceiling' ? ceilingOn : undefined} title={layoutEditor&&item?`Edit ${item}`:object.label} onClick={() => layoutEditor&&item ? setSelectedItem(item) : onSelect(object.id)} style={{ touchAction: object.id === "ceiling" && !layoutEditor ? "none" : undefined, left: `${box[0] / 4.8}%`, top: `${box[1] / 2.4}%`, width: `${box[2] / 4.8}%`, height: `${box[3] / 2.4}%` }}><span>{object.label}</span></button>; })}
+    {current&&wallNotes.map((note,index)=>{const {x,y}=pixelNotePosition(note);return <button key={`note-${note.id}`} ref={node=>{if(index===0)objectRefs.current.notes=node;}} className={styles.hotspot} disabled={transitioning||disabled} aria-label={`View sticky note ${index+1} on the wall`} onClick={()=>onSelect?.('notes',note)} style={{left:`${x/4.8}%`,top:`${y/2.4}%`,width:`${PIXEL_NOTE_AREA.size/4.8}%`,height:`${PIXEL_NOTE_AREA.size/2.4}%`}}><span>Sticky note</span></button>;})}
+    {objectsAt(month).filter(object=>{const item=OBJECT_ITEMS[object.id],projected=['github','leetcode','cribble','office'].includes(object.id);return (!projected||pixelProjectorOn)&&(!item||!!activeLayout[item]);}).map(object => { const box=objectBoxAt(object,activeLayout),item=OBJECT_ITEMS[object.id],projected=['github','leetcode','cribble','office'].includes(object.id),offsetX=projected?pixelProjectorOffset.x:0,offsetY=projected?pixelProjectorOffset.y:0; return <button {...(object.id === "ceiling" && !layoutEditor ? ceilingDrag : {})} data-ceiling-hotspot={object.id === "ceiling" ? true : undefined} key={object.id} ref={node => { objectRefs.current[object.id] = node; }} className={styles.hotspot} disabled={transitioning || disabled} aria-label={object.id === 'lamp' ? `Desk lamp · turn ${lampOn ? 'off' : 'on'}` : object.id === 'radio' ? `Radio · ${radioPlaying ? 'turn music off' : 'play music'}` : object.id === 'ceiling' ? `Ceiling light · turn ${ceilingOn ? 'off' : 'on'}` : `Explore ${object.label}`} aria-pressed={object.id === 'lamp' ? lampOn : object.id === 'radio' ? radioPlaying : object.id === 'ceiling' ? ceilingOn : undefined} title={layoutEditor&&item?`Edit ${item}`:object.label} onClick={() => layoutEditor&&item ? setSelectedItem(item) : onSelect?.(object.id)} style={{ touchAction: object.id === "ceiling" && !layoutEditor ? "none" : undefined, left: `${(box[0]+offsetX) / 4.8}%`, top: `${(box[1]+offsetY) / 2.4}%`, width: `${box[2] / 4.8}%`, height: `${box[3] / 2.4}%` }}><span>{object.label}</span></button>; })}
     {layoutEditor&&<PixelLayoutEditor year={year} layouts={draftLayouts} selected={selectedItem} onSelect={setSelectedItem} onChange={updatePlacement} onResetYear={resetYear} onResetAll={resetAll}/>}
   </div>;
 }

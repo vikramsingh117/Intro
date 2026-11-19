@@ -55,10 +55,15 @@ export function ChairDetails() {
 
 export function PlantDetails() {
   return <g>
-    <path fill="#a3b575" d="M58 132h3v9h-3zm9-7h2v17h-2zm12 8h3v9h-3z"/>
-    <path fill="#516c40" d="M63 138h2v10h-2zm9-6h3v16h-3z"/>
-    <path fill="#c2986c" d="M58 148h25v3H58zM61 153h2v10h-2z"/>
-    <path fill="#7a543e" d="M61 164h19v2H61z"/>
+    {/* The room plant is a tall, sparse bird-of-paradise in a charcoal cylinder pot. */}
+    <path fill="#1e211e" d="M57 150h25v4H57zM58 154h23v14l-3 3H61l-3-3z"/>
+    <path fill="#4b4b42" d="M58 150h23v2H58zM60 154h19v1H60z"/>
+    <path fill="#5e5a4e" d="M61 152h17v1H61z"/><path fill="#302f29" d="M61 168h17v2H61z"/>
+    <path fill="#273b1f" d="M68 151h3v-40h2v40zm1 0h3v-25h2v25zM65 151h3v-19h2v19zM73 151h3v-17h2v17z"/>
+    <path fill="#4f762c" d="M70 113h2v36h-2zm3 15h2v20h-2zM66 133h2v16h-2zM75 136h2v14h-2z"/>
+    <path fill="#385721" d="M70 113l-7 14 7 6zm2 14 8-15 7 1-4 9-9 9zm-4 9-14-7-5 2 10 7 9 5zm1 8-16 3-5 5 14-1 8-4zm6-1 12-11 2 2-8 10z"/>
+    <path fill="#668c35" d="M71 114l-5 12 5 4zm2 15 8-14 4 1-4 7-8 7zm-6 9-12-6-3 1 9 5zm1 8-14 3-3 2 10-1zm8-2 10-9-6 8z"/>
+    <path fill="#88a84a" d="M71 116h1v12h-1zm3 15 6-10 1 1-6 10zm-7 9-8-4 1-1 8 4zm1 8-9 2 9-1z"/>
   </g>;
 }
 

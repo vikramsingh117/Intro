@@ -4,11 +4,11 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { CanvasTexture, DoubleSide, PlaneGeometry, SRGBColorSpace } from 'three';
 import { drawNotebook, drawNotebookDoodle } from './drawNotebook';
-import { NOTEBOOK_PAGES } from './notebookPages';
+import { notebookPagesForYear } from './notebookPages';
 import { deformTearingPage, visibleLeftPage, nextNotebookPage, notebookTurnLeaves, tornEdgeWidth } from './notebookPaper.mjs';
 
 export const NOTEBOOK_TARGET = [-1.7, -1.4, .65];
-export default function Notebook({ open, focused, page, reduced, onOpen, onPageChange, tornPages = [], canTear, onTear, onImagesReady }) {
+export default function Notebook({ roomYear='2026', open, focused, page, reduced, onOpen, onPageChange, tornPages = [], canTear, onTear, onImagesReady }) {
   const cover = useRef(null), sheet = useRef(null), turn = useRef(null);
   const coverMotion = useRef(null), wasFocused = useRef(false);
   const tearSheet = useRef(null), tearGesture = useRef(null), suppressClickUntil = useRef(0);
@@ -18,6 +18,7 @@ export default function Notebook({ open, focused, page, reduced, onOpen, onPageC
   const [shownPage, setShownPage] = useState(page);
   const [flip, setFlip] = useState(null);
   const { invalidate, size } = useThree();
+  const pages=notebookPagesForYear(roomYear);
   useEffect(() => {
     const cancel = () => {
       const gesture = tearGesture.current;
@@ -31,25 +32,25 @@ export default function Notebook({ open, focused, page, reduced, onOpen, onPageC
     window.addEventListener('blur', cancel);
     return () => { window.removeEventListener('blur', cancel); cancel(); };
   }, [page, focused, invalidate, peelingGeometry]);
-  const tornEdges = useMemo(() => NOTEBOOK_PAGES.map((_, page) => {
+  const tornEdges = useMemo(() => pages.map((_, page) => {
     const geometry = new PlaneGeometry(.07, 1.55, 1, 24);
     const positions = geometry.attributes.position;
     for (let i = 1; i < positions.count; i += 2) positions.setX(i, tornEdgeWidth(page, geometry.attributes.uv.getY(i)) - .035);
     geometry.computeVertexNormals();
     return geometry;
-  }), []);
+  }), [pages]);
   useEffect(() => () => tornEdges.forEach(geometry => geometry.dispose()), [tornEdges]);
-  const textures = useMemo(() => NOTEBOOK_PAGES.map((entry, page) => {
+  const textures = useMemo(() => pages.map((entry, page) => {
     const canvas = document.createElement('canvas'); canvas.width = 1200; canvas.height = 840;
-    drawNotebook(canvas, entry, page, NOTEBOOK_PAGES.length);
+    drawNotebook(canvas, entry, page, pages.length);
     const map = new CanvasTexture(canvas); map.colorSpace = SRGBColorSpace; map.anisotropy = 8;
     const left = map.clone(), right = map.clone();
     left.repeat.x = right.repeat.x = .5; right.offset.x = .5;
     return { map, left, right };
-  }), []);
+  }), [pages]);
   useEffect(() => {
     let cancelled = false;
-    const entries = NOTEBOOK_PAGES.filter(entry => entry.image);
+    const entries = pages.filter(entry => entry.image);
     let remaining = entries.length;
     const settled = () => { if (!cancelled && --remaining === 0) onImagesReady?.(); };
     if (!remaining) onImagesReady?.();
@@ -57,7 +58,7 @@ export default function Notebook({ open, focused, page, reduced, onOpen, onPageC
       const image = new Image();
       image.onload = () => {
         if (cancelled) return;
-        const index = NOTEBOOK_PAGES.indexOf(entry);
+        const index = pages.indexOf(entry);
         const paint = (pageIndex, side) => {
           const texture = textures[pageIndex];
           drawNotebookDoodle(texture.map.image, image, entry.crop, side);
@@ -74,7 +75,7 @@ export default function Notebook({ open, focused, page, reduced, onOpen, onPageC
       return image;
     });
     return () => { cancelled = true; images.forEach(image => { image.onload = image.onerror = null; }); };
-  }, [textures, invalidate, onImagesReady]);
+  }, [pages, textures, invalidate, onImagesReady]);
   useEffect(() => () => textures.forEach(({map,left,right}) => {map.dispose();left.dispose();right.dispose();}), [textures]);
   useEffect(() => {
     if(page === shownPage) return;
@@ -157,23 +158,23 @@ export default function Notebook({ open, focused, page, reduced, onOpen, onPageC
     event.stopPropagation();
     if(event.delta>5 || performance.now() < suppressClickUntil.current) return;
     if(!focused) { onOpen(); return; }
-    if(!turn.current && !coverMotion.current) onPageChange(nextNotebookPage(shownPage, direction, tornPages, NOTEBOOK_PAGES.length));
+    if(!turn.current && !coverMotion.current) onPageChange(nextNotebookPage(shownPage, direction, tornPages, pages.length));
   };
   return <group position={NOTEBOOK_TARGET} onClick={event=>{event.stopPropagation();if(event.delta<=5 && performance.now() >= suppressClickUntil.current)onOpen();}}>
     <mesh position={[.55,-.055,0]} castShadow receiveShadow><boxGeometry args={[1.16,.08,1.65]}/><meshStandardMaterial color="#354d43" roughness={.9}/></mesh>
-    <mesh position={[.55,0,0]} receiveShadow><boxGeometry args={[1.08,.07,1.55]}/><meshStandardMaterial color={NOTEBOOK_PAGES[shownPage].paperColor || '#ded1ae'}/></mesh>
+    <mesh position={[.55,0,0]} receiveShadow><boxGeometry args={[1.08,.07,1.55]}/><meshStandardMaterial color={pages[shownPage].paperColor || '#ded1ae'}/></mesh>
     {open && <>
       <group ref={tearSheet} position={[0,.045,0]} onPointerDown={startTear} onPointerMove={moveTear} onPointerUp={endTear} onPointerCancel={resetTear} onLostPointerCapture={resetTear}>
         <mesh geometry={peelingGeometry} userData={{precisePicking:true}} rotation={[-Math.PI/2,0,0]} position={[.55,0,0]} castShadow receiveShadow onClick={event=>selectPage(event,1)}>{tornPages.includes(rightIndex) ? <meshStandardMaterial key="backing" color="#354d43" roughness={1} side={DoubleSide}/> : <meshStandardMaterial key="page" map={textures[rightIndex].right} color="#ffffff" roughness={.95} side={DoubleSide}/>}</mesh>
       </group>
-      <mesh ref={tearRemnant} visible={false} geometry={tornEdges[shownPage]} rotation={[-Math.PI/2,0,0]} position={[.035,.048,0]}><meshStandardMaterial color={NOTEBOOK_PAGES[shownPage].paperColor || '#eee3c8'} roughness={1} side={DoubleSide}/></mesh>
+      <mesh ref={tearRemnant} visible={false} geometry={tornEdges[shownPage]} rotation={[-Math.PI/2,0,0]} position={[.035,.048,0]}><meshStandardMaterial color={pages[shownPage].paperColor || '#eee3c8'} roughness={1} side={DoubleSide}/></mesh>
       {tornPages.filter(index => !turningLeaves.includes(index)).map(index => <group key={index} position={[0,.049 + index * .0005,0]} rotation={[0,0,index < shownPage ? Math.PI : 0]}>
-        <mesh geometry={tornEdges[index]} rotation={[-Math.PI/2,0,0]} position={[.035,0,0]}><meshStandardMaterial color={NOTEBOOK_PAGES[index].paperColor || '#eee3c8'} roughness={1} side={DoubleSide}/></mesh>
+        <mesh geometry={tornEdges[index]} rotation={[-Math.PI/2,0,0]} position={[.035,0,0]}><meshStandardMaterial color={pages[index].paperColor || '#eee3c8'} roughness={1} side={DoubleSide}/></mesh>
       </group>)}
       {/* Thin turning faces must not shadow each other or stamp unstable shadows onto the spread. */}
       {flip && <group ref={sheet} position={[0,.065,0]} rotation={[0,0,flip.forward ? 0 : Math.PI]}>
         {turningLeaves.map((index, layer) => <group key={index} position={[0,layer * .003,0]} rotation={[0,0,(layer - (turningLeaves.length - 1) / 2) * .025]}>
-          {tornPages.includes(index) ? <mesh geometry={tornEdges[index]} position={[.035,0,0]} rotation={[-Math.PI/2,0,0]}><meshStandardMaterial color={NOTEBOOK_PAGES[index].paperColor || '#eee3c8'} roughness={1} side={DoubleSide}/></mesh> : <>
+          {tornPages.includes(index) ? <mesh geometry={tornEdges[index]} position={[.035,0,0]} rotation={[-Math.PI/2,0,0]}><meshStandardMaterial color={pages[index].paperColor || '#eee3c8'} roughness={1} side={DoubleSide}/></mesh> : <>
             <mesh position={[.55,.002,0]} rotation={[-Math.PI/2,0,0]}><planeGeometry args={[1.1,1.55]}/><meshStandardMaterial map={textures[index].right} roughness={.95}/></mesh>
             <mesh position={[.55,-.002,0]} rotation={[Math.PI/2,0,Math.PI]}><planeGeometry args={[1.1,1.55]}/><meshStandardMaterial map={textures[Math.min(index + 1, textures.length - 1)].left} roughness={.95}/></mesh>
           </>}
