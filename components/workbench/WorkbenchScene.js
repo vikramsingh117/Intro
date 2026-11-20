@@ -44,6 +44,35 @@ const ROOM_ATMOSPHERE={
   '2026':{background:'#091321',sky:'#c8d4d0',ground:'#494237',ambient:.65,directional:.8,directionalColor:'#c7d5df',windowLight:18,windowColor:'#8abbd9',exposure:.85},
 };
 
+// Reports a rolling render rate twice per second without adding another render loop.
+function FpsMeter() {
+  const sample = useRef({ frames:0, startedAt:0 });
+  const slowStartDetected = useRef(false);
+  useFrame(state => {
+    const now = state.clock.elapsedTime;
+    if (!sample.current.startedAt) sample.current.startedAt = now;
+    sample.current.frames += 1;
+    const elapsed = now - sample.current.startedAt;
+    if (elapsed < .5) return;
+    const fps = Math.round(sample.current.frames / elapsed);
+    if (now <= 4 && fps < 20 && !slowStartDetected.current) {
+      slowStartDetected.current = true;
+      window.dispatchEvent(new CustomEvent('workbench:slow-start'));
+    }
+    const label = document.getElementById('fps-meter');
+    const optimiseButton = document.getElementById('optimise-button');
+    const performanceWarning = slowStartDetected.current || label?.dataset.performanceWarning === 'true';
+    if (label) {
+      label.textContent = `${fps} FPS`;
+      label.setAttribute('aria-label', `Frame rate ${fps} frames per second`);
+      label.dataset.performanceWarning = String(performanceWarning);
+    }
+    if (optimiseButton) optimiseButton.dataset.performanceWarning = String(performanceWarning);
+    sample.current = { frames:0, startedAt:now };
+  }, -2);
+  return null;
+}
+
 function roomEvents(store) {
   const events = createPointerEvents(store);
   return { ...events, compute(event, state, previous) {
@@ -534,11 +563,12 @@ export default function MonitorScene({ roomYear=DEFAULT_ROOM_YEAR, optimised = f
   const markRoomAssetsReady=useCallback(()=>setRoomAssetsReady(true),[]);
   const markNotebookImagesReady=useCallback(()=>setNotebookImagesReady(true),[]);
   const markFireflyLightHit=useCallback(()=>setFireflyLightHit(value=>value+1),[]);
-  return <Canvas events={roomEvents} onPointerMissed={()=>{if(notebook)onNotebookExit();}} shadows camera={{ position:[6, 3.5, 14.8], fov:42 }} dpr={optimised ? (notebook || upliance ? 1 : .75) : notebook || upliance ? [1, 2] : 1} frameloop={optimised ? "never" : "demand"} gl={{alpha:true, antialias:true, toneMapping:ACESFilmicToneMapping, toneMappingExposure:.85}}>
+  return <Canvas events={roomEvents} onPointerMissed={()=>{if(notebook)onNotebookExit();}} shadows={!optimised} camera={{ position:[6, 3.5, 14.8], fov:42 }} dpr={optimised ? (notebook || upliance ? 1 : .75) : notebook || upliance ? [1, 2] : 1} frameloop={optimised ? "never" : "demand"} gl={{alpha:true, antialias:true, toneMapping:ACESFilmicToneMapping, toneMappingExposure:.85}}>
+    <FpsMeter/>
     <OptimisedFrames enabled={optimised}/>
     {screensReady && <FirstRoomFrame onReady={onRoomReady}/>}
     {screensReady && currentRoom && <PreloadAssets onReady={markRoomAssetsReady} onError={markRoomAssetsReady}/>}
-    <StationaryShadows/>
+    {!optimised && <StationaryShadows/>}
     <color attach="background" args={[atmosphere.background]} />
     <group onClick={event=>{if(notebook && event.delta<=5){event.stopPropagation();onNotebookExit();}}}>
     <NightEffects optimised={optimised} exposure={outside ? citySettings.exposure : atmosphere.exposure} glow={outside ? citySettings.glow : .55} pixelLens={wearingGlasses && glassesLens === 'pixel'} crayonLens={wearingGlasses && glassesLens === 'crayon'} sketchLens={wearingGlasses && glassesLens === 'sketch'} glassesLeaving={glassesLeaving} lensSettings={lensSettings} />

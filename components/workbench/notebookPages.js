@@ -1,5 +1,5 @@
 // Defines year-specific scratch-work and sketchbook content painted into the physical room notebook.
-// Every year keeps eight pages and the shared tear/doodle tail at identical indices so saved state remains compatible.
+// Every year keeps nine pages and the shared tear/doodle tail at identical indices so saved state remains compatible.
 const CURRENT_SCRATCH_PAGES=[
   {
     title:'upliance / bits to check',subtitle:'SCRATCH WORK',doodle:'loop',
@@ -47,6 +47,13 @@ const YEAR_SCRATCH_PAGES={
       notes:['[ map ] → [ new idea ]','explore → change → test','keep the weird side quests'],
       caption:'A rough map grid, branching route, patch notes and small spark marks extend the 2021 side-quest doodles.',
     },
+    {
+      title:'the habit that stuck',subtitle:'FIELD NOTES / 2021',doodle:'reflection',variant:'origin',
+      text:'The useful lesson from those early experiments was not a particular mod or map. It was a repeatable habit: notice something interesting, make one small change, test it honestly, and write down what happens next.',
+      question:'What is the smallest version I can test today?',
+      notes:['Observe the system before changing it.','Keep a tiny build log: idea, change, result.','A rough prototype is a question made visible.'],
+      caption:'A field-note loop connects curiosity, a small prototype, a test result and the next question: the thread that carries 2021 forward.',
+    },
   ],
   '2025':[
     {
@@ -70,8 +77,21 @@ const YEAR_SCRATCH_PAGES={
       notes:['portfolio → keep iterating','Go crawler → MongoDB Atlas','Cribble → Office Solutions','check the edge cases'],
       caption:'Deployment boxes, a crawler path, commit branches and a compact project stack continue the 2025 build notes.',
     },
+    {
+      title:'from exercise to evidence',subtitle:'FIELD NOTES / 2025',doodle:'reflection',variant:'systems',
+      text:'Practice became more useful when it left evidence behind: a clear problem statement, a small system diagram, an implementation, a reviewable change, and a deployment that someone could actually use.',
+      question:'Can someone understand, run and improve this after me?',
+      notes:['Start with the user and the failure case.','Make the data flow visible before the code grows.','Ship a small version, measure it, then improve the next one.'],
+      caption:'A clean build loop ties a brief, system sketch, pull request and release marker into the practical rhythm of 2025.',
+    },
   ],
-  '2026':CURRENT_SCRATCH_PAGES,
+  '2026':[...CURRENT_SCRATCH_PAGES,{
+    title:'keep the loop human',subtitle:'FIELD NOTES / 2026',doodle:'reflection',variant:'product',
+    text:'The current thread is product craft: make complicated systems legible, preserve the choices people make, and keep a person in the loop when automation is uncertain.',
+    question:'Does this make the next decision easier for a real person?',
+    notes:['Prototype the smallest useful interaction.','Show state, progress and recovery paths clearly.','Measure the rough edges, then return with a better question.'],
+    caption:'A calmer 2026 field note joins observation, prototype, feedback and iteration around a small human-in-the-loop diagram.',
+  }],
 };
 
 const TEAR_PAGE={

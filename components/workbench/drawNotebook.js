@@ -29,6 +29,11 @@ export function drawNotebook(canvas, entry, page, pageCount) {
   for(let i=0;i<6500;i++){c.fillStyle=`rgba(98,79,45,${random()*.055})`;c.fillRect(random()*1200,random()*840,random()*2+.3,.6);}
   for(let y=110;y<795;y+=36){line([[35,y],[565,y+1]],'#849caa25',.7);line([[630,y],[1165,y-1]],'#849caa25',.7);}
   line([[58,65],[61,785]],'#b46b5c38',1);line([[642,65],[645,785]],'#b46b5c38',1);
+  // Small physical details keep the procedural pages from feeling like a flat, clean canvas.
+  c.save();c.globalAlpha=.26;c.fillStyle='#b59c68';c.fillRect(78,38,128,13);c.fillStyle='#b46b5c';c.fillRect(1014,38,108,13);c.restore();
+  [160,394,628].forEach(y=>{
+    c.save();c.fillStyle='#7a674737';c.beginPath();c.arc(18,y,8,0,Math.PI*2);c.fill();c.beginPath();c.arc(1182,y,8,0,Math.PI*2);c.fill();c.restore();
+  });
   if(entry.doodle==='tear'){
     write('a little room to play',84,160,29,ink,-.025);
     write('My doodles on the next pages.',84,235,25,pencil);
@@ -198,6 +203,43 @@ export function drawNotebook(canvas, entry, page, pageCount) {
     // A crooked little paper plane in the margin.
     line([[1001,700],[1112,666],[1064,745],[1048,712],[1001,700],[1067,701],[1112,666]],pencil,1.6);
     line([[1048,712],[1067,701],[1064,745]],pencil,1.3);
+  }else if(entry.doodle==='reflection'){
+    const isOrigin=entry.variant==='origin',isSystems=entry.variant==='systems';
+    const label=isOrigin?'curiosity becomes practice':isSystems?'practice becomes evidence':'make the loop human';
+    write(label,82,82,29,ink,-.025);
+    write(isOrigin?'small experiments / 2021':isSystems?'shipping notes / 2025':'product notes / 2026',94,125,20,pencil);
+    const steps=isOrigin
+      ? [['notice',104],['change one thing',248],['test honestly',392],['write the next question',536]]
+      : isSystems
+        ? [['brief',104],['map the flow',248],['review the change',392],['release and learn',536]]
+        : [['observe',104],['prototype',248],['show the state',392],['learn and return',536]];
+    steps.forEach(([label,y],index)=>{
+      box(88,y,315,82);write(String(index+1).padStart(2,'0'),106,y+49,24,rust);write(label,157,y+48,24,ink,(index%2?1:-1)*.012);
+      if(index<steps.length-1)arrow(246,y+86,246,y+132);
+    });
+    write(isOrigin?'keep a tiny build log':isSystems?'leave a clear trail':'keep a person in the loop',96,718,24,pencil,-.02);
+    star(454,688,9);star(397,742,6);
+
+    write('field log',692,82,29,ink,-.02);
+    const notes=isOrigin
+      ? ['idea: what changes?', 'build: smallest version', 'result: what surprised me?', 'next: one better question']
+      : isSystems
+        ? ['user + failure case', 'data flow on paper', 'reviewable pull request', 'measure after release']
+        : ['make state visible', 'provide recovery paths', 'ask for feedback early', 'iterate with evidence'];
+    notes.forEach((note,index)=>{
+      const y=151+index*87;box(700,y,30,30);line([[706,y+16],[713,y+23],[725,y+8]],index===3?rust:ink,2);
+      write(note,750,y+23,22,index===3?rust:ink,(index%2?1:-1)*.01);line([[748,y+38],[1115,y+38]],'#849caa55',1);
+    });
+    write('next version',711,540,23,pencil,-.025);box(705,563,402,112);
+    if(isOrigin){
+      ellipse(771,619,30,30,ink);arrow(810,619,887,619);box(895,584,132,70);write('tiny',926,615,20);write('test',928,641,20);
+      arrow(1035,619,1083,619);star(1092,619,17);
+    }else if(isSystems){
+      box(735,588,92,54);write('brief',750,622,20);arrow(835,615,882,615);box(890,588,92,54);write('PR',920,622,21,rust);arrow(990,615,1035,615);write('ship',1042,622,20);
+    }else{
+      ellipse(770,616,31,23,ink);write('human',737,622,18);arrow(807,616,875,616);box(884,585,126,61);write('tool',923,622,21,rust);arrow(1018,616,1070,616);write('choice',1032,665,19,pencil);
+    }
+    write('keep the notes honest.',728,731,25,ink,.012);
   }else{
     write('harness? / reading notes',82,82,27,ink,-.025);
     write('model + tools',100,151,28);write('= agent?',309,185,24,pencil,.03);

@@ -66,14 +66,19 @@ export default function ProductWorkbench() {
   useEffect(()=>()=>roomYearTimers.current.forEach(timer=>window.clearTimeout(timer)),[]);
   const toggleOptimisation=useCallback(()=>{
     if(sceneRestarting)return;
-    // Fade before recreating the canvas so renderer and physics settings change as one scene refresh.
+    // Cover the whole workbench while the renderer and physics settings change together.
     setSceneRestarting(true);
     optimiseTimer.current=window.setTimeout(()=>{
       setOptimised(value=>!value);
       setSceneRestartKey(value=>value+1);
-      requestAnimationFrame(()=>setSceneRestarting(false));
-    },180);
+      requestAnimationFrame(()=>{optimiseTimer.current=window.setTimeout(()=>setSceneRestarting(false),360);});
+    },220);
   },[sceneRestarting]);
+  useEffect(()=>{
+    const enableForSlowStart=()=>{if(!optimised&&!sceneRestarting)toggleOptimisation();};
+    window.addEventListener('workbench:slow-start',enableForSlowStart);
+    return ()=>window.removeEventListener('workbench:slow-start',enableForSlowStart);
+  },[optimised,sceneRestarting,toggleOptimisation]);
   const stickyNotes = useStickyNotes();
   const propPlacement=DEFAULT_PROP_PLACEMENT;
   const lensSettings=DEFAULT_LENS_SETTINGS;
@@ -456,10 +461,12 @@ export default function ProductWorkbench() {
     setUpliance(null);setUplianceArrived(false);stickyNotes.cancel(true);restoreFocus();
   });
   return <div ref={workbenchRef} className={styles.workbench} onKeyDown={handleWorkbenchKeyDown}>
-    {!aimingPaper&&roomYearTransition==='idle'&&<button type="button" className={styles.optimiseButton} aria-pressed={optimised} aria-describedby="optimise-details" disabled={sceneRestarting} onClick={toggleOptimisation}>
+    {!aimingPaper&&roomYearTransition==='idle'&&<button id="optimise-button" type="button" className={styles.optimiseButton} aria-pressed={optimised} aria-describedby="optimise-details" disabled={sceneRestarting} onClick={toggleOptimisation}>
       {sceneRestarting ? 'Optimising…' : optimised ? 'Optimised' : 'Optimise'}
       <span id="optimise-details" className={styles.optimiseDetails}>30 FPS cap · lower resolution · lighter lighting and effects</span>
     </button>}
+    {sceneRestarting&&<div className={styles.optimiseFade} role="status" aria-live="polite">Optimising performance…</div>}
+    <output id="fps-meter" className={styles.fpsMeter} aria-label="Frame rate measuring">FPS —</output>
     <div style={{display:'contents'}} inert={aimingPaper ? '' : undefined} aria-hidden={aimingPaper ? true : undefined}>
     <div className={`${styles.scene}${sceneRestarting?` ${styles.sceneRestarting}`:''}`} onPointerMoveCapture={releaseKeyboardSelection} onPointerDownCapture={releaseKeyboardSelection} style={{pointerEvents:photo || entered || upliance ? 'none' : undefined}} aria-hidden={desktop} ref={enterButton} role="group" aria-label="Interactive room. Use arrow keys to select objects, Enter to activate, and Escape to return." tabIndex={photo || workBoard || desktop || outside || notebook || !!upliance ? -1 : 0}>
       <div hidden={photo || workBoard || desktop || outside || notebook || !!upliance} className={styles.sceneLabel}>VIKRAM’S WORKSPACE <span>{roomYear} / ENTER TO EXPLORE</span></div>
