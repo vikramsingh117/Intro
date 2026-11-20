@@ -5,12 +5,24 @@ import { AdditiveBlending, BufferGeometry, CanvasTexture, DoubleSide, Float32Buf
 import InteractiveObject from './InteractiveObject';
 import { CENTERED_PROJECTOR, resistedPull } from './projectorMotion.mjs';
 import { drawWorkBoardIcon, WORK_BOARD_TILES, workBoardTileIndex } from './workBoardTiles.mjs';
-import { contributions } from '../../lib/contributions';
 export const WORK_BOARD_TARGET=[1.5,2.35,-3.07];
 const PROJECTOR_POSITION=[1.5,5.1,1.25];
 const CEILING_Y=24.02;
+const contributions=[];
+const ACTIVITY_DAY=24*60*60*1000;
+const activityKey=value=>{
+  const date=value?.date instanceof Date?value.date:value;
+  if(!date||typeof date.getFullYear!=='function'||Number.isNaN(date.getTime?.()))return '';
+  return [date.getFullYear(),String(date.getMonth()+1).padStart(2,'0'),String(date.getDate()).padStart(2,'0')].join('-');
+};
+const activityShade=count=>count===0?'#20352d':count===1?'#426c55':count<=3?'#619071':count<=6?'#91b885':'#d8e0b5';
+function activityDays(activity){
+  const today=new Date();today.setHours(0,0,0,0);const start=new Date(today);start.setDate(start.getDate()-83-start.getDay());
+  const counts=new Map(activity.map(item=>[item.date,item.count]));
+  return Array.from({length:84},(_,index)=>{const date=new Date(start.getTime()+index*ACTIVITY_DAY);return {date,count:counts.get(activityKey(date))||0};});
+}
 
-function createBoardTexture(selected,detailTile) {
+function createBoardTexture(selected,detailTile,githubDays,selectedGithubDay,githubEvents,githubStatus) {
   const canvas=document.createElement('canvas');
   canvas.width=768;canvas.height=576;
   const context=canvas.getContext('2d');
@@ -33,6 +45,41 @@ function createBoardTexture(selected,detailTile) {
       context.fillStyle='#fff4cf';context.font='bold 17px monospace';context.fillText(item.status.toUpperCase(),590,y+49);
     });
     context.fillStyle='#819687';context.font='16px monospace';context.fillText('STATUSES ARE SAVED SNAPSHOTS · NOT LIVE GITHUB DATA',48,536);
+    context.fillStyle='#182a24';context.fillRect(18,18,732,530);
+    drawWorkBoardIcon(context,github,46,30,70);
+    context.fillStyle='#d8c58e';context.font='bold 40px monospace';context.fillText('GITHUB / ACTIVITY',142,68);
+    context.fillStyle='#819687';context.font='16px monospace';context.fillText('PUBLIC EVENT FEED  -  CLICK A DAY TO INSPECT',142,94);
+    context.fillStyle='#819687';context.font='14px monospace';context.fillText('12 WEEKS',58,126);
+    githubDays.forEach((day,index)=>{
+      const column=Math.floor(index/7),row=index%7,x=58+column*35,y=145+row*31;
+      context.fillStyle=activityShade(day.count);context.fillRect(x,y,25,22);
+      if(selectedGithubDay&&activityKey(day.date)===activityKey(selectedGithubDay)){context.strokeStyle='#fff0ae';context.lineWidth=3;context.strokeRect(x-2,y-2,29,26);}
+    });
+    context.fillStyle='#819687';context.font='13px monospace';context.fillText('SUN',18,162);context.fillText('WED',18,255);context.fillText('SAT',18,348);
+    context.fillStyle='#0d1814';context.fillRect(500,132,220,265);context.strokeStyle='#547064';context.lineWidth=2;context.strokeRect(500,132,220,265);
+    context.fillStyle='#a8c9af';context.font='bold 15px monospace';context.fillText(selectedGithubDay?activityKey(selectedGithubDay):'DAY LOG',516,160);
+    const lines=githubStatus?[githubStatus]:githubEvents.length?githubEvents.slice(0,4).flatMap(event=>[`${event.time} ${event.type.toUpperCase()}`,event.message||event.description]):['SELECT A GREEN TILE','TO REVEAL PUBLIC','PUSH DETAILS'];
+    context.fillStyle='#cbd8c8';context.font='12px monospace';lines.slice(0,8).forEach((line,index)=>context.fillText(String(line).toUpperCase().slice(0,27),516,190+index*23));
+    context.fillStyle='#819687';context.font='13px monospace';context.fillText('LIVE PUBLIC EVENTS  -  INDIA TIME',58,444);
+    context.fillStyle='#546e60';context.fillText('LESS',58,472);[0,1,2,4,7].forEach((count,index)=>{context.fillStyle=activityShade(count);context.fillRect(108+index*26,458,18,18);});context.fillStyle='#546e60';context.fillText('MORE',246,472);
+    context.fillStyle='#819687';context.font='14px monospace';context.fillText('GITHUB CONTRIBUTION TOTALS MAY INCLUDE PRIVATE ACTIVITY',58,536);
+  }else if(detailTile==='cribble'){
+    const cribble=WORK_BOARD_TILES[2];drawWorkBoardIcon(context,cribble,48,32,76);
+    context.fillStyle='#d8c58e';context.font='bold 38px monospace';context.fillText('CRIBBLE / COMMUNITY BUILD',146,70);
+    context.fillStyle='#819687';context.font='17px monospace';context.fillText('SWE INTERN  -  JAN TO MAR 2025',148,98);
+    const cards=[['TELEGRAM MINIAPP','COMMUNITY OF 3,000+'],['OBSERVABILITY','50+ WINSTON LOGS'],['DATA LAYER','FIRESTORE + GCP'],['INTERFACE','REACT + FIREBASE']];
+    cards.forEach(([label,value],index)=>{const x=48+(index%2)*344,y=140+Math.floor(index/2)*118;context.fillStyle='#20382e';context.fillRect(x,y,320,96);context.fillStyle='#8da291';context.font='16px monospace';context.fillText(label,x+18,y+30);context.fillStyle='#e4ecd4';context.font='bold 20px monospace';context.fillText(value,x+18,y+67);});
+    context.fillStyle='#a6b494';context.font='bold 18px monospace';context.fillText('REACT  /  FIREBASE  /  GCP  /  WINSTON',48,456);
+    context.fillStyle='#819687';context.font='16px monospace';context.fillText('COMMUNITY SOFTWARE WITH A RELIABLE SIGNAL TRAIL',48,532);
+  }else if(detailTile==='office'){
+    const office=WORK_BOARD_TILES[3];drawWorkBoardIcon(context,office,48,32,76);
+    context.fillStyle='#d8c58e';context.font='bold 38px monospace';context.fillText('OFFICE / BENCHMARK LAB',146,70);
+    context.fillStyle='#819687';context.font='17px monospace';context.fillText('BACKEND TRAINEE  -  MAR TO JUN 2025',148,98);
+    const stages=[['POWER BI','EMBEDDED REPORT'],['NODE','EMBED WORKFLOW'],['SPRING BOOT','BENCHMARK ENGINE']];
+    stages.forEach(([name,detail],index)=>{const x=48+index*224;context.fillStyle=index===1?'#bb957d':'#294238';context.fillRect(x,152,188,94);context.fillStyle=index===1?'#30251f':'#dce5cf';context.font='bold 19px monospace';context.fillText(name,x+16,187);context.font='14px monospace';context.fillText(detail,x+16,215);if(index<2){context.fillStyle='#d8c58e';context.font='bold 25px monospace';context.fillText('>',x+196,207);}});
+    const metrics=[['DELIVERY','3 WEEKS'],['TESTS','50+ JUNIT'],['QUERY WORK','50% REPORTED GAIN'],['GUARDRAIL','REDIS RATE LIMIT']];
+    metrics.forEach(([label,value],index)=>{const x=48+(index%2)*344,y=290+Math.floor(index/2)*78;context.fillStyle='#17251f';context.fillRect(x,y,320,60);context.fillStyle='#8da291';context.font='14px monospace';context.fillText(label,x+15,y+24);context.fillStyle='#e4ecd4';context.font='16px monospace';context.fillText(value,x+15,y+47);});
+    context.fillStyle='#819687';context.font='16px monospace';context.fillText('SELENIUM  /  CUCUMBER  /  MULTITHREADING  /  REDIS',48,532);
   }else if(detailTile==='leetcode'){
     const leetcode=WORK_BOARD_TILES[1];
     drawWorkBoardIcon(context,leetcode,48,30,76);
@@ -92,8 +139,13 @@ function createBackTexture() {
 export default function WorkBuildBoard({ focused, keyboardFocused, registerRoomAction, onSelect, onTileSelect, selectedTile, onHover, onDragging, projectorState=CENTERED_PROJECTOR, onProjectorChange }) {
   const [selectedCard,setSelectedCard]=useState(null);
   const [detailTile,setDetailTile]=useState(null);
+  const [githubActivity,setGithubActivity]=useState([]);
+  const [selectedGithubDay,setSelectedGithubDay]=useState(null);
+  const [githubEvents,setGithubEvents]=useState([]);
+  const [githubStatus,setGithubStatus]=useState('LOADING PUBLIC ACTIVITY');
   const selectedIndex=selectedTile ? workBoardTileIndex(selectedTile) : selectedCard;
-  const texture=useMemo(()=>createBoardTexture(selectedIndex,detailTile),[selectedIndex,detailTile]);
+  const githubDays=useMemo(()=>activityDays(githubActivity),[githubActivity]);
+  const texture=useMemo(()=>createBoardTexture(selectedIndex,detailTile,githubDays,selectedGithubDay,githubEvents,githubStatus),[selectedIndex,detailTile,githubDays,selectedGithubDay,githubEvents,githubStatus]);
   const backTexture=useMemo(()=>createBackTexture(),[]);
   const powered=projectorState.powered,pull=projectorState.pull||CENTERED_PROJECTOR.pull;
   const offset=useMemo(()=>({x:pull.x*2.4,y:pull.y*1.35}),[pull.x,pull.y]);
@@ -141,6 +193,14 @@ export default function WorkBuildBoard({ focused, keyboardFocused, registerRoomA
   useEffect(()=>()=>backTexture.dispose(),[backTexture]);
   useEffect(()=>{if(!focused)setDetailTile(null);},[focused]);
   useEffect(()=>setDetailTile(null),[selectedTile]);
+  useEffect(()=>{
+    if(detailTile!=='github')return;
+    let active=true;setSelectedGithubDay(null);setGithubEvents([]);setGithubStatus('LOADING PUBLIC ACTIVITY');
+    fetch('/api/github-activity?user=vikramsingh117').then(response=>response.ok?response.json():Promise.reject()).then(data=>{
+      if(!active)return;setGithubActivity(data.activity||[]);setGithubStatus('CLICK A GREEN TILE TO INSPECT');
+    }).catch(()=>active&&setGithubStatus('ACTIVITY FEED UNAVAILABLE'));
+    return()=>{active=false;};
+  },[detailTile]);
   useEffect(()=>()=>{beam.volume.dispose();beam.edges.dispose();},[beam]);
   useEffect(()=>registerRoomAction?.('work-board',onSelect),[registerRoomAction,onSelect]);
   useEffect(()=>{
@@ -166,10 +226,19 @@ export default function WorkBuildBoard({ focused, keyboardFocused, registerRoomA
     if(!focused){onSelect?.();return;}
     setSelectedCard(index);
     const id=WORK_BOARD_TILES[index].id;
-    if(id==='github'||id==='leetcode')setDetailTile(id);
+    if(['github','leetcode','cribble','office'].includes(id))setDetailTile(id);
     else onTileSelect?.(id);
   };
   const showBoard=event=>{event.stopPropagation();if(event.delta<=5)setDetailTile(null);};
+  const selectGithubDay=(event,day)=>{
+    event.stopPropagation();if(event.delta>5)return;
+    setSelectedGithubDay(day);setGithubEvents([]);
+    if(!day.count){setGithubStatus('NO PUBLIC EVENTS ON THIS DAY');return;}
+    setGithubStatus('LOADING DAY LOG');
+    fetch(`/api/github-activity?user=vikramsingh117&date=${activityKey(day.date)}`).then(response=>response.ok?response.json():Promise.reject()).then(data=>{
+      setGithubEvents(data.events||[]);setGithubStatus(data.events?.length?'':'NO EVENT DETAILS RETURNED');
+    }).catch(()=>setGithubStatus('EVENT DETAILS UNAVAILABLE'));
+  };
   const togglePower=event=>{
     event?.stopPropagation();
     if(dragged.current){dragged.current=false;return;}
@@ -229,6 +298,13 @@ export default function WorkBuildBoard({ focused, keyboardFocused, registerRoomA
       {!detailTile&&WORK_BOARD_TILES.map((tile,index)=><mesh key={tile.id} position={[projectionPosition[0]+tile.worldOffset[0],projectionPosition[1]+tile.worldOffset[1],projectionPosition[2]+.015]} onClick={event=>selectTile(event,index)}>
         <planeGeometry args={[2.05,.78]}/><meshBasicMaterial transparent opacity={0} depthWrite={false}/>
       </mesh>)}
+      {detailTile==='github'&&githubDays.map((day,index)=>{
+        const column=Math.floor(index/7),row=index%7;
+        const x=58+column*35+12.5,y=145+row*31+11;
+        return <mesh key={activityKey(day.date)} position={[projectionPosition[0]+(x/768-.5)*5.2,projectionPosition[1]+(.5-y/576)*3.15,projectionPosition[2]+.018]} onClick={event=>selectGithubDay(event,day)}>
+          <planeGeometry args={[.2,.13]}/><meshBasicMaterial transparent opacity={0} depthWrite={false}/>
+        </mesh>;
+      })}
       {detailTile&&<mesh position={[projectionPosition[0],projectionPosition[1]-1.82,projectionPosition[2]+.02]} onClick={showBoard}>
         <planeGeometry args={[2.55,.4]}/><meshBasicMaterial map={backTexture} transparent toneMapped={false}/>
       </mesh>}
