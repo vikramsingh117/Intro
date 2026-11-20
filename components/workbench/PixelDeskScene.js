@@ -58,9 +58,31 @@ function Weather({ season }) {
 }
 
 const OBJECT_ITEMS = {
-  lamp: 'lamp', notebook: 'notebook', computer: 'computer', github: 'work-board', leetcode: 'work-board', cribble: 'work-board', office: 'work-board',
-  upliance: 'upliance', radio: 'radio', ceiling: 'ceiling-light', window: 'window',
+  lamp: 'lamp', notebook: 'notebook', computer: 'computer', github: 'work-projection', leetcode: 'work-projection', cribble: 'work-projection', office: 'work-projection',
+  upliance: 'upliance', radio: 'radio', ceiling: 'ceiling-light', window: 'window', 'letter-clock': 'letter-clock',
 };
+
+const CLOCK_ONES=['ZERO','ONE','TWO','THREE','FOUR','FIVE','SIX','SEVEN','EIGHT','NINE'];
+const CLOCK_TEENS=['TEN','ELEVEN','TWELVE','THIRTEEN','FOURTEEN','FIFTEEN','SIXTEEN','SEVENTEEN','EIGHTEEN','NINETEEN'];
+const CLOCK_TENS=['','','TWENTY','THIRTY','FORTY','FIFTY'];
+const clockWord=value=>value<10?CLOCK_ONES[value]:value<20?CLOCK_TEENS[value-10]:`${CLOCK_TENS[Math.floor(value/10)]}${value%10?` ${CLOCK_ONES[value%10]}`:''}`;
+function pixelClockTime(date,use24Hour) {
+  const hour=use24Hour?date.getHours():date.getHours()%12||12;
+  return {hourWords:clockWord(hour)};
+}
+
+function PixelLetterClock({ use24Hour, onToggle }) {
+  const [now,setNow]=useState(()=>new Date());
+  useEffect(()=>{const interval=window.setInterval(()=>setNow(new Date()),250);return()=>window.clearInterval(interval);},[]);
+  const time=pixelClockTime(now,use24Hour);
+  return <g onClick={event=>{event.stopPropagation();onToggle?.();}} style={{cursor:'pointer'}} aria-label={`Letter clock, ${time.hourWords}. Click to switch time format.`}>
+    <path fill="#101716" d="M215 17h54v30h-54z"/><path fill="none" stroke="#65786e" strokeWidth="1.5" d="M216 18h52v28h-52z"/>
+    <text x="219" y="25" fill="#d9efd5" fontSize="4.2" fontFamily="MascotPixel, monospace">I T I S</text>
+    <text x="218" y="31" fill="#33433d" fontSize="3.1" fontFamily="MascotPixel, monospace">ONETWOTHREE</text>
+    <text x="218" y="35" fill="#33433d" fontSize="3.1" fontFamily="MascotPixel, monospace">FOURSIXSEVEN</text>
+    <text x="219" y="42" fill="#d9efd5" fontSize="3.5" fontFamily="MascotPixel, monospace">{time.hourWords}</text><text x="264" y="42" textAnchor="end" fill="#496158" fontSize="2.5" fontFamily="MascotPixel, monospace">{use24Hour?'24H':'12H'}</text>
+  </g>;
+}
 
 const PIXEL_NOTE_AREA={left:160,right:371,top:35,bottom:133,size:17};
 function pixelNotePosition(note) {
@@ -85,6 +107,35 @@ function PixelWallNotes({ notes }) {
 function PixelWorkIcon({ tile, x, y, size=20 }) {
   const unit=size/(tile.iconGrid||16);
   return <g>{tile.icon.map(([left,top,width,height,color],index)=><rect key={index} fill={color||tile.ink} x={x+left*unit} y={y+top*unit} width={width*unit} height={height*unit}/>)}</g>;
+}
+
+function PixelGithubActivityProjection() {
+  const levels=[0,0,1,0,2,3,1,0,0,2,4,1,0,1,0,3,2,0,0,4,3,1,0,1,2,0,0,3];
+  const colors=['#243c32','#426c55','#619071','#91b885','#d8e0b5'];
+  return <g aria-label="GitHub public activity projection">
+    <path fill="#14251e" d="M176 62h54v24h-54z"/><path fill="#7e987d" d="M176 62h54v1H176zM176 62h1v24h-1z"/>
+    <text x="179" y="67" fill="#d8e0b5" fontSize="3.3" fontFamily="MascotPixel, monospace">GIT / LOG</text>
+    {levels.map((level,index)=><path key={index} fill={colors[level]} d={`M${179+(index%7)*7} ${70+Math.floor(index/7)*4}h5v3h-5z`}/>)}
+    <path fill="none" stroke="#fff0ae" strokeWidth=".8" d="M214 73h6v4h-6z"/><path fill="#d8e0b522" d="M177 82h52v1h-52z"/>
+  </g>;
+}
+
+function PixelCribbleProjection() {
+  return <g aria-label="Cribble community build projection">
+    <path fill="#213127" d="M176 98h54v28h-54z"/><path fill="#a6b494" d="M176 98h54v1H176z"/>
+    <text x="179" y="104" fill="#dce5cf" fontSize="3.1" fontFamily="MascotPixel, monospace">CRIBBLE / 3K</text>
+    <path fill="#718e70" d="M180 109h13v11h-13zM196 107h12v13h-12zM211 111h14v9h-14z"/>
+    <path fill="#d8e0b5" d="M182 112h9v2h-9zm16-2h8v2h-8zm15 4h10v2h-10z"/><path fill="#d8e0b522" d="M177 123h52v1h-52z"/>
+  </g>;
+}
+
+function PixelOfficeProjection() {
+  return <g aria-label="Office Solutions benchmark projection">
+    <path fill="#30251f" d="M250 98h54v28h-54z"/><path fill="#bb957d" d="M250 98h54v1H250z"/>
+    <text x="253" y="104" fill="#f0d7bc" fontSize="3.1" fontFamily="MascotPixel, monospace">POWER BI / LAB</text>
+    <path fill="#bb957d" d="M254 118h8v3h-8zm14-5h8v8h-8zm14-8h8v16h-8z"/><path fill="none" stroke="#d8c58e" strokeWidth="1" d="M253 122h39"/>
+    <text x="253" y="109" fill="#d8c58e" fontSize="2.6" fontFamily="MascotPixel, monospace">3 WKS  /  50+ TESTS</text>
+  </g>;
 }
 
 function PixelItem({ id, layout, children }) {
@@ -118,7 +169,7 @@ function objectBoxAt(object, layout) {
   return item ? placePixelBox(object.box,item,layout[item]) : object.box;
 }
 
-export default function PixelDeskScene({ month, previousMonth = month, transitioning = false, disabled = false, layoutEditor = false, lampOn = true, radioPlaying = false, ceilingOn = true, wallNotes = [], projectorState=CENTERED_PROJECTOR, onProjectorChange, onSelect, objectRefs }) {
+export default function PixelDeskScene({ month, previousMonth = month, transitioning = false, disabled = false, layoutEditor = false, lampOn = true, radioPlaying = false, ceilingOn = true, wallNotes = [], projectorState=CENTERED_PROJECTOR, onProjectorChange, onSelect, objectRefs, clock24Hour=false, onClockToggle }) {
   const [draftLayouts,setDraftLayouts]=useState(cloneLayouts);
   const pixelProjectorOn=projectorState.powered,pixelPull=projectorState.pull||CENTERED_PROJECTOR.pull;
   const pixelProjectorOffset={x:pixelPull.x*55,y:-pixelPull.y*28};
@@ -223,8 +274,7 @@ export default function PixelDeskScene({ month, previousMonth = month, transitio
         <NotebookDetails/>
       </PixelItem>
       <Presence visible={month >= 48 && month < 60} before={previousMonth >= 48 && previousMonth < 60} transitioning={transitioning} delay={100}>
-        <PixelItem id="work-board" layout={layout}>
-        <path fill="none" stroke="#303a34" strokeWidth="2" d={`M240 0L${240+pixelProjectorOffset.x} ${10+pixelProjectorOffset.y}`}/>
+        <PixelItem id="work-projection" layout={layout}>
         {pixelProjectorOn&&<g transform={`translate(${pixelProjectorOffset.x} ${pixelProjectorOffset.y})`} className={pixelProjectorFlicker?styles.pixelProjectorFlicker:undefined}>
           <path fill="#d8e0b51a" d="M237 28L165 38h150l-72-10z"/>
           <path fill="#172820" d="M165 38h150v98H165z"/><path fill="#7e987d" d="M165 38h150v2H165zM165 38h2v98h-2z"/>
@@ -232,12 +282,15 @@ export default function PixelDeskScene({ month, previousMonth = month, transitio
           <text x="176" y="52" fill="#d5d8a7" fontSize="6" fontFamily="MascotPixel, monospace">WORK / BUILD 2025</text>
           <path fill={WORK_BOARD_TILES[0].color} d="M174 60h58v28h-58z"/>
           <path fill={WORK_BOARD_TILES[1].color} d="M248 60h58v28h-58z"/>
-          <PixelWorkIcon tile={WORK_BOARD_TILES[0]} x={189} y={62} size={24}/>
+          <PixelGithubActivityProjection/>
           <PixelWorkIcon tile={WORK_BOARD_TILES[1]} x={265} y={62} size={24}/>
           <path fill={WORK_BOARD_TILES[2].color} d="M174 96h58v33h-58z"/>
-          <PixelWorkIcon tile={WORK_BOARD_TILES[2]} x={192} y={100} size={24}/>
+          <PixelCribbleProjection/>
           <path fill="#647e64" d="M181 126h44v1h-44z"/>
         </g>}
+        </PixelItem>
+        <PixelItem id="projector" layout={layout}>
+        <path fill="none" stroke="#303a34" strokeWidth="2" d={`M240 0L${240+pixelProjectorOffset.x} ${10+pixelProjectorOffset.y}`}/>
         <g transform={`translate(${pixelProjectorOffset.x} ${pixelProjectorOffset.y})`} onPointerDown={startPixelProjectorDrag} onPointerMove={movePixelProjector} onPointerUp={endPixelProjectorDrag} onPointerCancel={endPixelProjectorDrag} onClick={togglePixelProjector} style={{cursor:'grab',touchAction:'none'}} aria-label={`Projector · ${pixelProjectorOn?'turn off':'turn on'} or drag`}>
           <path fill="#59665b" d="M230 8h20v3h-20z"/>
           <path fill="#4f5b50" d="M222 11h36v14h-36z"/><path fill="#758375" d="M225 9h30v4h-30z"/>
@@ -246,13 +299,16 @@ export default function PixelDeskScene({ month, previousMonth = month, transitio
         </PixelItem>
       </Presence>
       <Presence visible={month >= 50 && month < 60} before={previousMonth >= 50 && previousMonth < 60} transitioning={transitioning} delay={300}>
-        <PixelItem id="work-board" layout={layout}>
+        <PixelItem id="work-projection" layout={layout}>
         {pixelProjectorOn&&<g transform={`translate(${pixelProjectorOffset.x} ${pixelProjectorOffset.y})`} className={pixelProjectorFlicker?styles.pixelProjectorFlicker:undefined}>
           <path fill={WORK_BOARD_TILES[3].color} d="M248 96h58v33h-58z"/>
-          <PixelWorkIcon tile={WORK_BOARD_TILES[3]} x={266} y={100} size={24}/>
+          <PixelOfficeProjection/>
           <path fill="#917259" d="M255 126h44v1h-44z"/>
         </g>}
         </PixelItem>
+      </Presence>
+      <Presence visible={month >= 56 && month < 60} before={previousMonth >= 56 && previousMonth < 60} transitioning={transitioning} delay={125}>
+        <PixelItem id="letter-clock" layout={layout}><PixelLetterClock use24Hour={clock24Hour} onToggle={onClockToggle}/></PixelItem>
       </Presence>
       {/* The physical monitor sits in front of the wall projection, so paint it after every projected tile. */}
       <PixelItem id="computer" layout={layout}><DesktopComputer current/></PixelItem>

@@ -35,5 +35,6 @@ export const OBJECTS = [
   { id: 'upliance', label: 'upliance · my work', at: 60, box: [389, 123, 51, 63] },
   { id: 'radio', label: 'Radio · toggle music', at: 56, box: [99, 146, 44, 20] },
   { id: 'ceiling', label: 'Ceiling light · toggle', at: 60, box: [388, 20, 51, 20] },
+  { id: 'letter-clock', label: 'Letter clock - toggle 12/24 hour time', at: 56, box: [215, 17, 54, 30] },
 ];
 export function objectsAt(month) { return OBJECTS.filter(object => month >= object.at); }

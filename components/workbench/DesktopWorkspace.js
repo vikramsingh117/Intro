@@ -27,7 +27,7 @@ function AboutIcon() {
     <path fill="#f5ca68" d="M38 7h2v8h-2zm-3 3h8v2h-8z"/>
   </svg>;
 }
-export default function DesktopWorkspace({ desktopRef, interactive, visible=true, reduced=false, exitRef, onLeave, roomYear, wallNotes, onRequestYear, projectorState, onProjectorChange, workBoardDetail, onWorkBoardDetailShown, onOpenWorkBoard, onOpenUpliance, onOpenNotebook, onOpenNotes, onOpenWindow, onToggleLamp, lampOn, onToggleRadio, onToggleCeiling, ceilingOn, radioPlaying, room, musicPlaying=false, celebrating=false }) {
+export default function DesktopWorkspace({ desktopRef, interactive, visible=true, reduced=false, exitRef, onLeave, roomYear, wallNotes, onRequestYear, projectorState, onProjectorChange, workBoardDetail, onWorkBoardDetailShown, onOpenWorkBoard, onOpenUpliance, onOpenNotebook, onOpenNotes, onOpenWindow, onToggleLamp, lampOn, onToggleRadio, onToggleCeiling, ceilingOn, radioPlaying, room, musicPlaying=false, celebrating=false, clock24Hour=false, onClockToggle }) {
   const [windows,setWindows]=useState([{title:'About Me',minimized:false}]);
   const [menu,setMenu]=useState(null);
   const [iconsVisible,setIconsVisible]=useState(true);
@@ -70,7 +70,7 @@ export default function DesktopWorkspace({ desktopRef, interactive, visible=true
       {window.title==='AI Assistant'?<AboutChat theme="dark" embedded active={interactive && !window.minimized && top===window.title}/>:window.title==='Photos'?<Photos active={interactive && !window.minimized && top===window.title}/>:window.title==='Task Manager'?<TaskManager windows={windows} activeTitle={top} onFocus={focus} onClose={close} room={room}/>:window.title==='Terminal'?<Terminal windows={windows} onExit={()=>close('Terminal')}/>:window.title==='Credits'?<><AssetCredits/><FireflyCredit/></>:window.title==='GitHub'?<GitHubSnapshot/>:window.title==='LeetCode'?<LeetCodeSnapshot desktop/>:<PortfolioApps
         title={window.title} roomYear={roomYear} wallNotes={wallNotes} onRequestYear={onRequestYear} projectorState={projectorState} onProjectorChange={onProjectorChange}
         workBoardDetail={workBoardDetail} onWorkBoardDetailShown={onWorkBoardDetailShown} onOpenWorkBoard={onOpenWorkBoard}
-        onOpenUpliance={onOpenUpliance} onOpenNotebook={onOpenNotebook} onOpenNotes={onOpenNotes} onOpenWindow={onOpenWindow}
+        onOpenUpliance={onOpenUpliance} onOpenNotebook={onOpenNotebook} onOpenNotes={onOpenNotes} onOpenWindow={onOpenWindow} clock24Hour={clock24Hour} onClockToggle={onClockToggle}
         onToggleLamp={onToggleLamp} lampOn={lampOn} onToggleRadio={onToggleRadio} onToggleCeiling={onToggleCeiling} ceilingOn={ceilingOn}
         onEnterPortfolio={()=>{close('About Me');onLeave();}} radioPlaying={radioPlaying}/>}
     </DesktopWindow>)}
