@@ -59,30 +59,8 @@ function Weather({ season }) {
 
 const OBJECT_ITEMS = {
   lamp: 'lamp', notebook: 'notebook', computer: 'computer', github: 'work-projection', leetcode: 'work-projection', cribble: 'work-projection', office: 'work-projection',
-  upliance: 'upliance', radio: 'radio', ceiling: 'ceiling-light', window: 'window', 'letter-clock': 'letter-clock',
+  upliance: 'upliance', radio: 'radio', ceiling: 'ceiling-light', window: 'window',
 };
-
-const CLOCK_ONES=['ZERO','ONE','TWO','THREE','FOUR','FIVE','SIX','SEVEN','EIGHT','NINE'];
-const CLOCK_TEENS=['TEN','ELEVEN','TWELVE','THIRTEEN','FOURTEEN','FIFTEEN','SIXTEEN','SEVENTEEN','EIGHTEEN','NINETEEN'];
-const CLOCK_TENS=['','','TWENTY','THIRTY','FORTY','FIFTY'];
-const clockWord=value=>value<10?CLOCK_ONES[value]:value<20?CLOCK_TEENS[value-10]:`${CLOCK_TENS[Math.floor(value/10)]}${value%10?` ${CLOCK_ONES[value%10]}`:''}`;
-function pixelClockTime(date,use24Hour) {
-  const hour=use24Hour?date.getHours():date.getHours()%12||12;
-  return {hourWords:clockWord(hour)};
-}
-
-function PixelLetterClock({ use24Hour, onToggle }) {
-  const [now,setNow]=useState(()=>new Date());
-  useEffect(()=>{const interval=window.setInterval(()=>setNow(new Date()),250);return()=>window.clearInterval(interval);},[]);
-  const time=pixelClockTime(now,use24Hour);
-  return <g onClick={event=>{event.stopPropagation();onToggle?.();}} style={{cursor:'pointer'}} aria-label={`Letter clock, ${time.hourWords}. Click to switch time format.`}>
-    <path fill="#101716" d="M215 17h54v30h-54z"/><path fill="none" stroke="#65786e" strokeWidth="1.5" d="M216 18h52v28h-52z"/>
-    <text x="219" y="25" fill="#d9efd5" fontSize="4.2" fontFamily="MascotPixel, monospace">I T I S</text>
-    <text x="218" y="31" fill="#33433d" fontSize="3.1" fontFamily="MascotPixel, monospace">ONETWOTHREE</text>
-    <text x="218" y="35" fill="#33433d" fontSize="3.1" fontFamily="MascotPixel, monospace">FOURSIXSEVEN</text>
-    <text x="219" y="42" fill="#d9efd5" fontSize="3.5" fontFamily="MascotPixel, monospace">{time.hourWords}</text><text x="264" y="42" textAnchor="end" fill="#496158" fontSize="2.5" fontFamily="MascotPixel, monospace">{use24Hour?'24H':'12H'}</text>
-  </g>;
-}
 
 const PIXEL_NOTE_AREA={left:160,right:371,top:35,bottom:133,size:17};
 function pixelNotePosition(note) {
@@ -169,7 +147,7 @@ function objectBoxAt(object, layout) {
   return item ? placePixelBox(object.box,item,layout[item]) : object.box;
 }
 
-export default function PixelDeskScene({ month, previousMonth = month, transitioning = false, disabled = false, layoutEditor = false, lampOn = true, radioPlaying = false, ceilingOn = true, wallNotes = [], projectorState=CENTERED_PROJECTOR, onProjectorChange, onSelect, objectRefs, clock24Hour=false, onClockToggle }) {
+export default function PixelDeskScene({ month, previousMonth = month, transitioning = false, disabled = false, layoutEditor = false, lampOn = true, radioPlaying = false, ceilingOn = true, wallNotes = [], projectorState=CENTERED_PROJECTOR, onProjectorChange, onSelect, objectRefs }) {
   const [draftLayouts,setDraftLayouts]=useState(cloneLayouts);
   const pixelProjectorOn=projectorState.powered,pixelPull=projectorState.pull||CENTERED_PROJECTOR.pull;
   const pixelProjectorOffset={x:pixelPull.x*55,y:-pixelPull.y*28};
@@ -306,9 +284,6 @@ export default function PixelDeskScene({ month, previousMonth = month, transitio
           <path fill="#917259" d="M255 126h44v1h-44z"/>
         </g>}
         </PixelItem>
-      </Presence>
-      <Presence visible={month >= 56 && month < 60} before={previousMonth >= 56 && previousMonth < 60} transitioning={transitioning} delay={125}>
-        <PixelItem id="letter-clock" layout={layout}><PixelLetterClock use24Hour={clock24Hour} onToggle={onClockToggle}/></PixelItem>
       </Presence>
       {/* The physical monitor sits in front of the wall projection, so paint it after every projected tile. */}
       <PixelItem id="computer" layout={layout}><DesktopComputer current/></PixelItem>

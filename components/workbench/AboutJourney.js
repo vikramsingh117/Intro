@@ -22,15 +22,15 @@ const BOARD_ZOOMS = {
   office: ['57.71%', '46.88%'],
 };
 
-function BoardZoom({ id, month, leaving, lampOn, radioPlaying, ceilingOn, projectorState, onProjectorChange, clock24Hour, onClockToggle }) {
+function BoardZoom({ id, month, leaving, lampOn, radioPlaying, ceilingOn, projectorState, onProjectorChange }) {
   const objects = useRef({});
   const [originX, originY] = BOARD_ZOOMS[id];
   return <div className={styles.boardZoomViewport} aria-hidden="true"><div className={`${styles.boardZoom} ${leaving ? styles.boardZoomOut : ''}`} style={{ '--board-x': originX, '--board-y': originY }}>
-    <PixelDeskScene month={month} disabled lampOn={lampOn} radioPlaying={radioPlaying} ceilingOn={ceilingOn} projectorState={projectorState} onProjectorChange={onProjectorChange} objectRefs={objects} clock24Hour={clock24Hour} onClockToggle={onClockToggle}/>
+    <PixelDeskScene month={month} disabled lampOn={lampOn} radioPlaying={radioPlaying} ceilingOn={ceilingOn} projectorState={projectorState} onProjectorChange={onProjectorChange} objectRefs={objects}/>
   </div></div>;
 }
 
-export default function AboutJourney({ roomYear=DEFAULT_ROOM_YEAR, wallNotes=[], onRequestYear, projectorState, onProjectorChange, workBoardDetail, onWorkBoardDetailShown, onOpenWorkBoard, onOpenUpliance, onOpenNotebook, onOpenNotes, onOpenWindow, onToggleLamp, lampOn, onToggleRadio, onToggleCeiling, ceilingOn, onEnterPortfolio, radioPlaying, clock24Hour=false, onClockToggle }) {
+export default function AboutJourney({ roomYear=DEFAULT_ROOM_YEAR, wallNotes=[], onRequestYear, projectorState, onProjectorChange, workBoardDetail, onWorkBoardDetailShown, onOpenWorkBoard, onOpenUpliance, onOpenNotebook, onOpenNotes, onOpenWindow, onToggleLamp, lampOn, onToggleRadio, onToggleCeiling, ceilingOn, onEnterPortfolio, radioPlaying }) {
   const setWindowBack = useContext(WindowBackContext);
   const [layoutEditor,setLayoutEditor]=useState(false);
   useEffect(()=>setLayoutEditor(new URLSearchParams(window.location.search).get('pixel-editor')==='1'),[]);
@@ -53,7 +53,6 @@ export default function AboutJourney({ roomYear=DEFAULT_ROOM_YEAR, wallNotes=[],
     if (id === 'window') { onOpenWindow?.(); return; }
     if (id === 'lamp') { onToggleLamp?.(); return; }
     if (id === 'radio' && month >= 56) { onToggleRadio?.(); return; }
-    if (id === 'letter-clock' && month >= 56) { onClockToggle?.(); return; }
     if (month >= 60) {
       if (id === 'upliance') { onOpenUpliance?.(); return; }
       if (id === 'notebook') { onOpenNotebook?.(); return; }
@@ -134,7 +133,7 @@ export default function AboutJourney({ roomYear=DEFAULT_ROOM_YEAR, wallNotes=[],
       <span>VIKRAM’S ROOM</span><div className={styles.loadingTrack} aria-hidden="true"><i /></div><small>STEPPING INSIDE…</small>
     </div>}
     <main className={styles.stage}>
-      {selected && BOARD_ZOOMS[selected] && detailMotion !== 'view' ? <BoardZoom key={`${selected}-${detailMotion}`} id={selected} month={month} leaving={detailMotion === 'out'} lampOn={lampOn} radioPlaying={radioPlaying} ceilingOn={ceilingOn} projectorState={projectorState} onProjectorChange={onProjectorChange} clock24Hour={clock24Hour} onClockToggle={onClockToggle}/> : selected === 'computer' && index === 2 ? <InceptionMonitor onEnterPortfolio={() => { trackInteraction('journey_enter_portfolio', '2026'); onEnterPortfolio?.(); }} lampOn={lampOn} radioPlaying={radioPlaying} ceilingOn={ceilingOn} wallNotes={wallNotes}/> : selected === 'leetcode' ? <LeetCodeSnapshot month={month} onBack={returnToRoom} backRef={back} radioPlaying={radioPlaying} ceilingOn={ceilingOn}/> : selected === 'computer' && archiveUrl ? <div className={styles.portfolioLayout}><PortfolioYearNotes year={STOPS[index].year} side="left"/><section className={`${styles.closeup} ${styles.archiveMonitor}`} aria-label="Archived portfolio monitor">
+      {selected && BOARD_ZOOMS[selected] && detailMotion !== 'view' ? <BoardZoom key={`${selected}-${detailMotion}`} id={selected} month={month} leaving={detailMotion === 'out'} lampOn={lampOn} radioPlaying={radioPlaying} ceilingOn={ceilingOn} projectorState={projectorState} onProjectorChange={onProjectorChange}/> : selected === 'computer' && index === 2 ? <InceptionMonitor onEnterPortfolio={() => { trackInteraction('journey_enter_portfolio', '2026'); onEnterPortfolio?.(); }} lampOn={lampOn} radioPlaying={radioPlaying} ceilingOn={ceilingOn} wallNotes={wallNotes}/> : selected === 'leetcode' ? <LeetCodeSnapshot month={month} onBack={returnToRoom} backRef={back} radioPlaying={radioPlaying} ceilingOn={ceilingOn}/> : selected === 'computer' && archiveUrl ? <div className={styles.portfolioLayout}><PortfolioYearNotes year={STOPS[index].year} side="left"/><section className={`${styles.closeup} ${styles.archiveMonitor}`} aria-label="Archived portfolio monitor">
         <div className={styles.closeupBar}>
           <button ref={back} onClick={returnToRoom}>← Back to room</button>
           <span className={styles.portfolioYear}>Same portfolio, in {STOPS[index].year}.</span>
@@ -167,7 +166,7 @@ export default function AboutJourney({ roomYear=DEFAULT_ROOM_YEAR, wallNotes=[],
           {detail.href && <a onClick={() => trackInteraction('journey_link', `${STOPS[index].year}:${selected}`)} href={detail.href} target="_blank" rel="noopener noreferrer">{detail.link} ↗ <span className={styles.srOnly}>(opens in a new tab)</span></a>}
         </article>
       </section> : <div className={styles.room}>
-        <div className={styles.sceneViewport}><PixelDeskScene month={month} previousMonth={previousMonth} transitioning={transitioning} onSelect={selectObject} layoutEditor={layoutEditor} lampOn={lampOn} ceilingOn={ceilingOn} radioPlaying={radioPlaying} wallNotes={wallNotes} projectorState={projectorState} onProjectorChange={onProjectorChange} disabled={intro !== 'ready'} objectRefs={objectRefs} clock24Hour={clock24Hour} onClockToggle={onClockToggle}/></div>
+        <div className={styles.sceneViewport}><PixelDeskScene month={month} previousMonth={previousMonth} transitioning={transitioning} onSelect={selectObject} layoutEditor={layoutEditor} lampOn={lampOn} ceilingOn={ceilingOn} radioPlaying={radioPlaying} wallNotes={wallNotes} projectorState={projectorState} onProjectorChange={onProjectorChange} disabled={intro !== 'ready'} objectRefs={objectRefs}/></div>
       </div>}
     </main>
     <nav hidden={selected === 'computer' && index === 2} className={styles.timeline} style={{ '--time-direction': timelineMotion.direction, '--time-stop': index }} aria-label="Journey year" onKeyDown={event => {

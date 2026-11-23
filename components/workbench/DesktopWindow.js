@@ -24,7 +24,7 @@ function resized(rect, edge, dx, dy) {
 export default function DesktopWindow({ title, desktopRef, active, minimized, zIndex, onFocus, onClose, onMinimize, children }) {
   const [rect,setRect]=useState({x:title==='Terminal'?285:210,y:title==='Terminal'?135:100,width:900,height:540});
   const [backAction, setBackAction] = useState(null);
-  const [maximized,setMaximized]=useState(title === 'About Me');
+  const [maximized,setMaximized]=useState(false);
   const gesture=useRef(null), close=useRef(null), initialFocus=useRef(false);
   useEffect(()=>{if(active && !minimized && !initialFocus.current) {initialFocus.current=true;close.current?.focus({preventScroll:true});}},[active,minimized]);
   const begin=(event,edge)=>{

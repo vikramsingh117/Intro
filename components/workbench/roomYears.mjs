@@ -2,7 +2,7 @@
 // Asset URLs can be added per chapter as period-specific models replace the temporary geometry.
 export const ROOM_YEARS = [
   { year: '2021', month: 2, label: 'College room', objects: ['monitor', 'window', 'notebook', 'desk-lamp', 'drawer'], props: ['day-window'], assets: [] },
-  { year: '2025', month: 56, label: 'Graduation room', objects: ['monitor', 'window', 'notebook', 'desk-lamp', 'drawer', 'radio', 'work-board', 'letter-clock'], props: ['plant', 'work-build-projector', 'rain-window', 'letter-clock'], assets: [] },
+  { year: '2025', month: 56, label: 'Graduation room', objects: ['monitor', 'window', 'notebook', 'desk-lamp', 'drawer', 'radio', 'work-board'], props: ['plant', 'work-build-projector', 'rain-window'], assets: [] },
   { year: '2026', month: 60, label: 'Current room', objects: ['monitor', 'photo', 'window', 'notebook', 'paper-pile', 'upliance', 'desk-lamp', 'radio', 'ceiling-light', 'drawer', 'glasses-blur', 'glasses-pixel', 'glasses-crayon', 'glasses-sketch'], props: ['current-room', 'night-window'], assets: [] },
 ];
 
