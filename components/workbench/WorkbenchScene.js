@@ -166,6 +166,8 @@ const ROOM_TARGET = [0, .2128, -.51];
 // Keep both orbit extremes inside the room at the 24-unit zoom-out limit.
 const ROOM_MIN_AZIMUTH = -22 * Math.PI / 180;
 const ROOM_MAX_AZIMUTH = 1.2;
+const MOBILE_WORK_BOARD_FRAME_OFFSET = 2.65;
+const MOBILE_WORK_BOARD_LOOK_DOWN = 3;
 
 function Camera({ paperOrbit, photo, workBoard, projectorState, pauseCamera, upliance, onUplianceArrive, entered, outside, onOutsideArrive, notebook, citySettings, reduced, onArrive, interactionBlocked, noteMode, noteX, noteY, notePlacement, roomResetKey }) {
   const { camera, gl, scene, size, invalidate } = useThree();
@@ -455,9 +457,12 @@ function Camera({ paperOrbit, photo, workBoard, projectorState, pauseCamera, upl
       WORK_BOARD_TARGET[1]+projectorPull.y*1.35*.82,
       WORK_BOARD_TARGET[2]
     );
+    const mobileWorkBoard=size.width<=760;
+    const workBoardFocusTarget = mobileWorkBoard ? workBoardTarget.clone().add(new Vector3(0,MOBILE_WORK_BOARD_FRAME_OFFSET,0)) : workBoardTarget;
+    const workBoardLookTarget = mobileWorkBoard ? workBoardFocusTarget.clone().add(new Vector3(0,-MOBILE_WORK_BOARD_LOOK_DOWN,0)) : workBoardFocusTarget;
     const workBoardDistance = Math.max(1.575,2.6/(size.width/size.height))/Math.tan(21*Math.PI/180)*1.24;
-    const workBoardCamera = workBoardTarget.clone().add(new Vector3(0,.05,workBoardDistance));
-    transition.current = { from:camera.position.clone(), fovFrom:camera.fov, fovTo:outside ? fov : 42, lookFrom:lookTarget.current.clone(), lookTo:photo ? photoTarget : workBoard ? workBoardTarget : upliance ? applianceTarget : noteMode ? noteTarget : notebook ? new Vector3(...NOTEBOOK_TARGET) : outside ? new Vector3(targetX,targetY,targetZ) : (entered ? new Vector3(1.5, .2128, -.51) : new Vector3(...ROOM_TARGET)), to:photo ? photoCamera : workBoard ? workBoardCamera : upliance ? applianceCamera : noteMode ? noteCamera : notebook ? notebookCamera : outside ? new Vector3(cameraX,cameraY,cameraZ) : entered ? new Vector3(1.5, .2128 + .139173 * distance, -.51 + .990268 * distance)  : (resetRoom ? roomHome.clone() : roomPosition.current?.clone() || roomHome.clone()), duration:entrance ? 2.4 : 1.45, elapsed:entrance && !reduced ? -.35 : noteMode==='wall' && !reduced ? -.65 : 0, done:false };
+    const workBoardCamera = workBoardFocusTarget.clone().add(new Vector3(0,mobileWorkBoard ? -.55 : .05,workBoardDistance));
+    transition.current = { from:camera.position.clone(), fovFrom:camera.fov, fovTo:outside ? fov : 42, lookFrom:lookTarget.current.clone(), lookTo:photo ? photoTarget : workBoard ? workBoardLookTarget : upliance ? applianceTarget : noteMode ? noteTarget : notebook ? new Vector3(...NOTEBOOK_TARGET) : outside ? new Vector3(targetX,targetY,targetZ) : (entered ? new Vector3(1.5, .2128, -.51) : new Vector3(...ROOM_TARGET)), to:photo ? photoCamera : workBoard ? workBoardCamera : upliance ? applianceCamera : noteMode ? noteCamera : notebook ? notebookCamera : outside ? new Vector3(cameraX,cameraY,cameraZ) : entered ? new Vector3(1.5, .2128 + .139173 * distance, -.51 + .990268 * distance)  : (resetRoom ? roomHome.clone() : roomPosition.current?.clone() || roomHome.clone()), duration:entrance ? 2.4 : 1.45, elapsed:entrance && !reduced ? -.35 : noteMode==='wall' && !reduced ? -.65 : 0, done:false };
     invalidate();
   }, [focused, photo, workBoard, projectorState, upliance, noteMode, noteX, noteY, notePlacement, entered, outside, notebook, cameraX, cameraY, cameraZ, targetX, targetY, targetZ, fov, reduced, camera, size.width, size.height, roomHome, roomResetKey, invalidate]);
   useFrame((state, dt) => {
@@ -563,7 +568,7 @@ export default function MonitorScene({ roomYear=DEFAULT_ROOM_YEAR, optimised = f
   const markRoomAssetsReady=useCallback(()=>setRoomAssetsReady(true),[]);
   const markNotebookImagesReady=useCallback(()=>setNotebookImagesReady(true),[]);
   const markFireflyLightHit=useCallback(()=>setFireflyLightHit(value=>value+1),[]);
-  return <Canvas events={roomEvents} onPointerMissed={()=>{if(notebook)onNotebookExit();}} shadows={!optimised} camera={{ position:[6, 3.5, 14.8], fov:42 }} dpr={optimised ? (notebook || upliance ? 1 : .75) : notebook || upliance ? [1, 2] : 1} frameloop={optimised ? "never" : "demand"} gl={{alpha:true, antialias:true, toneMapping:ACESFilmicToneMapping, toneMappingExposure:.85}}>
+  return <Canvas events={roomEvents} onPointerMissed={()=>{if(notebook)onNotebookExit();}} shadows={!optimised} camera={{ position:[6, 3.5, 14.8], fov:42 }} dpr={notebook || upliance || workBoard ? [1, 2] : optimised ? .75 : 1} frameloop={optimised ? "never" : "demand"} gl={{alpha:true, antialias:true, toneMapping:ACESFilmicToneMapping, toneMappingExposure:.85}}>
     <FpsMeter/>
     <OptimisedFrames enabled={optimised}/>
     {screensReady && <FirstRoomFrame onReady={onRoomReady}/>}

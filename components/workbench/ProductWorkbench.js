@@ -373,7 +373,11 @@ export default function ProductWorkbench() {
     };
     const wheel=event=>{
       if(!inside(event))return;
-      if(event.ctrlKey||event.metaKey)event.preventDefault();
+      // A plain wheel event is also how a two-finger trackpad scroll reaches
+      // projected app content. Only treat a modifier-wheel as a pinch, so
+      // reading/scrolling cannot accidentally dismiss the focused view.
+      if(!(event.ctrlKey||event.metaKey))return;
+      event.preventDefault();
       const delta=event.deltaMode===1?event.deltaY*16:event.deltaY;
       if(delta>0)exit();
     };

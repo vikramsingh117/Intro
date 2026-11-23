@@ -20,7 +20,6 @@ Stop the dev server before `npm run build`; both use `.next`. Then `npm start` s
 - `/`: experience chooser; Simple loads first, then the room code and assets preload.
 - `/simple`: résumé, selected projects, career timeline, contributions, and assistant.
 - `/after-hours`: fullscreen room; `/workbench` shares the same implementation.
-- `/temp`: noindex three-year city editor with independent, locally persisted 2021/2025/2026 slider values and one-click JSON copying.
 - `/api/about`: assistant streaming endpoint.
 - `/api/wall-notes`: shared sticky-note CRUD endpoint.
 - `/api/photos`: shared gallery, image/thumbnail delivery, upload and owner deletion.

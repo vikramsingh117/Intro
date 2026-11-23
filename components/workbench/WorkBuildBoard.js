@@ -305,7 +305,7 @@ export default function WorkBuildBoard({ focused, keyboardFocused, registerRoomA
           <planeGeometry args={[.2,.13]}/><meshBasicMaterial transparent opacity={0} depthWrite={false}/>
         </mesh>;
       })}
-      {detailTile&&<mesh position={[projectionPosition[0],projectionPosition[1]-1.82,projectionPosition[2]+.02]} onClick={showBoard}>
+      {detailTile&&<mesh position={[projectionPosition[0],projectionPosition[1]-1.32,projectionPosition[2]+.02]} onClick={showBoard}>
         <planeGeometry args={[2.55,.4]}/><meshBasicMaterial map={backTexture} transparent toneMapped={false}/>
       </mesh>}
       </InteractiveObject>

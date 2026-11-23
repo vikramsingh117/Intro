@@ -240,7 +240,7 @@
 @media(prefers-reduced-motion:reduce){.mascotLayer *{animation:none!important}}
 
 @media(max-width:760px){
-  .optimiseButton{left:16px;top:max(16px,env(safe-area-inset-top));bottom:auto;transform:none}
+  .optimiseButton{left:50%;right:auto;top:max(16px,env(safe-area-inset-top));bottom:auto;transform:translateX(-50%)}
   .optimiseDetails{left:0;transform:translateY(5px)}
   .optimiseButton:hover .optimiseDetails,.optimiseButton:focus-visible .optimiseDetails{transform:none}
 }
