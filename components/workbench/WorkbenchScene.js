@@ -535,18 +535,6 @@ function Camera({ paperOrbit, photo, workBoard, projectorState, pauseCamera, upl
   }, -1);
   return null;
 }
-/* Removed letter-clock implementation.
-function LetterClock({ use24Hour, onSelect, keyboardFocused, registerRoomAction, onHover }) {
-  const [now,setNow]=useState(()=>new Date());
-  useEffect(()=>{const interval=window.setInterval(()=>setNow(new Date()),250);return()=>window.clearInterval(interval);},[]);
-  useEffect(()=>registerRoomAction?.('letter-clock',onSelect),[registerRoomAction,onSelect]);
-  const time=`${String(use24Hour?now.getHours():now.getHours()%12||12).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
-  return <InteractiveObject focused={keyboardFocused} label={`Letter clock · ${time} · click to inspect`} onHover={onHover} onFocus={onSelect}><group position={[-1.96,3.12,-3.065]} onClick={event=>{event.stopPropagation();if(event.delta<=5)onSelect?.();}}>
-    <mesh position={[0,0,-.025]} castShadow receiveShadow><boxGeometry args={[1.7,1.7,.12]}/><meshStandardMaterial color="#111817" roughness={.42} metalness={.28}/></mesh><mesh position={[0,0,.045]}><boxGeometry args={[1.62,1.62,.04]}/><meshStandardMaterial color="#53645c" roughness={.52} metalness={.18}/></mesh><LetterClockFace now={now} use24Hour={use24Hour}/>
-  </group></InteractiveObject>;
-}
-*/
-
 export default function MonitorScene({ roomYear=DEFAULT_ROOM_YEAR, optimised = false, paperInventory, onPickUpPaper, basketScore, celebrating, onBasket, photo, onPhotoOpen, workBoard, workBoardTile, onWorkBoardOpen, onWorkBoardTileSelect, projectorState, onProjectorChange, onPlaybackChange, onCeilingPowerChange, onNotebookTear, onPaperMotionChange, aimingPaper, heldPaper, paperControls, onPaperThrown, tornPages, keyboardTarget, registerRoomAction, upliance, upliancePage, uplianceArrived, uplianceControlsRef, onUplianceArrive, onUplianceSelect, propPlacement, glassesPlacement, stickyNotePlacement, lensSettings, entered, reduced, onEnter, onArrive, lampOn, onLampToggle, onWindowSelect, outside, onCityReady, desktopRef, desktop, notebook, notebookPage, onNotebookOpen, onHover, notebookOpen, onNotebookPageChange, onNotebookExit, citySettings, wearingGlasses, glassesLens, glassesLeaving, onWearGlasses, stickyNotes, noteEditorRef, roomResetKey }) {
   const { sceneReady } = useAfterHoursTransition();
   const onRoomReady = useCallback(() => {
