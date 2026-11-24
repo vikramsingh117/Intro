@@ -16,7 +16,6 @@ import MonitorConfetti from './MonitorConfetti';
 import PreloadAssets from './PreloadAssets';
 import { isRoomHover } from './roomHover.mjs';
 import StationaryShadows from './StationaryShadows';
-import OptimisedFrames from './OptimisedFrames';
 import InteractiveObject from './InteractiveObject';
 import NoteProjection from './NoteProjection';
 import StickyNotes from './StickyNotes';
@@ -70,6 +69,34 @@ function FpsMeter() {
     if (optimiseButton) optimiseButton.dataset.performanceWarning = String(performanceWarning);
     sample.current = { frames:0, startedAt:now };
   }, -2);
+  return null;
+}
+
+// Performance mode stays uncapped: it trades visual quality for available frame time,
+// then adjusts render resolution only while consecutive active frames show sustained load.
+function AdaptivePerformanceDpr({ enabled }) {
+  const { setDpr, invalidate } = useThree();
+  const sample = useRef({ dpr:1, elapsed:0, frames:0 });
+  useEffect(() => {
+    sample.current = { dpr:1, elapsed:0, frames:0 };
+    if (!enabled) return;
+    setDpr(1);
+    invalidate();
+  }, [enabled, setDpr, invalidate]);
+  useFrame((_, delta) => {
+    if (!enabled) return;
+    // Demand rendering leaves long gaps between idle frames; those are not slow frames.
+    if (delta > .1) { sample.current.elapsed=0; sample.current.frames=0; return; }
+    const current = sample.current;
+    current.elapsed += delta;
+    current.frames += 1;
+    if (current.elapsed < 1) return;
+    const fps = current.frames / current.elapsed;
+    const next = fps < 42 ? Math.max(.6, current.dpr-.1) : fps > 57 ? Math.min(1, current.dpr+.1) : current.dpr;
+    if (next !== current.dpr) { current.dpr=next; setDpr(next); invalidate(); }
+    current.elapsed=0;
+    current.frames=0;
+  }, -3);
   return null;
 }
 
@@ -568,17 +595,17 @@ export default function MonitorScene({ roomYear=DEFAULT_ROOM_YEAR, optimised = f
   const markRoomAssetsReady=useCallback(()=>setRoomAssetsReady(true),[]);
   const markNotebookImagesReady=useCallback(()=>setNotebookImagesReady(true),[]);
   const markFireflyLightHit=useCallback(()=>setFireflyLightHit(value=>value+1),[]);
-  return <Canvas events={roomEvents} onPointerMissed={()=>{if(notebook)onNotebookExit();}} shadows={!optimised} camera={{ position:[6, 3.5, 14.8], fov:42 }} dpr={notebook || upliance || workBoard ? [1, 2] : optimised ? .75 : 1} frameloop={optimised ? "never" : "demand"} gl={{alpha:true, antialias:true, toneMapping:ACESFilmicToneMapping, toneMappingExposure:.85}}>
+  return <Canvas events={roomEvents} onPointerMissed={()=>{if(notebook)onNotebookExit();}} shadows={!optimised} camera={{ position:[6, 3.5, 14.8], fov:42 }} dpr={optimised ? 1 : notebook || upliance || workBoard ? [1, 2] : 1} frameloop="demand" gl={{alpha:true, antialias:!optimised, toneMapping:ACESFilmicToneMapping, toneMappingExposure:.85}}>
     <FpsMeter/>
-    <OptimisedFrames enabled={optimised}/>
+    <AdaptivePerformanceDpr enabled={optimised}/>
     {screensReady && <FirstRoomFrame onReady={onRoomReady}/>}
     {screensReady && currentRoom && <PreloadAssets onReady={markRoomAssetsReady} onError={markRoomAssetsReady}/>}
     {!optimised && <StationaryShadows/>}
     <color attach="background" args={[atmosphere.background]} />
     <group onClick={event=>{if(notebook && event.delta<=5){event.stopPropagation();onNotebookExit();}}}>
     <NightEffects optimised={optimised} exposure={outside ? citySettings.exposure : atmosphere.exposure} glow={outside ? citySettings.glow : .55} pixelLens={wearingGlasses && glassesLens === 'pixel'} crayonLens={wearingGlasses && glassesLens === 'crayon'} sketchLens={wearingGlasses && glassesLens === 'sketch'} glassesLeaving={glassesLeaving} lensSettings={lensSettings} />
-    {screensReady && <Suspense fallback={null}><CityExterior onReady={onCityReady} settings={citySettings} year={roomYear} outside={exteriorSettled} rain={graduationRoom&&exteriorSettled} reduced={reduced}/></Suspense>}
-    {screensReady && <Suspense fallback={null}><FlyingPlane active={exteriorSettled} reduced={reduced} settings={citySettings} year={roomYear}/></Suspense>}
+    {screensReady && <Suspense fallback={null}><CityExterior onReady={onCityReady} settings={citySettings} year={roomYear} outside={exteriorSettled} rain={graduationRoom&&exteriorSettled} reduced={reduced} optimised={optimised}/></Suspense>}
+    {screensReady && <Suspense fallback={null}><FlyingPlane active={exteriorSettled} reduced={reduced||optimised} settings={citySettings} year={roomYear}/></Suspense>}
     <hemisphereLight args={[atmosphere.sky,atmosphere.ground,outside?citySettings.ambient:atmosphere.ambient]} />
     <directionalLight userData={{cacheStationaryShadow:true}} position={[3,5,4]} intensity={atmosphere.directional} color={atmosphere.directionalColor} castShadow shadow-mapSize={[1024,1024]} shadow-camera-left={-9} shadow-camera-right={9} shadow-camera-top={8} shadow-camera-bottom={-8} shadow-normalBias={.04} />
     <pointLight position={[-4.6,2,-2.5]} intensity={atmosphere.windowLight} distance={12} decay={2} color={atmosphere.windowColor} />

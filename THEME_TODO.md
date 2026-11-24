@@ -1,6 +1,6 @@
 # After Hours implementation / original planning archive
 
-Status (2026-10-27): historical planning archive only. Both the Signal Room experiment and scroll-driven After Hours layout are superseded by the fullscreen cozy 3D workspace. Current implemented behavior is documented in README.md and COZY_WORKSPACE_TODO.md. Do not use unchecked historical items below as the current roadmap.
+Status (2026-11-24): historical planning archive only. Both the Signal Room experiment and scroll-driven After Hours layout are superseded by the fullscreen cozy 3D workspace. Current implemented behavior is documented in README.md and COZY_WORKSPACE_TODO.md. Do not use unchecked historical items below as the current roadmap.
 Vikram's title is AI Product Engineer, including product decisions and ownership.
 No automated tests or browser review by default; the owner handles visual review.
 

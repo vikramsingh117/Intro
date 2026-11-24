@@ -1,6 +1,6 @@
 # After Hours — cozy workspace
 
-Current implementation on `main` (updated 2026-10-27). `/after-hours` and `/workbench` share the fullscreen room. The Simple portfolio remains the readable alternative.
+Current implementation on `main` (updated 2026-11-24). `/after-hours` and `/workbench` share the fullscreen room. The Simple portfolio remains the readable alternative.
 
 ## Implemented
 
@@ -36,6 +36,9 @@ Current implementation on `main` (updated 2026-10-27). `/after-hours` and `/work
 - [x] Production MongoDB IP-based landing counts, action history, elapsed/visible-tab duration, and privacy disclosure.
 - [x] Best-effort ntfy notifications for new photos, India landings, and newly shared sticky-note messages.
 - [x] Office Solutions Power BI benchmarking details aligned across Simple, monitor apps, and assistant knowledge.
+- [x] About Me synchronizes the 2021, 2025, and 2026 physical room variants. The 2025 WORK / BUILD action opens a ceiling-projector-controlled four-card wall projection with keyboard, click-outside, Escape, and visible back-control exits.
+- [x] WORK / BUILD close-up uses DPR up to 2 for readable board detail. Its approved mobile view fits the projection vertically, allows horizontal crop, and uses source-controlled framing; temporary adjustment controls have been removed.
+- [x] Optimise is uncapped: it removes postprocessing, shadows, MSAA, nonessential city/firefly lights, and background motion before adaptively reducing DPR under sustained active-frame pressure.
 
 ## Final placement
 
@@ -71,7 +74,7 @@ Current mascot baseline: monitor greeting waves/jumps, then idle pixel-step stro
 - [x] Drag the notebook's right-hand page to lift and tear it on release; normal clicks turn pages. Torn sheets flip only their ragged binding strip on both sides. Torn paper goes into a background-free paper-ball icon at bottom left. Click the icon to center the downloaded ball model, then flick with mouse or touch: direction aims the throw and release speed sets force (5.4-unit baseline, reduced 40%). Aiming shows only “Flick to throw” and Esc; Escape restores inventory. Camera and room controls pause only while aiming. Inventory hides in focused views. One stored ball at a time; thrown balls persist for the session with gravity, collisions, bounce, friction and sleep. Owner visual review pending.
 - [ ] Task manager should also show how many componetns user has interacted with, out of all.
 
-Validation: new automated tests removed at the owner's request. Mobile positioning and animation appearance still need owner visual review; no browser inspector used. Local/preview analytics remain intentionally disabled, so no production database writes were made during testing.
+Validation: new automated tests are not added or run unless the owner requests them. Mobile positioning and animation appearance still need owner visual review; no browser inspector was used for the finalized projector framing. Local/preview analytics remain intentionally disabled, so no production database writes were made during testing. Review the intended diff and run `git diff --check` before handoff; retain final visual values in source rather than browser storage or temporary controls.
 
 The earlier subway exterior and click-to-sit chair were replaced: the skyline is current, and the chair is decorative. No new work on those earlier interactions is planned.
 

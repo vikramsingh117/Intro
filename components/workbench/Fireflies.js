@@ -65,7 +65,7 @@ function Firefly({ optimised, source, animations, config, reduced, onLightHit })
   }, [animations, config.seed, config.wingSpeed, invalidate, materials, mixer, model]);
   useFrame((_, delta) => {
     if (!group.current) return;
-    if (reduced) {
+    if (reduced || optimised) {
       group.current.position.set(-6.2 + config.offset[0], -.2 + config.offset[1], .2 + config.offset[2]);
       return;
     }
@@ -102,7 +102,7 @@ function Firefly({ optimised, source, animations, config, reduced, onLightHit })
       <sphereGeometry args={[.0192, 10, 7]}/>
       <meshStandardMaterial color="#fff6a8" emissive="#ceff45" emissiveIntensity={8} toneMapped={false}/>
     </mesh>
-    <pointLight color="#d9ff72" intensity={2.1} distance={1.45} decay={2}/>
+    {!optimised&&<pointLight color="#d9ff72" intensity={2.1} distance={1.45} decay={2}/>}
   </group>;
 }
 

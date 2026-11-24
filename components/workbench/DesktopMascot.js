@@ -22,7 +22,7 @@ const HINTS = [
   { id:'glasses', text:'Try the four glasses: blur, chunky pixel, pastel crayon, and monochrome sketch. Open apps stay visible through every lens.' },
   { id:'zoom', text:'On desktop, move the mouse to reveal the right-edge 1× zoom scale, then drag it up or down.' },
   { id:'fireflies', text:'Follow the fireflies. Their flight path and the hanging light blink are mirrored in the 2D desk graphic.' },
-  { id:'optimise', text:'Need a lighter scene? Use Optimise for a 30 FPS cap, lower resolution, and gentler lighting and effects.' },
+  { id:'optimise', text:'Need a lighter scene? Use Optimise for uncapped rendering, adaptive resolution, and gentler lighting and effects.' },
   { id:'My Work', text:'Open My Work for the story behind the builds.' },
   { id:'About Me', text:'Meet the person behind this desk in About Me.' },
   { id:'Projects', text:'Take a closer look at the Projects app.' },

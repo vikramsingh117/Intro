@@ -122,6 +122,8 @@ Simple remains a readable portfolio; the homepage chooser is the entry point.
 - Use smooth camera focus/return transitions; respect reduced motion. No separate content popup for notebook pages or the exterior.
 - Handwritten notebook pages should resemble rough working notes, diagrams and doodles, not polished motivational copy.
 - Mobile uses plain monitor wallpaper, full-width app windows, large controls, and touch orbit/pinch.
+- The 2025 WORK / BUILD experience is a ceiling-projector wall projection, not a monitor window. Its mobile camera must retain the full projected height, may crop horizontally, keeps the physical back control reachable, and uses the focused-view DPR cap for legibility. Store approved framing as named source constants; do not ship tuning sliders.
+- Optimise is an uncapped quality profile, not a fixed frame-rate setting. Prefer removing expensive effects, shadows, MSAA, background lights, and decorative motion before adaptive DPR; profile before introducing model LODs or broad culling.
 - The mint square cursor turns subtly 90 degrees on hover. Preserve native pointers for window dragging/resizing and input controls.
 - Props remain decorative unless an interaction has a clear purpose. Audio begins only with a user gesture.
 - Model originals and licenses are preserved. Optimize runtime geometry/textures, and preload exactly the URLs used by scene components. Do not add fake CPU/RAM numbers or byte-progress claims.

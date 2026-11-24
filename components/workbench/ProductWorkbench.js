@@ -467,7 +467,7 @@ export default function ProductWorkbench() {
   return <div ref={workbenchRef} className={styles.workbench} onKeyDown={handleWorkbenchKeyDown}>
     {!aimingPaper&&roomYearTransition==='idle'&&<button id="optimise-button" type="button" className={styles.optimiseButton} aria-pressed={optimised} aria-describedby="optimise-details" disabled={sceneRestarting} onClick={toggleOptimisation}>
       {sceneRestarting ? 'Optimising…' : optimised ? 'Optimised' : 'Optimise'}
-      <span id="optimise-details" className={styles.optimiseDetails}>30 FPS cap · lower resolution · lighter lighting and effects</span>
+      <span id="optimise-details" className={styles.optimiseDetails}>Uncapped rendering · adaptive resolution · lighter lighting and effects</span>
     </button>}
     {sceneRestarting&&<div className={styles.optimiseFade} role="status" aria-live="polite">Optimising performance…</div>}
     <output id="fps-meter" className={styles.fpsMeter} aria-label="Frame rate measuring">FPS —</output>

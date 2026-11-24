@@ -254,7 +254,7 @@ function crescentTexture() {
   const texture=new CanvasTexture(canvas);texture.colorSpace=SRGBColorSpace;return texture;
 }
 
-function CrescentMoon() {
+function CrescentMoon({ lighting=true }) {
   const textures=useMemo(()=>[
     crescentTexture(),
     radialTexture([[0,'#f4f7ffbb'],[.18,'#c8dbff80'],[.48,'#7ba5e236'],[1,'#5784c000']]),
@@ -267,19 +267,19 @@ function CrescentMoon() {
     <sprite position={MOON_POSITION} scale={[.78,.78,1]} raycast={()=>null}>
       <spriteMaterial map={textures[0]} color="#dbe8ff" transparent depthWrite={false} toneMapped={false} rotation={-.18}/>
     </sprite>
-    <pointLight position={MOON_POSITION} color="#9ebfff" intensity={12} distance={32} decay={2}/>
+    {lighting&&<pointLight position={MOON_POSITION} color="#9ebfff" intensity={12} distance={32} decay={2}/>}
   </group>;
 }
 
-function CelestialBody({ year, glareActive=false }) {
+function CelestialBody({ year, glareActive=false, lighting=true }) {
   if(year==='2021')return <>
     <group position={SUN_POSITION}>
       <mesh raycast={()=>null}><sphereGeometry args={[.5,32,20]}/><meshBasicMaterial color="#ffdc86" toneMapped={false}/></mesh>
-      <pointLight color="#ffd18a" intensity={68} distance={48} decay={2}/>
+      {lighting&&<pointLight color="#ffd18a" intensity={68} distance={48} decay={2}/>}
     </group>
     {glareActive&&<SunGlare/>}
   </>;
-  if(year==='2026')return <CrescentMoon/>;
+  if(year==='2026')return <CrescentMoon lighting={lighting}/>;
   return null;
 }
 
@@ -325,7 +325,7 @@ function RainClouds({ reduced }) {
   </group>)}</group>;
 }
 
-export default function CityExterior({ onReady, settings, year='2026', outside=false, rain=false, reduced=false }) {
+export default function CityExterior({ onReady, settings, year='2026', outside=false, rain=false, reduced=false, optimised=false }) {
   const { scene } = useLoader(GLTFLoader, '/models/city/optimized.gltf');
   const { invalidate } = useThree();
   const treatment=CITY_TREATMENTS[year]||CITY_TREATMENTS['2026'];
@@ -339,8 +339,8 @@ export default function CityExterior({ onReady, settings, year='2026', outside=f
     clone.position.sub(center.multiplyScalar(scale));
     clone.traverse(node => {
       if (!node.isMesh) return;
-      node.castShadow = true;
-      node.receiveShadow = true;
+      node.castShadow = !optimised;
+      node.receiveShadow = !optimised;
       const tune = source => {
         const material = source.clone();
 
@@ -349,7 +349,7 @@ export default function CityExterior({ onReady, settings, year='2026', outside=f
       node.material = Array.isArray(node.material) ? node.material.map(tune) : tune(node.material);
     });
     return clone;
-  }, [scene]);
+  }, [scene,optimised]);
   useEffect(() => {
     invalidate();
     onReady?.(true);
@@ -369,11 +369,11 @@ export default function CityExterior({ onReady, settings, year='2026', outside=f
       <group scale={[settings.scale,settings.scale*heightScale,settings.scale]}><primitive object={model}/></group>
       <group scale={settings.scale}><CityFog base={base*heightScale} settings={settings} year={year}/></group>
     </group>
-    <pointLight userData={{cacheStationaryShadow:true}} position={[-5,10,8]} color={treatment.warmColor} intensity={settings.warm*treatment.warm} castShadow shadow-intensity={settings.shadows} shadow-mapSize={[512,512]} shadow-bias={-.001} shadow-normalBias={.015} distance={40} decay={2}/>
-    <pointLight position={[6,8,-3]} color={treatment.coolColor} intensity={settings.cool*treatment.cool} distance={40} decay={2}/>
+    {!optimised&&<><pointLight userData={{cacheStationaryShadow:true}} position={[-5,10,8]} color={treatment.warmColor} intensity={settings.warm*treatment.warm} castShadow shadow-intensity={settings.shadows} shadow-mapSize={[512,512]} shadow-bias={-.001} shadow-normalBias={.015} distance={40} decay={2}/>
+    <pointLight position={[6,8,-3]} color={treatment.coolColor} intensity={settings.cool*treatment.cool} distance={40} decay={2}/></>}
   </group>
-  <CelestialBody year={year} glareActive={outside}/>
-  {year==='2025'&&<RainClouds reduced={reduced}/>}
-  {rain&&<CityRain reduced={reduced}/>}
+  <CelestialBody year={year} glareActive={outside&&!optimised} lighting={!optimised}/>
+  {year==='2025'&&<RainClouds reduced={reduced||optimised}/>}
+  {rain&&<CityRain reduced={reduced||optimised}/>}
   </>;
 }
