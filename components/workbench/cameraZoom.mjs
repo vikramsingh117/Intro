@@ -5,6 +5,9 @@ export const ROOM_MAX_DISTANCE = 24;
 export const ZOOM_TICK_COUNT = 17;
 // Hysteresis keeps trackpad momentum from repeatedly opening a close-up near the cutoff.
 export const ROOM_FOCUS_PROGRESS = .78;
+// A deliberate wheel burst over a focusable object should commit without
+// making the visitor traverse the room-wide focus threshold first.
+export const ROOM_FOCUS_ZOOM_DELTA = .15;
 
 export const roomZoomBridge = (() => {
   let api = null;

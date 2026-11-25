@@ -59,21 +59,37 @@ export default function ProductWorkbench() {
   const [roomYearTarget,setRoomYearTarget]=useState(DEFAULT_ROOM_YEAR);
   const roomYearTimers=useRef([]);
   const [optimised,setOptimised]=useState(false);
-  const [sceneRestarting,setSceneRestarting]=useState(false);
+  const [sceneRestartPhase,setSceneRestartPhase]=useState('idle');
   const [sceneRestartKey,setSceneRestartKey]=useState(0);
   const optimiseTimer=useRef(null);
-  useEffect(()=>()=>window.clearTimeout(optimiseTimer.current),[]);
+  const optimiseWatchdog=useRef(null);
+  const optimiseTarget=useRef(false);
+  const sceneRestarting=sceneRestartPhase!=='idle';
+  const sceneCovered=sceneRestartPhase==='covering'||sceneRestartPhase==='loading';
+  useEffect(()=>()=>{window.clearTimeout(optimiseTimer.current);window.clearTimeout(optimiseWatchdog.current);},[]);
   useEffect(()=>()=>roomYearTimers.current.forEach(timer=>window.clearTimeout(timer)),[]);
   const toggleOptimisation=useCallback(()=>{
     if(sceneRestarting)return;
-    // Cover the whole workbench while the renderer and physics settings change together.
-    setSceneRestarting(true);
+    // Cover the whole workbench before replacing the renderer and keep it
+    // covered until the replacement reports loaded visuals and rendered frames.
+    optimiseTarget.current=!optimised;
+    setSceneRestartPhase('covering');
     optimiseTimer.current=window.setTimeout(()=>{
       setOptimised(value=>!value);
       setSceneRestartKey(value=>value+1);
-      requestAnimationFrame(()=>{optimiseTimer.current=window.setTimeout(()=>setSceneRestarting(false),360);});
+      setSceneRestartPhase('loading');
+      optimiseWatchdog.current=window.setTimeout(()=>setSceneRestartPhase(current=>current==='loading'?'revealing':current),15000);
     },220);
-  },[sceneRestarting]);
+  },[optimised,sceneRestarting]);
+  const finishSceneRestart=useCallback(()=>{
+    window.clearTimeout(optimiseWatchdog.current);
+    setSceneRestartPhase(current=>current==='loading'?'revealing':current);
+  },[]);
+  useEffect(()=>{
+    if(sceneRestartPhase!=='revealing')return;
+    optimiseTimer.current=window.setTimeout(()=>setSceneRestartPhase('idle'),360);
+    return()=>window.clearTimeout(optimiseTimer.current);
+  },[sceneRestartPhase]);
   useEffect(()=>{
     const enableForSlowStart=()=>{if(!optimised&&!sceneRestarting)toggleOptimisation();};
     window.addEventListener('workbench:slow-start',enableForSlowStart);
@@ -366,6 +382,15 @@ export default function ProductWorkbench() {
     if(!element)return;
     let exited=false,pinchStart=null,gestureStartScale=1;
     const inside=event=>(event.target instanceof Node&&element.contains(event.target))||element.matches(':hover');
+    const isScrollableContent=target=>{
+      let node=target instanceof Element?target:null;
+      while(node&&node!==element){
+        const style=window.getComputedStyle(node);
+        if(/auto|scroll/.test(style.overflowY)&&node.scrollHeight>node.clientHeight+1)return true;
+        node=node.parentElement;
+      }
+      return false;
+    };
     const exit=()=>{
       if(exited)return;
       exited=true;
@@ -373,13 +398,14 @@ export default function ProductWorkbench() {
     };
     const wheel=event=>{
       if(!inside(event))return;
-      // A plain wheel event is also how a two-finger trackpad scroll reaches
-      // projected app content. Only treat a modifier-wheel as a pinch, so
-      // reading/scrolling cannot accidentally dismiss the focused view.
-      if(!(event.ctrlKey||event.metaKey))return;
-      event.preventDefault();
       const delta=event.deltaMode===1?event.deltaY*16:event.deltaY;
-      if(delta>0)exit();
+      if(delta<=0)return;
+      // Plain scrolling over text, apps, editors, and other scrollable regions
+      // always belongs to that content, including at its top or bottom edge.
+      // A modifier-pinch or a wheel over non-scrollable space can still exit.
+      if(!(event.ctrlKey||event.metaKey)&&isScrollableContent(event.target))return;
+      event.preventDefault();
+      exit();
     };
     const distance=touches=>Math.hypot(touches[0].clientX-touches[1].clientX,touches[0].clientY-touches[1].clientY);
     const touchStart=event=>{if(inside(event)&&event.touches.length===2)pinchStart=distance(event.touches);};
@@ -466,15 +492,22 @@ export default function ProductWorkbench() {
   });
   return <div ref={workbenchRef} className={styles.workbench} onKeyDown={handleWorkbenchKeyDown}>
     {!aimingPaper&&roomYearTransition==='idle'&&<button id="optimise-button" type="button" className={styles.optimiseButton} aria-pressed={optimised} aria-describedby="optimise-details" disabled={sceneRestarting} onClick={toggleOptimisation}>
-      {sceneRestarting ? 'Optimising…' : optimised ? 'Optimised' : 'Optimise'}
-      <span id="optimise-details" className={styles.optimiseDetails}>Uncapped rendering · adaptive resolution · lighter lighting and effects</span>
+      {sceneRestarting ? optimiseTarget.current ? 'Optimising…' : 'Restoring…' : optimised ? 'Optimised' : 'Optimise'}
+      <span id="optimise-details" className={styles.optimiseDetails}>{optimised
+        ? 'Restore full visuals: shadows, bloom and post-processing, WebGL antialiasing, scene lights, background motion, high-resolution close-ups, and pixel, crayon, and sketch lens effects.'
+        : 'Use lighter rendering: remove shadows, bloom and post-processing, WebGL antialiasing, extra city and firefly lights, background motion, and non-blur lens effects; adapt resolution when needed.'}</span>
     </button>}
-    {sceneRestarting&&<div className={styles.optimiseFade} role="status" aria-live="polite">Optimising performance…</div>}
+    {sceneRestarting&&<div className={styles.optimiseFade} data-phase={sceneRestartPhase} role="status" aria-live="polite">
+      <strong>{optimiseTarget.current?'Building the lighter scene…':'Restoring the original scene…'}</strong>
+      <span>{optimiseTarget.current
+        ? 'Removing shadows, post-processing, WebGL antialiasing, extra lights, background motion, and non-blur lens effects. Preparing adaptive resolution.'
+        : 'Adding back shadows, post-processing, WebGL antialiasing, scene lights, background motion, high-resolution close-ups, and non-blur lens effects.'}</span>
+    </div>}
     <output id="fps-meter" className={styles.fpsMeter} aria-label="Frame rate measuring">FPS —</output>
     <div style={{display:'contents'}} inert={aimingPaper ? '' : undefined} aria-hidden={aimingPaper ? true : undefined}>
-    <div className={`${styles.scene}${sceneRestarting?` ${styles.sceneRestarting}`:''}`} onPointerMoveCapture={releaseKeyboardSelection} onPointerDownCapture={releaseKeyboardSelection} style={{pointerEvents:photo || entered || upliance ? 'none' : undefined}} aria-hidden={desktop} ref={enterButton} role="group" aria-label="Interactive room. Use arrow keys to select objects, Enter to activate, and Escape to return." tabIndex={photo || workBoard || desktop || outside || notebook || !!upliance ? -1 : 0}>
+    <div className={`${styles.scene}${sceneCovered?` ${styles.sceneRestarting}`:''}`} onPointerMoveCapture={releaseKeyboardSelection} onPointerDownCapture={releaseKeyboardSelection} style={{pointerEvents:photo || entered || upliance ? 'none' : undefined}} aria-hidden={desktop} ref={enterButton} role="group" aria-label="Interactive room. Use arrow keys to select objects, Enter to activate, and Escape to return." tabIndex={photo || workBoard || desktop || outside || notebook || !!upliance ? -1 : 0}>
       <div hidden={photo || workBoard || desktop || outside || notebook || !!upliance} className={styles.sceneLabel}>VIKRAM’S WORKSPACE <span>{roomYear} / ENTER TO EXPLORE</span></div>
-      <Boundary onEnter={()=>{preloadAboutJourney();setEntered(true);setDesktop(true);}}><Scene key={sceneRestartKey} roomYear={roomYear} optimised={optimised} paperInventory={paperInventory} onPickUpPaper={pickUpPaper} basketScore={basketScore} celebrating={celebrating} onBasket={onBasket} photo={photo} onPhotoOpen={openPhoto} workBoard={workBoard} workBoardTile={workBoardTile} onWorkBoardOpen={openWorkBoard} onWorkBoardTileSelect={selectWorkBoardTile} projectorState={projectorState} onProjectorChange={setProjectorState} onPlaybackChange={handlePlaybackChange} onCeilingPowerChange={setCeilingOn} onNotebookTear={tearPage} onPaperMotionChange={setPaperInFlight} aimingPaper={aimingPaper} heldPaper={heldPaper} paperControls={paperControls} onPaperThrown={onPaperThrown} tornPages={tornPages} keyboardTarget={keyboardTarget?.id} registerRoomAction={registerRoomAction} upliance={upliance} upliancePage={upliancePage} uplianceArrived={uplianceArrived} uplianceControlsRef={uplianceBack} onUplianceArrive={()=>setUplianceArrived(true)} onUplianceSelect={view=>{if(photo||workBoard||entered||outside||notebook||stickyNotes.editor||stickyNotes.placing)return;rememberFocus();setWearingGlasses(false);setUplianceArrived(false);setUpliance(view);}} propPlacement={propPlacement} glassesPlacement={glassesPlacement} stickyNotePlacement={stickyNotePlacement} lensSettings={lensSettings} noteEditorRef={noteEditorRef} stickyNotes={stickyNotes} wearingGlasses={wearingGlasses} glassesLens={glassesLens} glassesLeaving={glassesLeaving} onWearGlasses={wearGlasses} citySettings={citySettings} notebookOpen={notebookOpen} onNotebookPageChange={setNotebookPage} onNotebookExit={leaveNotebook} notebook={notebook} notebookPage={notebookPage} onNotebookOpen={openNotebook} onHover={handleHover} desktopRef={desktopRef} desktop={desktop} outside={outside} onCityReady={setCityReady} onWindowSelect={openWindow} lampOn={lampOn} onLampToggle={()=>setLampOn(value=>!value)} entered={entered} reduced={reduced} roomResetKey={roomResetKey} onEnter={openMonitor} onArrive={()=>setDesktop(true)} /></Boundary>
+      <Boundary onEnter={()=>{preloadAboutJourney();setEntered(true);setDesktop(true);}}><Scene key={sceneRestartKey} roomYear={roomYear} optimised={optimised} onRestartReady={finishSceneRestart} paperInventory={paperInventory} onPickUpPaper={pickUpPaper} basketScore={basketScore} celebrating={celebrating} onBasket={onBasket} photo={photo} onPhotoOpen={openPhoto} workBoard={workBoard} workBoardTile={workBoardTile} onWorkBoardOpen={openWorkBoard} onWorkBoardTileSelect={selectWorkBoardTile} projectorState={projectorState} onProjectorChange={setProjectorState} onPlaybackChange={handlePlaybackChange} onCeilingPowerChange={setCeilingOn} onNotebookTear={tearPage} onPaperMotionChange={setPaperInFlight} aimingPaper={aimingPaper} heldPaper={heldPaper} paperControls={paperControls} onPaperThrown={onPaperThrown} tornPages={tornPages} keyboardTarget={keyboardTarget?.id} registerRoomAction={registerRoomAction} upliance={upliance} upliancePage={upliancePage} uplianceArrived={uplianceArrived} uplianceControlsRef={uplianceBack} onUplianceArrive={()=>setUplianceArrived(true)} onUplianceSelect={view=>{if(photo||workBoard||entered||outside||notebook||stickyNotes.editor||stickyNotes.placing)return;rememberFocus();setWearingGlasses(false);setUplianceArrived(false);setUpliance(view);}} propPlacement={propPlacement} glassesPlacement={glassesPlacement} stickyNotePlacement={stickyNotePlacement} lensSettings={lensSettings} noteEditorRef={noteEditorRef} stickyNotes={stickyNotes} wearingGlasses={wearingGlasses} glassesLens={glassesLens} glassesLeaving={glassesLeaving} onWearGlasses={wearGlasses} citySettings={citySettings} notebookOpen={notebookOpen} onNotebookPageChange={setNotebookPage} onNotebookExit={leaveNotebook} notebook={notebook} notebookPage={notebookPage} onNotebookOpen={openNotebook} onHover={handleHover} desktopRef={desktopRef} desktop={desktop} outside={outside} onCityReady={setCityReady} onWindowSelect={openWindow} lampOn={lampOn} onLampToggle={()=>setLampOn(value=>!value)} entered={entered} reduced={reduced} roomResetKey={roomResetKey} onEnter={openMonitor} onArrive={()=>setDesktop(true)} /></Boundary>
       <div hidden={photo || workBoard || desktop || notebook || !!upliance} className={styles.enterRow}><RoomHoverLabel store={hoverStore} outside={outside} cityReady={cityReady} entered={entered}/></div>
     </div>
     <div className={`${transitionStyles.veil} ${transitionStyles[roomYearTransition]}`} aria-hidden="true"/>
@@ -508,7 +541,7 @@ export default function ProductWorkbench() {
     {!focused && <Link href="/"><a className={styles.homeLink} aria-label="Back to home">← Home</a></Link>}
     <DesktopZoomControl disabled={focused || aimingPaper || paperInFlight}/>
     <StickyNotesUI api={stickyNotes} elementRef={noteEditorRef}/>
-    {wearingGlasses && <GlassesOverlay reduced={reduced} lens={glassesLens} onLeaving={()=>setGlassesLeaving(true)} onRemove={removeGlasses}/>}
+    {wearingGlasses && <GlassesOverlay reduced={reduced} optimised={optimised} lens={glassesLens} onLeaving={()=>setGlassesLeaving(true)} onRemove={removeGlasses}/>}
     {/* Keep the projected desktop rendered during a throw: its inactive state freezes the open app in place. */}
     {/* Non-blur lens passes run in WebGL, so they use the static monitor surface instead of unfiltered projected HTML. */}
     {desktop && <button type="button" tabIndex={-1} className={styles.monitorDismiss} onClick={leave} aria-label="Click outside the monitor to return to the desk"/>}

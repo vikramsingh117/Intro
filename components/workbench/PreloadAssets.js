@@ -11,6 +11,7 @@ const audio = '/audio/cozy-nordic-quiet-spot.m4a';
 const priorityModels = ['/models/monitor.glb', '/models/upliance/interactive.glb'];
 const priorityTextures = textures.slice(0, 3);
 const priorityAssets = [...priorityModels, ...priorityTextures];
+const visualAssets = [...models, ...textures];
 export const ASSET_COUNT = models.length + textures.length + 1;
 
 function Asset({ url, texture, onLoaded }) {
@@ -36,15 +37,16 @@ class LoadBoundary extends Component {
   componentDidCatch() { this.props.onError(); }
   render() { return this.state.failed ? null : this.props.children; }
 }
-export default function PreloadAssets({ onLoaded, onError, onReady }) {
+export default function PreloadAssets({ onLoaded, onError, onVisualError, onVisualReady, onReady }) {
   const [completed,setCompleted]=useState([]);
   const reportLoaded=useCallback(url=>{
     setCompleted(current=>current.includes(url)?current:[...current,url]);
     onLoaded?.(url);
   },[onLoaded]);
+  useEffect(()=>{if(visualAssets.every(url=>completed.includes(url)))onVisualReady?.();},[completed,onVisualReady]);
   useEffect(()=>{if(completed.length===ASSET_COUNT)onReady?.();},[completed,onReady]);
   const screensReady=priorityAssets.every(url=>completed.includes(url));
-  return <LoadBoundary onError={onError}>
+  return <LoadBoundary onError={onVisualError||onError}>
     {(screensReady ? models : priorityModels).map(url => <Suspense key={url} fallback={null}><Asset url={url} onLoaded={reportLoaded}/></Suspense>)}
     {(screensReady ? textures : priorityTextures).map(url=><Suspense key={url} fallback={null}><Asset url={url} texture onLoaded={reportLoaded}/></Suspense>)}
     <AudioAsset onLoaded={reportLoaded} onError={onError}/>

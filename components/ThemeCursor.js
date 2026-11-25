@@ -14,6 +14,8 @@ export default function ThemeCursor() {
     let hoveredTarget = null;
     let spin = null;
     let aimCenter = null;
+    let aimOrigin = null;
+    let aimPoint = null;
     let lastPointer = null;
     let aimMotion = null;
     const place = ([x,y]) => { node.style.transform = `translate3d(${x}px, ${y}px, 0)`; };
@@ -53,6 +55,8 @@ export default function ThemeCursor() {
       visible = false;
       hoveredTarget = null;
       aimCenter = null;
+      aimOrigin = null;
+      aimPoint = null;
       aimMotion?.cancel();
       aimMotion = null;
       spin?.cancel();
@@ -72,7 +76,7 @@ export default function ThemeCursor() {
         aimMotion?.cancel();
         aimMotion=null;
         place(lastPointer);
-      } else if (!aimMotion) place(aimCenter);
+      } else if (!aimMotion) place(aimPoint||lastPointer);
       const pane = target?.closest("[data-cursor-theme]");
       node.dataset.theme = pane?.dataset.cursorTheme || "simple";
       icon.current.dataset.theme = node.dataset.theme;
@@ -89,9 +93,19 @@ export default function ThemeCursor() {
       if (!media.matches) return;
       if (event.detail?.active) {
         const nextCenter=[event.detail.x,event.detail.y];
-        const from=lastPointer||aimCenter||nextCenter;
+        if(!aimCenter){
+          aimOrigin=lastPointer||nextCenter;
+          aimPoint=aimOrigin;
+        }
+        const progress=Math.max(0,Math.min(1,Number(event.detail.progress)||0));
+        const nextPoint=[
+          aimOrigin[0]+(nextCenter[0]-aimOrigin[0])*progress,
+          aimOrigin[1]+(nextCenter[1]-aimOrigin[1])*progress,
+        ];
+        const from=aimPoint||aimOrigin;
         aimCenter=nextCenter;
-        glide(from,aimCenter);
+        aimPoint=nextPoint;
+        glide(from,aimPoint,140);
         node.dataset.theme = 'glossy';
         node.dataset.interactive = 'true';
         node.dataset.visible = 'true';
@@ -100,8 +114,10 @@ export default function ThemeCursor() {
         document.documentElement.dataset.chooserCursor = 'true';
         visible = true;
       } else {
-        const from=aimCenter;
+        const from=aimPoint;
         aimCenter = null;
+        aimOrigin = null;
+        aimPoint = null;
         if (lastPointer) glide(from||lastPointer,lastPointer,360);
       }
     };

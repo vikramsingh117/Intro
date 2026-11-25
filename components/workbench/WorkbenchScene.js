@@ -34,7 +34,7 @@ import Chair from './Chair';
 import Keyboard from './Keyboard';
 import WorkBuildBoard, { WORK_BOARD_TARGET } from './WorkBuildBoard';
 import { DEFAULT_ROOM_YEAR, roomHasObject } from './roomYears.mjs';
-import { distanceForZoomProgress, roomZoomBridge, ROOM_FOCUS_PROGRESS, ROOM_MAX_DISTANCE, ROOM_MIN_DISTANCE, zoomMultiplier, zoomProgressForDistance } from './cameraZoom.mjs';
+import { distanceForZoomProgress, roomZoomBridge, ROOM_FOCUS_PROGRESS, ROOM_FOCUS_ZOOM_DELTA, ROOM_MAX_DISTANCE, ROOM_MIN_DISTANCE, zoomMultiplier, zoomProgressForDistance } from './cameraZoom.mjs';
 import { ACESFilmicToneMapping, Box3, Euler, Quaternion, Matrix4, SRGBColorSpace, TextureLoader, TOUCH, Vector3 } from 'three';
 
 const ROOM_ATMOSPHERE={
@@ -114,7 +114,7 @@ function FirstRoomFrame({ onReady }) {
   useFrame(() => {
     if (frames.current >= 4) return;
     frames.current += 1;
-    if (frames.current === 4) onReady();
+    if (frames.current === 4) onReady?.();
     else invalidate();
   });
   return null;
@@ -270,9 +270,9 @@ function Camera({ paperOrbit, photo, workBoard, projectorState, pauseCamera, upl
       invalidate();
       return true;
     };
-    const setCenteredCursor = active => {
+    const setCenteredCursor = (active, progress=0) => {
       const bounds = gl.domElement.getBoundingClientRect();
-      window.dispatchEvent(new CustomEvent('room-zoom-cursor',{detail:{active,x:bounds.left+bounds.width/2,y:bounds.top+bounds.height/2}}));
+      window.dispatchEvent(new CustomEvent('room-zoom-cursor',{detail:{active,progress,x:bounds.left+bounds.width/2,y:bounds.top+bounds.height/2}}));
     };
     const restoreUncommittedAim = () => {
       const start = zoomAimStart.current;
@@ -313,8 +313,9 @@ function Camera({ paperOrbit, photo, workBoard, projectorState, pauseCamera, upl
         if (typeof hovered?.userData?.roomZoomFocus === 'function') {
           if (zoomFocusTarget.current && zoomFocusTarget.current !== hovered) restoreUncommittedAim();
           if (!zoomAimStart.current) {
-            zoomAimStart.current = {position:camera.position.clone(),target:controls.target.clone()};
-            setCenteredCursor(true);
+            const position=camera.position.clone(),target=controls.target.clone();
+            zoomAimStart.current = {position,target,multiplier:zoomMultiplier(homeDistance,position.distanceTo(target))};
+            setCenteredCursor(true,0);
           }
           zoomFocusTarget.current = hovered;
           scheduleAimRestore();
@@ -360,15 +361,26 @@ function Camera({ paperOrbit, photo, workBoard, projectorState, pauseCamera, upl
       // There is no lower buffer zone: object-directed aiming starts at any
       // room zoom and remains tentative until it focuses or rolls back.
       if (snapshot.progress < ROOM_FOCUS_PROGRESS) zoomFocusArmed.current = true;
-      if (snapshot.progress >= ROOM_FOCUS_PROGRESS && zoomFocusArmed.current) {
+      const aimedZoomDelta=zoomAimStart.current ? snapshot.multiplier-zoomAimStart.current.multiplier : 0;
+      if(zoomFocusTarget.current&&zoomAimStart.current){
+        // Advance the custom cursor with zoom intent instead of sending it to
+        // the centre on the first wheel event. A .15x focus gesture moves it
+        // roughly a quarter of the way; larger bursts continue the approach.
+        setCenteredCursor(true,1-Math.exp(-Math.max(0,aimedZoomDelta)/.5));
+      }
+      const decisiveObjectZoom=!!zoomFocusTarget.current&&aimedZoomDelta>=ROOM_FOCUS_ZOOM_DELTA;
+      if ((snapshot.progress >= ROOM_FOCUS_PROGRESS || decisiveObjectZoom) && zoomFocusArmed.current) {
         const hovered = scene.getObjectByProperty('uuid', gl.domElement.dataset.cursorObject || '');
         const object = typeof hovered?.userData?.roomZoomFocus === 'function' ? hovered : zoomFocusTarget.current;
         const focus = object?.userData?.roomZoomFocus;
         if (typeof focus === 'function') {
           zoomFocusArmed.current = false;
           zoomAimStart.current = null;
+          zoomFocusTarget.current = null;
           zoomReturn.current = null;
           zoomSightReturn.current = null;
+          delete gl.domElement.dataset.cursorObject;
+          gl.domElement.dispatchEvent(new CustomEvent('cursor-object-change',{bubbles:true}));
           setCenteredCursor(false);
           window.clearTimeout(aimResetTimer);
           focus();
@@ -395,15 +407,29 @@ function Camera({ paperOrbit, photo, workBoard, projectorState, pauseCamera, upl
     roomZoomBridge.setApi(zoomApi);
     return () => { window.clearTimeout(aimResetTimer); setCenteredCursor(false); gl.domElement.removeEventListener('wheel',aimWheel,{capture:true}); gl.domElement.removeEventListener('pointerdown',interruptPointer,{capture:true}); gl.domElement.removeEventListener('cursor-object-change',cancelAimWhenPointerLeaves); controls.removeEventListener('change', onChange); controls.dispose(); emitZoom.current = () => {}; roomZoomBridge.setApi(null); orbit.current = null; paperOrbit.current = null; };
   }, [camera, gl, scene, invalidate, paperOrbit, roomHome]);
+  const focused = !!(photo || workBoard || entered || outside || notebook || upliance || noteMode);
   useEffect(() => {
-    if(photo||workBoard||entered||outside||notebook||upliance||noteMode)zoomSightReturn.current=null;
+    if(focused){
+      // A focused view disables room hit testing. Clear both the latched aim
+      // and its DOM hover marker so the first wheel after returning uses
+      // OrbitControls' pointer-relative dolly instead of the previous object.
+      zoomAimStart.current=null;
+      zoomFocusTarget.current=null;
+      zoomReturn.current=null;
+      zoomSightReturn.current=null;
+      zoomFocusArmed.current=true;
+      if(gl.domElement.dataset.cursorObject){
+        delete gl.domElement.dataset.cursorObject;
+        gl.domElement.dispatchEvent(new CustomEvent('cursor-object-change',{bubbles:true}));
+      }
+      window.dispatchEvent(new CustomEvent('room-zoom-cursor',{detail:{active:false}}));
+    }
     if(orbit.current) {
       orbit.current.enabled = !interactionBlocked && !photo && !workBoard && !entered && !outside && !notebook && !upliance && !!transition.current?.done;
       emitZoom.current();
     }
-  }, [interactionBlocked, entered, outside, notebook, upliance, photo, workBoard, noteMode]);
+  }, [focused, interactionBlocked, entered, outside, notebook, upliance, photo, workBoard, noteMode, gl]);
   useEffect(() => { if (orbit.current) orbit.current.enableDamping = !reduced; }, [reduced]);
-  const focused = !!(photo || workBoard || entered || outside || notebook || upliance || noteMode);
   const lookTarget = useRef(new Vector3(...ROOM_TARGET));
   useEffect(() => {
     const element=gl.domElement, look=windowLook.current;
@@ -489,7 +515,7 @@ function Camera({ paperOrbit, photo, workBoard, projectorState, pauseCamera, upl
     const workBoardLookTarget = mobileWorkBoard ? workBoardFocusTarget.clone().add(new Vector3(0,-MOBILE_WORK_BOARD_LOOK_DOWN,0)) : workBoardFocusTarget;
     const workBoardDistance = Math.max(1.575,2.6/(size.width/size.height))/Math.tan(21*Math.PI/180)*1.24;
     const workBoardCamera = workBoardFocusTarget.clone().add(new Vector3(0,mobileWorkBoard ? -.55 : .05,workBoardDistance));
-    transition.current = { from:camera.position.clone(), fovFrom:camera.fov, fovTo:outside ? fov : 42, lookFrom:lookTarget.current.clone(), lookTo:photo ? photoTarget : workBoard ? workBoardLookTarget : upliance ? applianceTarget : noteMode ? noteTarget : notebook ? new Vector3(...NOTEBOOK_TARGET) : outside ? new Vector3(targetX,targetY,targetZ) : (entered ? new Vector3(1.5, .2128, -.51) : new Vector3(...ROOM_TARGET)), to:photo ? photoCamera : workBoard ? workBoardCamera : upliance ? applianceCamera : noteMode ? noteCamera : notebook ? notebookCamera : outside ? new Vector3(cameraX,cameraY,cameraZ) : entered ? new Vector3(1.5, .2128 + .139173 * distance, -.51 + .990268 * distance)  : (resetRoom ? roomHome.clone() : roomPosition.current?.clone() || roomHome.clone()), duration:entrance ? 2.4 : 1.45, elapsed:entrance && !reduced ? -.35 : noteMode==='wall' && !reduced ? -.65 : 0, done:false };
+    transition.current = { from:camera.position.clone(), fovFrom:camera.fov, fovTo:outside ? fov : 42, lookFrom:lookTarget.current.clone(), lookTo:photo ? photoTarget : workBoard ? workBoardLookTarget : upliance ? applianceTarget : noteMode ? noteTarget : notebook ? new Vector3(...NOTEBOOK_TARGET) : outside ? new Vector3(targetX,targetY,targetZ) : (entered ? new Vector3(1.5, .2128, -.51) : new Vector3(...ROOM_TARGET)), to:photo ? photoCamera : workBoard ? workBoardCamera : upliance ? applianceCamera : noteMode ? noteCamera : notebook ? notebookCamera : outside ? new Vector3(cameraX,cameraY,cameraZ) : entered ? new Vector3(1.5, .2128 + .139173 * distance, -.51 + .990268 * distance)  : ((resetRoom||returningToRoom) ? roomHome.clone() : roomPosition.current?.clone() || roomHome.clone()), duration:entrance ? 2.4 : 1.45, elapsed:entrance && !reduced ? -.35 : noteMode==='wall' && !reduced ? -.65 : 0, done:false };
     invalidate();
   }, [focused, photo, workBoard, projectorState, upliance, noteMode, noteX, noteY, notePlacement, entered, outside, notebook, cameraX, cameraY, cameraZ, targetX, targetY, targetZ, fov, reduced, camera, size.width, size.height, roomHome, roomResetKey, invalidate]);
   useFrame((state, dt) => {
@@ -567,7 +593,7 @@ function Camera({ paperOrbit, photo, workBoard, projectorState, pauseCamera, upl
   }, -1);
   return null;
 }
-export default function MonitorScene({ roomYear=DEFAULT_ROOM_YEAR, optimised = false, paperInventory, onPickUpPaper, basketScore, celebrating, onBasket, photo, onPhotoOpen, workBoard, workBoardTile, onWorkBoardOpen, onWorkBoardTileSelect, projectorState, onProjectorChange, onPlaybackChange, onCeilingPowerChange, onNotebookTear, onPaperMotionChange, aimingPaper, heldPaper, paperControls, onPaperThrown, tornPages, keyboardTarget, registerRoomAction, upliance, upliancePage, uplianceArrived, uplianceControlsRef, onUplianceArrive, onUplianceSelect, propPlacement, glassesPlacement, stickyNotePlacement, lensSettings, entered, reduced, onEnter, onArrive, lampOn, onLampToggle, onWindowSelect, outside, onCityReady, desktopRef, desktop, notebook, notebookPage, onNotebookOpen, onHover, notebookOpen, onNotebookPageChange, onNotebookExit, citySettings, wearingGlasses, glassesLens, glassesLeaving, onWearGlasses, stickyNotes, noteEditorRef, roomResetKey }) {
+export default function MonitorScene({ roomYear=DEFAULT_ROOM_YEAR, optimised = false, onRestartReady, paperInventory, onPickUpPaper, basketScore, celebrating, onBasket, photo, onPhotoOpen, workBoard, workBoardTile, onWorkBoardOpen, onWorkBoardTileSelect, projectorState, onProjectorChange, onPlaybackChange, onCeilingPowerChange, onNotebookTear, onPaperMotionChange, aimingPaper, heldPaper, paperControls, onPaperThrown, tornPages, keyboardTarget, registerRoomAction, upliance, upliancePage, uplianceArrived, uplianceControlsRef, onUplianceArrive, onUplianceSelect, propPlacement, glassesPlacement, stickyNotePlacement, lensSettings, entered, reduced, onEnter, onArrive, lampOn, onLampToggle, onWindowSelect, outside, onCityReady, desktopRef, desktop, notebook, notebookPage, onNotebookOpen, onHover, notebookOpen, onNotebookPageChange, onNotebookExit, citySettings, wearingGlasses, glassesLens, glassesLeaving, onWearGlasses, stickyNotes, noteEditorRef, roomResetKey }) {
   const { sceneReady } = useAfterHoursTransition();
   const onRoomReady = useCallback(() => {
     sceneReady();
@@ -591,15 +617,19 @@ export default function MonitorScene({ roomYear=DEFAULT_ROOM_YEAR, optimised = f
   const exteriorSettled=outside&&outsideArrived;
   const screensReady=monitorReady&&(!currentRoom||uplianceReady);
   const [roomAssetsReady,setRoomAssetsReady]=useState(false);
+  const [roomVisualsReady,setRoomVisualsReady]=useState(false);
   const [notebookImagesReady,setNotebookImagesReady]=useState(false);
   const markRoomAssetsReady=useCallback(()=>setRoomAssetsReady(true),[]);
+  const markRoomVisualsReady=useCallback(()=>setRoomVisualsReady(true),[]);
+  const markRoomVisualsFailed=useCallback(()=>{setRoomVisualsReady(true);setRoomAssetsReady(true);},[]);
   const markNotebookImagesReady=useCallback(()=>setNotebookImagesReady(true),[]);
   const markFireflyLightHit=useCallback(()=>setFireflyLightHit(value=>value+1),[]);
   return <Canvas events={roomEvents} onPointerMissed={()=>{if(notebook)onNotebookExit();}} shadows={!optimised} camera={{ position:[6, 3.5, 14.8], fov:42 }} dpr={optimised ? 1 : notebook || upliance || workBoard ? [1, 2] : 1} frameloop="demand" gl={{alpha:true, antialias:!optimised, toneMapping:ACESFilmicToneMapping, toneMappingExposure:.85}}>
     <FpsMeter/>
     <AdaptivePerformanceDpr enabled={optimised}/>
     {screensReady && <FirstRoomFrame onReady={onRoomReady}/>}
-    {screensReady && currentRoom && <PreloadAssets onReady={markRoomAssetsReady} onError={markRoomAssetsReady}/>}
+    {screensReady && (!currentRoom||roomVisualsReady) && notebookImagesReady && <FirstRoomFrame onReady={onRestartReady}/>}
+    {screensReady && currentRoom && <PreloadAssets onVisualReady={markRoomVisualsReady} onVisualError={markRoomVisualsFailed} onReady={markRoomAssetsReady} onError={markRoomAssetsReady}/>}
     {!optimised && <StationaryShadows/>}
     <color attach="background" args={[atmosphere.background]} />
     <group onClick={event=>{if(notebook && event.delta<=5){event.stopPropagation();onNotebookExit();}}}>
@@ -625,7 +655,7 @@ export default function MonitorScene({ roomYear=DEFAULT_ROOM_YEAR, optimised = f
     {screensReady && currentRoom && <Suspense fallback={null}><Pascal placement={propPlacement?.pascal}/></Suspense>}
     {currentRoom && <Suspense fallback={null}><Upliance celebrating={celebrating} preloadArtwork={roomAssetsReady&&notebookImagesReady} onReady={markUplianceReady} keyboardFocused={keyboardTarget==='upliance'} registerRoomAction={registerRoomAction} controlsRef={uplianceControlsRef} focused={!!upliance} zoomComplete={uplianceArrived} workPage={upliancePage} onSelect={onUplianceSelect} placement={propPlacement?.upliance} reduced={reduced} interactive={!photo && !entered && !outside && !notebook && !upliance && !stickyNotes.editor && !stickyNotes.placing} onHover={onHover}/></Suspense>}
     {screensReady && showObject('ceiling-light') && <Suspense fallback={null}><CeilingLight optimised={optimised} fireflyHit={fireflyLightHit} onPowerChange={onCeilingPowerChange} basketScore={basketScore} reduced={reduced} onDragging={setLightDragging} interactive={!photo&&!entered&&!outside&&!notebook&&!upliance&&!stickyNotes.editor&&!stickyNotes.placing} keyboardFocused={keyboardTarget==='ceiling-light'} registerRoomAction={registerRoomAction} onHover={onHover}/></Suspense>}
-    <CozyRoom roomYear={roomYear} outside={outside} keyboardTarget={keyboardTarget} registerRoomAction={registerRoomAction} reduced={reduced} wearingGlasses={wearingGlasses} glassesPlacement={glassesPlacement} glassesLens={glassesLens} onWearGlasses={onWearGlasses} onWindowSelect={notebook ? onNotebookExit : onWindowSelect} onHover={onHover} />
+    <CozyRoom roomYear={roomYear} outside={outside} keyboardTarget={keyboardTarget} registerRoomAction={registerRoomAction} reduced={reduced} optimised={optimised} wearingGlasses={wearingGlasses} glassesPlacement={glassesPlacement} glassesLens={glassesLens} onWearGlasses={onWearGlasses} onWindowSelect={notebook ? onNotebookExit : onWindowSelect} onHover={onHover} />
     {screensReady && graduationRoom && <WorkBuildBoard focused={workBoard} selectedTile={workBoardTile} keyboardFocused={keyboardTarget==='work-board'} registerRoomAction={registerRoomAction} onSelect={onWorkBoardOpen} onTileSelect={onWorkBoardTileSelect} onHover={onHover} onDragging={setProjectorDragging} projectorState={projectorState} onProjectorChange={onProjectorChange}/>}
     {screensReady && <InteractiveObject moving focused={keyboardTarget==='notebook'} label="Notebook · ideas & sketches" onHover={onHover} onFocus={onNotebookOpen}><Notebook roomYear={roomYear} onImagesReady={markNotebookImagesReady} onTear={onNotebookTear} canTear={true} tornPages={tornPages} focused={notebook} open={notebookOpen} onPageChange={onNotebookPageChange} page={notebookPage} reduced={reduced} onOpen={onNotebookOpen} /></InteractiveObject>}
     {screensReady && <Suspense fallback={null}><Keyboard /></Suspense>}

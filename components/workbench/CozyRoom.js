@@ -66,7 +66,7 @@ function WindowWeather({ year, reduced }) {
   </group>;
 }
 
-export default function CozyRoom({ roomYear='2026', keyboardTarget, registerRoomAction, onWindowSelect, onHover, reduced, wearingGlasses, glassesPlacement, glassesLens, onWearGlasses }) {
+export default function CozyRoom({ roomYear='2026', keyboardTarget, registerRoomAction, onWindowSelect, onHover, reduced, optimised=false, wearingGlasses, glassesPlacement, glassesLens, onWearGlasses }) {
   const wood = useMemo(() => {
     const canvas = document.createElement('canvas');
     canvas.width = 1024; canvas.height = 256;
@@ -131,7 +131,7 @@ export default function CozyRoom({ roomYear='2026', keyboardTarget, registerRoom
     <Block position={[-3.15,-3.52,-.12]} size={[1.85,1.8,3.45]} color="#6e5039" map={wood}/>
     <Block position={[-3.15,-2.22,-1.8]} size={[1.85,.8,.1]} color="#6e5039" map={wood}/>
     <GlassesDrawer keyboardFocused={keyboardTarget==='drawer'} registerRoomAction={registerRoomAction} wood={wood} reduced={reduced} onHover={onHover}/>
-    {roomYear==='2026' && <DeskGlasses placement={glassesPlacement} keyboardTarget={keyboardTarget} registerRoomAction={registerRoomAction} onHover={onHover} wearingLens={wearingGlasses?glassesLens:null} onWear={onWearGlasses}/>}
+    {roomYear==='2026' && <DeskGlasses placement={glassesPlacement} keyboardTarget={keyboardTarget} registerRoomAction={registerRoomAction} onHover={onHover} wearingLens={wearingGlasses?glassesLens:null} onWear={onWearGlasses} optimised={optimised}/>}
     {[-3.08,-3.89].map(y => <group key={y}>
       <Block position={[-3.15,y,1.66]} size={[1.9,.73,.12]} color="#ba9168" map={wood} roughness={.65}/>
       <Block position={[-3.15,y+.05,1.78]} size={[.65,.065,.09]} color="#33413a" roughness={.4}/>

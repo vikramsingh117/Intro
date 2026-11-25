@@ -81,7 +81,7 @@ const DESK_LENSES = [
   {id:'sketch',label:'Monochrome glasses · wear sketch lens'},
 ];
 
-export default function DeskGlasses({ placement=DEFAULT_PROP_PLACEMENT.glasses, keyboardTarget, registerRoomAction, onHover, wearingLens, onWear }) {
+export default function DeskGlasses({ placement=DEFAULT_PROP_PLACEMENT.glasses, keyboardTarget, registerRoomAction, onHover, wearingLens, onWear, optimised=false }) {
   useEffect(()=>{
     const cleanups=DESK_LENSES.map(({id})=>registerRoomAction?.(`glasses-${id}`,()=>{if(!wearingLens){onHover('');onWear(id);}}));
     return ()=>cleanups.forEach(cleanup=>cleanup?.());
@@ -110,6 +110,7 @@ export default function DeskGlasses({ placement=DEFAULT_PROP_PLACEMENT.glasses, 
       {[-.54,.54].map(x=><mesh key={x} position={[x,.045,-.015]} rotation={[0,0,Math.PI/2]} castShadow><cylinderGeometry args={[.018,.018,.065,10]}/><meshStandardMaterial color={id==='crayon'?'#b7a0d5':id==='sketch'?'#777d7b':'#765c38'} metalness={.62} roughness={.3}/></mesh>)}
       <mesh position={[0,.08,-.08]}><boxGeometry args={[1.18,.2,.78]}/><meshBasicMaterial transparent opacity={0} depthWrite={false}/></mesh>
     </group>;
-    return wearingLens?<group key={id}>{model}</group>:<InteractiveObject key={id} focused={keyboardTarget===`glasses-${id}`} label={label} onHover={onHover}>{model}</InteractiveObject>;
+    const hoverLabel=optimised&&id!=='blur'?`${label} · full quality required`:label;
+    return wearingLens?<group key={id}>{model}</group>:<InteractiveObject key={id} focused={keyboardTarget===`glasses-${id}`} label={hoverLabel} onHover={onHover}>{model}</InteractiveObject>;
   })}</group>;
 }

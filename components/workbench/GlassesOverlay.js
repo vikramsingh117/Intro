@@ -10,7 +10,7 @@ const LENSES = [
   { id: 'sketch', label: 'Sketch' },
 ];
 
-export default function GlassesOverlay({ reduced, lens: lensId, onLeaving, onRemove }) {
+export default function GlassesOverlay({ reduced, optimised=false, lens: lensId, onLeaving, onRemove }) {
   const [leaving, setLeaving] = useState(false);
   const finish = useRef(onRemove);
   finish.current = onRemove;
@@ -38,6 +38,7 @@ export default function GlassesOverlay({ reduced, lens: lensId, onLeaving, onRem
   const lens = LENSES[lensIndex];
   return <div className={styles.glassesOverlay} data-leaving={leaving} data-reduced={reduced} data-lens={lens.id}
     onKeyDown={event=>{if(event.key==='Escape'){event.preventDefault();event.stopPropagation();remove();}}}>
+    {optimised&&lens.id!=='blur'&&<p className={styles.glassesModeNotice} role="status">This lens effect needs full quality. Click Optimised to restore it.</p>}
     <div className={styles.glassesControls}>
       <span className={styles.lensStatus} aria-live="polite">Lens · {lens.label}</span>
       <button data-glasses-control className={styles.removeGlasses} onClick={remove}>Take off · Esc</button>
